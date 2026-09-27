@@ -12,6 +12,7 @@
 import glob
 import json
 import os
+import re
 from collections import Counter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +40,10 @@ TOPIC_TITLES = {
     "G6_benchmarks_models": "[보완] 벤치마크·모델 비교",
     "G7_computer_use": "[보완] 컴퓨터 유즈 vs MCP vs 스크립트",
     "G8_blender_lab_mcp": "[보완] 공식 Blender Lab MCP 소스 정독·실제 구동",
+    "G9_human_character": "[보완] 인체·캐릭터 조형 도구",
+    "G10_organic_nature": "[보완] 유기물·자연·조형물 도구",
+    "G11_architecture": "[보완] 건물·건축·평면·도시 배치 도구",
+    "G12_tool_safety": "[보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)",
 }
 
 VERDICT_KO = {"confirmed": "✅ 확인", "partially": "🟡 부분", "refuted": "❌ 반박", "unverifiable": "❔ 미확인"}
@@ -66,7 +71,7 @@ def topics():
     keys = set()
     for p in glob.glob(os.path.join(RAW, "*.json")):
         keys.add(os.path.basename(p).split(".")[0])
-    return sorted(keys, key=lambda k: (k.startswith("G"), k))
+    return sorted(keys, key=lambda k: (k.startswith("G"), int(re.match(r"G?(\d+)", k).group(1)), k))
 
 
 def research_file(key):
