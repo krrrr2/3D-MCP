@@ -85,7 +85,7 @@ CONTAINER_WORDS = {"house", "building", "home", "apartment", "flat", "scene", "r
 # 한국어·중국어 이름 (AI 가 만든 장면에서 자주 보임). 위에서부터 먼저 맞는 것이 이긴다 (부속품·마감재를 먼저 거름)
 CJK_ROLES = [
     ("trim", ("门套", "窗套", "门框", "窗框", "门槛", "踢脚", "线脚", "墙纸", "문틀", "창틀", "걸레받이", "몰딩", "벽지")),
-    ("furniture", ("把手", "门吸", "门锁", "窗帘", "窗台", "灯", "画", "镜", "柜", "架", "开关", "插座", "装饰", "冰箱",
+    ("furniture", ("把手", "门吸", "门锁", "窗帘", "帘", "窗台", "灯", "画", "镜", "柜", "架", "开关", "插座", "装饰", "冰箱",
                    "손잡이", "커튼", "블라인드", "창턱", "벽등", "벽걸이", "조명", "액자", "거울", "선반", "수납")),
     ("railing", ("栏杆", "护栏", "扶手", "난간")),
     ("stair", ("楼梯", "台阶", "踏步", "계단")),
@@ -140,6 +140,8 @@ def _toks(name):
     return out
 
 
+CJK_DIRECTIONS = {"남", "북", "동", "서", "남쪽", "북쪽", "동쪽", "서쪽", "좌", "우", "앞", "뒤", "상", "하",
+                  "东", "西", "南", "北", "左", "右", "上", "下", "前", "后"}
 _CJK_RUN = re.compile(r"[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]+")
 
 
@@ -147,6 +149,8 @@ def _cjk_role(name):
     """한국어·중국어·일본어는 끝 단어가 핵심(창가_소파 = 소파, 窗边绿植 = 화분, 双门冰箱 = 냉장고).
     마지막 CJK 덩어리의 '끝'에 붙은 역할 단어로 판정한다."""
     runs = _CJK_RUN.findall(name)
+    while len(runs) > 1 and runs[-1] in CJK_DIRECTIONS:
+        runs.pop()                     # '외벽_남', '墙_北' 처럼 끝에 붙은 방향어는 건너뜀
     if not runs:
         return None
     seg = runs[-1]
@@ -708,6 +712,8 @@ def audit_building(collection=None, limits=None):
                 dx = max(omin.x - oc.x, 0.0, oc.x - omax.x)
                 dy = max(omin.y - oc.y, 0.0, oc.y - omax.y)
                 wd = leaf if hit_edge else width
+                if math.hypot(dx, dy) > wd / 2 + 0.15:
+                    continue        # 구멍은 문·창과 붙어 있어야 한다 (벽 끝 너머 바깥 공간 등 배제)
                 score = math.hypot(dx, dy) + abs(wd - leaf) + (1.0 if hit_edge else 0.0)
                 if best is None or score < best[0]:
                     best = (score, n, along, t, oc, wd, near)
@@ -758,7 +764,7 @@ def audit_building(collection=None, limits=None):
             side["ahead"] = (ahead[1], ahead[2]) if ahead else None
             sides.append(side)
         return {"wall": w, "n": n, "along": along, "t": t, "c": c, "width": width, "zmin": zmin, "zmax": zmax,
-                "sides": sides, "open_leaf": open_leaf, "hole": hole}
+                "sides": sides, "open_leaf": open_leaf, "hole": hole, "cut": best is not None}
 
     def intrudes(fu, origin, d, along, depth, width, z0, z1):
         """가구 fu 가 (origin 에서 d 방향 depth, along 방향 ±width/2, 높이 z0~z1) 상자 안으로 들어오는가."""
@@ -793,7 +799,8 @@ def audit_building(collection=None, limits=None):
         r = opening_report(o, "door")
         if r is None:
             continue
-        door_holes.append((r["c"], r["along"], r["n"], r["t"], r["width"]))
+        if r["cut"]:
+            door_holes.append((r["c"], r["along"], r["n"], r["t"], r["width"]))
         h = r["zmax"] - r["zmin"]
         if not r["open_leaf"] and not (L["door_h"][0] <= h <= L["door_h"][1]):
             add("warning", "door_size", o["name"], f"문 높이 {h:.2f} m (상식 범위 {L['door_h'][0]}~{L['door_h'][1]} m)")
@@ -864,6 +871,8 @@ def audit_building(collection=None, limits=None):
                              "at": [round(r["c"].x, 2), round(r["c"].y, 2)], "sides": names, "open_leaf": r["open_leaf"]})
         if a is not None and a == b and a != "EXTERIOR":
             add("warning", "door_same_room", o["name"], f"문 양쪽이 같은 방({a})입니다. 의미 없는 문.")
+        if not r["cut"]:
+            continue                   # 구멍 없는 문(벽에 붙인 그림 같은 문)은 방을 잇지 않는다
         for nm in (a, b):
             if nm in room_info:
                 room_info[nm]["doors"].append(o["name"])
@@ -1091,6 +1100,12 @@ def audit_building(collection=None, limits=None):
                 ch = _cast(over, Vector((q.x, q.y, top + 0.05)), Vector((0, 0, 1)), 20.0)
                 if ch is not None:
                     hs.append(ch[0].z - top)
+                # 격자 천장: 막대 사이로 레이가 빠져도 머리 위 가까운 천장 면(막대 밑면)을 천장으로 본다
+                qh = Vector((q.x, q.y, top + 1.8))
+                for cu in _near(ceilings, qh - Vector((1.0, 1.0, 0.0)), qh + Vector((1.0, 1.0, 1.0))):
+                    loc, _n, _i, _d = cu["bvh"].find_nearest(qh, 1.0)
+                    if loc is not None and loc.z > top + 1.5:
+                        hs.append(loc.z - top)
         ceil_h = min(hs) if hs else None
         total_area += area
         if rtype == "circulation":
@@ -1143,12 +1158,15 @@ def audit_building(collection=None, limits=None):
     # --- 벽
     everything = [u for u in units if u["role"] != "floor"]
 
-    def see_through(mid, n, t, exclude=()):
-        """mid 에서 벽 법선 방향으로 벽 두께 구간을 가로지를 때 아무것도 없으면 True (정말 뚫려 보임)."""
-        o = mid - n * (t / 2 + 0.1)
-        cand = [u for u in _near(everything, o - Vector((0.5, 0.5, 0.5)), o + Vector((0.5, 0.5, 0.5)) + n * (t + 0.2))
-                if u["name"] not in exclude]
-        return _cast(cand, o, n, t + 0.2) is None and _cast(cand, o + n * (t + 0.2), -n, t + 0.2) is None
+    def see_through(mid, n, t, exclude=(), reach=0.1):
+        """mid 에서 벽 법선 방향으로 벽 두께(+양쪽 reach)를 가로지를 때 아무것도 없으면 True (정말 뚫려 보임)."""
+        o = mid - n * (t / 2 + reach)
+        span = t + 2 * reach
+        e = o + n * span
+        lo = Vector((min(o.x, e.x), min(o.y, e.y), min(o.z, e.z))) - Vector((0.5, 0.5, 0.5))
+        hi = Vector((max(o.x, e.x), max(o.y, e.y), max(o.z, e.z))) + Vector((0.5, 0.5, 0.5))
+        cand = [u for u in _near(everything, lo, hi) if u["name"] not in exclude]
+        return _cast(cand, o, n, span) is None and _cast(cand, o + n * span, -n, span) is None
 
     for w in walls:
         f = w["frame"]
@@ -1165,14 +1183,16 @@ def audit_building(collection=None, limits=None):
         # 아래를 향한 면(천장 밑면)에 먼저 닿으면 그 사이가 빈 것. 위를 향한 면이면 이미 슬래브 안에서 시작(= 붙어 있음)
         if hit is not None and hit[3].z < 0 and hit[0].z - wtop > L["wall_top_gap"]:
             gap = hit[0].z - wtop
-            # 벽 양옆 어느 쪽이든 벽 윗단 높이에 천장(격자 천장·내림 천장 포함)이 붙어 있으면 틈은 그 위 설비 공간이라 안 보인다
+            # 벽 양옆 어느 쪽이든 벽 윗단 높이에 천장(격자 천장·내림 천장 포함)이 붙어 있으면 틈은 그 위 설비 공간이라 안 보인다.
+            # 격자 막대 사이로 레이가 빠질 수 있으므로 '벽 옆 0.4 m 안의 가장 가까운 천장 면 높이'로 판단
             covered = False
             for side in (-1, 1):
                 for fr in (-0.3, 0.0, 0.3):
-                    q = f["center"] + f["long"] * (fr * f["length"]) + f["normal"] * side * (f["thick"] / 2 + 0.15)
-                    for dq in (Vector((0, 0, 0)), f["long"] * 0.05, f["long"] * -0.05, f["normal"] * side * 0.1):
-                        h2 = up(q + dq)
-                        if h2 is not None and (h2[3].z >= 0 or h2[0].z - wtop <= L["wall_top_gap"]):
+                    q = f["center"] + f["long"] * (fr * f["length"]) + f["normal"] * side * (f["thick"] / 2 + 0.2)
+                    q = Vector((q.x, q.y, wtop + 0.01))
+                    for cu in _near(ceilings, q - Vector((0.4, 0.4, 0.4)), q + Vector((0.4, 0.4, 0.4))):
+                        loc, _n, _i, _d = cu["bvh"].find_nearest(q, 0.4)
+                        if loc is not None and loc.z <= wtop + L["wall_top_gap"] + 0.03:
                             covered = True
                             break
                     if covered:
@@ -1180,7 +1200,8 @@ def audit_building(collection=None, limits=None):
                 if covered:
                     break
             mid = Vector((f["center"].x, f["center"].y, wtop + gap / 2))
-            if not covered and see_through(mid, f["normal"], f["thick"]):
+            # 양쪽 0.6 m 까지 트여 있어야 '건너편이 보이는' 틈 (윗부분만 안쪽으로 물러난 계단식 벽은 제외)
+            if not covered and see_through(mid, f["normal"], f["thick"], reach=0.6):
                 add("error", "wall_short_of_ceiling", w["name"], f"벽 위와 천장 사이가 {gap:.2f} m 비어 있어 건너편이 보입니다.")
         if not straight:
             continue  # 곡선·꺾인 벽은 끝점 개념이 모호하므로 틈 검사 생략
