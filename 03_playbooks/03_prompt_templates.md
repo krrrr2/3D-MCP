@@ -581,7 +581,7 @@ print("done: 3 materials")
 
 - Metallic 스위치, 코트·유리·벨벳 값, 유리 bounces 16 이상은 [RobLe3 materials](https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/SKILL.md) 값입니다("Metallic is a switch, not a slider").
 - albedo sRGB 30~240(범위 밖 픽셀 2% 미만), roughness 맵 표준편차 > 0.01 같은 감사 기준은 [scenario texturing-shading](https://raw.githubusercontent.com/scenario-labs/skills/main/skills/dcc/blender/scenario-blender-texturing-shading/SKILL.md) 스킬의 값입니다. 업계 표준이 아니라 해당 스킬의 자체 기준입니다.
-- 비활성 소켓(예: `Subsurface IOR`)은 문자열 키로 접근하면 KeyError가 납니다(검증에서 bpy 5.0.1로 확인). 그래서 목록을 돌며 identifier로 찾습니다. 5.0의 Noise 출력은 표시 이름이 `Factor`로 바뀌었지만 identifier는 `Fac`입니다(이번 작성 중 확인).
+- 비활성 소켓(예: `Subsurface IOR`)은 문자열 키로 접근하면 KeyError가 납니다(검증에서 bpy 5.0.1로 확인). 그래서 목록을 돌며 identifier로 찾습니다. 5.0의 Noise 출력은 표시 이름이 `Factor`로 바뀌었지만 identifier는 `Fac`입니다(이번 작성 중 확인). 한국어 UI에서는 Preferences > Interface > Translation의 New Data(`use_translate_new_dataname`)가 켜져 있으면 새 노드 이름이 번역될 수 있는데, pip `bpy` 공장 기본값이 5.0.1에서는 켜짐, 4.2.23에서는 꺼짐이었습니다(이번 작성 중 확인, 실제 번역 동작은 미확인).
 - 재질 수치의 기준표와 PBR 자동 감사 코드(`pbr_audit`)는 [텍스처링·재질 가이드](../02_guides/05_texturing_materials.md)에 있습니다.
 
 ---

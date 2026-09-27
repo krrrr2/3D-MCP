@@ -9,9 +9,9 @@
 - **작업별 잠정 선택**: 공간·치수·CAD·사진/도면 재구성은 Astra(high 이상), 장시간 씬 빌드·룩뎁·애니메이션 타이밍·정밀 배치는 Opus 5.5, 가장 어려운 계획과 오케스트레이션은 Fable 5.1, 대량 반복은 Sonnet 5나 GPT-6 Sol, 저가 렌더 1차 검수는 Gemini 3.8 Flash가 맞습니다.
 - **effort는 반드시 직접 지정하세요.** Codex에서 Astra의 기본 effort는 **low**이고(Codex models.json 기준, 단계는 low/medium/high/xhigh/max/ultra), Opus 5.5의 기본값은 **medium**입니다. 지정하지 않으면 품질이 떨어지고 모델 비교도 왜곡됩니다.
 - **유기체·캐릭터는 어떤 LLM도 직접 모델링을 잘 못합니다.** 생성형 3D로 메시를 만들고 LLM은 조립·리깅·배치를 맡기세요. **한국 사용자 주의**: Tencent Hunyuan3D 계열 오픈웨이트 라이선스는 적용 지역에서 대한민국을 제외합니다.
-- **모델을 바꾸기 전에 하네스부터 고치세요.** 실행 오류를 모델에 되돌려 주기만 해도 Blender 코드 실행 가능률이 0.69에서 0.97로 올랐다는 보고가 있습니다(3DCodeBench, 논문 요약 기준). 렌더→멀티뷰 비평→수치 검사 루프가 모델 차이보다 결과를 더 크게 바꿉니다.
+- **모델을 바꾸기 전에 하네스부터 고치세요.** 실행 오류를 모델에 되돌려 주기만 해도 Blender 코드 실행 가능률이 0.69에서 0.97로 올랐다는 보고가 있습니다(3DCodeBench. 논문 요약에만 있는 수치로 **미확인**). 렌더→멀티뷰 비평→수치 검사 루프가 모델 차이보다 결과를 더 크게 바꿉니다.
 - **클라이언트**: 3D 에이전트 작업에는 Claude Code와 Codex(CLI/앱)가 가장 적합합니다. 비개발자는 Claude Desktop에 공식 Blender 커넥터를 붙이는 방법이 가장 쉽습니다. ChatGPT 웹 채팅은 원격 MCP만 지원해 로컬 Blender에 직접 붙지 않습니다. Cursor는 활성 도구가 약 40개로 제한되고, Gemini CLI는 2026-06-18부터 소비자 티어 서비스를 끝내고 Antigravity CLI로 넘어갔습니다.
-- **비용은 작업당으로 비교하세요.** 토큰 단가로는 Opus 5.5가 Astra의 40%이지만 출력 토큰을 훨씬 많이 써서, 한 개인 테스트에서는 작업당 비용이 비슷했습니다(개인 테스트, n=1). 1920×1080 스크린샷 한 장은 2,691토큰으로, Opus 5.5 기준 약 $0.011입니다.
+- **비용은 작업당으로 비교하세요.** 토큰 단가로는 Opus 5.5가 Astra의 40%이지만(Astra 가격은 보도 기준, 미확인) 출력 토큰을 훨씬 많이 써서, 한 개인 테스트에서는 작업당 비용이 비슷했습니다(개인 테스트, n=1). 1920×1080 스크린샷 한 장은 2,691토큰으로, Opus 5.5 기준 약 $0.011입니다.
 - **'실행자 + 어드바이저' 조합은 기대만큼 효과가 없습니다.** Opus 5.5에 Fable 5.1 어드바이저를 붙인 공식 측정 결과는 +1.7점(노이즈 수준)에 비용이 약 2.1배였습니다.
 - AI+MCP로 만든 결과물 가운데 독립적으로 'AAA급' 판정을 받은 사례는 찾지 못했습니다. 모델 선택은 품질의 일부이고, 나머지는 에셋, 검증 루프, 사람의 마무리에서 나옵니다([사례 모음](../04_case_studies/01_case_studies.md)).
 
@@ -38,7 +38,7 @@
 
 **Claude Opus 5.5**
 - 장시간 에이전트 코딩과 지식 작업용 모델입니다. adaptive thinking이 항상 켜져 있어 끌 수 없고, **기본 effort가 medium**입니다(Opus 5는 high). 어려운 턴에서는 effort를 직접 올려야 합니다.
-- [공식 문서](https://platform.claude.com/docs/en/models/opus-5-5/whats-new-opus-5-5)는 Opus 5보다 **차트·다이어그램·스크린샷 판독**이 크게 좋아졌고, 위치 관계 이해와 여러 단계에 걸친 스크린샷 기반 컴퓨터 사용도 개선되었으며, 출력 속도가 30% 이상 빨라졌다고 설명합니다.
+- Anthropic 제품 페이지는 'our best Opus model for vision and computer use'라고 소개합니다(3D·Blender 언급은 없음). [공식 문서](https://platform.claude.com/docs/en/models/opus-5-5/whats-new-opus-5-5)는 Opus 5보다 **차트·다이어그램·스크린샷 판독**이 크게 좋아졌고, 위치 관계 이해와 여러 단계에 걸친 스크린샷 기반 컴퓨터 사용도 개선되었으며, 출력 속도가 30% 이상 빨라졌다고 설명합니다.
 - Claude Code **2.1.280 이상**, Claude Desktop, claude.ai(유료 플랜), API, Bedrock, Vertex, Foundry에서 쓸 수 있고, 2026-09-22부터 [GitHub Copilot](https://github.blog/changelog/2026-09-22-claude-opus-5-5-is-now-available-in-github-copilot/)에서도 쓸 수 있습니다. 은퇴는 2027-09-22 이후입니다.
 
 ### 1-2. 함께 거론되는 모델
@@ -48,7 +48,7 @@
 | GPT-6 Sol / GPT-6 Luna | 2026-09-22 (보도) | Sol $2/$10, Luna $0.10/$0.50 **(미확인)** | Astra 아래 저가 티어입니다. Codex models.json에서 존재를 확인했습니다(최소 클라이언트 0.155.0, Luna에는 ultra 단계가 없음). 같은 파일에 중간 티어 GPT-5.6 Terra도 있습니다 | 존재 확인, [가격·출시일은 보도](https://venturebeat.com/technology/openai-releases-gpt-6-sol-and-luna-models-slashing-api-costs-50-or-more)만 |
 | Claude Sonnet 5 | 2026-06-30 | $2/$10 (2026-08-10부터 영구 가격) | 1M/128K, 기본 effort high, claude.ai Free/Pro의 기본 모델입니다 | [공식](https://www.anthropic.com/news/claude-sonnet-5) |
 | Claude Haiku 4.5 | 현행 | $1/$5 | 200K/64K. 이미지는 표준 티어(긴 변 1568px)라 스크린샷 비평에 불리합니다 | [공식](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model) |
-| Gemini 3.1 Pro | 2026-02-19 (BenchCAD 표에는 '2026-05'로 표기) | $2/$12 (입력 200k 초과 시 $4/$18) (보도) | Google Pro급 최신입니다. 3.5 Pro는 2026-05 I/O에서 발표만 되고 미출시입니다(Google 공식 [gemini-cli models.ts](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/config/models.ts)에 Pro는 3.1까지만 있음) | 부분 확인 |
+| Gemini 3.1 Pro | 2026-02-19 (BenchCAD 표에는 '2026-05'로 표기) | $2/$12 (입력 200k 초과 시 $4/$18) (보도) | Google Pro급 최신입니다. 3.5 Pro는 2026-05 I/O에서 발표만 되고 아직 나오지 않은 것으로 보입니다(보도는 미확인. 간접 근거로 Google 공식 [gemini-cli models.ts](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/config/models.ts)에 Pro는 3.1까지만 있음) | 부분 확인 |
 | Gemini 3.8 Flash | 2026-09-02 | $0.75/$3.75 (2026-12-31까지 프로모션, 보도) | 1M 컨텍스트, 약 305 tok/s로 싸고 빠른 비전 작업에 맞습니다 | 존재는 models.ts로 확인, 수치는 [보도](https://www.vellum.ai/blog/gemini-3-8-flash-benchmarks-explained) |
 | xAI Grok 4.7 | 2026-09-21 | $2/$6 (200k 초과 시 $4/$12) **(미확인)** | 500K 컨텍스트, 텍스트·이미지 입력. 3D 공식 수치는 없습니다 | [docs.x.ai](https://docs.x.ai/developers/models) 미열람 |
 | Kimi K3 (오픈웨이트) | 2026-07 | Kimi 플랫폼 과금 | 2.8T MoE(활성 104B), 1M 컨텍스트, 이미지·영상 입력. 개인이 호스팅하기엔 너무 크고 **커스텀 라이선스**입니다 | [GitHub README](https://github.com/MoonshotAI/Kimi-K3) 확인 |
@@ -221,7 +221,7 @@
 ### 5-2. Blender 서버 등록: 먼저 알아야 할 것
 
 - **`uvx blender-mcp`나 `uvx mcp-for-blender`는 공식 서버가 아닙니다.** 둘 다 커뮤니티 표준인 ahujasid 'MCP for Blender'를 실행합니다([PyPI mcp-for-blender](https://pypi.org/project/mcp-for-blender/), [PyPI blender-mcp](https://pypi.org/project/blender-mcp/)). 신규 설치는 `mcp-for-blender`를 권장합니다.
-- Claude 공식 **Blender 커넥터**는 Blender 개발자 조직인 Blender Lab이 만든 별도 서버입니다(애드온 필요, Blender 5.1 이상, git 소스에서 설치)([커넥터 페이지](https://claude.com/connectors/blender)).
+- Claude 공식 **Blender 커넥터**는 Blender 개발자 조직인 Blender Lab이 만든 별도 서버입니다. 애드온이 필요하고, 애드온 manifest의 `blender_version_min`이 5.1.0이라 Blender 5.1 이상에서 돌아갑니다. Claude Desktop 밖에서 쓸 때는 git 소스에서 설치합니다([커넥터 페이지](https://claude.com/connectors/blender). 커넥터 페이지 자체에는 Blender 버전 요구가 적혀 있지 않음).
 - **두 서버 모두 localhost:9876을 쓰므로 하나만 켜세요.** 서버별 기능 차이, 텔레메트리, `BLENDER_MCP_SAFE_MODE`는 [02_blender_mcp](./02_blender_mcp.md)에서 다룹니다.
 
 **Claude Code** (`.mcp.json`, 프로젝트 공유용):
@@ -232,14 +232,14 @@
     "blender": {
       "command": "uvx",
       "args": ["mcp-for-blender"],
-      "env": { "DISABLE_TELEMETRY": "true" },
+      "env": { "DISABLE_TELEMETRY": "true", "BLENDER_MCP_SAFE_MODE": "1" },
       "timeout": 600000
     }
   }
 }
 ```
 
-한 줄로 등록할 때는 `claude mcp add blender -- uvx mcp-for-blender`를 씁니다(팀 공유는 `--scope project`).
+한 줄로 등록할 때는 `claude mcp add blender -- uvx mcp-for-blender`를 씁니다(팀 공유는 `--scope project`). `"timeout"`의 의미는 5-3의 주의 상자를 보세요.
 
 **공식 Blender Lab 서버** (Claude Desktop 외 클라이언트에서 쓸 때. 태그는 조사 시점 2차 자료 기준이고, 커넥터 표기는 v1.0.1이므로 최신 태그를 확인하세요):
 
@@ -247,7 +247,7 @@
 uvx --from "git+https://projects.blender.org/lab/blender_mcp.git@v1.0.0#subdirectory=mcp" blender-mcp
 ```
 
-첫 실행 때는 git 빌드 때문에 기본 MCP 시작 타임아웃을 넘길 수 있습니다. Claude Code라면 `MCP_TIMEOUT`을 늘리세요.
+첫 실행 때는 git 빌드와 의존성(약 41개) 다운로드 때문에 기본 MCP 시작 타임아웃을 넘길 수 있습니다. Claude Code라면 `MCP_TIMEOUT=120000 claude`처럼 시작 타임아웃(ms)을 늘려 실행하세요. 등록 명령과 `~/.claude.json` 예시는 [빠른 시작 1.5절](../03_playbooks/01_quickstart_setup.md)에 있습니다.
 
 **Codex** (`~/.codex/config.toml`, **effort를 꼭 지정**):
 
@@ -258,12 +258,12 @@ model_reasoning_effort = "high"   # 지정하지 않으면 Codex 기본값 low
 [mcp_servers.blender]
 command = "uvx"
 args = ["mcp-for-blender"]
-env = { DISABLE_TELEMETRY = "true" }
+env = { DISABLE_TELEMETRY = "true", BLENDER_MCP_SAFE_MODE = "1" }
 startup_timeout_sec = 30
 tool_timeout_sec = 600
 ```
 
-프로젝트별 설정은 `.codex/config.toml`에 두며, 신뢰된 프로젝트에서만 적용됩니다([Codex MCP 문서](https://developers.openai.com/codex/mcp)). 등록 후 `codex mcp list`로 확인합니다.
+Codex 설정 키 이름과 기본값은 Codex 문서의 검색 요약에서 가져왔고 원문은 열람하지 못했습니다. 오류가 나면 공식 문서로 확인하세요. 프로젝트별 설정은 `.codex/config.toml`에 두며, 신뢰된 프로젝트에서만 적용됩니다([Codex MCP 문서](https://developers.openai.com/codex/mcp)). 등록 후 `codex mcp list`로 확인합니다.
 
 ### 5-3. 3D 작업에 맞춘 한도·타임아웃
 
@@ -272,9 +272,9 @@ tool_timeout_sec = 600
 | 항목 | 기본값 | 3D 권장 | 설정 위치 |
 |---|---|---|---|
 | Claude Code MCP 출력 한도 | 25,000토큰 (10,000에서 경고) | 50,000 | 환경변수 `MAX_MCP_OUTPUT_TOKENS` |
-| Claude Code 도구 타임아웃 | 서버별 | 600000 (ms) | `.mcp.json`의 `"timeout"` |
-| Claude Code 서버 시작 타임아웃 | — | 공식 서버를 처음 실행할 때 늘리기 | 환경변수 `MCP_TIMEOUT` |
-| Claude Code stdio 도구 유휴 타임아웃 | **30분** | 진행 출력 없이 오래 걸리는 렌더·베이크가 있으면 조정 | `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT` |
+| Claude Code 도구 타임아웃 (호출당 절대 한도) | `MCP_TOOL_TIMEOUT` 미설정 시 약 28시간 | 서버별로 정하려면 600000 (ms, 10분) | `.mcp.json`의 `"timeout"` (진행 알림으로 연장되지 않는 절대 한도. 1000 이상이면 유휴 타임아웃의 하한도 겸함, v2.1.203+) |
+| Claude Code 서버 시작 타임아웃 | — | 공식 서버 첫 실행 때 120000 (ms) 정도 | 환경변수 `MCP_TIMEOUT` (예: `MCP_TIMEOUT=120000 claude`) |
+| Claude Code 도구 유휴 타임아웃 (응답·진행 알림이 없을 때) | stdio **30분**, HTTP·SSE·WebSocket·claude.ai 커넥터 **5분** | 진행 출력 없이 오래 걸리는 렌더·베이크가 있으면 조정 | `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT` (ms, `0`이면 끔) |
 | Codex 서버 시작 타임아웃 | 10초 (이번 조사에서 재확인 못 함) | 30 | `startup_timeout_sec` |
 | Codex 도구 타임아웃 | 60초 (이번 조사에서 재확인 못 함) | 600 | `tool_timeout_sec` |
 | 커뮤니티 Blender 서버 소켓 타임아웃 | 180초 | 클라이언트 값을 늘려도 서버 쪽 한도가 남으므로, 긴 렌더는 `blender -b` 헤드리스로 분리 | 서버 내부 |
@@ -282,6 +282,8 @@ tool_timeout_sec = 600
 | Gemini CLI 원격 서버 | `httpUrl`=Streamable HTTP, `url`=구형 SSE | Blender 서버는 기본이 stdio(`command`/`args`)라서 **원격 HTTP로 띄운 경우에만** 해당 | `settings.json` ([문서](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md)) |
 
 출처: [Claude Code MCP 문서](https://code.claude.com/docs/en/mcp), [Codex MCP 문서](https://developers.openai.com/codex/mcp).
+
+> **주의**: stdio 서버에 `"timeout": 600000`을 넣으면 한도가 늘어나는 것이 아니라 **기본 약 28시간이던 절대 한도가 10분으로 줄어듭니다.** 이 값은 HTTP 서버(예: UE 5.8 공식 MCP)에서 기본 5분 유휴 타임아웃과 60초 첫 응답 대기를 늘릴 때 효과가 있습니다. 커뮤니티 Blender 서버는 어차피 서버 쪽 소켓 타임아웃(180초)이 먼저 걸리므로, 긴 렌더는 헤드리스로 분리하세요.
 
 ---
 
@@ -354,7 +356,7 @@ Claude 4.7 이후 모델(Sonnet 5, Opus 5.5, Fable 5.1)은 **고해상도 이미
 | Astra effort | xhigh가 medium보다 토큰을 1.76~2.52배 씁니다([2차 분석](https://trilogyai.substack.com/p/astra-reasoning-effort-token-usage)). Max 53분 대 Medium 25분 사례([MindStudio](https://www.mindstudio.ai/blog/gpt-6-astra-video-game-development))도 있습니다 (벤더 블로그, 미검증) | 기본은 high. 비교 실험은 같은 단계로 고정합니다 |
 | **생성형 3D + LLM 조립** (Astra + Tripo P2.0, Grok 4.6 + Meshy) | 제작자 보고 사례만 있고 정량 비교는 없습니다([큐레이션 목록](https://github.com/magiccreator-ai/awesome-gpt-6-astra)) | 유기체의 사실상 표준 분업 |
 | 작업별 라우팅 (3-1) | 측정 없음 | 개인 테스트들의 방향과는 맞지만 검증되지 않았습니다 |
-| **하네스 개선 (모델 고정)** | 멀티턴 오류 피드백으로 실행 가능률 0.69 → 0.97(3DCodeBench). build123d-mcp 연결로 0.360 → 0.457, 유효율 88% → 100%. 생성·검증 역할을 번갈아 하는 VIGA는 원샷 대비 BlenderGym +35.32%, BlenderBench +124.70%([VIGA](https://arxiv.org/abs/2601.11109)). BlenderGym은 예산이 클수록 검증에 연산을 더 쓰는 쪽이 유리하다고 보고했습니다 | **가장 먼저 할 일.** 모델을 바꾸는 것보다 효과가 큽니다 |
+| **하네스 개선 (모델 고정)** | 멀티턴 오류 피드백으로 실행 가능률 0.69 → 0.97(3DCodeBench, 논문 요약 기준으로 미확인). build123d-mcp 연결로 0.360 → 0.457, 유효율 88% → 100%. 생성·검증 역할을 번갈아 하는 VIGA는 원샷 대비 BlenderGym +35.32%, BlenderBench +124.70%([VIGA](https://arxiv.org/abs/2601.11109)). BlenderGym은 예산이 클수록 검증에 연산을 더 쓰는 쪽이 유리하다고 보고했습니다 | **가장 먼저 할 일.** 모델을 바꾸는 것보다 효과가 큽니다 |
 
 ### 7-2. Claude 장시간 세션 설정 (Opus 5.5 / Fable 5.1)
 
@@ -416,7 +418,7 @@ Opus 5.5 공식 가이드는 '제너릭한 AI 느낌을 피하라' 같은 막연
 | 공식·커뮤니티 Blender 서버를 동시에 켬 | 연결 실패, 엉뚱한 서버가 응답 | 둘 다 localhost:9876이므로 하나만 켬 |
 | ChatGPT 웹 채팅에 로컬 Blender를 붙이려 함 | 연결 불가 | Codex CLI/앱 또는 ChatGPT 데스크톱의 Codex·Work 모드 사용 |
 | Cursor에 MCP 서버를 여러 개 켬 | 일부 도구가 조용히 사라짐 | 활성 도구 40개 미만. 커뮤니티 Blender 서버만으로 36개 |
-| 렌더를 MCP 도구로 오래 돌림 | 60초(Codex)·180초(커뮤니티 서버 소켓)·30분 유휴(Claude Code)에서 끊김 | 타임아웃을 늘리고, 긴 렌더는 `blender -b` 헤드리스로 분리 |
+| 렌더를 MCP 도구로 오래 돌림 | 60초(Codex)·180초(커뮤니티 서버 소켓)·유휴 30분(Claude Code stdio. HTTP 서버는 5분)에서 끊김 | 타임아웃을 늘리고, 긴 렌더는 `blender -b` 헤드리스로 분리 |
 | 큰 씬 덤프를 그대로 반환 | 출력이 잘려 모델이 씬을 잘못 이해함 | `MAX_MCP_OUTPUT_TOKENS=50000`, 덤프는 요약·필터링해서 반환 |
 | 벤더 수치를 한 표에 섞어 순위를 매김 | 'Astra 95.9% 대 Gemini 0.289' 같은 무의미한 비교 | 벤더 보고와 독립 재채점을 다른 열에, 조건 병기 |
 | 아레나 1위를 절대 순위로 해석 | 표본이 적은 신규 모델 순위가 1~2주 뒤 뒤집힘 | 오차범위가 겹치면 동률, 1~2주 뒤 재확인 |

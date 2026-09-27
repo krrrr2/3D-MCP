@@ -7,7 +7,7 @@
 - **순서가 품질을 결정합니다.** 레퍼런스와 카메라 구도를 먼저 고정하고(0단계), 그다음 ① 색관리·노출 ② 실측 스케일(1 unit = 1 m) ③ 검정에서 시작해 광원 하나씩 ④ 재질값의 공간적 변화 ⑤ 모든 하드엣지 베벨과 마모 ⑥ 물리 카메라(초점거리·f-stop·조리개 날) ⑦ 깨끗하게 렌더한 뒤 절제된 합성 순서로 갑니다. 한 번에 한 변수만 바꿉니다.
 - **색관리는 AgX가 기본입니다.** 제품 색이 중요하면 Khronos PBR Neutral, HDR 납품이나 파이프라인 표준이면 ACES 2.0을 씁니다. Standard는 쓰지 않습니다(선형 1.0, 즉 중간 회색보다 약 2.5 stop 밝은 곳에서 바로 잘림. 실측에서 선형 1.44가 이미 255). AgX는 클리핑을 부드럽게 숨기므로(선형 4.0 → 표시 0.91) 노출은 False Color와 EXR 수치로 판정하고, 밝기는 램프가 아니라 `view_settings.exposure`로 조절합니다.
 - **광원 크기 0 금지, 색은 켈빈으로.** Blender에서 bpy로 새로 만든 Point 라이트의 반경 기본값은 0이고(칼같이 딱딱한 그림자), UE 로컬 라이트의 Source Radius 기본값도 0입니다. 5.x는 `use_temperature`로 켈빈을 직접 지정하는데, 켜면 `color`가 곱해지는 틴트로 바뀌므로 흰색으로 되돌려야 합니다. 키는 카메라 축에서 20° 이상 떨어뜨리고(기본 40°·위 35°·피사체 반경 3배 거리·크기 = 반경), 필은 key:fill 3~4:1에서 시작해 레퍼런스에 맞춥니다.
-- **blender-mcp에는 렌더 도구가 없습니다**([이슈 #61](https://github.com/ahujasid/blender-mcp/issues/61), not planned). 뷰포트 스크린샷은 최종 색관리·GI·DOF와 다르므로, `execute_blender_code`나 헤드리스 Blender로 렌더를 **파일로 저장**해서 봐야 합니다. 이 문서의 `review_render()`는 렌더 한 번으로 표시용 PNG, 선형 EXR, False Color PNG, 수치 JSON을 남깁니다(pip bpy 5.0.1·4.2.23 LTS에서 실행 확인).
+- **blender-mcp에는 렌더 도구가 없습니다**([이슈 #61](https://github.com/ahujasid/blender-mcp/issues/61), not planned). 뷰포트 스크린샷은 최종 색관리·GI(전역 조명)·DOF(피사계 심도)와 다르므로, `execute_blender_code`나 헤드리스 Blender로 렌더를 **파일로 저장**해서 봐야 합니다. 이 문서의 `review_render()`는 렌더 한 번으로 표시용 PNG, 선형 EXR, False Color PNG, 수치 JSON을 남깁니다(pip bpy 5.0.1·4.2.23 LTS에서 실행 확인).
 - **Blender 5.x에서 LLM이 자주 틀리는 것**: EEVEE 식별자(5.0+ `BLENDER_EEVEE`, 4.2~4.x `BLENDER_EEVEE_NEXT`), 없는 속성(`use_bloom`·`use_ssr`·`use_gtao` → AttributeError), 컴포지터(`scene.compositing_node_group`, Composite 노드 없음 → Group Output), Glare 기본 타입이 **Streaks**라는 점, 구버전 Glare 값(Size 8~9, mix -0.7)은 5.x에서 입력 불가, 멀티레이어 EXR은 `media_type`을 먼저 바꿔야 한다는 점.
 - **Unreal**: Lumen은 **Static** 라이트만 지원하지 않습니다(Stationary도 GI에 반영됨. 커뮤니티 스킬의 'Movable만 반영' 주장은 틀림). 벽 두께 10 cm 이상, 작은 발광체는 Emissive Light Source, 거울끼리 비치는 장면은 반사 바운스(기본 1)를 올리고, Substrate 다층 재질은 Adaptive GBuffer로 바꿉니다. 룩뎁 중에는 자동노출을 끄고 EV100을 고정합니다. Path Tracer 문서는 diffuse Base Color를 0.8 미만으로 두라고 권합니다.
 - **카메라·아트디렉션**: 기본 50 mm를 그대로 쓰지 않고(실내 24~35 mm), 눈높이 1.6~1.7 m, 건축은 수평 카메라 + shift로 수직선을 세웁니다. 한 뷰에 히어로 하나, 전경·중경·배경, 스토리 비트당 소품 3~7개와 마모 데칼 1~2개, 스케일 단서(1.8 m 인물 등)를 두고, 순흑·순백·채도 100% 픽셀은 금지합니다.
@@ -65,10 +65,10 @@
 
 | 경로 | 렌더하는 법 | 이미지를 AI가 보는 법 | 주의 |
 |---|---|---|---|
-| ahujasid MCP for Blender (GUI) | `execute_blender_code`로 아래 `review_render()` 실행 | Claude Code·Codex처럼 로컬 파일을 읽을 수 있는 클라이언트에서 PNG를 읽음 | 소켓 타임아웃 180초 → 검토 렌더는 해상도 50%, 샘플 64 안팎. `BLENDER_MCP_SAFE_MODE=1`에서도 렌더·저장은 허용되지만(README), `open()`·`os` 같은 파일 I/O는 막힐 수 있으니 그럴 땐 헤드리스로 |
+| ahujasid MCP for Blender (GUI) | `execute_blender_code`로 아래 `review_render()` 실행 | Claude Code·Codex처럼 로컬 파일을 읽을 수 있는 클라이언트에서 PNG를 읽음 | 소켓 타임아웃 180초 → 검토 렌더는 해상도 50%, 샘플 64 안팎. `BLENDER_MCP_SAFE_MODE=1`에서도 bpy를 통한 렌더·저장은 허용되지만(README), `open()`·`os` 같은 직접 파일 I/O는 막힙니다. 아래 `review_render()`는 `os.makedirs`와 `open()`(stats.json 쓰기)을 쓰므로 safe mode에서는 사전 검사에 걸릴 가능성이 큽니다(미실측). 그럴 땐 헤드리스로 돌리세요 |
 | 공식 Blender Lab 서버 (Blender 5.1+) | 코드 실행 tool로 같은 함수 실행 | 서버의 화면·렌더 관련 tool은 [Blender MCP 가이드](02_blender_mcp.md) 참고 | 커뮤니티 서버와 같은 포트(9876)라 동시에 켜지 말 것 |
 | 헤드리스 (Claude Code / Codex) | `blender -b scene.blend --factory-startup --python-exit-code 1 -P review.py` | 생성된 PNG를 파일 읽기 도구로 읽음 | `--python-exit-code 1`이 없으면 예외가 나도 성공으로 보임. GPU 없는 서버는 Cycles(CPU) |
-| Unreal | MRQ 또는 Path Tracer로 스틸 출력 | 같은 방식으로 파일 읽기 | Epic 공식 플러그인 README에는 조명·포스트·렌더 전용 도구가 명시돼 있지 않음 → Python·콘솔 명령으로 우회(4.9) |
+| Unreal | MRQ(Movie Render Queue) 또는 Path Tracer로 스틸 출력 | 같은 방식으로 파일 읽기 | Epic 공식 플러그인 README에는 조명·포스트·렌더 전용 도구가 명시돼 있지 않음 → Python·콘솔 명령으로 우회(4.9) |
 
 > 파일을 읽을 수 없는 클라이언트라면 차선책으로 뷰포트를 카메라 뷰 + Rendered 셰이딩으로 맞춘 뒤 스크린샷을 찍을 수 있습니다. 이 방법은 최종 렌더와 다를 수 있으니 룩 확정에는 쓰지 마세요(이 문서의 제안, 미검증).
 
@@ -433,7 +433,7 @@ print({o.name: round(o.data.energy, 1) for o in (key, fill, rim)},
 
 **Light Linking·Light Group**
 - Light Linking은 **Object Properties > Shading > Light Linking**에 있습니다. 데이터는 Light 데이터블록이 아니라 라이트 **오브젝트**에 있습니다: `obj.light_linking.receiver_collection`, `obj.light_linking.blocker_collection`. 부모 패널의 호환 엔진에 `BLENDER_EEVEE`가 들어 있어 EEVEE에서도 씁니다([properties_object.py v5.2.2](https://raw.githubusercontent.com/blender/blender/v5.2.2/scripts/startup/bl_ui/properties_object.py) [소스], 5.0.1·4.2.23 [실측]).
-- Light Group(렌더 패스)은 **Cycles 전용**입니다([cycles ui.py v5.2.2](https://raw.githubusercontent.com/blender/blender/v5.2.2/intern/cycles/blender/addon/ui.py)). `obj.lightgroup = 'key'`와 `view_layer.lightgroups.add(name='key')`로 역할별(key, fill, rim, window)로 나눠 EXR로 뽑으면, 합성에서 비율을 다시 맞출 수 있어 전체 재렌더 비용이 줄고 역할별 기여도(예: World < 10%)를 수치로 확인할 수 있습니다(scenario [스킬]). EEVEE에서는 light linking이나 view layer로 대신합니다.
+- Light Group(렌더 패스)은 **Cycles 전용**입니다([cycles ui.py v5.2.2](https://raw.githubusercontent.com/blender/blender/v5.2.2/intern/cycles/blender/addon/ui.py)). `obj.lightgroup = 'key'`와 `view_layer.lightgroups.add(name='key')`로 광원을 역할별(key, fill, rim, window)로 나눠 EXR로 뽑으세요. 그러면 합성 단계에서 광량비를 다시 맞출 수 있어 전체 재렌더가 줄고, 역할별 기여도(예: World < 10%)도 수치로 확인할 수 있습니다(scenario [스킬]). EEVEE에서는 light linking이나 view layer로 대신합니다.
 
 **고보·볼류메트릭** (미검증 주장 — [hyperrealism 01-lighting](https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/01-lighting.md))
 - 고보(쿠키): 광원 앞에 알파가 노이즈·컷아웃인 평면을 두고 광원에 parent합니다. 창살·나뭇잎·구름 그림자는 화면 밖 세계를 암시합니다. UE에서는 Light Function 머티리얼로 같은 효과를 냅니다.
@@ -463,7 +463,7 @@ for L in bpy.data.lights:
 ```
 
 - 실내는 볼륨 프로브를 베이크합니다. Bloom은 컴포지터 Glare로 만듭니다(3.5).
-- EEVEE는 SSS, 굴절, 화면 밖 반사가 Cycles보다 약합니다. 피부·유리 히어로 샷은 Cycles를 쓰고, EEVEE로 반복 작업하더라도 **Cycles 레퍼런스 한 장**을 만들어 비교하세요. 레퍼런스가 없으면 에이전트가 EEVEE 아티팩트를 룩으로 오인합니다.
+- EEVEE는 SSS(표면하 산란), 굴절, 화면 밖 반사가 Cycles보다 약합니다. 피부·유리 히어로 샷은 Cycles를 쓰고, EEVEE로 반복 작업하더라도 **Cycles 레퍼런스 한 장**을 만들어 비교하세요. 레퍼런스가 없으면 에이전트가 EEVEE 아티팩트를 룩으로 오인합니다.
 - 5.2 LTS는 인스턴스가 많은 CPU 병목 장면에서 EEVEE가 최대 2배 빨라졌습니다. 가구·소품이 많은 장면은 컬렉션 인스턴스로 구성하세요(보완 조사).
 
 ### 3.5 컴포지터·후처리
@@ -535,9 +535,11 @@ def add_bloom(strength=1.0, threshold=1.0, size=0.5):
 
 ## 4. Unreal Engine (5.7 / 5.8)
 
+> 이 장의 약어: **PPV** = Post Process Volume(후처리 볼륨), **MRQ** = Movie Render Queue, **HWRT** = Hardware Ray Tracing, **VSM** = Virtual Shadow Maps, **SMRT** = Shadow Map Ray Tracing(VSM의 부드러운 그림자 샘플링), **EV100** = ISO 100 기준 노출값, **NNE/NFOR** = Path Tracer 디노이저 종류.
+
 ### 4.1 버전 상태
 
-| 기능 | UE 5.7 (2025-11) | UE 5.8 (2026-06-17) |
+| 기능 | UE 5.7 (2025-11) | UE 5.8 (2026-06-17, 보도 기준·Epic 원문 미확인) |
 |---|---|---|
 | MegaLights | Beta [UE 미러] | Production-Ready (보완 조사) |
 | Substrate 머티리얼 | Production-Ready, 새 프로젝트 기본 활성 [UE 미러] | — |

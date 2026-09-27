@@ -4,14 +4,14 @@
 
 ## 핵심 요약
 
-- **소싱 순서가 품질을 정합니다.** ① Poly Haven·ambientCG 같은 CC0 스캔 라이브러리 → ② Infinigen·Substance Designer 레시피 같은 검증된 절차 재질 → ③ 형상 고유 디테일이 필요할 때만 AI 메시 텍스처링. NVIDIA Material Agent도 VLM이 렌더를 보고 **라이브러리에서 고르는** 방식을 기본으로 씁니다.
+- **소싱 순서가 품질을 정합니다.** ① Poly Haven·ambientCG 같은 CC0 스캔 라이브러리 → ② Infinigen·Substance Designer 레시피 같은 검증된 절차 재질 → ③ 형상 고유 디테일이 필요할 때만 AI 메시 텍스처링. NVIDIA Material Agent도 VLM(비전-언어 모델)이 렌더를 보고 **라이브러리에서 고르는** 방식을 기본으로 씁니다.
 - **PBR 규칙은 숫자로 줘야 지켜집니다.** Metallic은 0 또는 1, 금속 Base Color는 밝게(실측값 대부분 linear 0.5~1.0), 비금속 albedo는 조명·그림자 없이 linear 0.02(숯)~0.85(눈), Roughness는 0 금지(0.02 이상), 컬러 맵만 sRGB. LLM은 "반짝이는 금속 = metallic 0.7" 같은 값을 자주 씁니다.
 - **ahujasid MCP for Blender(구 blender-mcp)의 Poly Haven 연동은 2026-09-21 이전 버전에 버그가 있었습니다.** normal/displacement 맵을 받아 놓고 연결하지 않는 경로가 있었고, Mapping 노드가 TEXTURE 모드라 타일링이 뒤집혔습니다(2m 텍스처가 4m 면에서 1.993회가 아니라 0.509회 반복). Poly Haven의 Greg Zaal이 [PR #367](https://github.com/ahujasid/blender-mcp/pull/367)로 고쳤습니다. 최신 버전을 쓰고, 도구가 "성공"을 반환해도 연결 상태를 스크립트로 확인하세요(3.2절).
 - **절차 셰이더는 검증된 레시피를 따라 하게 하세요.** Infinigen(BSD-3) 소스는 수치가 구체적인 좋은 참고서지만 metallic 0.37 같은 비물리 값이 섞여 있고, Blender 4.1에서 제거된 Musgrave 노드도 씁니다. 이 문서의 대리석·나무·브러시드 메탈·패브릭·엣지 마모 코드는 **Blender 4.2.23 LTS와 5.0.1**(pip `bpy`, 헤드리스)에서 동작을 확인했습니다.
 - **웨더링 마스크는 렌더러를 탑니다.** Pointiness와 Bevel 노드는 Cycles 전용입니다(EEVEE에서 pointiness는 상수 0.5, bevel은 효과 없음). AO 노드는 EEVEE에서도 돌지만 화면 공간 방식입니다. EEVEE·게임엔진·glTF가 목표면 Cycles로 구워야 합니다.
 - **절차 재질을 그대로 GLB로 내보내면 거의 다 사라집니다.** 이 문서 테스트에서 대리석 절차 재질은 GLB에 `metallicFactor: 0`과 `KHR_materials_specular`만 남았습니다(색·거칠기·요철 소실). 베이크 → ORM(R=AO, G=Roughness, B=Metallic) 팩킹 → AO는 `glTF Material Output` 노드 그룹의 `Occlusion` 입력으로 연결하세요. 활성 이미지 노드가 없는 재질 슬롯은 **오류 없이 건너뜁니다**.
 - **AI 텍스처 생성의 3대 실패**는 albedo에 구워진 조명, 뷰 간 불일치·이음새, 이미지 모델이 지어낸 노멀·러프니스 맵입니다. Meshy는 `enable_pbr=true`를 명시해야 하고(기본 false), PBR 맵은 텍스처 해상도 설정과 무관하게 2K입니다. 데이터 맵은 이미지 모델에게 그리게 하지 말고 전용 추정기나 베이크로 만드세요.
-- **[한국 사용자] Tencent Hunyuan3D(2.0/2.1, Paint 포함) 라이선스는 한국·EU·영국을 적용 지역에서 빼고 출력물 사용도 제한합니다.** 한국에서 로컬로 쓰면 라이선스 범위 밖입니다. "MIT라서 안전"에도 단서가 붙습니다. TRELLIS.2는 비상업 nvdiffrast에 의존하고, Material Anything은 비상업 Text2Tex 설정을 쓰고, PartUV의 PartField 전처리는 비상업입니다. CHORD는 연구 전용입니다.
+- **[한국 사용자] Tencent Hunyuan3D(2.0/2.1, Paint 포함) 라이선스는 한국·EU·영국을 적용 지역에서 빼고 출력물 사용도 제한합니다.** 한국에서 로컬로 쓰면 라이선스 범위 밖입니다. "MIT·Apache라서 안전"에도 단서가 붙습니다. TRELLIS.2는 비상업 nvdiffrast에 의존하고, Step1X-3D 텍스처 모듈에는 Hunyuan 라이선스 헤더가 남은 코드가 있고, Material Anything은 비상업 Text2Tex 설정을 쓰고, PartUV의 PartField 전처리는 비상업입니다. CHORD는 연구 전용입니다.
 - **텍스처 전용 MCP**: Substance 3D Painter MCP(커뮤니티, 도구 79개), Substance Designer MCP(레시피 79개), RTX Remix Toolkit 내장 공식 MCP, ComfyUI 공식 `comfy-mcp`, Meshy 공식 MCP가 쓸 만합니다. Adobe 공식 Substance MCP, BlenderKit·Megascans 공식 MCP는 없습니다.
 - **"AAA급"은 도구 하나로 나오지 않습니다.** 독립적으로 검증된 AI+MCP의 AAA 재질 결과물은 찾지 못했습니다. 현실적인 경로는 [라이브러리·생성 + 에이전트 조립 + Cycles 렌더 비평 루프 + 사람의 마무리(특히 Painter 스마트 마스크 웨더링)]입니다.
 
@@ -66,7 +66,7 @@
 
 ### 2.2 실측 기준값 (physicallybased.info, CC0)
 
-에이전트가 색을 "추측"하지 않게 이 값을 프롬프트나 도구 결과로 넣으세요. API는 `https://api.physicallybased.info/v2`, 저장소는 [AntonPalmqvist/physically-based-api](https://github.com/AntonPalmqvist/physically-based-api)입니다(v2 materials.json, 재질 116종, 2026-09-01 갱신본 기준).
+에이전트가 색을 "추측"하지 않게 이 값을 프롬프트나 도구 결과로 넣으세요. API는 `https://api.physicallybased.info/v2`, 저장소는 [AntonPalmqvist/physically-based-api](https://github.com/AntonPalmqvist/physically-based-api)입니다(v2 materials.json, 재질 116종, 2026-09 검증 시점 기준).
 
 - 값은 **linear sRGB**입니다. Blender의 RGB 입력 칸도 linear라서 그대로 넣으면 됩니다. Hex 칸은 sRGB이니 섞어 쓰지 마세요.
 - DB의 roughness는 대표값입니다(금속 0은 연마면 기준). 제작할 때는 2.1절 규칙대로 조정하세요.
@@ -304,7 +304,7 @@ Infinigen([저장소](https://github.com/princeton-vl/infinigen), BSD-3, 일부 
 
 아래 세 파일은 이 문서 작성 중 **pip `bpy` 4.2.23 LTS와 5.0.1**에서 다음을 확인한 코드입니다: 다섯 재질 생성, 같은 이름으로 다시 만들어도 Principled·Output이 1개씩만 남음(idempotent), Cycles 렌더, 베이크(7장), ORM 팩킹, glTF 내보내기 후 슬롯 확인(8장), 규칙 위반 감지. 노드를 이름이 아니라 type과 소켓으로만 다루므로 한국어 UI에서도 안전합니다.
 
-**사용법**: 파일로 저장해 `sys.path`에 추가하고 import하거나(MCP의 `execute_blender_code`는 호출마다 새 네임스페이스), 헤드리스로 `blender -b scene.blend --python build.py`처럼 실행합니다. `BLENDER_MCP_SAFE_MODE=1`은 파일 I/O를 막으므로 import가 안 될 수 있습니다. 그때는 내용을 붙여 넣으세요([보조 스크립트 README](../03_playbooks/scripts/README.md)와 같은 방식).
+**사용법**: 파일로 저장해 `sys.path`에 추가하고 import하거나(MCP의 `execute_blender_code`는 호출마다 새 네임스페이스), 헤드리스로 `blender -b scene.blend --python build.py`처럼 실행합니다. `BLENDER_MCP_SAFE_MODE=1`은 `open()`·`os` 같은 직접 파일 I/O, 프로세스, 네트워크를 막습니다(bpy 오퍼레이터를 통한 .blend 저장·열기, import/export, 렌더는 허용). `sys.path`에 추가한 모듈을 import할 수 있는지는 확인하지 못했으니, 막히면 내용을 붙여 넣으세요([보조 스크립트 README](../03_playbooks/scripts/README.md)와 같은 방식). `pbr_bake.py`는 `os.makedirs`를 쓰므로 safe mode에서는 헤드리스(7.4절)로 돌리세요.
 
 <details>
 <summary><b>pbr_recipes.py</b> — 공통 헬퍼 + 대리석·브러시드 메탈·나무·소파 패브릭·엣지 마모 도장 금속 (약 210줄)</summary>
@@ -934,7 +934,7 @@ bpy.ops.export_scene.gltf(filepath=f"{out}/{name}.glb", export_format="GLB", use
 
 **테스트 결과** (pip `bpy` 4.2.23·5.0.1 동일): 4.7절 대리석 절차 재질을 그대로 GLB로 내보내자 재질에 `pbrMetallicRoughness.metallicFactor: 0`과 `KHR_materials_specular`(Specular IOR Level 0.6 → specularColorFactor 1.2)**만** 남았습니다. 색·거칠기·요철은 모두 빠졌습니다. 베이크 후 `gltf_material`로 다시 연결하자 baseColor·metallicRoughness·normal·occlusion이 모두 들어갔습니다.
 
-**사례**: blender-kiln은 Poly Haven `american_walnut_veneer`의 맵 7개(AO, arm, Diffuse, Displacement, nor_dx, nor_gl, Rough) 중 3개(baseColor, metallicRoughness, normal)만 GLB에 남았다고 기록했습니다([texturing-strategy.md](https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md)). 단 이 측정은 모든 맵을 받던 PR #367 **이전** 동작 기준이라 지금 버전에서는 재현되지 않고, 표에 Metallic도 ✅로 표시돼 있어 서술과 약간 어긋납니다. kiln 문서의 "AO는 ARM 팩킹 배치에서만 채워진다"는 설명은 공식 문서와 다릅니다(검증 결과).
+**사례**: blender-kiln은 Poly Haven `american_walnut_veneer`의 맵 7개(AO, arm, Diffuse, Displacement, nor_dx, nor_gl, Rough) 중 3개(baseColor, metallicRoughness, normal)만 GLB에 남았다고 기록했습니다([texturing-strategy.md](https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md)). 단 이 측정은 모든 맵을 받던 PR #367 **이전** 동작 기준이라 지금 버전에서는 재현되지 않습니다. 또 kiln의 표에는 Metallic도 ✅로 표시돼 있어 "3개"라는 서술과 약간 어긋납니다. kiln 문서의 "AO는 ARM 팩킹 배치에서만 채워진다"는 설명은 공식 문서와 다릅니다(검증 결과).
 
 ### 8.2 내보낸 뒤 감사: 만든 맵 vs 들어간 슬롯
 
@@ -980,7 +980,7 @@ print(glb_material_report("out/MyProp.glb"))
 | 상황 | 추천 조합 | 이유 |
 |---|---|---|
 | 한국, 상업, 로컬 GPU 8~16GB | StableGen(SDXL) → Marigold IID·StableDelight로 PBR 분해 → Bake Textures | 지역 제한 없는 오픈 도구로 Blender 안에서 끝까지. 모델별 라이선스는 따로 확인 |
-| 한국, 상업, GPU 24GB 이상 | 위 조합 + TRELLIS.2 texturing(법무 검토 후), Step1X-3D 텍스처 모델(Apache-2.0) | Hunyuan 대체. TRELLIS.2는 nvdiffrast 비상업 의존 |
+| 한국, 상업, GPU 24GB 이상 | 위 조합 + TRELLIS.2 texturing(법무 검토 후) | Hunyuan 대체. TRELLIS.2는 nvdiffrast 비상업 의존. Step1X-3D 텍스처 모델은 Apache-2.0으로 배포되지만 Hunyuan 파생 코드·nvdiffrast 의존이 있어 법률 검토 전 보류(9.2 표) |
 | GPU 부족 / 빠른 결과 | Meshy retexture(`enable_pbr=true`, `remove_lighting=true`, `enable_original_uv=true`) | 클라우드. 플랜별 결과물 라이선스는 [AI 3D 생성 가이드](04_ai_3d_generation.md) |
 | 가구처럼 부위가 뚜렷함 | 3.4절 라이브러리 할당 우선 → 부족하면 Tripo `texture_model(part_names=[...])` | 부위별 텍스처링 |
 | 새 타일링 재질 | FLUX 등 + ComfyUI-seamless-tiling → Offset 검사 → PBRify/DeepBump(상업) 또는 CHORD(연구만) | 데이터 맵은 추정기로 |
@@ -992,12 +992,12 @@ print(glb_material_report("out/MyProp.glb"))
 | 도구 | 방식 | PBR 출력 | 요구 사양 | 라이선스·상업 | 한국 | MCP·연동 | 기준 |
 |---|---|---|---|---|---|---|---|
 | [Meshy](https://github.com/meshy-dev/meshy-mcp-server) retexture | 클라우드. 스타일 입력은 text(최대 600자)·이미지·멀티뷰(1~4장, meshy-7/latest) 중 **정확히 하나** | `enable_pbr=true`일 때만. **PBR 맵은 2K 고정**(`texture_resolution` 2k/4k/8k는 Base Color에만) | 크레딧: 텍스처 2K·4K 10, 8K 15 | 플랜별 | 가능 | 공식 Meshy MCP(도구 24개) | 2026-09 |
-| [Tripo](https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md) `texture_model` | 클라우드. `part_names`로 부위별 | `pbr` 기본 True | 크레딧(세부 미확인) | 플랜별 | 가능 | 공식 [tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp)(알파, 206 stars, 최근 갱신일 미확인), ahujasid `generate_tripo_model`(유료 Premium) | — |
+| [Tripo](https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py) `texture_model` | 클라우드. `part_names`로 부위별 | `pbr` 기본 True | 크레딧(세부 미확인) | 플랜별(무료 플랜은 비상업) | 가능 | [Python SDK](https://pypi.org/project/tripo3d/)(tripo3d 0.4.2) 직접 호출이 현실적. 공식 [tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp)는 마지막 커밋 2025-04-14인 alpha라 추천하지 않음. ahujasid `generate_tripo_model`은 유료 Premium 전용 | — |
 | [Scenario Blender plugin](https://github.com/scenario-labs/blender-plugin) | 클라우드(선택 메시용 PBR 맵 생성) | PBR 맵 | Blender 5.0+, CU 과금(생성 전 비용 추정 확인) | 플러그인 GPL-3.0-or-later. 모델 세부 미확인 | 가능 | 로컬 MCP `http://127.0.0.1:9876/mcp`(**blender-mcp와 충돌**), 호스티드 MCP `mcp.scenario.com`. 임의 Python 실행은 별도 opt-in | Experimental, 2026-09 |
-| [Hunyuan3D-Paint 2.1](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1) | 오픈 웨이트, 멀티뷰 PBR 확산([MaterialMVP](https://github.com/ZebinHe/MaterialMVP) 계열). `Hunyuan3DPaintConfig(max_num_view=6, resolution=512)` | 조명 불변 albedo + metallic-roughness | 텍스처 21GB, 형상+텍스처 29GB | Tencent Community License, 전월 MAU 100만 초과 시 별도 | **✗ 라이선스 범위 밖(출력물 포함)** | [ComfyUI 래퍼(kijai)](https://github.com/kijai/ComfyUI-Hunyuan3DWrapper), [3DGenStudio](https://github.com/visualbruno/3DGenStudio) | 2.1 공개 2025-06-13, Paint v2-1(2B) 2025-06-14 |
+| [Hunyuan3D-Paint 2.1](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1) | 오픈 웨이트, 멀티뷰 PBR 확산([MaterialMVP](https://github.com/ZebinHe/MaterialMVP) 계열). `Hunyuan3DPaintConfig(max_num_view=6, resolution=512)` | 조명 불변 albedo + metallic-roughness | 텍스처 21GB, 형상+텍스처 29GB | Tencent Community License. MAU(월간 활성 사용자) 100만 조항은 버전 출시일 직전 달을 한 번 보는 조건 | **✗ 라이선스 범위 밖(출력물 포함)** | [ComfyUI 래퍼(kijai)](https://github.com/kijai/ComfyUI-Hunyuan3DWrapper), [3DGenStudio](https://github.com/visualbruno/3DGenStudio) | 2.1 공개 2025-06-13, Paint v2-1(2B) 2025-06-14 |
 | ahujasid `texture_mesh_hunyuan3d` ([PR #343](https://github.com/ahujasid/blender-mcp/pull/343)) | 기존 메시를 GLB로 로컬 Hunyuan3D-2 서버 `/generate(texture=True)`에 보내 재텍스처, 원본은 숨김 | Hunyuan3D-2 페인트(2.1 PBR 아님) | 로컬 GPU 서버. `LOCAL_API` 전용 | Hunyuan3D-2 라이선스 | **✗** | MCP 도구(병합 전) | 2026-09-02 오픈, 미병합 |
 | [TRELLIS.2](https://github.com/microsoft/TRELLIS.2) texturing | 4B, 기존 형상에 PBR(`example_texturing.py`, `app_texturing.py`) | Base Color·Roughness·Metallic·Opacity | 24GB 이상(A100/H100 검증) | 코드 MIT, 그러나 [nvdiffrast](https://raw.githubusercontent.com/NVlabs/nvdiffrast/main/LICENSE.txt)는 NVIDIA Source Code License(비상업) → **상업 전 법무 검토** | 지역 제한 없음 | StableGen v0.3.0+, ComfyUI 본체([AI 3D 생성 가이드](04_ai_3d_generation.md)) | GLB는 OPAQUE로 나옴. 예시 `texture_size 4096`, `decimation_target 1000000` |
-| [Step1X-3D](https://github.com/stepfun-ai/Step1X-3D) | 3.5B 텍스처 모델, SDXL 기반 멀티뷰 동기화 | PBR 여부 미확인 | [AI 3D 생성 가이드](04_ai_3d_generation.md) 참고 | Apache-2.0 | **지역 제한 없음** | NVIDIA Texture Agent가 백엔드로 언급 | 2025 |
+| [Step1X-3D](https://github.com/stepfun-ai/Step1X-3D) | 3.5B 텍스처 모델, SDXL 기반 멀티뷰 동기화 | PBR 여부 미확인 | [AI 3D 생성 가이드](04_ai_3d_generation.md) 참고 | README·LICENSE는 Apache-2.0. 그러나 텍스처 모듈(`custom_rasterizer`, `differentiable_renderer`)이 Hunyuan3D 2.0 코드를 재사용해 **Tencent Hunyuan 라이선스 헤더**가 남아 있고 nvdiffrast에도 의존([mesh_render.py](https://raw.githubusercontent.com/stepfun-ai/Step1X-3D/main/step1x3d_texture/differentiable_renderer/mesh_render.py)) | **△ 텍스처 단계는 법률 검토 전 보류** | NVIDIA Texture Agent가 백엔드로 언급 | 2025 |
 | [StableGen](https://github.com/sakalond/StableGen) | Blender 애드온. ComfyUI 백엔드(SDXL, FLUX.1-dev, FLUX.2 Klein(실험적), Qwen-Image-Edit)로 멀티뷰 투영 → Bake Textures | v0.3.0부터 Marigold IID·StableDelight로 albedo·roughness·metallic·normal·height·emission 분해(AO는 Blender 베이크) | SDXL 8GB, FLUX/Qwen 16GB+, FLUX.2 Klein 약 13GB. 모델 다운로드 7~33GB | 애드온 GPL-3.0, 모델별 별도 | 모델 라이선스에 따름 | MCP로 노출 안 됨(애드온 UI) | [v0.3.1](https://github.com/sakalond/StableGen/releases) 2026-06-12. **Blender 4.2~4.5, 5.1+ 지원, 5.0 미지원**(OSL 문제, 네이티브 Raycast 없음) |
 | [MV-Adapter](https://github.com/huanngzh/MV-Adapter) | 형상 조건 멀티뷰(6뷰, 768px), `texture_t2tex`/`texture_i2tex` | **diffuse만** | SD2.1 10GB 미만, SDXL i2mv 약 14GB, 형상 조건 SDXL은 16GB 초과 권장 | 코드 Apache-2.0, 베이스 모델 별도 | 가능 | ComfyUI-MVAdapter | ICCV 2025 |
 | [Material Anything](https://github.com/3DTopia/MaterialAnything) | 무텍스처·albedo만·생성·스캔 메시 → PBR. confidence mask, UV 공간 refiner | albedo·roughness·metallic·bump | PyTorch3D 등 설치 까다로움 | 코드 MIT지만 [Text2Tex](https://github.com/daveredrum/Text2Tex)(CC BY-NC-SA 3.0) 설정을 그대로 쓰고 가중치 라이선스 미확인 → **상업 안전 단정 불가** | 조건 확인 | — | CVPR 2025 |
@@ -1014,7 +1014,7 @@ print(glb_material_report("out/MyProp.glb"))
 | [Materialize](https://github.com/BoundingBoxSoftware/Materialize) | 단일 이미지 → height·normal·metallic·smoothness·edge·AO | GPL-3.0 | Unity 기반, 유지보수 사실상 중단 |
 | [ComfyUI-seamless-tiling](https://github.com/spinagon/ComfyUI-seamless-tiling) | circular padding으로 이음매 없는 생성(X·Y 독립), `Make Circular VAE`, `Circular VAE Decode`, 검사용 `Offset Image` | GPL-3.0 | FLUX 등 DiT 계열 지원은 미확인 |
 | [Dream Textures](https://github.com/carson-katri/dream-textures/releases) | Blender 안 SD 타일링·투영 | 오픈소스 | v0.4.1(2024-08-26) 이후 정체 → 신규 프로젝트는 StableGen |
-| Substance 3D Sampler "Image to Material" / Firefly text-to-texture | 사진·AI 이미지 → PBR, 텍스트 → 타일링 텍스처 | Adobe 구독 | **(미확인)** adobe.com 차단으로 버전·날짜·조건을 1차 출처로 확인 못 함. 공식 MCP 없음. Claude의 'Adobe for creativity' 커넥터에는 Substance 3D가 없음([기타 MCP 가이드](03_other_mcp_dcc_cad_engines.md)) |
+| Substance 3D Sampler "Image to Material" / Firefly text-to-texture | 사진·AI 이미지 → PBR, 텍스트 → 타일링 텍스처 | Adobe 구독 | Firefly 기반 Sampler Text to Texture 베타는 2024-03-18 출시([Adobe 발표](https://news.adobe.com/news/news-details/2024/adobe-brings-firefly-generative-ai-into-substance-3d-workflows), 보완 검증). 2026년 정식 여부·버전·크레딧 단가는 **(미확인)**. 공식 MCP 없음. Claude의 'Adobe for creativity' 커넥터(2026-04-28)에는 Substance 3D가 없음([기타 MCP 가이드](03_other_mcp_dcc_cad_engines.md)) |
 
 **타일링 재질 파이프라인 예** (albedo만 생성, 데이터 맵은 추정):
 
@@ -1059,7 +1059,7 @@ meshy_retexture(
 - image-to-3D에서 `latest`와 `remove_lighting`을 함께 쓰면 작업이 Meshy 6으로 처리되고, text-to-3D의 `latest`는 Meshy 6으로 해석됩니다(검증 결과). 크레딧: Meshy 7 image-to-3D 메시만 20, 텍스처 포함 30.
 - 텍스처 프롬프트에는 **재질, 마감, 색, 마모 위치, "그림자·하이라이트 없음"**을 넣습니다. 결과 맵의 물리적 정확성은 2.1절 규칙으로 따로 확인하세요.
 
-**Tripo** `texture_model` 파라미터([SDK API.md](https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md)): `texture`(기본 True), `pbr`(기본 True), `texture_quality` `'standard'`(기본)/`'detailed'`, `texture_alignment` `'original_image'`(기본, 참조 이미지 충실)/`'geometry'`(형상 맞춤 디테일), `texture_seed`, `bake`(기본 True), `text_prompt`, `image_prompt`, `style_image`, `part_names`.
+**Tripo** `texture_model` 파라미터([SDK API.md](https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md) 기준. 검증에서 API.md의 `smart_lowpoly` 설명이 현행 코드와 다른 것이 확인됐으니, 쓰기 전에 [client.py](https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py)로 인자를 다시 확인하세요. [에셋 가이드 2.7절](10_assets_pipeline_licensing.md) 참고): `texture`(기본 True), `pbr`(기본 True), `texture_quality` `'standard'`(기본)/`'detailed'`, `texture_alignment` `'original_image'`(기본, 참조 이미지 충실)/`'geometry'`(형상 맞춤 디테일), `texture_seed`, `bake`(기본 True), `text_prompt`, `image_prompt`, `style_image`, `part_names`.
 
 ```python
 texture_model(pbr=True, texture_quality="detailed", texture_alignment="geometry", part_names=["seat", "legs"])
@@ -1173,7 +1173,7 @@ RTX 4090(24GB)은 TRELLIS.2와 Hunyuan Paint의 경계선입니다. VRAM이 부�
 ## 13. 한국 사용자 체크리스트
 
 - [ ] **Hunyuan3D를 로컬로 쓰지 않는다.** [Hunyuan3D-2.1 LICENSE](https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE) 원문: "THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA". Territory 정의에서 제외되고, 5(c)항은 **출력물(Output)**도 Territory 밖에서 쓰지 못하게 합니다. 해외 서버에서 생성한 결과를 한국에서 쓰는 경우도 해당합니다. [Hunyuan3D-2(2.0) LICENSE](https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2/main/LICENSE)도 같아서 ahujasid 서버의 Hunyuan 연동과 PR #343에도 적용됩니다. 정확히는 "법으로 금지"가 아니라 "라이선스가 부여되지 않아 무단 사용이 되는 것"입니다. Tencent Cloud API 약관은 별개이며 원문을 확인하지 못했습니다. Hunyuan3D 2.5는 2025-06-23에 기술 보고서만 공개됐습니다.
-- [ ] **대안**: 지역 제한 없는 Step1X-3D(Apache-2.0), TRELLIS.2(MIT, 단 nvdiffrast 비상업), MV-Adapter(Apache-2.0, diffuse만), StableGen + Marigold/StableDelight, PBRify(CC0), 클라우드 Meshy·Tripo(유료 플랜).
+- [ ] **대안**: TRELLIS.2(MIT, 단 nvdiffrast 비상업), MV-Adapter(Apache-2.0, diffuse만), StableGen + Marigold/StableDelight, PBRify(CC0), 클라우드 Meshy·Tripo(유료 플랜). Step1X-3D는 Apache-2.0이지만 텍스처 모듈에 Hunyuan 파생 코드가 있어 텍스처 단계는 법률 검토 전 보류합니다.
 - [ ] **연구 전용을 상업에 섞지 않는다**: CHORD(Research-Only), VLMaterial 데이터(CC BY-NC), Material Anything(Text2Tex CC BY-NC-SA 설정·가중치 미확인), PartUV의 PartField(비상업).
 - [ ] **한국어 UI**: 새로 만든 노드 이름이 번역될 수 있어 `nodes['Principled BSDF']`가 깨집니다. 이 문서 코드처럼 type으로 찾고, 에이전트용 Blender에서는 Preferences > Interface > Translation의 **New Data**를 끄세요(`bpy.context.preferences.view.use_translate_new_dataname = False`). 자세한 내용은 [Blender MCP 가이드 12절](02_blender_mcp.md).
 - [ ] **재질·오브젝트 이름은 영어**로(`MAT_Oak`, `GEO_Chair` 등). [`scene_audit.py`](../03_playbooks/scripts/README.md)의 치수 검사도 영어 키워드로 동작합니다.
@@ -1241,5 +1241,6 @@ RTX 4090(24GB)은 TRELLIS.2와 Hunyuan Paint의 경계선입니다. VRAM이 부�
 - `01_research/raw/06_texturing-materials.research.json` — 조사 결과(항목 37, 노하우 26, 사례 10, 출처 83)
 - `01_research/raw/06_texturing-materials.verify.json` — 독립 검증(판정 25, 항목 점검 23, 신뢰도 낮은 출처 6, 누락 항목 8)
 - 검증 반영 요약: 반박 2건(RTX Remix 공식 MCP 존재, blender-kiln 갤러리는 MCP 결과가 아님), 부분 정정 9건(베이크 동작, 텔레메트리 기본값, cc-blender-skill 수치·스킬 수, Hunyuan 2.5 공개 범위, Megascans 표현, Material Anything·PartUV·TRELLIS.2 라이선스 단서, 비금속 albedo 상한, EEVEE AO), 누락 보완 8건(comfy-mcp, RTX Remix MCP, monolith, Step1X-3D, Quartermaster, SAFE_MODE·DISABLE_TELEMETRY, Scenario 호스티드 MCP, Poly Haven ToS)
+- 교차 반영: `01_research/raw/12_assets-pipeline-licensing.verify.json`(Step1X-3D 텍스처 모듈의 Hunyuan 헤더·nvdiffrast 의존, Tripo SDK `docs/API.md`와 현행 코드 불일치), `01_research/raw/05_ai-3d-generation.verify.json`(tripo-mcp 마지막 커밋 2025-04-14), `01_research/raw/10_agent-workflow.verify.json`(SAFE_MODE 차단·허용 범위), `01_research/raw/G4_licensing_pricing.verify.json`(Substance Sampler 2024-03-18)
 - 신뢰도 낮은 출처로 표시한 것: blender-kiln, cc-blender-skill SKILL.md(값은 교차확인해 사용), dcc-mcp 조직, MaterialPilot. GitHub 이슈 검색 페이지는 근거에서 빼고 Blender 소스로 대체
 - 이 문서의 코드·수치 중 "테스트"로 표시한 것은 2026-09-27 pip `bpy` 4.2.23 LTS·5.0.1(헤드리스, Cycles CPU)에서 직접 실행한 결과(개인 테스트, n=1)

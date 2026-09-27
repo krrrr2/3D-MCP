@@ -83,7 +83,7 @@ Blender 애드온 (N 패널에서 "서버 시작" → 명령을 메인 스레드
 
 ### 1.1 준비물
 
-- Claude Desktop(macOS 또는 Windows)과 Claude 계정. 커넥터 자체는 무료입니다. Opus 5.5와 Fable은 유료 플랜에서만 쓸 수 있습니다.
+- Claude Desktop(macOS 또는 Windows)과 Claude 계정. 커넥터 추가에 별도 요금은 없다고 조사됐지만, '모든 Claude 플랜에서 쓸 수 있다'는 설명은 발표문에 없어 확인하지 못했습니다(검색 요약 기준). Opus 5.5와 Fable 5.1은 유료 플랜에서만 쓸 수 있습니다.
 - Blender **5.1.0 이상**(권장: 5.2.2). 근거는 GitHub 미러에 있는 공식 애드온 manifest의 `blender_version_min = "5.1.0"`입니다. [커넥터 페이지](https://claude.com/connectors/blender)에는 버전 요구가 적혀 있지 않습니다.
 - 인터넷 연결. 공식 애드온은 Blender의 **Allow Online Access**가 켜져 있어야 시작된다는 보고가 있습니다([scenario-labs 이슈 #3](https://github.com/scenario-labs/blender-plugin/issues/3), 2차 출처).
 
@@ -198,11 +198,15 @@ codex mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/bl
 
 ### 2.3 클라이언트 등록
 
-**Claude Code** ([README](https://github.com/ahujasid/blender-mcp) 명령):
+**Claude Code** ([README](https://github.com/ahujasid/blender-mcp) 명령에 `--` 구분자를 더한 형태):
 
 ```bash
-claude mcp add blender uvx mcp-for-blender
+claude mcp add blender -- uvx mcp-for-blender
+# 환경변수까지 한 줄로: --env 바로 뒤에 서버 이름이 오면 이름을 KEY=value로 읽으므로 --transport를 사이에 둠
+claude mcp add --env DISABLE_TELEMETRY=true --env BLENDER_MCP_SAFE_MODE=1 --transport stdio blender -- uvx mcp-for-blender
 ```
+
+README는 `claude mcp add blender uvx mcp-for-blender`처럼 `--` 없이 적지만, Claude Code 문서는 Claude 옵션과 서버 명령을 `--`로 나누라고 권합니다([Claude Code MCP 문서](https://code.claude.com/docs/en/mcp)).
 
 팀과 설정을 공유하거나 환경변수·타임아웃까지 파일로 고정하려면 프로젝트 루트의 `.mcp.json`을 씁니다(`--scope project`로 만들 수 있음). 권장 설정은 아래와 같습니다.
 
@@ -217,7 +221,8 @@ claude mcp add blender uvx mcp-for-blender
         "BLENDER_MCP_SAFE_MODE": "1",
         "DISABLE_TELEMETRY": "true"
       },
-      "timeout": 600000          // Claude Code 서버별 도구 타임아웃(ms). 단, ahujasid 소켓 상한은 180초
+      "timeout": 600000          // (선택) 호출당 절대 한도(ms). 미설정 시 약 28시간이라 늘리는 효과는 없고,
+                                 // ahujasid는 서버 소켓 180초가 먼저 걸림. 5절 참고
     }
   }
 }
@@ -609,8 +614,8 @@ Blender를 헤드리스로 써서 작업해. MCP는 쓰지 않는다.
 | ahujasid 서버 | 소켓 타임아웃 | **180초**(server.py 고정값) | 코드 5~20줄 청크 | 클라이언트 타임아웃을 늘려도 호출 하나는 180초를 넘지 못함. 긴 렌더는 경로 C |
 | Claude Desktop | 도구 호출 | 약 4분에 포기하는 사례 관찰 | — | 공식 값은 미확인 |
 | Claude Code | `MCP_TIMEOUT`(서버 **시작** 타임아웃, ms) | — | 공식 서버 첫 실행 때 120000 정도 | `MCP_TIMEOUT=120000 claude` |
-| Claude Code | `.mcp.json` 서버별 `"timeout"`(ms) / `MCP_TOOL_TIMEOUT` | 설정하지 않으면 약 28시간 | 600000 | [Claude Code MCP 문서](https://code.claude.com/docs/en/mcp) |
-| Claude Code | `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`(유휴 타임아웃) | **검증 기록마다 다름(5분 / stdio 기준 30분)** | 긴 작업 전에 명시적으로 설정 | 진행 출력 없이 오래 걸리는 Cycles 렌더·베이크가 끊길 수 있음 |
+| Claude Code | `.mcp.json` 서버별 `"timeout"`(ms) / `MCP_TOOL_TIMEOUT` | 설정하지 않으면 약 28시간 | stdio 서버는 그대로. HTTP 서버(UE 5.8 등)는 600000 | 호출당 **절대 한도**(진행 알림으로 연장 안 됨). 값을 넣으면 28시간이 그 값으로 줄어듦. 1000 이상이면 유휴 타임아웃의 하한도 겸하고(v2.1.203+), HTTP 서버의 첫 응답 대기(기본 60초)도 이 값까지 늘어남. [Claude Code MCP 문서](https://code.claude.com/docs/en/mcp) |
+| Claude Code | `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`(유휴 타임아웃, ms) | stdio 서버 **30분**, HTTP·SSE·WebSocket·claude.ai 커넥터 **5분**(v2.1.203 이전에는 stdio 제외) | 긴 작업 전에 명시적으로 설정, `0`이면 끔 | 응답도 진행 알림도 없이 오래 걸리는 Cycles 렌더·베이크가 끊길 수 있음. 2026-09-27에 공식 문서로 재확인(두 검증 기록의 5분/30분 차이는 전송 방식 차이) |
 | Claude Code | `MAX_MCP_OUTPUT_TOKENS` | 25,000(10,000 초과 시 경고) | 50000 | 큰 씬 덤프·스크린샷이 잘릴 때. 이미지도 이 한도에 포함됨 |
 | Codex | `startup_timeout_sec` / `tool_timeout_sec` | 10 / 60(원문 미재확인) | 30 / 600 | `[mcp_servers.blender]` 아래 |
 | Gemini CLI | `timeout`(ms) | 600,000 | 그대로 | `settings.json`의 `mcpServers` |
@@ -664,7 +669,7 @@ print("saved:", bpy.data.filepath)
 
 | 상황 | 추천 | 이유 |
 |---|---|---|
-| 코드를 모르고 가장 쉽게 시작하고 싶다 | **A** | 커넥터 클릭 + 애드온 설치로 끝. 텔레메트리·외부 서비스 없음 |
+| 코드를 모르고 가장 쉽게 시작하고 싶다 | **A** | 커넥터 클릭 + 애드온 설치로 끝. 텔레메트리·외부 서비스 연동 없음(조사 기준, 원문 미열람) |
 | Blender 5.0 이하를 써야 한다 | **B** 또는 **C** | 공식 서버는 5.1.0 이상 |
 | 에셋 검색(Poly Haven·Sketchfab·Poly Pizza)이나 AI 3D 생성을 에이전트가 직접 해야 한다 | **B** | 공식 서버에는 없음. Tripo는 Premium 전용 |
 | GPT-6 Astra를 쓰고 싶다 | **B**(Codex) 또는 **C** | ChatGPT 웹은 로컬 MCP 불가. effort를 high 이상으로 명시 |

@@ -5,15 +5,15 @@
 > [!WARNING]
 > **한국 사용자 라이선스 경고: 가장 먼저 확인하세요**
 >
-> - **Tencent Hunyuan 계열 오픈웨이트는 한국에서 쓸 수 없습니다.** Hunyuan3D 2.0(2mv·2mini·Turbo 포함), 2.1, Omni, Part, HunyuanWorld 1.0, HY-World 2.0, HY-Motion 1.0(다른 조사 기준으로 BPT도 포함)의 Community License는 모두 적용 지역(Territory)을 "EU·영국·대한민국을 제외한 전 세계"로 정의합니다. 2.0·2.1 라이선스는 머리말에 아예 "DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA"라고 적어 두었습니다. **모델만이 아니라 출력물(Output)도** Territory 밖에서 사용·복제·수정·배포·전시하면 안 됩니다(5(c)항). Output 정의에 "Hosted Service를 통한 것"이 들어 있으므로, **제3자가 호스팅한 2.x 가중치 API를 불러 쓰는 것도 같은 제약을 받는다고 보는 편이 안전합니다.** 근거: [2.1 LICENSE](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE) · [2.0 LICENSE](https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE) · [Omni](https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni/blob/main/License.txt) · [Part](https://github.com/Tencent-Hunyuan/Hunyuan3D-Part/blob/main/LICENSE) · [HY-World 2.0](https://github.com/Tencent-Hunyuan/HY-World-2.0/blob/main/License.txt) · [HY-Motion 1.0](https://github.com/Tencent-Hunyuan/HY-Motion-1.0)
+> - **Tencent Hunyuan 계열 오픈웨이트는 한국에서 쓸 수 없습니다.** Hunyuan3D 2.0(2mv·2mini·Turbo 포함), 2.1, Omni, Part, HunyuanWorld 1.0, HY-World 2.0, HY-Motion 1.0(다른 조사 기준으로 BPT도 포함)의 Community License는 모두 적용 지역(Territory)을 "EU·영국·대한민국을 제외한 전 세계"로 정의합니다. 2.0·2.1 라이선스는 머리말에 아예 "DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA"라고 적어 두었습니다. **모델만이 아니라 출력물(Output)도** Territory 밖에서 사용·복제·수정·배포·전시하면 안 됩니다(5(c)항). Output 정의에는 "Hosted Service를 통한 것"도 들어 있습니다. 따라서 **제3자가 호스팅한 2.x 가중치 API를 불러 쓰는 것도 같은 제약을 받는다고 보는 편이 안전합니다.** 근거: [2.1 LICENSE](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE) · [2.0 LICENSE](https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE) · [Omni](https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni/blob/main/License.txt) · [Part](https://github.com/Tencent-Hunyuan/Hunyuan3D-Part/blob/main/LICENSE) · [HY-World 2.0](https://github.com/Tencent-Hunyuan/HY-World-2.0/blob/main/License.txt) · [HY-Motion 1.0](https://github.com/Tencent-Hunyuan/HY-Motion-1.0)
 > - Tencent Cloud의 **Hunyuan 3D 3.0/3.1 API**(가중치 비공개)는 오픈웨이트 라이선스와 별개인 서비스 약관을 따릅니다. 한국 계정으로 쓸 수 있는지, 지역 조항이 있는지는 **(미확인)** 입니다. 확인하기 전에는 상업 프로젝트에 쓰지 마세요.
-> - **"MIT라서 안전하다"도 절반만 맞습니다.** TRELLIS.2 코드는 MIT이지만, 텍스처링 파이프라인과 GLB 후처리가 **비상업 전용 라이선스인 nvdiffrast**를 import합니다. 이미지 인코더는 DINOv3 License를 따르고, 파이프라인 기본 배경 제거기는 **비상업 RMBG-2.0**으로 보고됩니다. 상업 프로젝트라면 [9장](#9-상업-파이프라인-함정)을 먼저 보세요.
+> - **"MIT라서 안전하다"도 절반만 맞습니다.** TRELLIS.2 코드는 MIT이지만, 텍스처링 파이프라인과 GLB 후처리가 **비상업 전용 라이선스인 nvdiffrast**를 import합니다. 이미지 인코더는 DINOv3 License를 따르고, 파이프라인 기본 배경 제거기는 **비상업 RMBG-2.0**으로 보고됩니다. "Apache-2.0"인 Step1X-3D도 텍스처 모듈에 Hunyuan 라이선스 헤더가 남은 코드가 있습니다. 상업 프로젝트라면 [9장](#9-상업-파이프라인-함정)을 먼저 보세요.
 > - **SaaS는 "어느 플랜으로 생성했는가"가 곧 라이선스입니다.** Tripo 무료 플랜은 비상업, World Labs Marble은 Free·Standard에 상업권 없음, Meshy 무료 플랜은 CC BY 4.0(출처 표기 필요)입니다. Rodin 무료·체험 키로 만든 결과물은 상업권이 **(미확인)** 이니 비상업으로 취급하세요.
 
 ## 핵심 요약
 
 - **역할 분담부터 정리하세요.** GPT-6 Astra, Claude Fable 5.1, Opus 5.5 같은 LLM은 3D 메시를 직접 "생성"하지 않습니다. MCP로 생성기를 호출하고, 스키마를 확인하고, 후처리 코드를 짜고, 결과를 검증하는 **감독** 역할입니다. 메시는 Rodin·Tripo·Meshy·TRELLIS.2 같은 3D 생성 모델이 만듭니다. Scenario 문서에 나오는 "GPT-6 Astra 3D"는 Scenario가 자체적으로 붙인 파이프라인 이름으로 보이며, OpenAI가 내놓은 3D 제품이라는 근거는 없습니다.
-- **최신 버전(2026-09 기준).** 상용 서비스는 Rodin Gen-2.5, Tripo v3.1·P1·P2(P2는 2026-09-15), Meshy 7·7.1(7.1은 2026-09-20), Tencent Hunyuan 3D 3.1, Hitem3D v2.0(Sparc3D 2.1)입니다. 오픈 모델 최상위권은 Microsoft **TRELLIS.2**(4B)와 TencentARC **Pixal3D**(SIGGRAPH 2026)이고, ComfyUI 본체가 2026-08-21부터 둘 다 네이티브로 지원합니다.
+- **최신 버전(2026-09 기준).** 상용 서비스는 Rodin Gen-2.5, Tripo v3.1·P1·P2(P2는 ComfyUI 노드 추가일 2026-09-15 기준), Meshy 7·7.1(7.1은 ComfyUI 반영일 2026-09-20 기준), Tencent Hunyuan 3D 3.1, Hitem3D v2.0(Sparc3D 2.1)입니다. 벤더 자체 출시일은 공식 사이트 차단으로 확인하지 못했습니다. 오픈 모델 최상위권은 Microsoft **TRELLIS.2**(4B)와 TencentARC **Pixal3D**(SIGGRAPH 2026)이고, ComfyUI 본체가 2026-08-21부터 둘 다 네이티브로 지원합니다.
 - **한국 사용자 기본 조합.** 클라우드는 Rodin, Meshy, Tripo를 **유료 플랜**으로 쓰세요. 로컬에서 쓸 때는 TRELLIS.2나 Pixal3D가 맞고, 상업 목적이면 의존성 라이선스를 검토해야 합니다. Hunyuan 로컬 가중치는 쓰지 않습니다.
 - **용도별로 생성기를 고르세요.** 가구·하드서피스는 Rodin Gen-2.5 Low + bbox, Tripo P1/P2, Meshy smart-topology가 맞습니다. 조형물처럼 디테일이 높은 대상은 Rodin Extreme-High, TRELLIS.2·Pixal3D 1536, Hitem3D 1536pro를 씁니다. 캐릭터는 Rodin TAPose, Meshy A-pose와 리깅을 조합하고, 월드는 Marble(Pro 이상)의 splat을 collider mesh로 변환합니다.
 - **품질의 절반은 입력 이미지에서 갈립니다.** 오브젝트 하나를 화면 중앙에 두고, 단색이나 투명 배경, 3/4 뷰, 부드러운 조명, 글자 없음을 지키세요. 텍스트로 바로 3D를 만들기보다 텍스트→이미지→3D 두 단계로 나누는 편이 낫습니다. 멀티뷰 입력 순서는 모델마다 다릅니다.
@@ -81,10 +81,10 @@
 | **Microsoft TRELLIS.2-4B** (2025-12-16, 학습 코드 2026-01-10, 마지막 커밋 2026-06-05) | 코드 MIT. 지역 제한은 없습니다. **단, 상업 사용은 의존성 검토가 필요합니다**(nvdiffrast 비상업, DINOv3 License, 배경 제거 가중치) | GLB. O-Voxel 512³/1024³/1536³ cascade. open surface, non-manifold, 내부 구조까지 표현 | base color, roughness, metallic, opacity. **normal 맵은 출력하지 않음**(bake 필요). 알파는 텍스처에 남지만 OPAQUE로 export | **24GB 이상**(A100·H100에서 검증), Linux. H100 기준 512³ 약 3초, 1024³ 약 17초, 1536³ 약 60초(벤더 자체 보고) | 텍스처 전용 `Trellis2TexturingPipeline`(메시+이미지) 제공. ComfyUI 네이티브([nodes_trellis2.py](https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_extras/nodes_trellis2.py)), [trellis_blender](https://github.com/FishWoWater/trellis_blender), trellis2_mcp, [asset-studio](https://github.com/zorrobyte/asset-studio). [저장소](https://github.com/microsoft/TRELLIS.2) |
 | **TencentARC Pixal3D** (SIGGRAPH 2026, 2026-05 코드, 2026-09-01 multi-view) | MIT. TencentARC 소속이라 **Hunyuan 라이선스가 아니고 한국 제외 조항이 없음**. 다만 DINOv3를 불러옴(NOTICE에는 dinov2만 기재) | PBR GLB(UV 텍스처) | PBR | 기본 1536, `--low_vram` 또는 `--resolution 1024`. C++ 포트 [pixal3d.cpp](https://github.com/raven38/pixal3d.cpp)는 1024 cascade 기준 16GB 카드에서 동작 | 개선판은 TRELLIS.2 backbone(main 브랜치), 원 논문판은 Direct3D-S2 기반. `python inference.py --image in.png --output out.glb`, 멀티뷰는 `python inference_mv.py --views_dir <dir>`. 알파가 없으면 자동으로 배경 제거. 정량 벤치마크 없음. [저장소](https://github.com/TencentARC/Pixal3D) |
 | **DreamTech Direct3D-S2** (2025-05-30) | MIT | OBJ, **형상만** | 없음 | 512는 10GB, 1024는 약 24GB | 텍스처는 TRELLIS.2 texturing이나 Meshy retexture로 입힘. [저장소](https://github.com/DreamTechAI/Direct3D-S2) |
-| **StepFun Step1X-3D** (2025-05-13) | Apache-2.0 | GLB(watertight TSDF) | 3.5B 텍스처 모델 | 27~29GB, 50 step에 약 152초(벤더 자체 보고) | LoRA 파인튜닝. 독립 비교는 없음. [저장소](https://github.com/stepfun-ai/Step1X-3D) |
+| **StepFun Step1X-3D** (2025-05-13) | README·LICENSE는 Apache-2.0. **단, 텍스처 모듈은 Hunyuan3D 2.0 코드를 재사용해 파일 헤더에 Tencent Hunyuan 라이선스 문구가 남아 있고 nvdiffrast에도 의존**합니다([mesh_render.py 헤더](https://raw.githubusercontent.com/stepfun-ai/Step1X-3D/main/step1x3d_texture/differentiable_renderer/mesh_render.py)). 한국에서는 형상 단계만 검토 대상이고 텍스처 단계는 법률 검토 전 보류 | GLB(watertight TSDF) | 3.5B 텍스처 모델(위 라이선스 주의) | 27~29GB, 50 step에 약 152초(벤더 자체 보고) | LoRA 파인튜닝. 독립 비교는 없음. [저장소](https://github.com/stepfun-ai/Step1X-3D) |
 | **Meta SAM 3D Objects** (2025-11-19) | SAM License. 상업 허용, ITAR·군사·제재 대상 사용과 역공학은 금지 | Gaussian splat `.ply` + mesh `.glb`, **여러 객체의 위치·자세 포함** | 텍스처(게임용 PBR은 아님) | **NVIDIA 32GB 이상**([setup.md](https://github.com/facebookresearch/sam-3d-objects/blob/main/doc/setup.md)). 24GB 카드로는 부족 | 가림이 있는 실사진에서 가구 여러 개를 동시에 복원해 배치 참고용으로 씀. [저장소](https://github.com/facebookresearch/sam-3d-objects) |
-| **Stability SPAR3D / Stable Fast 3D** (2025년 초) | Stability Community License(연매출 100만 달러 미만이면 상업 가능) | UV 펼친 메시 | material 예측 | 10.5GB(low VRAM 모드 약 7GB) | 매우 빠르고 point cloud를 편집해 뒷면을 고칠 수 있음. 충실도는 낮아 프리비즈용. [LICENSE](https://github.com/Stability-AI/stable-point-aware-3d/blob/main/LICENSE.md) |
-| **PartCrafter** (NeurIPS 2025) | MIT | 파트별·객체별 메시 | 없음 | 8GB 이상 | 파트 수를 직접 지정하거나 VLM에게 추천받음. [저장소](https://github.com/wgsxm/PartCrafter) |
+| **Stability SPAR3D / Stable Fast 3D** (2025년 초) | Stability Community License(계열사 합산 연매출 100만 달러 미만이면 상업 가능. **상업 이용 시 Stability 등록 필수**, 9장) | UV 펼친 메시 | material 예측 | 10.5GB(low VRAM 모드 약 7GB) | 매우 빠르고 point cloud를 편집해 뒷면을 고칠 수 있음. 충실도는 낮아 프리비즈용. [LICENSE](https://github.com/Stability-AI/stable-point-aware-3d/blob/main/LICENSE.md) |
+| **PartCrafter** (NeurIPS 2025) | MIT | 파트별·객체별 메시 | 없음 | 8GB 이상 | 파트 수를 직접 지정하거나 VLM(비전-언어 모델)에게 추천받음. [저장소](https://github.com/wgsxm/PartCrafter) |
 | **OmniPart** (2025-10) | MIT | 파트 분리 3D(2D 파트 mask `.exr` 조건) | TRELLIS 1세대 수준 | 미명시 | mask를 고쳐 파트 경계를 직접 정함. [저장소](https://github.com/HKU-MMLab/OmniPart) |
 | **NVIDIA PartPacker** | **NVIDIA Source Code License, 비상업**([license.md](https://github.com/NVlabs/PartPacker/blob/main/license.md)) | GLB(파트) | 없음 | 약 10GB(fp16) | 연구·참고용 |
 | **PhysX-Anything** (CVPR 2026) | S-Lab License(일반적으로 비상업) | URDF, MJCF, PLY(관절·물리 속성) | — | — | 서랍·문 관절 구조 추정 참고. [저장소](https://github.com/ziangcao0312/PhysX-Anything) |
@@ -115,7 +115,7 @@
 
 | 조합 | 구성 | 장점 | 주의 |
 |---|---|---|---|
-| **A. 가장 간단한 클라우드** | ahujasid MCP for Blender + Rodin 자기 키(BYOK) → Blender에서 정리·검증 | 생성, import, 배치, 스크린샷 검증을 에이전트 하나로 처리. 서버 프롬프트도 먼저 통합 상태를 확인하고 변경 전후에 `get_viewport_screenshot()`을 찍으라고 권장 | 생성기 파라미터 노출이 제한적입니다(세부 quality, mesh_mode 등). 세밀하게 제어하려면 B나 C를 함께 쓰세요. Hunyuan 통합은 끄세요 |
+| **A. 가장 간단한 클라우드** | ahujasid MCP for Blender + Rodin 자기 키(BYOK) → Blender에서 정리·검증 | 생성, import, 배치, 스크린샷 검증을 에이전트 하나로 처리. 서버 프롬프트도 먼저 통합 상태를 확인하고 변경 전후에 `get_viewport_screenshot()`을 찍으라고 권장 | 생성기 파라미터 노출이 제한적입니다(세부 quality, mesh_mode 등). 세밀하게 제어하려면 B나 C를 함께 쓰세요. Hunyuan 통합은 쓰지 마세요: `BLENDERMCP_HUNYUAN3D_*` 환경변수를 설정하지 않고, CLAUDE.md에 "`generate_hunyuan3d_model` 호출 금지"를 적어 둡니다 |
 | **B. 파라미터를 세밀하게** | 공식 Meshy MCP 또는 Rodin 공식 skill + `hyper3d` CLI(`--output json`) → 파일로 받아 Blender MCP로 import | quad·polycount·bbox·delight·BANG을 모두 제어 | 결과 URL 만료(Rodin은 10분), 비동기 폴링 규칙이 필요 |
 | **C. 로컬·무료** | ComfyUI 네이티브 TRELLIS.2/Pixal3D(+ Paint Mesh, Bake Texture From Voxel 최대 8192) 또는 asset-studio MCP → Blender | 크레딧이 들지 않고, 지역 제한 없는 오픈 모델이라 한국에서 가장 쉽게 시작 | TRELLIS.2는 24GB 이상 GPU 필요(pixal3d.cpp는 1024 cascade를 16GB에서 실행). **상업 납품에는 9장의 의존성 라이선스 검토 필수** |
 | **D. 멀티벤더 비교** | Scenario MCP + skills | 벤더 교체와 A/B 비교가 쉽고, 모델 비교 절차가 스킬로 정리됨 | 중개 비용이 붙음. Hunyuan·HY World 항목 주의 |
@@ -130,7 +130,7 @@
   - 보안(임의 Python 실행, `BLENDER_MCP_SAFE_MODE`), 텔레메트리, 공식 Blender Lab 서버와의 포트 충돌(9876)은 [02 Blender MCP 가이드](02_blender_mcp.md)를 보세요.
 - **Meshy 공식 MCP**: `npx add-mcp @meshy-ai/meshy-mcp-server --env MESHY_API_KEY=msy_...`. 0.5.0은 npm에 없고 0.5.1(2026-08-27), 0.5.2(2026-09-22)가 배포되어 있습니다.
 - **Rodin**: `npm install --global @hyper3d/cli@latest`. 에이전트가 `--output json`으로 호출하게 하면 스크립트로 다루기 쉽습니다. Claude Code에서는 [rodin3d-skills](https://github.com/DeemosTech/rodin3d-skills)를 플러그인으로 설치합니다. 공식 스킬에 티어별 용도와 면 수 매핑이 정리되어 있습니다.
-- **Tripo**: ahujasid에서는 Premium 전용이고 공식 tripo-mcp는 방치 상태입니다. 따라서 [SDK](https://pypi.org/project/tripo3d/)나 ComfyUI 노드, 커뮤니티 trident-mcp를 쓰는 편이 현실적입니다. ([02 가이드](02_blender_mcp.md)는 tripo-mcp를 대안으로 소개하지만, 이번 검증에서 2025-04-14 이후 커밋이 없는 것을 확인했습니다.)
+- **Tripo**: ahujasid에서는 Premium 전용이고 공식 tripo-mcp는 방치 상태입니다. 따라서 [SDK](https://pypi.org/project/tripo3d/)나 ComfyUI 노드, 커뮤니티 trident-mcp를 쓰는 편이 현실적입니다. ([02 가이드](02_blender_mcp.md)는 tripo-mcp를 대안으로 소개하지만, AI 3D 생성 주제 검증(`05_ai-3d-generation.verify.json`)에서 마지막 커밋이 2025-04-14(커밋 8개)인 alpha로 확인돼 추천하지 않습니다.)
 - **TRELLIS.2 / Pixal3D**: ComfyUI 본체에서 2026-08-21(PR #14718)부터 커스텀 노드 없이 돌아갑니다. [asset-studio](https://github.com/zorrobyte/asset-studio)는 Claude Code용 MCP tool(`generate`, `status`, `artifacts`, `retry`, `open_in_blender`)을 제공합니다. [trellis_blender](https://github.com/FishWoWater/trellis_blender)의 기본값은 sampling steps 12, CFG 7.5, simplify 0.95, texture 1024/2048, bake mode fast|opt입니다.
 - **Scenario MCP 표준 절차**: `recommend`로 모델을 찾고 → `model_schema_get` → `model_run(wait=false)` → `jobs_wait` → `asset_display`(직접 눈으로 확인) → `asset_download` 순서입니다. 모델 ID는 하드코딩하지 말고 매번 `recommend`와 `model_schema_get`으로 확인하세요. 카탈로그에서 빠지는 모델에는 `deprecated:<replacement_id>` 태그가 붙습니다. 흔한 실수로 스키마를 보지 않고 실행하기, 로컬 경로를 그대로 넘기기, 모델 ID 하드코딩이 문서에 정리되어 있습니다.
 - **ComfyUI Partner(API) Nodes**: Rodin, Tripo, Meshy, Hunyuan 3.x 노드가 본체에 들어 있어서 **최신 모델이 가장 빨리 반영되고**, 한 워크플로에서 벤더끼리 A/B 비교를 할 수 있습니다([comfy_api_nodes](https://github.com/comfyanonymous/ComfyUI/tree/master/comfy_api_nodes)). 벤더마다 파라미터 이름이 조금씩 다르게 매핑되니 주의하세요.
@@ -142,6 +142,7 @@
 - 생성 전: 모델 버전을 명시한다(Tripo model_version, Meshy ai_model). "latest"나 SDK 기본값에 맡기지 않는다.
 - 생성 전: 스키마를 조회한다(Scenario model_schema_get 등). 멀티뷰 순서와 장수는 모델마다 다르다.
 - 생성 전: 유료 생성은 사용자 승인을 받는다. 예상 크레딧과 pass/fail 기준을 먼저 적는다.
+- 한국 프로젝트: Hunyuan3D 계열(generate_hunyuan3d_model, 로컬 모드, Premium 경유 Hunyuan)은 호출하지 않는다. 무료·체험 키 결과물은 출시 에셋에 쓰지 않는다.
 - 제출 후: 타임아웃이 나도 같은 작업을 다시 제출하지 않는다. job id로 상태를 조회한다(jobs_wait, poll_rodin_job_status).
 - 완료 즉시: 결과 파일을 로컬에 저장한다(Rodin 다운로드 링크는 10분 뒤 만료).
 - import 후: 스케일·원점·트랜스폼을 정규화하고, scene_audit.py와 검토 렌더로 확인한 다음에 다음 단계로 간다.
@@ -163,7 +164,7 @@
 | **두상·흉상** | Sparc3D/Hitem3D **Portrait** 라인 | Rodin 고티어 | 4뷰 front/back/left/right | 비용과 시간이 큽니다 |
 | **실사진 → 가구 배치 참고** | SAM 3D Objects(32GB+) | SceneGen(MIT) | 객체 mask(SAM) | 에셋 품질은 게임용 수준이 아닙니다. 위치와 자세만 참고하세요 |
 | **월드·배경** | Marble **Pro 이상**(상업권) | Lyra 2(H100), 에셋 라이브러리 조립 | Draft로 탐색하고 같은 seed로 상위 티어 | splat은 게임 메시가 아닙니다. collider mesh export 후 retopo가 필요합니다. 근경 오브젝트는 따로 만드세요 |
-| **빠른 프리비즈** | Stable Fast 3D / SPAR3D | TRELLIS.2 512³(약 3초) | — | 연매출 100만 달러 이상이면 Stability Enterprise 라이선스가 필요합니다 |
+| **빠른 프리비즈** | Stable Fast 3D / SPAR3D | TRELLIS.2 512³(약 3초) | — | 상업 이용이면 Stability 등록이 필요하고, 계열사 합산 연매출 100만 달러 이상이면 Enterprise 라이선스가 필요합니다(9장) |
 
 > 이 표는 각 벤더 문서의 용도 설명과 커뮤니티 정성 평가에 근거합니다. 가구·하드서피스·조형물을 같은 입력으로 비교한 **정량 벤치마크는 찾지 못했습니다.** 중요한 에셋은 후보 2~3개를 같은 레퍼런스로 돌려 직접 비교하세요.
 
@@ -227,7 +228,7 @@ soft even studio lighting, realistic shading, no text, no logo, no props.
 
 ### 5.4 배경 제거는 품질과 라이선스를 같이 봐야 합니다
 
-- TRELLIS.2 코드는 BiRefNet 구조로 배경을 제거합니다. 커뮤니티 파이프라인 두 곳(asset-studio, image-to-3dlab)에 따르면 TRELLIS.2·Pixal3D 파이프라인의 **기본 가중치는 gated·비상업 라이선스인 `briaai/RMBG-2.0`** 입니다(HF 설정 파일은 직접 확인하지 못함). image-to-3dlab은 이 때문에 RMBG-2.0을 패치로 꺼 둡니다.
+- TRELLIS.2 코드는 BiRefNet 구조로 배경을 제거합니다. asset-studio README, image-to-3dlab, TRELLIS.2 [PR #175](https://github.com/microsoft/TRELLIS.2/issues/175)에 따르면 TRELLIS.2·Pixal3D 파이프라인의 **기본 가중치는 gated·비상업 라이선스인 `briaai/RMBG-2.0`** 입니다(HF 설정 파일은 직접 확인하지 못함). image-to-3dlab은 이 때문에 RMBG-2.0을 패치로 꺼 둡니다.
 - **권장 대응**: 알파 PNG를 직접 만들어 넣으세요(투명 배경으로 렌더하거나 편집). 또는 라이선스가 허용되는 matting(예: rembg u2net, MIT 가중치의 BiRefNet)으로 바꾸고 `.provenance.json`에 기록하세요.
 
 ---
@@ -335,7 +336,7 @@ print(basic_cleanup(obj))                # 정규화 뒤에 실행해야 병합 
 | 5. 텍스처 | **(a) master에서 bake**: color, metallic-roughness, normal. 또는 **(b) 깨끗한 메시에 텍스처만 다시 생성** | (b) TRELLIS.2 `Trellis2TexturingPipeline`, Meshy retexture(2k/4k/8k), Tencent TextureEdit + ModelTo3DUV, Tripo `texture_model`. ComfyUI Bake Texture From Voxel은 최대 8192 |
 | 6. LOD·충돌 | LOD1 50%, LOD2 25%, convex hull collision | LOD가 8k tri 아래로 내려가면 UV 보존 제약 때문에 목표치에 못 미칠 수 있음 |
 | 7. export | procedural 셰이더는 bake(glTF가 버리는 노드 감사), 텍스처 압축 | gltf-transform, gltfpack. 재인코딩으로 약 32MB → 5MB 미만(image-to-3dlab). TRELLIS.2 GLB는 알파가 있어도 OPAQUE로 나오므로 투명 재질은 blend mode를 직접 켜야 함 |
-| 8. 검증 | Khronos glTF validator 오류 0, `scene_audit.py`, [review_views.py](../03_playbooks/scripts/README.md) 4방향 렌더를 AI에게 비평시키기, 엔진 import 테스트 | asset-studio는 validator 통과와 Godot 4.7.2 import를 확인함 |
+| 8. 검증 | Khronos glTF validator 오류 0(`npx @gltf-transform/cli validate out.glb`. `npx gltf-validator`는 CLI가 아니라 실행되지 않음, [10 가이드 2.6절](10_assets_pipeline_licensing.md)), `scene_audit.py`, [review_views.py](../03_playbooks/scripts/README.md) 4방향 렌더를 AI에게 비평시키기, 엔진 import 테스트 | asset-studio는 validator 통과와 Godot 4.7.2 import를 확인함 |
 
 - **예산만 바꿀 때는 다시 생성하지 마세요.** 최적화 단계만 다시 돌리면 됩니다. asset-studio는 `retry --from-stage blender`로 약 80초가 걸립니다.
 - **[한국어 UI 주의]** bake용 노드를 스크립트로 구성할 때 `nodes['Principled BSDF']`처럼 이름으로 찾으면 한국어 UI의 "New Data" 번역 설정에 따라 깨질 수 있습니다. 노드는 `type`으로 찾게 하세요(이 저장소 스크립트도 그렇게 합니다. 자세한 내용은 [02 가이드](02_blender_mcp.md)).
@@ -378,12 +379,13 @@ print(basic_cleanup(obj))                # 정규화 뒤에 실행해야 병합 
 
 | 함정 | 무엇이 문제인가 | 대응 |
 |---|---|---|
-| **Hunyuan 오픈웨이트 (한국)** | Territory에서 한국 제외. 출력물도 Territory 밖 사용 금지(5(c)), 호스팅 서비스 경유 출력도 Output에 포함, 출력물로 다른 AI 모델 개선 금지(5(b)). MAU 100만 조항은 **각 버전 출시일(2.0은 2025-01-21, 2.1은 2025-06-13) 기준 직전 달 MAU를 한 번 보는 조건**입니다 | 로컬 가중치, 서드파티 호스팅 2.x API, ahujasid 로컬 모드, blender-kiln 같은 파이프라인의 Hunyuan 기본값을 모두 끄고 다른 생성기로 바꾸세요 |
+| **Hunyuan 오픈웨이트 (한국)** | Territory에서 한국 제외. 출력물도 Territory 밖 사용 금지(5(c)), 호스팅 서비스 경유 출력도 Output에 포함, 출력물로 다른 AI 모델 개선 금지(5(b)). MAU(월간 활성 사용자) 100만 조항은 **각 버전 출시일(2.0은 2025-01-21, 2.1은 2025-06-13) 기준 직전 달 MAU를 한 번 보는 조건**입니다 | 로컬 가중치, 서드파티 호스팅 2.x API, ahujasid 로컬 모드, blender-kiln 같은 파이프라인의 Hunyuan 기본값을 모두 끄고 다른 생성기로 바꾸세요 |
 | **TRELLIS.2의 숨은 의존성** | 코드는 MIT지만 텍스처링(`trellis2_texturing.py`)과 GLB 후처리(`o_voxel/postprocess.py`)가 **nvdiffrast**를 import합니다. nvdiffrast·nvdiffrec의 NVIDIA Source Code License 3.3항은 "non-commercially(research or evaluation purposes only)"입니다([nvdiffrast LICENSE](https://github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt)). 이미지 인코더 `facebook/dinov3-vitl16`은 Meta DINOv3 License를 따릅니다 | 상업 납품 전에 nvdiffrast를 대체할 경로가 있는지, NVIDIA 상업 라이선스가 필요한지, DINOv3 약관을 검토하세요. Pixal3D도 TRELLIS.2 backbone과 DINOv3를 쓰므로 같은 검토가 필요합니다(Pixal3D의 nvdiffrast 사용 여부는 미확인) |
 | **배경 제거기 RMBG-2.0** | TRELLIS.2·Pixal3D 파이프라인의 기본 matting 가중치로 보고됨. gated·비상업 | 알파 PNG를 직접 넣거나 허용 라이선스 matting으로 교체 (5.4절) |
 | **레퍼런스 이미지 모델** | Qwen-Image 2.1은 Research License, FLUX.2 Klein 9B는 비상업 | 상업이면 Qwen-Image-2512(Apache-2.0)처럼 라이선스를 확인한 모델을 쓰세요 |
 | **연구 전용 모델** | Roblox Cube·CubePart(RAIL-MS 연구 전용), PartPacker(NVIDIA SCL 비상업), PhysX-Anything(S-Lab) | 아이디어와 레퍼런스용으로만. 출시 에셋 경로에 넣지 마세요 |
-| **Stability Community License** | 연매출 100만 달러를 넘으면 Enterprise 라이선스 필요 | 매출 기준을 기록해 두세요 |
+| **Step1X-3D 텍스처 모듈** | 저장소는 Apache-2.0이지만 텍스처 단계(`step1x3d_texture/custom_rasterizer`, `differentiable_renderer`)가 Hunyuan3D 2.0 코드를 재사용해 Tencent Hunyuan 라이선스 헤더가 남아 있고, nvdiffrast에도 의존합니다 | 형상 단계만 쓰고, 텍스처는 다른 경로(Meshy retexture 유료 플랜, 베이크 등)로. 텍스처 단계는 법률 검토 전 보류([10 가이드 7장](10_assets_pipeline_licensing.md)) |
+| **Stability Community License** | 본인과 계열사를 합친 **전체 연매출**이 100만 달러를 넘으면 Enterprise 라이선스 필요. 100만 달러 미만이라도 **상업 이용 시 `stability.ai/community-license` 등록 필수**. 배포 시 Notice 파일과 "Powered by Stability AI" 표시, 출력물로 파운데이션 모델 학습·개선 금지 | 등록 여부와 매출 기준을 provenance에 기록 ([LICENSE](https://raw.githubusercontent.com/Stability-AI/stable-fast-3d/main/LICENSE.md)) |
 | **SaaS 무료 플랜** | Tripo Free는 비상업, Marble Free·Standard는 상업권 없음, Meshy Free는 CC BY 4.0(출처 표기), Rodin 무료·체험 키는 미확인 | 출시 에셋은 상업권이 있는 플랜에서 생성하고, 결제 영수증과 당시 약관 캡처를 보관 |
 | **Tripo 상업권의 범위** | "구독이 활성화된 기간에 생성한 모델"에 적용 | 생성 날짜와 구독 기간을 provenance에 기록 |
 | **Meshy 유료 소유권의 조건** | Community에 공개하면 비공개 소유 조건이 깨짐. 입력 이미지가 타인 권리를 침해하면 안 됨 | 에셋을 공개 갤러리에 올리지 말 것 |
@@ -470,5 +472,6 @@ print(basic_cleanup(obj))                # 정규화 뒤에 실행해야 병합 
 
 - `01_research/raw/05_ai-3d-generation.research.json`: 생성 모델·서비스·MCP 연동·노하우·사례 조사
 - `01_research/raw/05_ai-3d-generation.verify.json`: 독립 검증. TRELLIS.2 최근 커밋 정정, 3DQA 수치 철회, Tripo P2 정정, tripo-mcp·rodin-api-mcp 방치, SAM 3D 32GB, PartPacker 비상업, RMBG-2.0 함정, ComfyUI 네이티브 지원 등 누락 항목
+- `01_research/raw/12_assets-pipeline-licensing.verify.json`: Step1X-3D 텍스처 모듈의 Hunyuan 헤더, Stability Community License 등록 의무, TRELLIS.2 PR #175(RMBG-2.0)
 - `01_research/raw/G4_licensing_pricing.gap.json`: 가격·상업 조건·라이선스·법규 보완 조사
 - `01_research/raw/G4_licensing_pricing.verify.json`: 보완 검증. TRELLIS.2 nvdiffrast 비상업 의존성, Hunyuan MAU 조항 해석, Tripo·Meshy 가격 정정, Rodin 전 플랜 상업권 미확인, EU 워터마크 유예 범위

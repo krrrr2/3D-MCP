@@ -15,6 +15,8 @@
 - **[한국 사용자]** Tencent Hunyuan3D 오픈웨이트 라이선스는 적용 지역에서 EU·영국·한국을 뺍니다. AI Forge MCP의 ForgeHunyuan처럼 Hunyuan3D를 로컬로 돌리는 경로는 한국에서 라이선스 밖이고, AI Forge README의 "MIT" 표기는 틀렸습니다. SketchUp 커넥터의 "무료 모델 30개" 한도는 보도 기준이며 원문으로 확인하지 못했습니다.
 - **없거나 못 쓰는 것**: Womp(MCP 없음), Plasticity(Phase 0, 사용 불가), Spline(아카이브, 공개 API 없음), KeyShot·Onshape·Maxon 공식 MCP(확인 안 됨), CryEngine MCP(없음).
 
+> **이 문서에 자주 나오는 약어**: DCC(Maya·3ds Max·Houdini 같은 3D 제작 앱), PCG(Procedural Content Generation, UE의 절차적 배치 프레임워크), PIE(Play In Editor, 에디터 안 플레이), MRQ(Movie Render Queue), PPV(PostProcessVolume), ISM(Instanced Static Mesh), HDA(Houdini Digital Asset), VSM(Virtual Shadow Maps), BP(Blueprint).
+
 ---
 
 ## 1. 먼저 보기: AAA 에셋 목적별 추천 조합
@@ -354,7 +356,7 @@ C4D_MCP_TOKEN=<공유 비밀>
 | [WildCake/unreal-engine-mcp-codex](https://github.com/WildCake/unreal-engine-mcp-codex) | 공식 MCP용 Codex 스킬(2026-06-20) | — |
 | [mMo66666/Unreal-MCP-Skills](https://github.com/mMo66666/Unreal-MCP-Skills) | 레벨 디자인·시네마틱용 Codex 스킬(중국어) | — |
 
-Claude Code는 `.claude/skills`, Codex는 `~/.codex/skills`에 넣고, 작업 전에 스킬 문서를 읽으라고 지시합니다. 이 저장소의 [스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)과 같은 방식입니다.
+Claude Code는 `.claude/skills`에 넣습니다. Codex는 `~/.codex/skills`와 저장소의 `.agents/skills`가 모두 보고돼 있으니(공식 문서 미확인) 설치한 Codex 버전에서 인식되는 쪽을 확인하세요. 어느 쪽이든 작업 전에 스킬 문서를 읽으라고 지시합니다. 이 저장소의 [스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)과 같은 방식입니다.
 
 #### 4.1.5 Unreal 서버 고르는 기준
 

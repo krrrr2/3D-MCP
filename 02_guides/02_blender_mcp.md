@@ -20,7 +20,7 @@
 
 | 상황 | 1순위 | 대안 | 이유 |
 |---|---|---|---|
-| Claude Desktop·claude.ai에서 가장 쉽게 쓰고 싶음 (Blender 5.1 이상) | 공식 Blender 커넥터 | ahujasid | Anthropic 인증. 조사 기준으로 텔레메트리·외부 서비스 연동 없음 |
+| Claude Desktop에서 가장 쉽게 쓰고 싶음 (Blender 5.1 이상. 로컬 앱이라 claude.ai 웹에서는 붙지 않음) | 공식 Blender 커넥터 | ahujasid | Anthropic 인증. 조사 기준으로 텔레메트리·외부 서비스 연동 없음 |
 | 씬 분석·디버깅, 큰 .blend 점검(누락 텍스처, 링크 라이브러리) | 공식 서버 (`get_blendfile_summary_*`, `*_for_cli`) | — | GUI 없이 저장 파일을 분석 가능 |
 | HDRI·텍스처·모델 에셋과 AI 3D 생성을 한 서버에서 | ahujasid | 공식 서버 + Meshy/Tripo MCP | 에셋·생성 tool 내장 |
 | Codex(GPT-6 Astra) 사용 | ahujasid (README에 Codex 설정 있음) | 공식 서버 수동 설정, 헤드리스(Blender Agent Studio) | 2026-09에 'GPT Astra용 권장 서버' 질문이 올라옴([#351](https://github.com/ahujasid/blender-mcp/issues/351)) |
@@ -152,10 +152,11 @@ ahujasid 서버는 FastMCP `instructions`와 prompt로 모델에게 다음 규�
 ```
 
 ```bash
-# Claude Code
-claude mcp add blender uvx mcp-for-blender
+# Claude Code (README 표기는 `--` 없이 쓰지만, 공식 문서는 옵션과 서버 명령을 `--`로 구분하라고 권장.
+# --env 바로 뒤에 서버 이름을 두면 이름을 KEY=value로 읽으므로 --transport를 사이에 둠)
+claude mcp add --env DISABLE_TELEMETRY=true --transport stdio blender -- uvx mcp-for-blender
 # Codex CLI (Codex Desktop은 Settings → MCP servers → STDIO → uvx mcp-for-blender)
-codex mcp add blender -- uvx mcp-for-blender
+codex mcp add blender --env DISABLE_TELEMETRY=true -- uvx mcp-for-blender
 ```
 
 ```toml
@@ -163,7 +164,8 @@ codex mcp add blender -- uvx mcp-for-blender
 [mcp_servers.blender]
 command = "uvx"
 args = ["mcp-for-blender"]
-# env 키 지원 여부는 Codex 공식 문서로 확인하지 못함
+env = { DISABLE_TELEMETRY = "true" }   # 조사 요약 기준. Codex 공식 문서(developers.openai.com)는 이번에 직접 열람하지 못함
+tool_timeout_sec = 600
 ```
 
 - Cursor(Windows)는 `"command": "cmd", "args": ["/c", "uvx", "mcp-for-blender"]`로 설정합니다.
@@ -404,8 +406,8 @@ claude plugin install blender-skills@blender-claude-marketplace
 | Poly Haven 다운로드 | 메인 스레드 동기 처리 | 1k/2k로 요청 |
 | MCP 클라이언트(Claude Desktop 등) | 약 4분에 포기하는 사례 관측 | 긴 작업은 헤드리스로 |
 | Windows 버그 [#339](https://github.com/ahujasid/blender-mcp/issues/339)·[#357](https://github.com/ahujasid/blender-mcp/issues/357) | 연결은 되는데 명령이 처리되지 않고 약 4분 뒤 타임아웃(Blender 5.1.1/5.2.1). 프레이밍 불일치 의심, **아직 열려 있음** | Claude와 Blender 서버를 둘 다 재시작, 최신 버전으로 업데이트, 헤드리스로 우회 |
-| Claude Code `MCP_TOOL_TIMEOUT` | 설정하지 않으면 약 28시간. `.mcp.json` 서버별 `"timeout"`(ms)으로 덮어쓸 수 있음 | — |
-| Claude Code 유휴 타임아웃 `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT` | 기본 5분 | 진행 알림 없는 긴 Cycles 렌더는 중단될 수 있음 → 헤드리스([Claude Code MCP 문서](https://code.claude.com/docs/en/mcp)) |
+| Claude Code `MCP_TOOL_TIMEOUT` | 설정하지 않으면 약 28시간. `.mcp.json` 서버별 `"timeout"`(ms)으로 덮어쓸 수 있음(진행 알림으로 연장되지 않는 절대 한도라, 값을 넣으면 오히려 짧아질 수 있음) | — |
+| Claude Code 유휴 타임아웃 `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT` | stdio 서버(ahujasid·공식 서버 기본) **30분**, HTTP·SSE·WebSocket 서버 **5분** | 진행 알림 없는 긴 Cycles 렌더는 중단될 수 있음 → 헤드리스([Claude Code MCP 문서](https://code.claude.com/docs/en/mcp)) |
 | Gemini CLI | `timeout` 기본 600,000ms | [Gemini CLI MCP 문서](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md) |
 
 최종 렌더와 베이크는 better-blender-mcp의 백그라운드 워커나 헤드리스 `blender -b` 서브프로세스에서 돌리세요.
@@ -462,7 +464,8 @@ print(json.dumps(rows, separators=(',', ':')))
 
 ```python
 import bpy
-# (1) 증분 저장: 파일 이름 끝 번호를 올려 새 파일로 저장 (Blender 5.0.1에 존재 확인)
+# (1) 증분 저장: 파일 이름 끝 번호를 올려 새 파일로 저장 (5.0.1과 4.2.23 LTS에 존재 확인.
+#     chair.blend → chair1.blend처럼 저장되고, 작업 파일도 새 번호 파일로 바뀜. 한 번도 저장하지 않은 파일에는 쓸 수 없음)
 bpy.ops.wm.save_mainfile(incremental=True)
 # (2) 현재 작업 파일 경로는 그대로 두고 사본만 저장
 bpy.ops.wm.save_as_mainfile(filepath=bpy.path.abspath('//versions/scene_v003.blend'), copy=True)
@@ -623,7 +626,7 @@ fmts = [i.identifier for i in scene.render.image_settings.bl_rna.properties['fil
 print("blender", v, "formats", fmts[:5])
 ```
 
-이 저장소의 `review_views.py`·`scene_audit.py`도 같은 원칙(type으로 노드 찾기, `node_tree is None`일 때만 `use_nodes`)으로 작성돼 4.2.23 LTS와 5.0.1에서 경고 없이 통과합니다.
+이 저장소의 `review_views.py`도 같은 원칙(type으로 노드 찾기, `node_tree is None`일 때만 `use_nodes`)으로 작성돼 4.2.23 LTS와 5.0.1에서 경고 없이 통과합니다(`scene_audit.py`는 노드를 다루지 않고 메시 bbox만 검사).
 
 ### 11.3 추측 대신 조회하게 하기
 
