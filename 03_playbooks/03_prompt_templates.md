@@ -114,7 +114,8 @@ ChatGPT·Codex 앱처럼 규칙 파일을 쓰지 않는 환경에서는 템플�
              hero:true|false, material_intent, notes}]
     치수마다 근거를 적는다: "치수표 1장 식탁의자" / "Image 2" / "추정".
  2) spec/acceptance.yaml  (G1 승인 뒤에는 수정하지 않는다)
-    hard: scene_audit(floating 0, interpenetration 0, unapplied_scale 0, size_out_of_range 0)
+    hard: scene_audit(floating 0, below_floor 0, sunk_into 0, above_ceiling 0, interpenetration 0,
+          unapplied_scale 0, size_out_of_range 0), 방·건물이면 building_audit errors 0
           관계 치수(예: 식탁 상판 − 의자 좌판 0.25~0.305 m), 주동선 ≥ 0.9 m
     soft: 비평 기준(NEEDS_FIX: NO 2회 연속), 렌더 기준(발광체 외 클리핑 ≤ 0.5%)
     limits: 단계별 최대 수정 라운드, 유료 호출 한도
@@ -419,10 +420,11 @@ print(f"done:{seat.name} min={tuple(round(v, 3) for v in mn)} max={tuple(round(v
 ```text
 spec/relations.json의 배치를 적용했다. 이제 검사하고 고친다. 한 호출에 오브젝트 1~3개만 다룬다.
 1) 숫자 검사를 돌려 결과를 표로 보여 줘:
-   - scene_audit(floor_z=0, size_rules={{SIZE_RULES}}): floating, below_floor, interpenetration, size_out_of_range
+   - scene_audit(floor_z=0, ceiling_z={{CEILING_Z}}, collection="{{ROOM_COLLECTION}}", size_rules={{SIZE_RULES}}):
+     floating, below_floor, sunk_into, above_ceiling, interpenetration(가구–벽·천장 포함), size_out_of_range
    - check_clearances({{CLEARANCE_RULES}})
    - facing: 정면(-Y)과 대상 방향의 수평 내적 ≥ 0.9
-   - 문 앞 금지 영역, 주동선 폭 ≥ 0.9 m
+   - 문 앞 금지 영역, 주동선 폭 ≥ 0.9 m. 벽·문·창이 있으면 building_audit로 door_blocked·window_blocked 확인
 2) DONE 조건: interpenetrations == [] AND floating == [](acceptance의 허용 예외 제외)
    AND 동선·문 막힘 0 AND clearance 위반 0 AND facing 전부 통과.
    하나라도 어기면 DONE이라고 말하지 마. 해결할 수 없는 충돌이면 그 오브젝트를 빼자고 제안한다.
@@ -454,13 +456,14 @@ def facing_ok(obj, target, min_dot=0.9):
     return f.normalized().dot(d.normalized()) >= min_dot
 
 O = bpy.data.objects
-rep = scene_audit.audit_scene(floor_z=0.0)
+rep = scene_audit.audit_scene(floor_z=0.0)   # 방이면 ceiling_z=2.30, collection="Room" 추가
 print("audit:", rep["summary"], [(u["name"], u["issues"]) for u in rep["units"] if u["issues"]], rep["interpenetrations"])
 print("clearance:", pu.check_clearances([("sofa", "coffee_table", 0.35, 0.45), ("sofa", "tv_stand", 2.0, 3.0)]))
 print("facing:", {n: facing_ok(O[n], O[t]) for n, t in [("sofa", "tv_stand"), ("armchair", "coffee_table")]})
 ```
 
-- 한국 프리셋 `size_rules`와 `ceiling_z`(구축 2.30)는 [치수표](05_reference_dimensions.md) 11절의 `KR_SIZE_RULES` 예시를 그대로 넘기세요. 이름은 부분 문자열로 맞추므로 `CoffeeTable`처럼 쓰면 `coffee_table` 규칙이 적용되지 않습니다.
+- 한국 프리셋 `size_rules`와 `ceiling_z`(구축 2.30)는 [치수표](05_reference_dimensions.md) 11절의 `KR_SIZE_RULES` 예시를 그대로 넘기세요. 이름은 단어 단위로 맞춥니다. `CoffeeTable`·`coffee_table_01`은 `coffee_table` 규칙에 걸리고, `table_lamp`·`door_handle`처럼 부속품 단어가 뒤에 붙거나 `turntable`처럼 단어 일부만 같으면 걸리지 않습니다. 폭·깊이는 가구 자체 방향 기준이라 회전한 가구도 오탐하지 않습니다.
+- 방 안 가구와 건물 외관이 한 장면에 있으면 `collection=`으로 나눠 검사하세요. 천장 규칙이 건물 기둥 같은 외관 오브젝트에 잘못 걸리지 않습니다([스크립트 README](scripts/README.md)).
 - 소품 물리 안착(2~5 cm 띄워 두고 rigid body로 떨어뜨린 뒤 변환 확정, 1 m 이상 이동하거나 45° 이상 기울면 실패)은 [배치 가이드](../02_guides/08_scene_layout_placement.md) 4.7절 코드를 쓰세요.
 
 **왜 이렇게 쓰나**

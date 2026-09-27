@@ -8,11 +8,11 @@
 - **7대 합의**: ① 렌더→비평 폐루프 ② 생성보다 검증에 연산 투자 ③ 좌표는 솔버, LLM은 관계·제약 ④ 처음부터 만들기보다 검색·재사용 ⑤ 파라메트릭 부품 코드 ⑥ 계층 단계 생성 + 물리 검증 ⑦ LLM은 렌더를 보지 않고는 결과를 상상하지 못함.
 - **모델을 바꾸는 것보다 하네스를 고치는 효과가 더 큽니다.** 이미지→Blender 역설계 에이전트 VIGA는 원샷 대비 BlenderGym +35.32%, BlenderBench +124.70%였고(arXiv 요약 기준), CAD 벤치에서는 build123d-mcp 도구만 붙여도 같은 모델의 점수가 0.360에서 0.457로 올랐습니다(도구 저자 자체 보고, 2026-06). 3DHarnessBench에서도 함수 호출로 대상에 접근하게 하자 모든 모델이 개선됐습니다. 다만 추가 시점만 요청하게 한 조건(Active Visual)에서는 일부 모델이 오히려 나빠졌으니 모델별로 A/B 테스트하세요(5.3절).
 - **배치는 "충돌을 하드 조건으로 막고 배치 후 따로 검사"가 핵심입니다.** 같은 비교표(SceneReVis 측정)에서 충돌률은 LLM 직접 좌표 40.8% → 제약 솔버 12.7% → 렌더·평가·수정 루프 + 물리 보상 4.5%였습니다. 미분 최적화(충돌이 soft 손실 항)를 쓴 LayoutVLM도 36.8%였으니 "솔버만 쓰면 된다"로 일반화하면 안 됩니다.
-- **아직 안 되는 것**: GPT-4o의 Blender 배치 편집 오차는 사람의 약 28배(BlenderGym)였고, VLM 검증기와 사람의 판정 일치율은 0.66(사람끼리 0.79)에 그쳤습니다. FreeCAD GUI를 클릭해 장기 작업을 하는 에이전트는 최고 17.5%로 전문가 87.0%에 크게 못 미쳤습니다. 메시 좌표를 토큰으로 직접 뽑는 방식(LLaMA-Mesh 등)은 저폴리에 머뭅니다.
+- **아직 안 되는 것**: GPT-4o의 Blender 배치 편집 오차는 사람의 약 28배(BlenderGym)였고, VLM 검증기와 사람의 판정 일치율은 0.66(사람끼리 0.79)에 그쳤습니다. FreeCAD GUI를 클릭해 장기 작업을 하는 에이전트는 최고 17.5%로 전문가 87.0%에 크게 못 미쳤습니다(CADWorld, arXiv 요약 기준). 메시 좌표를 토큰으로 직접 뽑는 방식(LLaMA-Mesh 등)은 저폴리에 머뭅니다.
 - **최신 모델을 같은 조건으로 비교한 통제 벤치마크는 없습니다.** OpenAI가 발표한 BenchCAD "Astra 95.9%"(도구 사용, 벤더 자체 보고)와 공식 재채점 최고점 "Gemini 3.1 Pro 0.289"(도구 없음, IoU)는 척도가 달라 나란히 놓으면 안 됩니다. 절대 순위 대신 **과제별 잠정 선택**만 하세요([AI 모델 가이드](01_ai_models_and_clients.md)).
 - **재현성 리스크가 실제로 터졌습니다.** LL3M은 논문에 쓴 Claude Sonnet 3.7이 retire되자(2026-02-19) 서버를 닫았습니다. Scene Language, BlenderGym의 Claude 기준선도 원래 설정으로는 돌아가지 않습니다. 프롬프트·툴 정의를 모델 중립으로 쓰고, 모델 ID·effort·Blender 버전을 로그에 남기세요.
 - **[한국 사용자] 연구 코드 상당수가 비상업 라이선스입니다**(LL3M, LLaMA-Mesh, CAD-Recode, Text2CAD, CAD-Assistant, VLMaterial 데이터). SceneSmith·SceneAssistant·WorldClaw가 쓰는 **Hunyuan3D 계열 오픈웨이트는 라이선스 적용 지역에서 대한민국을 제외**합니다. 상업 작업에는 아이디어만 가져오세요.
-- **실무 레시피 8단계**(7절): 레퍼런스 이미지 → 객체·관계 JSON → 파트별 함수 또는 에셋 검색·생성 → 솔버 배치와 충돌·물리 검사 → 4시점 렌더 → 체크리스트 비평 → 후보 비교·되돌리기 → 로그. 4~7단계는 이 저장소의 테스트된 스크립트([`scene_audit.py`, `placement_utils.py`, `review_views.py`](../03_playbooks/scripts/README.md))로 바로 돌릴 수 있습니다.
+- **실무 레시피 8단계**(7절): 레퍼런스 이미지 → 객체·관계 JSON → 파트별 함수 또는 에셋 검색·생성 → 솔버 배치와 충돌·물리 검사 → 4시점 렌더 → 체크리스트 비평 → 후보 비교·되돌리기 → 로그. 4~7단계는 이 저장소의 테스트된 스크립트([`scene_audit.py`, `placement_utils.py`, `review_views.py`, `building_audit.py`](../03_playbooks/scripts/README.md))로 바로 돌릴 수 있습니다.
 
 ---
 
@@ -79,9 +79,9 @@
 |---|---|---|---|---|
 | [3D-GPT](https://github.com/Chuny1/3DGPT) (3DV 2025, arXiv 2310.12945) | 3개 에이전트(과제 분배·개념화·모델링)가 Infinigen 절차적 생성 함수의 **파라미터만** 추론. 함수 문서를 컨텍스트로 제공 | 정량 평가 제한적 | **점진 공개**: 에이전트 구현만 있고 수정 Infinigen·파서는 "upcoming". LICENSE 표기 없음, `openai==0.27.8`(구버전 API) 고정 | 지오메트리를 직접 짜게 하지 말고, 문서화된 생성기를 툴로 노출하고 LLM은 파라미터만 채우게 함 |
 | [BlenderAlchemy](https://github.com/ianhuang0630/BlenderAlchemyOfficial) (ECCV 2024) | edit generator가 후보 편집 여러 개 → VLM이 렌더를 비교해 선택하는 트리 탐색. 텍스트 목표를 T2I "상상 이미지"로 만들어 기준으로 삼고, 나빠지면 이전 가설로 되돌림 | 정량 (미확인). [예제 config](https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml): tree_dims `4x8`(깊이 4 × 폭 8), num_tries 4, edit_style `rewrite_code`, 동시 렌더 8, 동시 평가 4. **예제 config 값이지 코드 전역 기본값은 아님** | 코드 공개. Infinigen Blender 바이너리 전제. GPT-4V가 가장 좋았고 Gemini·Claude·Ollama 지원 | 편집 대상을 재질 노드 트리 하나처럼 좁히고, 후보 3~8개를 렌더 비교, 나빠지면 스냅샷 복귀 |
-| [BlenderLLM](https://github.com/FreedomIntelligence/BlenderLLM) (arXiv 2412.14203, 2024-12) | Qwen2.5-Coder-7B를 BlendNet(지시-스크립트 12K쌍)으로 미세조정 + self-improvement | CADBench-Sim 0.748±0.085(GPT-4o 0.565). 구문 오류율 3.4%. 비교 모델 오류율은 15.6~21.4%인데, **어느 모델이 15.6%인지 조사끼리 어긋남**(Claude-3.5-Sonnet 또는 o1-Preview, README 표 재확인 필요) | Apache-2.0, 가중치 공개 | 도메인 파인튜닝은 "실행 가능률"을 올림. 평가 축(속성·공간 관계·지시 준수)은 자체 검수 체크리스트로 차용 |
+| [BlenderLLM](https://github.com/FreedomIntelligence/BlenderLLM) (arXiv 2412.14203, 2024-12) | Qwen2.5-Coder-7B를 BlendNet(지시-스크립트 12K쌍)으로 미세조정 + self-improvement | CADBench-Sim 0.748±0.085(GPT-4o 0.565). 구문 오류율 3.4%. 비교 모델 오류율은 15.6~21.4%인데, **두 검증이 README 표를 다르게 읽음**: 모델링 주제 검증은 GPT-4o 21.4%·o1-Preview 15.6%, 학술 주제 검증은 Claude-3.5-Sonnet 15.6%·GPT-4-Turbo 18.2%(모델별 값은 README 표 재확인 필요). 점수는 GPT-4o가 채점한 값(LLM 심판) | Apache-2.0, 가중치 공개 | 도메인 파인튜닝은 "실행 가능률"을 올림. 평가 축(속성·공간 관계·지시 준수)은 자체 검수 체크리스트로 차용 |
 | [LL3M](https://github.com/threedle/ll3m) (UChicago 3DL, 2025-08) | 역할 분담 멀티에이전트(README 기준 plan/retrieve/write/debug/refine) + **BlenderRAG**(Blender API 문서 검색)로 BMesh·modifier·셰이더 노드 활용 | 정량 (미확인). BlenderMCP 기준선보다 디테일이 좋고 연속 편집에서 정체성을 유지했다는 정성 비교 (신뢰도 낮음) | **[비상업 학술·평가 라이선스](https://raw.githubusercontent.com/threedle/ll3m/main/LICENSE)**. 저장소는 로그인형 데모의 클라이언트와 Blender 4.4 애드온뿐, 파이프라인 코드 비공개. **Claude Sonnet 3.7 retire로 서버 중단**([README](https://raw.githubusercontent.com/threedle/ll3m/main/README.md)) → 현재 사용 불가 | 쓰는 Blender 버전의 API 문서를 검색해 붙인다. 특정 모델 버전에 묶지 않는다 |
-| [VIGA](https://github.com/Fugtemypt123/VIGA) (arXiv 2601.11109, 2026-01, ECCV 2026) | 한 에이전트가 Generator(계획·코드 실행·에셋 검색·씬 조회)와 Verifier(다중 시점 렌더 비교)를 번갈아 맡음. 계획·코드 diff·렌더 이력 메모리. 새 벤치 BlenderBench(Level 1~3) | 원샷 대비 BlenderGym +35.32%, SlideBench +117.17%, BlenderBench +124.70%(arXiv 요약 기준). 백본별 절대 점수 (미확인) | MIT, 스타 약 1.3k. conda 환경 4개(agent/blender/sam/sam3d), NVIDIA GPU 권장, 예제는 `--model=gpt-5` + SAM3D | 참조 이미지와 같은 카메라로 렌더해 나란히 비교, 반복마다 계획·diff·스크린샷 경로를 로그로 누적 |
+| [VIGA](https://github.com/Fugtemypt123/VIGA) (arXiv 2601.11109, 2026-01. ECCV 2026은 보완 조사 표기, 미확인) | 한 에이전트가 Generator(계획·코드 실행·에셋 검색·씬 조회)와 Verifier(다중 시점 렌더 비교)를 번갈아 맡음. 계획·코드 diff·렌더 이력 메모리. 새 벤치 BlenderBench(Level 1~3) | 원샷 대비 BlenderGym +35.32%, SlideBench +117.17%, BlenderBench +124.70%(arXiv 요약 기준). 백본별 절대 점수 (미확인) | MIT, 스타 약 1.3k. conda 환경 4개(agent/blender/sam/sam3d), NVIDIA GPU 권장, 예제는 `--model=gpt-5` + SAM3D | 참조 이미지와 같은 카메라로 렌더해 나란히 비교, 반복마다 계획·diff·스크린샷 경로를 로그로 누적 |
 | [MeshCoder](https://github.com/InternRobotics/MeshCoder) (NeurIPS 2025) | 점군 → **파트별로 나뉜 편집 가능한 Blender 코드**. 복잡한 형상용 고수준 API, 41 카테고리 100만 object-code 쌍으로 학습 | 기존보다 재구성 품질이 높고 코드 수정으로 형상·토폴로지 편집 가능(README). 분포 밖 입력에서 저하 | MIT. 2025-11에 코드·체크포인트·데이터 10만 쌍 공개. 후속 MegaParts(1.5, 최대 300파트·256K 토큰) 코드는 공개 예정 | 생성 메시를 파트 코드로 역변환. 프런티어 모델에도 "파트별 함수 + 고수준 API"로 모델링을 지시 |
 | [LLaMA-Mesh](https://github.com/nv-tlabs/LLaMA-Mesh) (arXiv 2411.09595, 2024-11) | OBJ 텍스트(정점·면)를 그대로 토큰으로 LLaMA-3.1-8B SFT | 저폴리 한정(정확한 면 수 (미확인)) | **[NVIDIA License](https://raw.githubusercontent.com/nv-tlabs/LLaMA-Mesh/main/LICENSE) 3.3조: 연구·평가 목적 비상업만**. 학습 데이터 미공개 | 블록아웃 장난감 수준. AAA에는 코드·생성 모델 경로 |
 | [MeshLLM](https://github.com/Fangkang515/MeshLLM) (ICCV 2025) | 메시를 primitive-mesh로 분해해 부분 조립으로 이해·생성, 150만+ 샘플 LoRA | README에 비교 수치 없음 | 코드 공개 | 큰 메시는 파트로 쪼개야 LLM이 다룸 → 프런티어 모델에도 파트 단위 제작 지시 |
@@ -290,7 +290,7 @@ bpy.ops.object.shade_smooth_by_angle(angle=0.5236)                    # use_auto
 | ① 레퍼런스 | 참조·컨셉 이미지 2~3장 → 1장 선택 | BlenderAlchemy visual imagination, Scenethesis 가이던스 이미지 | [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) | 기준 이미지 1장 확정 |
 | ② 계획 JSON | 객체 목록·치수·관계 제약을 JSON으로, 단계(평면도 → 가구 → 벽 → 천장 → 소품) 지정 | SceneCraft scene graph, Holodeck 제약, SceneSmith 5단계, I-Design 역할 분담 | [치수 기준표](../03_playbooks/05_reference_dimensions.md) | 모든 객체에 mm 치수, 객체당 제약 3~5개 |
 | ③ 제작 | 파트별 파라메트릭 함수로 모델링, 유기체·조각은 에셋 검색·생성 후 정규화 | 3D-GPT, MeshCoder, Scene Language, Procedura / Holodeck, SceneSmith | [모델링 가이드](07_modeling_objects_furniture_sculpture.md), [3D 생성 가이드](04_ai_3d_generation.md) | 실행 오류 0(traceback 최대 3회 재시도) |
-| ④ 배치·검사 | 좌표는 스크립트 솔버, 충돌·경계·부유·물리 안정성 검사 | Holodeck, LayoutVLM, SceneReVis, SceneSmith | `placement_utils.py`, `scene_audit.py` | 관통 0, 의도하지 않은 부유 0 |
+| ④ 배치·검사 | 좌표는 스크립트 솔버, 충돌·경계·부유·물리 안정성 검사 | Holodeck, LayoutVLM, SceneReVis, SceneSmith | `placement_utils.py`, `scene_audit.py`(방이면 `ceiling_z`·`collection` 지정), 문·창·방 구조가 있으면 `building_audit.py` | 관통 0(가구–벽·천장 포함), 의도하지 않은 부유·박힘(`sunk_into`) 0 |
 | ⑤ 4시점 렌더 | 위(정사영)·정면·측면·3/4 | VIGA 다중 시점, TreeSearchGen 격자 지도 | `review_views.py` | 4장 생성 |
 | ⑥ 체크리스트 비평 | 예/아니오 질문 + 큰 구조 문제만 | CADCodeVerify, 3DCodeBench 비평 프롬프트, BlenderGym 검증기 | [품질 체크리스트](../03_playbooks/04_quality_checklists.md) | `NEEDS_FIX: NO` |
 | ⑦ 후보 비교·되돌리기 | 후보 2~3개 렌더 비교, 나빠지면 스냅샷 복귀 | BlenderAlchemy 트리 탐색·가설 되돌리기, BlenderGym 검증 연산 | `save_as_mainfile(copy=True)` | 이전보다 나은 후보만 채택 |
@@ -390,7 +390,7 @@ name = bpy.path.display_name_from_filepath(bpy.data.filepath)  # 작업 .blend�
 snap = bpy.path.abspath(f"//{name}_snap_v{n:02d}.blend")       # .blend와 같은 폴더라 새 폴더가 필요 없음
 bpy.ops.wm.save_as_mainfile(filepath=snap, copy=True)           # 작업 파일은 그대로, 사본만 저장
 
-report = scene_audit.audit_scene(floor_z=0.0)                  # 숫자 검사 먼저
+report = scene_audit.audit_scene(floor_z=0.0)                  # 숫자 검사 먼저. 방이면 ceiling_z=2.30, collection="Room" 추가
 print(json.dumps(report["summary"], ensure_ascii=False))
 for u in report["units"]:
     if u["issues"]:

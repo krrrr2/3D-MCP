@@ -4,7 +4,7 @@
 
 ## 핵심 요약
 
-- **기대치부터 맞추세요.** 독립적으로 검증된 'AAA급' AI+MCP 결과물은 찾지 못했습니다. 공개 점수가 있는 최고 사례인 Claude Fable 5.1 에이전트 스웜의 Union Square 디지털 트윈도 재질 6/10, 시각 충실도 6/10, 조명 7/10이었습니다(목표 8.5, [FINAL_QA_REPORT](https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md)). 고품질은 **[에셋·생성 모델 + 에이전트 조립 + 검증 루프 + 사람의 마무리]** 조합에서 나옵니다.
+- **기대치부터 맞추세요.** 독립적으로 검증된 'AAA급' AI+MCP 결과물은 찾지 못했습니다. 공개 점수가 있는 최고 사례인 Claude Fable 5.1 에이전트 스웜의 Union Square 디지털 트윈도 재질 6/10, 시각 충실도 6/10, 조명 7/10이었습니다(목표 8.5~9, [FINAL_QA_REPORT](https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md)). 고품질은 **[에셋·생성 모델 + 에이전트 조립 + 검증 루프 + 사람의 마무리]** 조합에서 나옵니다.
 - **순서를 고정합니다.** 공개 스킬팩들은 같은 순서로 수렴합니다: 레퍼런스·스펙 → 실측 블록아웃 → 카메라 고정 → 무채색 조명 → 형태 → 재질(명도 먼저) → 조명 v2 → 디테일 → 렌더 → 합성 → 익스포트. 이유는 하나입니다. *"A perfect material tuned in flat lighting will look wrong once real lighting goes in."*([RobLe3 pro-workflow](https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-pro-workflow/SKILL.md))
 - **게이트 4개에서 사람이 멈춰 봅니다.** G1 스펙, G2 블록아웃·구도, G3 최종 렌더, G4 익스포트. 유료 생성 직전에도 비용 승인을 받습니다. 사람 판단은 초반에 넣을수록 쌉니다.
 - **모든 단계 안에서 같은 루프를 돌립니다.** 작은 멱등 코드 → `.blend` 증분 저장 → **숫자 검사**([`scene_audit.py`](scripts/README.md)) → **렌더**([`review_views.py`](scripts/README.md)) → **다른 컨텍스트의 비평가** → 결함 하나만 수정. *"A passing technical validator does not mean an asset looks good."*([blender-art-factory](https://github.com/ErikBurdett/blender-art-factory)) 반대로 그림이 그럴듯해도 숫자가 틀리면 실패입니다.
@@ -125,14 +125,15 @@ project/
 | 원점 | 오브젝트 바닥 중앙 | 바닥 스냅·배치 계산이 단순해집니다 |
 | 정면 | 가구·제품의 앞면은 **-Y** | [`placement_utils.face_towards()`](scripts/README.md)가 이 규약을 씁니다. glTF 원본 정면은 +Z이며 임포트 후 Blender -Y가 됩니다([glTF 스펙](https://raw.githubusercontent.com/KhronosGroup/glTF/main/specification/2.0/Specification.adoc)) |
 | 묶음 | 가구 하나 = 부모(Empty) 1개 + 자식 부품 | `scene_audit.py`가 부모 기준 "유닛"으로 판정합니다 |
-| 이름 | 영어 + 접두사(예: `SM_`, `M_`, `LGT_`, `CAM_`, 컬렉션 `COL_Blockout/COL_Hero/COL_Props/COL_Lights/COL_Cameras`) | 호출마다 네임스페이스가 새로 만들어지므로 이름이 곧 상태 핸들입니다. 치수 규칙도 이름 키워드(`chair`, `sofa`…)로 동작합니다 |
+| 이름 | 영어 + 접두사(예: `SM_`, `M_`, `LGT_`, `CAM_`, 컬렉션 `COL_Blockout/COL_Hero/COL_Props/COL_Lights/COL_Cameras`) | 호출마다 네임스페이스가 새로 만들어지므로 이름이 곧 상태 핸들입니다. 치수 규칙도 이름에 든 종류 단어(`chair`, `sofa`…)로 고릅니다(단어 단위 매칭, CamelCase 인식). 가구 이름을 `..._wall`처럼 구조물 단어로 끝내면 구조물로 분류됩니다 |
 | 버전 | 단계마다 `versions/scene_v###.blend` | Claude Code의 `/rewind`는 MCP로 바꾼 Blender 상태를 되돌리지 못합니다([best-practices](https://code.claude.com/docs/en/best-practices)) |
 
 ### 1.4 이 저장소에서 가져다 쓰는 것
 
 | 자산 | 어느 단계에서 | 쓰는 법 |
 |---|---|---|
-| [`scripts/scene_audit.py`](scripts/README.md) | 1, 5, 6, 9, 11 | 떠 있음·바닥 관통·유닛 간 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·치수 범위 이탈을 JSON으로 보고 (Blender 4.2.23 LTS·5.0.1 테스트 통과) |
+| [`scripts/scene_audit.py`](scripts/README.md) | 1, 5, 6, 9, 11 | 떠 있음·바닥 아래로 박힘·다른 물체 속으로 파고듦(`sunk_into`)·천장 위로 뚫림(`ceiling_z`)·유닛 간 관통·가구–벽/천장 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·치수 범위 이탈(가구 방향 기준 w/d/z)을 JSON으로 보고. `collection=`으로 검사 범위를 좁힘 (Blender 4.2.23 LTS·5.0.1 테스트 통과) |
+| [`scripts/building_audit.py`](scripts/README.md) | 1(실내 구조), 6 | 문·창·방·벽·계단의 건축 상식 검사와 백룸 위험도(`liminal_risk`). 문 막힘, 갈 수 없는 방, 창 없는 거실 등 |
 | [`scripts/placement_utils.py`](scripts/README.md) | 6, 9 | `snap_to_floor`, `drop_to_surface`, `place_next_to`, `place_against_wall`, `face_towards`, `check_clearances` |
 | [`scripts/review_views.py`](scripts/README.md) | 1, 2, 5, 6, 9 | 위 정사영·정면·측면·3/4 원근 4장, 오브젝트별 랜덤 색 |
 | [`templates/CLAUDE.md`](templates/CLAUDE.md) | 준비 | 프로젝트 규칙(단위, 금지 작업, 루프, 버전 저장) |
@@ -142,7 +143,7 @@ project/
 | [실측 치수표](05_reference_dimensions.md) | 0, 1, 5, 6 | 한국·미국·유럽 치수와 간격, 에이전트용 압축 블록 |
 | 가이드 속 코드 | 3, 5, 6, 7, 10, 11 | `review_render()`([조명 가이드](../02_guides/06_lighting_rendering_art_direction.md) 2.3절), 부품 단위 조립 검사 `check_assembly()`([모델링 가이드](../02_guides/07_modeling_objects_furniture_sculpture.md) 2.4절), `grid_solver.py`([배치 가이드](../02_guides/08_scene_layout_placement.md) 4.4절), `pbr_audit`([재질 가이드](../02_guides/05_texturing_materials.md) 4.7절), 생성 에셋 정규화([AI 3D 생성](../02_guides/04_ai_3d_generation.md) 6.2절), provenance 기록([에셋·라이선스](../02_guides/10_assets_pipeline_licensing.md) 5.4절) |
 
-MCP로 스크립트를 쓰는 방법은 두 가지입니다: `sys.path`에 `03_playbooks/scripts`를 추가해 import하거나, 파일 내용을 `execute_blender_code`에 그대로 붙여 넣습니다([사용법](scripts/README.md)). `BLENDER_MCP_SAFE_MODE=1`은 bpy를 통한 저장·렌더는 허용하지만(검증 결과) 외부 모듈 import 방식이 허용되는지는 확인되지 않았습니다. 막히면 붙여 넣기 방식을 쓰세요.
+MCP로 스크립트를 쓰는 방법은 두 가지입니다: `sys.path`에 `03_playbooks/scripts`를 추가해 import하거나, 파일 내용을 `execute_blender_code`에 그대로 붙여 넣습니다([사용법](scripts/README.md)). `BLENDER_MCP_SAFE_MODE=1`은 bpy를 통한 저장·렌더는 허용하지만(검증 결과) 외부 모듈 import 방식이 허용되는지는 확인되지 않았습니다. 막히면 붙여 넣기 방식을 쓰세요. 단 `building_audit.py`는 같은 폴더의 `scene_audit.py`를 import하고 `os`를 쓰므로 붙여 넣기만으로는 돌지 않을 수 있습니다. 이때는 헤드리스(`blender -b house.blend --python building_audit.py -- --collection House --out building.json`)로 돌리세요.
 
 ### 1.5 [한국 사용자] 시작 전 점검
 
@@ -221,7 +222,7 @@ MCP로 스크립트를 쓰는 방법은 두 가지입니다: `sys.path`에 `03_p
 2. 스펙의 부품마다 프리미티브를 **실측 치수**로 만듭니다. 원점은 바닥 중앙, 스케일은 즉시 적용합니다. 큐브는 `size=2`로 만들어 scale 값이 반폭(half-extent)과 같게 하면 치수 계산 실수가 줄어듭니다([ProfRino Assembly Skill](https://github.com/ProfRino/Blender-MCP-Assembly-Skill)).
 3. **스케일 기준물**을 둡니다: 1.75~1.8 m 인체 더미, 문틀(최종 렌더에서는 숨김).
 4. 코드는 부품 하나, 단계 하나씩 **멱등**으로 씁니다(3.1 참고).
-5. `scene_audit.audit_scene(floor_z=0.0)`을 돌리고, `render_review_views()`로 4방향을 봅니다.
+5. `scene_audit.audit_scene(floor_z=0.0)`을 돌리고, `render_review_views()`로 4방향을 봅니다. 실내면 `ceiling_z`(예: 2.30)와 `collection="Room"`을 함께 줍니다.
 6. `versions/scene_v001.blend`로 저장합니다.
 
 **에이전트 지시 요지**
@@ -229,14 +230,15 @@ MCP로 스크립트를 쓰는 방법은 두 가지입니다: `sys.path`에 `03_p
 ```text
 spec_sheet의 부품을 실측 치수의 프리미티브로만 만들어라. 디테일·베벨·재질 금지.
 원점은 바닥 중앙, 스케일 즉시 적용, 부품은 부모 Empty 아래에.
-끝나면 scene_audit 결과 요약과 유닛별 dimensions_m 표(스펙 대비 오차 %)를 보고하고,
+끝나면 scene_audit 결과 요약과 유닛별 size_wdh_m 표(가구 방향 기준 폭·깊이·높이, 스펙 대비 오차 %)를 보고하고,
 review_views 4장을 찍어 비율을 레퍼런스와 비교해라. 오차가 3%를 넘는 부품만 고쳐라.
 ```
 
 **통과 게이트**
 
 - [ ] 전체 치수가 스펙 ±3% 이내(레퍼런스가 있으면 blockout 실루엣 IoU ≥ 0.85, 비율 오차 ≤ 5%. [blender-image-to-3d](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md) 기준, 커뮤니티 스킬)
-- [ ] `scene_audit`: `floating_or_wall_mounted`(의도한 벽걸이 제외), `below_floor`, `interpenetrations`, `unapplied_scale`, `negative_scale`, `size_out_of_range`가 모두 0
+- [ ] `scene_audit`: `floating_or_wall_mounted`(의도한 벽걸이 제외), `below_floor`, `sunk_into`, `above_ceiling`(천장 높이를 준 경우), `interpenetrations`, `unapplied_scale`, `negative_scale`, `size_out_of_range`가 모두 0
+- [ ] (실내) 벽·문·창을 만들었다면 `building_audit`의 `errors` 0. 문·창 구멍은 Boolean으로 실제로 뚫어야 검사됩니다. 방 하나만 만든 장면에서는 문 너머 바닥이 없어 `door_to_void`·`no_entrance`가 나오므로, 문 밖에 바닥과 같은 높이의 지면(`Ground`)을 두어 외부 출입문으로 만들거나, 의도한 예외로 기록합니다
 - [ ] 스케일 기준물과 비교했을 때 이상 없음(눈 검사)
 - [ ] `v001.blend` 저장 로그
 
@@ -500,7 +502,7 @@ asset_manifest.csv(유닛, 경로, 후보 출처 URL, 라이선스, 예상 크�
 4. **관계 제약 JSON**: 객체당 3~5개, 앵커 → 큰 가구 → 작은 가구 순서, 뒤의 객체는 앞의 것에만 의존합니다. 어휘는 7~10개로 고정하고 수치로 정의합니다(예: near 50~150 cm, far 150 cm 이상, [Holodeck prompts](https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py)).
 5. **솔버**로 (x, y, yaw)를 풉니다([배치 가이드](../02_guides/08_scene_layout_placement.md) 4.4절의 `grid_solver.py`).
 6. `placement_utils`로 적용합니다: `snap_to_floor` → `place_against_wall` → `place_next_to` → `face_towards` → (소품) `drop_to_surface`.
-7. **검사:** `scene_audit`(관통·부유), `check_clearances`(간격 규칙), 문·통로 막힘.
+7. **검사:** `scene_audit`(관통·부유·박힘, 방이면 `ceiling_z`), `check_clearances`(간격 규칙), 문·창 막힘과 방 도달 가능성은 `building_audit`(문 앞 비움 구역 = 문 폭 × 문 폭).
 8. **소품 안착:** 쌓기·기대기는 rigid body로 떨어뜨려 안착시킨 뒤 변환을 굳힙니다. 소품 ACTIVE/Convex Hull, 가구·바닥 PASSIVE/Mesh, 2~5 cm 띄워 약 120프레임 진행 → `visual_transform_apply` → rigid body 제거. 1 m 이상 이동하거나 45° 이상 기울면 실패로 보고 재배치합니다(SceneSmith 기준).
 9. **자연 노이즈:** 그리드 스냅 뒤 소량의 흔들림을 줍니다. SceneSmith Natural 프로파일은 가구 XY σ 0.03 m·yaw σ 1°, 소품 XY σ 0.01 m·yaw σ 3°입니다([base_furniture_agent.yaml](https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml)). 식탁 의자 몇 개를 5~10 cm 빼 두면 사용 중인 느낌이 납니다.
 10. **4방향 렌더 채점:** 탑다운 정사영(좌표 읽기에 가장 좋음) + 측면들. 루브릭 6항목(Realism, Functionality, Layout, Completeness, Prompt Following, Reachability) 0~10점([critic yaml](https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_critic_agent.yaml)).
@@ -532,8 +534,8 @@ DONE 조건: interpenetrations == [] AND 의도하지 않은 floating == [] AND 
 
 **통과 게이트**
 
-- [ ] `interpenetrations` 0, 의도하지 않은 `floating_or_wall_mounted` 0, `below_floor` 0
-- [ ] `check_clearances` 위반 0, 문·창·통로 막힘 0, 최소 동선 ≥ 0.9 m(또는 스펙 값)
+- [ ] `interpenetrations` 0, 의도하지 않은 `floating_or_wall_mounted` 0, `below_floor`·`sunk_into`·`above_ceiling` 0
+- [ ] `check_clearances` 위반 0, 문·창·통로 막힘 0(`building_audit`의 `door_blocked`·`window_blocked` 0), 최소 동선 ≥ 0.9 m(또는 스펙 값)
 - [ ] 정면 방향 검증: 정면(-Y) 벡터와 대상 방향의 내적 > 0.9
 - [ ] 보이는 모든 오브젝트에 지지·부착 근거가 있다(떠 있는 쿠션, 지지 없는 조명 없음. "사용자는 1차 버그 탐지자가 아니다", [unreal-home-wizard](https://github.com/amirmushichge/unreal-home-wizard))
 - [ ] 비평 6항목 모두 ≥ 9 또는 최대 라운드 도달(아래 3.3 종료 규칙)
@@ -690,7 +692,7 @@ Cycles면 Light Group을 역할별로 나눠라. 한 번에 한 변수만 바꾸
 
 **장면별 차이**
 
-- **A 실내:** 쿠션·담요·책·컵처럼 생활 흔적. 벽걸이는 `floating_or_wall_mounted`로 표시되니 의도한 것인지 확인합니다.
+- **A 실내:** 쿠션·담요·책·컵처럼 생활 흔적. 벽걸이는 `floating_or_wall_mounted`로 표시되니 의도한 것인지 확인합니다. 소품을 창 앞이나 문 앞에 두었다면 `building_audit`를 다시 돌려 `window_blocked`·`door_blocked`가 없는지 봅니다.
 - **B 제품:** 모서리 마모, 손이 닿는 부위의 광택 변화, 지문은 클로즈업일 때만.
 - **C 야외:** 쓰러진 나무·표지판·발자국 같은 흔적 클러스터를 3분할 교차점에. 바위는 이끼·먼지를 월드 노멀 기준으로.
 
@@ -923,7 +925,8 @@ Unity·Godot·Roblox 경로는 [기타 MCP 가이드](../02_guides/03_other_mcp_
 |---|---|---|
 | 가구가 장난감처럼 작거나 거대함 | 스케일 추측, 임포트 단위(cm/m, 100배) | 치수표 강제, 임포트 직후 bounds 실측, FBX_SCALE_UNITS (1, 11) |
 | 의자가 "분해되어" 보임 | 부품 좌표 즉흥 계산, 실린더 Euler 회전 | 부품 명세 JSON + 연결 맵, bmesh로 두 점 잇기, `check_assembly()` 검사 (5) |
-| 소품이 떠 있거나 파묻힘 | 원점 위치, `obj.location`을 버텍스 위치로 착각 | 원점 바닥 중앙, `snap_to_floor`/`drop_to_surface`, 월드 AABB (1, 6) |
+| 소품이 떠 있거나 파묻힘 | 원점 위치, `obj.location`을 버텍스 위치로 착각 | 원점 바닥 중앙, `snap_to_floor`/`drop_to_surface`, 월드 AABB. `scene_audit`의 `floating_or_wall_mounted`·`sunk_into`로 확인 (1, 6) |
+| 문을 열면 벽, 창 없는 거실, 복도 같은 빈 방(백룸 느낌) | 방 구조를 상식 검사 없이 생성 | `building_audit`로 문·창·방 검사, `liminal_risk`가 low가 될 때까지 수정 (1, 6) |
 | 배치가 대기실 같음 | 초점·그룹 없이 벽 따라 배치 | 초점 1개 + 기능 그룹 + 동선 먼저, 관계 제약 (6) |
 | 너무 깔끔하고 CG 같음 | 균일 roughness, 날카로운 모서리, 완벽 정렬 | roughness 변화, 모든 제조 모서리 베벨, 자연 노이즈, 스토리 비트 (5, 7, 9) |
 | 렌더가 밋밋함 | 카메라 축 정면 키, 필 과다, Standard 뷰 | 키 ≥ 20°, 검정에서 시작, AgX + exposure (3, 8) |

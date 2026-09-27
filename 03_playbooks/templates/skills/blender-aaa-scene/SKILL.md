@@ -185,12 +185,26 @@ import sys, importlib, json, bpy
 sys.path.append(r"{{SCRIPTS}}")                  # 03_playbooks/scripts 절대 경로
 import scene_audit, placement_utils as pu
 importlib.reload(scene_audit); importlib.reload(pu)
-rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)  # 천장 높이(구축 2.30, 신축 2.40~2.50). KR 프리셋: size_rules=KR_SIZE_RULES (치수표 11절)
+rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30, collection="Room")
+# ceiling_z: 천장 높이(구축 2.30, 신축 2.40~2.50). collection: 이 컬렉션의 유닛만 보고하고 천장 규칙도 여기에만 적용
+# (건물 외관을 같은 장면에 두었을 때 분리용, 없으면 생략). KR 프리셋: size_rules=KR_SIZE_RULES (치수표 11절)
 bad = [(u["name"], u["issues"]) for u in rep["units"] if u["issues"]]
 print("done:audit", json.dumps(rep["summary"]), bad[:20], rep["interpenetrations"][:20])
 ```
 
-헤드리스: `blender -b <file>.blend --python-exit-code 1 --python {{SCRIPTS}}/scene_audit.py -- --floor-z 0 --out review/v###/audit.json`
+헤드리스: `blender -b <file>.blend --python-exit-code 1 --python {{SCRIPTS}}/scene_audit.py -- --floor-z 0 --ceiling-z 2.3 --collection Room --out review/v###/audit.json`
+
+벽·문·창·계단 같은 건물 구조를 만들었으면 건축 상식 검사도 돌린다(문이 벽에 안 뚫림, 열면 벽, 허공으로 나가는 문, 창 없는 거실, 갈 수 없는 방, 백룸 위험도 등).
+
+```python
+import building_audit; importlib.reload(building_audit)   # scene_audit.py와 같은 폴더(SCRIPTS)에 있어야 한다
+b = building_audit.audit_building(collection="House")     # collection 생략 시 장면 전체
+print("done:building", b["summary"], [(i["severity"], i["code"], i["object"]) for i in b["issues"]][:20])
+```
+
+- 이름 규칙: 방 바닥 `Floor_<방종류>`(`Floor_living`, `Floor_bedroom_2`), 외부 지면 `Ground`, 벽 `Wall_...`, 문 `Door_...`, 창 `Window_...`. 문·창 구멍은 Boolean으로 실제로 뚫는다.
+- `building_audit.py`는 `os`를 쓰므로 safe mode에서 막히면 헤드리스로 돌린다: `blender -b <file>.blend --python {{SCRIPTS}}/building_audit.py -- --collection House --out review/v###/building.json`.
+- 방 하나만 만든 장면에서는 문 너머 바닥이 없어 `door_to_void`·`no_entrance`가 나온다. 문 밖에 같은 높이의 `Ground`를 두거나 `allowed_exceptions`에 적는다.
 
 배치 단계는 추가로:
 
@@ -199,9 +213,10 @@ print("done:clearance", pu.check_clearances([("sofa", "coffee_table", 0.35, 0.45
 ```
 
 **판정**
-- 통과: `units_with_issues == 0` AND `interpenetrating_pairs == 0`. 단 `acceptance.yaml`의 `allowed_exceptions`(벽걸이, 천장등)의 `floating_or_wall_mounted`는 허용.
+- 통과: `units_with_issues == 0` AND `interpenetrating_pairs == 0`. 단 `acceptance.yaml`의 `allowed_exceptions`(벽걸이, 천장등)의 `floating_or_wall_mounted`는 허용. 건물 구조가 있으면 `building_audit`의 `errors == 0`(허용 예외 제외).
 - 유닛을 짓는 도중의 audit는 떠 있음·치수 이탈이 나오는 것이 정상이다(예: 좌판만 있는 의자는 `floating_or_wall_mounted`와 `size_out_of_range:chair.z=0.03m`). **판정은 유닛이 완성된 뒤에** 한다. 부품 단위 검사는 `aabb_gap`이나 [모델링 가이드](../../../../02_guides/07_modeling_objects_furniture_sculpture.md) 2.4절 `check_assembly()`로 한다.
-- 한계: 한 물체가 다른 물체 안에 완전히 들어가 면이 교차하지 않으면 관통으로 안 잡힌다. `floor`·`wall`·`ceiling` 이름의 유닛은 관통 검사에서 빠지므로 가구가 벽·천장을 뚫어도 안 잡힌다(키 큰 가구는 z 상한 규칙으로 대신 막는다).
+- 구조물 판정: 이름의 마지막 핵심 단어가 `floor`·`ground`·`terrain`·`wall`·`ceiling`이면 구조물이다(`Wall_N`, `floor_plane` → 구조물 / `wall_shelf`, `floor_lamp` → 가구). 구조물은 받침면으로만 쓰이고 떠 있음·치수 검사에서 빠진다. 구조물끼리(벽–바닥)는 관통을 검사하지 않지만 **가구가 벽·천장을 뚫은 것은 관통으로 잡는다.** 가구 이름을 `..._wall`로 끝내지 않는다.
+- 한계: 한 물체가 다른 물체 안에 완전히 들어가 면이 교차하지 않으면 관통으로 안 잡힌다(바운딩박스 겹침 깊이로 보조 판단). 한 유닛 안의 부품끼리는 검사하지 않는다.
 
 **증상 → 처방**
 
@@ -209,11 +224,14 @@ print("done:clearance", pu.check_clearances([("sofa", "coffee_table", 0.35, 0.45
 |---|---|---|
 | `floating_or_wall_mounted` | 받침 없음, origin 기준으로 z 계산 | `pu.snap_to_floor` / `pu.drop_to_surface`. 벽걸이면 acceptance 예외에 등록 |
 | `below_floor` | 원점이 바닥 중앙이 아님 | 원점 재설정 후 `snap_to_floor` |
+| `sunk_into:<대상>=<깊이>` | 받침면(슬래브, 바닥 판, 상판) 속으로 파고듦. 깊이 = 대상 윗면과 내 바닥의 차이 | 유닛을 보고된 깊이만큼 +Z로 올린다(예: `sunk_into:slab=0.075m` → z +0.075). 대상이 바닥이면 `snap_to_floor`. `drop_to_surface`는 아래로만 내리므로 이 경우에 쓰지 않는다 |
+| `above_ceiling:<m>` | 키 큰 가구가 `ceiling_z`보다 높음(한국 구축 2.30 m에 흔함) | 높이를 치수표 값으로 줄이거나 다른 모델로 교체 |
 | interpenetration | 좌표 추측, 스냅 미사용 | 접촉면까지 이동(0.01 m씩 다가가다 충돌하면 한 스텝 후퇴), 관계 JSON 수정 후 재계산. 못 풀면 제거 제안 |
+| interpenetration(상대가 `Wall_…`·`Ceiling…`) | 가구가 벽·천장 속으로 들어감 | `pu.place_against_wall(obj, wall_y, gap=0.01~0.05)`로 벽 안쪽 면에 다시 붙임 |
 | `unapplied_scale` / `negative_scale` | scale로 크기 지정, 미러 | 정점으로 크기 재생성 또는 scale 적용, 노멀 재계산 |
 | `non_manifold_edges` | 불완전한 boolean, 열린 메시 | merge by distance 0.0001 m, 구멍 메우기, boolean 입력을 manifold로 |
 | `no_material` / `no_uv` | 재질·UV 누락 | 재질 단계에서 처리(블록아웃 단계면 허용 예외로 기록 가능) |
-| `size_out_of_range:<key>` | 치수 오류 또는 이름 부분 일치 오탐 | 스펙 치수로 되돌림. 오탐이면 이름 규칙이나 KR 프리셋 예외 사용 |
+| `size_out_of_range:<key>.<w\|d\|z>` | 치수 오류, 또는 이름의 종류 단어가 실제 물건과 다름 | 폭 w·깊이 d는 가구 자체 방향 기준이라 회전 때문에 생기는 오탐은 없다. `units[*].size_wdh_m`을 스펙과 비교해 되돌린다. 이름이 틀렸으면 이름을 고치고, 지역 차이면 KR 프리셋(`KR_SIZE_RULES`)을 쓴다 |
 | clearance 위반 | 간격 규칙 위반 | `relations.json`의 distance 수정 → 재배치(좌표를 손으로 맞추지 않음) |
 
 ---
@@ -272,7 +290,7 @@ Image 1: top  Image 2: front  Image 3: side  Image 4: persp.  기준: spec/spec_
 ## 6. 종료 조건
 
 **성공 종료(모두 만족)**
-1. 3(AUDIT) 통과: issues 0, 관통 0(허용 예외 제외), 배치 단계면 clearance 위반 0·facing 통과·주동선 ≥ 0.9 m·문 앞 금지 영역 비어 있음.
+1. 3(AUDIT) 통과: issues 0, 관통 0(허용 예외 제외), 배치 단계면 clearance 위반 0·facing 통과·주동선 ≥ 0.9 m·문 앞 금지 영역 비어 있음(건물 구조가 있으면 `building_audit` errors 0).
 2. `acceptance.yaml`의 hard 게이트 전부 통과(치수·관계 치수·트라이 예산 등).
 3. 4(REVIEW) 비평이 `NEEDS_FIX: NO`를 **2회 연속**(점수를 쓰면 모든 항목 ≥ 9도 조기 종료로 인정).
 4. 버전 저장 완료, 보고 작성.

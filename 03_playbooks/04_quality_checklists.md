@@ -6,7 +6,8 @@
 
 - **숫자 먼저, 눈은 그다음입니다.** 결정적 검사(`scene_audit.py`, 이 문서의 `quick_checks()`, 재질 감사, glTF 검증)를 먼저 통과시키고, 그다음 4방향 렌더와 최종 렌더를 보고 비평합니다. 반대로 **숫자가 모두 통과해도 이미지가 틀리면 실패**입니다. 여러 스킬 저자가 같은 경고를 남겼습니다.
 - **30초 빠른 점검은 1절**에 있습니다. "AI 결과가 싸 보이는 12가지"(Standard 뷰 변환, 기본 50 mm 카메라, 광원 크기 0, 정면광, 칼날 모서리, 균일한 roughness, 타일링, 등간격 배치, 스케일 오류, 과한 후처리, 구워진 조명, 생활감 부재)만 확인해도 CG 티의 대부분이 걸러집니다.
-- **`scene_audit.py`가 자동으로 잡는 것**: 떠 있음, 바닥 아래로 박힘, 유닛 간 관통, 스케일 미적용·음수 스케일, non-manifold 엣지, 재질·UV 없음, 이름 기준 치수 범위 이탈. **(2026-09-27 스크립트 개선 후 추가)** 가구–벽·천장 메시 관통, `ceiling_z`를 주면 천장 위로 뚫림. **못 잡는 것**: 벽 메시 없이 바닥만 있을 때 방 경계 밖으로 나감(0.5절 코드로 보완), 완전히 들어간 물체, 한 유닛 안의 부품끼리 관통, 뒤집힌 노멀, 의도한 벽걸이 구분. 빈칸은 이 문서 0절의 보조 코드와 다른 가이드의 테스트된 코드로 메웁니다(0.4·0.5절 코드는 pip `bpy` **5.0.1**과 **4.2.23 LTS**에서 실행 확인).
+- **`scene_audit.py`가 자동으로 잡는 것**: 떠 있음, 바닥 아래로 박힘, 다른 물체 속으로 파고듦(`sunk_into`), 유닛 간 관통, 가구–벽·천장 메시 관통, `ceiling_z`를 주면 천장 위로 뚫림, 스케일 미적용·음수 스케일, non-manifold 엣지, 재질·UV 없음, 이름 기준 치수 범위 이탈(가구 방향 기준 폭·깊이·높이). `collection=`을 주면 그 컬렉션만 검사합니다.
+- **`scene_audit.py`가 못 잡는 것**: 벽 메시 없이 바닥만 있을 때 방 경계 밖으로 나감(0.5절 코드로 보완), 완전히 들어간 물체, 한 유닛 안의 부품끼리 관통, 뒤집힌 노멀, 의도한 벽걸이 구분, 문·창·방 연결 같은 건축 상식(`building_audit.py`로 검사). 빈칸은 이 문서 0절의 보조 코드와 다른 가이드의 테스트된 코드로 메웁니다(0.4·0.5절 코드는 pip `bpy` **5.0.1**과 **4.2.23 LTS**에서 실행 확인).
 - **기준값 대부분은 오픈소스 코드·에이전트 스킬에 들어 있는 값입니다.** 업계 표준이 아니라 출발점이므로, 레퍼런스 사진과 비교해 조정하세요. 출처끼리 충돌하는 값은 [실측 치수표](05_reference_dimensions.md)와 [라이팅 가이드](../02_guides/06_lighting_rendering_art_direction.md) 8절의 권장 기본값을 따릅니다.
 - **[KR] 한국 사용자가 먼저 볼 것**: ① Tencent Hunyuan3D 계열(2.0·2.1·Omni·Part, BPT 등) 오픈웨이트 라이선스는 적용 지역에서 대한민국을 빼고 **출력물 사용도 제한**합니다. ② 한국어 UI에서는 새 노드 이름이 번역될 수 있으니 코드에서 노드를 `type`으로 찾습니다. ③ 치수는 한국 프리셋(구축 아파트 천장 2300 mm, 싱크대 850 mm, 방문 문틀 900×2100 mm)을 씁니다. ④ 인공지능기본법 제31조(2026-01-22 시행) 표시 의무 적용 여부를 검토합니다.
 - **에이전트 운영의 함정**: Claude Code `/rewind`는 MCP로 바꾼 Blender 씬을 되돌리지 못하므로 `.blend` 증분 저장이 필수입니다. `BLENDER_MCP_SAFE_MODE=1`은 샌드박스가 아니고, 텔레메트리는 익명 사용 기록이 기본으로 켜져 있습니다(`DISABLE_TELEMETRY=true`로 끔). MCP 기본 스크린샷(긴 변 1000px)은 약 756토큰입니다.
@@ -36,11 +37,12 @@
 
 | 도구 | 잡는 것 | 위치 | 테스트 |
 |---|---|---|---|
-| `scene_audit.audit_scene()` | 떠 있음·바닥 관통·유닛 간 관통·스케일·non-manifold·재질/UV 없음·치수 범위 | [scripts/README](scripts/README.md) | Blender 4.2.23 LTS·5.0.1 |
+| `scene_audit.audit_scene()` | 떠 있음·바닥 관통·박힘(`sunk_into`)·유닛 간 관통·가구–벽/천장 관통·천장 돌출(`ceiling_z`)·스케일·non-manifold·재질/UV 없음·치수 범위 | [scripts/README](scripts/README.md) | Blender 4.2.23 LTS·5.0.1 |
+| `building_audit.audit_building()` | 문(벽에 안 뚫림·뜸·열면 벽·허공)·창(창턱 높이·실내 창)·방(밀폐·갈 수 없음·창 없는 생활 공간·복도형)·벽 틈·계단 + 백룸 위험도 | [scripts/README](scripts/README.md) | 같음 |
 | `placement_utils.check_clearances()` | 두 유닛 사이 평면(XY) 간격이 최소·최대 범위 안인지 | [scripts/README](scripts/README.md) | 같음 |
 | `review_views.render_review_views()` | 위 정사영·정면·측면·3/4 원근 4장(오브젝트별 색) | [scripts/README](scripts/README.md) | 같음 |
 | `quick_checks()` | 뷰 변환·카메라·광원 크기·켈빈 틴트·metallic 중간값·고정 roughness·유리 바운스·EEVEE 레이트레이싱·이름 규칙 | 이 문서 0.4절 | 5.0.1·4.2.23 LTS |
-| 방 경계 검사 | 벽·천장 관통(scene_audit의 사각지대) | 이 문서 0.5절 | 5.0.1·4.2.23 LTS |
+| 방 경계 검사 | 벽 메시 없이 숫자로만 정한 방 경계 밖으로 나감(scene_audit는 벽 메시가 있어야 잡음) | 이 문서 0.5절 | 5.0.1·4.2.23 LTS |
 | `check_assembly()` | 한 가구 안의 부품 틈(GAP)·과한 겹침(TOO_DEEP)·계획에 없는 관통·떨어진 부품 | [모델링 가이드](../02_guides/07_modeling_objects_furniture_sculpture.md) 2.4절 | 4.2.23 LTS·5.0.1 |
 | `pbr_audit.audit_materials()` | metallic 중간값, roughness 0, 어두운 금속, albedo 범위, 데이터 맵 sRGB, 중복 Output | [텍스처링 가이드](../02_guides/05_texturing_materials.md) 4.7절 | 4.2 LTS·5.0 |
 | `review_render()` | 렌더 1회로 PNG·EXR·False Color·`clip_pct`·`value_range` 등 | [라이팅 가이드](../02_guides/06_lighting_rendering_art_direction.md) 2.3절 | 5.0.1·4.2.23 LTS |
@@ -49,18 +51,20 @@
 
 ### 0.3 `scene_audit.py` 자동 항목 대응표 (`[A]`)
 
-기본 허용 오차는 5 mm(`tol=0.005`)입니다. 부모가 없는 최상위 오브젝트를 하나의 "유닛"으로 묶어 판정하므로, 의자 부품은 한 부모(Empty 등) 아래에 두세요. 이름에 `floor`·`ground`·`wall`·`ceiling`이 들어간 유닛은 떠 있음·관통 검사에서 빠집니다.
+기본 허용 오차는 5 mm(`tol=0.005`)입니다. 부모가 없는 최상위 오브젝트를 하나의 "유닛"으로 묶어 판정하므로, 의자 부품은 한 부모(Empty 등) 아래에 두세요. 이름의 **마지막 핵심 단어**가 `floor`·`ground`·`wall`·`ceiling`·`terrain`인 유닛(`Floor`, `Wall_N`, `north_wall`)은 구조물로 보고 떠 있음·치수 검사에서 빼며, 받침면으로만 씁니다. 구조물끼리의 관통은 검사하지 않지만 가구–구조물 관통은 잡습니다. `floor_lamp`·`wall_shelf`는 가구로 인식하니, 가구 이름을 `..._wall`로 끝내지 마세요.
 
 | issue | 뜻 | 합격 기준 | 주의 |
 |---|---|---|---|
 | `floating_or_wall_mounted` | 바닥면 근처 5개 지점에서 아래로 쏜 레이에 받침면이 없음 | 0건. 벽걸이·천장등·액자는 의도한 것인지 목록으로 확인 | 벽 쪽은 벽과의 거리로 따로 검증 |
 | `below_floor:<d>m` | 유닛 최저점이 바닥보다 5 mm 넘게 아래 | 0건 | `floor_z`를 넘겨야 동작 |
-| `interpenetrations[]` | 바운딩박스가 5 mm 넘게 겹치는 쌍 중 실제 면이 교차하는 쌍 | 0쌍 | 한 물체가 다른 물체 안에 **완전히** 들어간 경우는 못 잡음 → `bbox_overlap_depth_m`로 보조 판단. 테이블 밑 의자처럼 bbox만 겹치면 오탐하지 않음 |
+| `sunk_into:<상대>=<d>m` | 받침면(바닥 슬래브·다른 가구) 속으로 파고듦. 예전에는 '떠 있음'으로 오탐하던 경우 | 0건 | 계단이 슬래브에, 다리가 바닥에 박힌 경우. `snap_to_floor`·`drop_to_surface`로 다시 올림 |
+| `above_ceiling:<d>m` | 유닛 꼭대기가 `ceiling_z`보다 5 mm 넘게 위 | 0건 | `ceiling_z`를 넘겨야 동작. 방과 건물 외관이 한 장면이면 `collection=`으로 방만 검사 |
+| `interpenetrations[]` | 바운딩박스가 5 mm 넘게 겹치는 쌍 중 실제 면이 교차하는 쌍(가구–벽·천장 포함, 구조물끼리는 제외) | 0쌍 | 한 물체가 다른 물체 안에 **완전히** 들어간 경우는 못 잡음 → `bbox_overlap_depth_m`로 보조 판단. 테이블 밑 의자처럼 bbox만 겹치면 오탐하지 않음 |
 | `unapplied_scale:<name>` | scale ≠ 1(허용 1e-4) | 0건 | bevel·solidify 폭 왜곡, 익스포트 스케일 오류의 원인 |
 | `negative_scale:<name>` | 음수 스케일(미러링 흔적) | 0건 | 적용 후 노멀 재계산 |
 | `non_manifold_edges:<name>=n` | 열린 경계·겹친 면 | 콜리전·boolean·3D 프린트·조형물 제작용이면 0. 렌더 전용이면 눈에 띄는 구멍만 없으면 됨 | 모디파이어 적용 **전** 원본 메시 기준 |
 | `no_material:<name>` / `no_uv:<name>` | 재질 슬롯이 비었거나 UV 레이어 없음 | 최종 단계에서 0건 | 바닥·벽에도 적용됨 |
-| `size_out_of_range:<key>.<axis>=…` | 이름 키워드(`chair`, `sofa`, `door` …) 기준 전체 치수 범위 이탈 | 0건 | 이름을 **영어 snake_case**로 지어야 동작. `CoffeeTable`은 `table` 규칙만 적용. 90° 돌린 가구·`armchair`·`counter_stool` 오탐은 [치수표](05_reference_dimensions.md) 11절의 한국 프리셋 `size_rules`로 해결 |
+| `size_out_of_range:<key>.<axis>=…` | 이름 키워드(`chair`, `sofa`, `door` …) 기준 전체 치수 범위 이탈. 축은 가구 방향 기준 `w`(수평 긴 변)·`d`(수평 짧은 변)·`z`(높이) | 0건 | 이름은 영어 단어 단위로 맞춤(CamelCase `CoffeeTable`도 `coffee_table`로 인식, 한국어 이름은 인식 안 함). `armchair`·`counter_stool`은 자체 규칙이 있고, 90°·30° 돌린 가구도 오탐하지 않음. `table_lamp`·`door_handle`처럼 부속품 단어가 뒤에 붙으면 규칙 미적용. 한국 장면은 [치수표](05_reference_dimensions.md) 11절 `KR_SIZE_RULES` |
 
 ### 0.4 보조 점검 코드 `quick_checks()` (테스트 완료)
 
@@ -136,7 +140,7 @@ def quick_checks(scene=None):
         elif not name.isascii():
             add(f"name:{name}", "non-ascii", False, "영어 snake_case 권장(치수 규칙·엔진 호환)")
         elif ob.parent is None and ob.type in ("MESH", "EMPTY") and re.search(r"[a-z][A-Z]", name) and "_" not in name:
-            add(f"name:{name}", "CamelCase", False, "scene_audit 키워드(coffee_table 등)와 안 맞음")
+            add(f"name:{name}", "CamelCase", False, "이름 규칙은 영어 snake_case(scene_audit는 CamelCase도 인식)")
     return out
 
 if __name__ != "quick_checks":
@@ -150,14 +154,15 @@ if __name__ != "quick_checks":
 
 ### 0.5 방 경계 검사: 벽·천장 관통 (테스트 완료)
 
-> **업데이트(2026-09-27)**: 이 절을 쓸 때의 `scene_audit.py`는 벽·천장을 관통 검사에서 빼서 벽 속 소파·천장을 뚫은 옷장을 놓쳤습니다. 지금은 스크립트를 고쳐 **벽·천장 메시가 있으면 가구–구조물 관통을 잡고, `audit_scene(ceiling_z=2.30)`으로 천장 위 돌출도 잡습니다**(테스트 통과). 아래 코드는 벽 메시 없이 바닥만 만든 블록아웃 단계처럼 **방 경계를 숫자로만 정한 경우**의 보조 검사로 쓰세요. SceneEval의 "Out of Bounds" 지표와 같은 검사입니다.
+> **업데이트(2026-09-27)**: 이 절을 쓸 때의 `scene_audit.py`는 벽·천장을 관통 검사에서 빼서 벽 속 소파·천장을 뚫은 옷장을 놓쳤습니다. 지금은 스크립트를 고쳐 **벽·천장 메시가 있으면 가구–구조물 관통을 잡고, `audit_scene(ceiling_z=2.30)`으로 천장 위 돌출도 잡습니다**(테스트 통과). 아래 코드는 벽 메시 없이 바닥만 만든 블록아웃 단계처럼 **방 경계를 숫자로만 정한 경우**의 보조 검사로 쓰세요. SceneEval의 "Out of Bounds" 지표와 같은 검사입니다. 구조물 판정은 `scene_audit`과 같은 규칙(이름의 마지막 핵심 단어)을 써서, 방 밖으로 나간 `floor_lamp`·`wall_shelf`를 구조물로 착각해 건너뛰지 않습니다(4.2.23 LTS·5.0.1에서 확인).
 
 ```python
 # rep = scene_audit.audit_scene(floor_z=0.0) 다음에 실행
 room = dict(xmin=0.0, xmax=4.0, ymin=0.0, ymax=3.2, ceiling=2.3)   # 방 안쪽 치수(m). KR 구축 천장 2.3
 tol = 0.005
+STRUCT = ("floor", "ground", "wall", "ceiling", "terrain")          # scene_audit 기본 구조물 단어
 for u in rep["units"]:
-    if any(k in u["name"].lower() for k in ("floor", "ground", "wall", "ceiling")):
+    if scene_audit._is_structure(u["name"], STRUCT):                  # 'Floor'·'Wall_N'만 건너뜀. 'floor_lamp'는 검사
         continue
     (x0, y0, z0), (x1, y1, z1) = u["bbox_min"], u["bbox_max"]
     if (x0 < room["xmin"] - tol or x1 > room["xmax"] + tol or y0 < room["ymin"] - tol
@@ -177,7 +182,7 @@ sys.path.append(r"C:\path\to\3D-MCP\03_playbooks\scripts")   # scene_audit.py �
 sys.path.append(r"C:\path\to\my_checks")                      # quick_checks.py(0.4절)를 저장한 위치
 import scene_audit, quick_checks
 importlib.reload(scene_audit); importlib.reload(quick_checks)
-rep = scene_audit.audit_scene(floor_z=0.0)        # 한국 장면이면 size_rules=KR_SIZE_RULES(치수표 11절)
+rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)   # 한국 구축 천장. 한국 장면이면 size_rules=KR_SIZE_RULES(치수표 11절)
 print(rep["summary"])
 print([(u["name"], u["issues"]) for u in rep["units"] if u["issues"]])
 print(rep["interpenetrations"])
@@ -189,7 +194,8 @@ print([r for r in quick_checks.quick_checks() if r["ok"] is False])
 **헤드리스에서**
 
 ```bash
-blender -b scene.blend --python-exit-code 1 --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --out audit.json
+blender -b scene.blend --python-exit-code 1 --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --ceiling-z 2.3 --out audit.json
+blender -b scene.blend --python-exit-code 1 --python 03_playbooks/scripts/building_audit.py -- --collection House --out building.json   # 건물·여러 방일 때
 blender -b scene.blend --python-exit-code 1 --python quick_checks.py
 ```
 
@@ -222,11 +228,12 @@ blender -b scene.blend --python-exit-code 1 --python quick_checks.py
 
 | 증상 | 흔한 원인 | 자동 검사 |
 |---|---|---|
-| 떠 있는 가구, 바닥에 박힌 다리 | LLM이 z값을 추측, origin과 실제 정점 위치 혼동 | [A] `floating_or_wall_mounted`, `below_floor` |
+| 떠 있는 가구, 바닥에 박힌 다리 | LLM이 z값을 추측, origin과 실제 정점 위치 혼동 | [A] `floating_or_wall_mounted`, `below_floor`, `sunk_into` |
 | '분해된 의자'(부품 사이 틈) | 좌표 즉흥 계산 | [스크립트] `check_assembly()` → `GAP`, `DETACHED` |
 | 치수가 절반 | `size=1` 큐브에 half-extent를 scale로 줌 | [A] `size_out_of_range`, 스펙 대비 치수 비교 |
 | 가구끼리 관통 | 좌표 직접 지정, 충돌 검사 생략 | [A] `interpenetrations` |
-| 소파가 벽을, 장이 천장을 뚫음 | 방 경계 미확인 | `audit_scene(ceiling_z=...)` + 벽 메시와의 관통 검사. 벽 메시가 없으면 0.5절 방 경계 검사 |
+| 소파가 벽을, 장이 천장을 뚫음 | 방 경계 미확인 | [A] `above_ceiling`(`audit_scene(ceiling_z=...)`), 벽·천장 메시와의 `interpenetrations`. 벽 메시가 없으면 0.5절 방 경계 검사 |
+| 문이 벽에 안 뚫림, 열면 벽, 문 없는 방, 창 없는 거실 | 방·문·창을 따로따로 배치 | [스크립트] `building_audit.audit_building()` → `summary.errors` 0, `liminal_risk` |
 | 엉뚱한 방향을 보는 가구 | 에셋 정면 규약 불일치, yaw 부호 오류 | [수치] 정면(-Y)과 대상 방향 내적 > 0.9(7.2절) |
 
 ---
@@ -237,7 +244,7 @@ blender -b scene.blend --python-exit-code 1 --python quick_checks.py
 
 - [ ] `[필수]` **단위 규약**: 1 unit = 1 m, Z-up, 원점 = 바닥 접점(바닥 중앙), 가구 정면 = -Y. 확인: [수치] `scene.unit_settings`, 원점 위치.
 - [ ] `[필수][A]` **스케일 적용**: 모든 메시 scale = (1, 1, 1)(허용 1e-4), 음수 스케일 없음. 확인: `unapplied_scale`, `negative_scale`. 처방: `transform_apply(rotation=True, scale=True)` 후 bevel 다시 적용.
-- [ ] **치수는 월드 bbox로 잽니다**: `obj.dimensions`는 스케일을 반영하지만 **로컬 축 기준이라 회전을 반영하지 않습니다**(검증에서 "scale=1일 때만 유효"라는 스킬 설명은 틀린 것으로 정정). 배치·검사에는 `matrix_world @ bound_box`로 구한 월드 AABB를 씁니다. 확인: [수치] `scene_audit` 리포트의 `dimensions_m`.
+- [ ] **치수는 월드 bbox로 잽니다**: `obj.dimensions`는 스케일을 반영하지만 **로컬 축 기준이라 회전을 반영하지 않습니다**(검증에서 "scale=1일 때만 유효"라는 스킬 설명은 틀린 것으로 정정). 배치·검사에는 `matrix_world @ bound_box`로 구한 월드 AABB(축 정렬 바운딩박스)를 씁니다. 확인: [수치] `scene_audit` 리포트의 `dimensions_m`(월드 x·y·z)과 `size_wdh_m`(가구 방향 기준 폭·깊이·높이. 치수 규칙은 이 값으로 비교).
 - [ ] **위치를 바꾼 직후 `bpy.context.view_layer.update()`**: 갱신 전에는 `matrix_world`가 옛 값입니다(0.4절 테스트에서도 확인).
 - [ ] **CAD(mm) 가져오기**: build123d 등은 mm가 기본이므로 0.001배 후 스케일 적용.
 
@@ -431,9 +438,10 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 ### 7.1 물리적 타당성
 
 - [ ] `[필수][A]` **부유 0**: `floating_or_wall_mounted` 목록이 의도한 벽걸이·천장등·선반 위 액자뿐.
-- [ ] `[필수][A]` **바닥 아래로 박힘 0**: `below_floor`.
+- [ ] `[필수][A]` **바닥 아래로 박힘·다른 물체 속으로 파고듦 0**: `below_floor`, `sunk_into`.
 - [ ] `[필수][A]` **유닛 간 관통 0**: `interpenetrations` 빈 목록. 완전히 들어간 물체는 `bbox_overlap_depth_m`로 보조 확인.
-- [ ] `[필수]` **벽·천장 관통 0**: 0.5절 방 경계 검사(`OUT_OF_ROOM` 0건). [KR] 구축 아파트 천장 2300 mm에서 키 큰 수납을 특히 확인.
+- [ ] `[필수][A]` **벽·천장 관통 0**: 벽·천장 메시가 있으면 `interpenetrations`에 가구–벽·천장 쌍이 없고, `audit_scene(ceiling_z=2.30)`의 `above_ceiling` 0건. 벽 메시가 없으면 0.5절 방 경계 검사(`OUT_OF_ROOM` 0건). [KR] 구축 아파트 천장 2300 mm에서 키 큰 수납(PAX 2360 등)을 특히 확인.
+- [ ] **건물·여러 방이면 건축 상식 검사**: [스크립트] `building_audit.audit_building(collection=...)`의 `summary.errors` 0, `liminal_risk`가 `high`가 아님(문이 벽에 뚫렸는지, 열면 벽·허공인지, 문 없는 방·창 없는 거실·복도형 빈 방 반복 등). 이름 규칙(`Floor_living`, `Wall_N`, `Door_01`, `Window_01`)은 [scripts/README](scripts/README.md)를 따릅니다.
 - [ ] **한 유닛 안의 부품 관통**은 `check_assembly()`로(scene_audit는 일부러 제외).
 - [ ] **소품은 받침면 위에**: `placement_utils.drop_to_surface()`로 가장 높은 받침면에 올리거나, rigid body로 2~5 cm 위에서 떨어뜨려 안착시킨 뒤 변환을 굳힘. 안착 후 45° 이상 기울었거나 1 m 이상 이동했으면 실패로 보고 다시 배치(SceneSmith 소품 설정, [base_manipuland_agent.yaml](https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml)).
 - [ ] **고폴리 에셋은 decimate 프록시로 검사**: 그대로 돌리면 MCP 소켓 타임아웃(180초)에 걸립니다.
@@ -537,7 +545,7 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 ### 9.1 `[KR]` 한국에서 쓰면 안 되는 것부터 확인
 
 - [ ] `[필수][KR]` **Tencent Hunyuan3D 계열 오픈웨이트 미사용 또는 법률 검토 완료**: 2.0·2.1·Omni·Part, HY-World, HY-Motion, BPT의 커뮤니티 라이선스는 적용 지역(Territory)에서 **EU·영국·대한민국을 제외**하고, 지역 밖에서의 **출력물 사용도** 허용하지 않습니다([Hunyuan3D 2.1 LICENSE](https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE), [BPT License](https://raw.githubusercontent.com/Tencent-Hunyuan/bpt/main/License)). 라이선스 정의에는 가중치뿐 아니라 inference 코드도 포함됩니다. 해외 서버에서 만든 결과물을 한국에서 쓰는 것도 해당합니다.
-- [ ] `[KR]` **mcp-for-blender의 Hunyuan3D 연동**은 로컬 오픈웨이트가 아니라 Tencent Cloud API 경로이며, 그 약관은 별개로 (미확인)입니다. 쓴다면 국제 계정(ap-singapore) 엔드포인트 토글이 필요합니다.
+- [ ] `[KR]` **mcp-for-blender의 Hunyuan3D 연동**은 경로가 둘입니다. 로컬 API(기본 `http://localhost:8081`)는 오픈웨이트를 돌리므로 위 제외 조항이 그대로 적용되고, Tencent Cloud API(SecretId/SecretKey) 경로는 별개 약관을 따르는데 한국 적용 여부는 (미확인)입니다. Cloud 경로를 쓴다면 국제 계정(ap-singapore) 엔드포인트 토글이 필요합니다.
 - [ ] `[KR]` **Hunyuan 코드가 섞인 파생 저장소**: Step1X-3D는 README·LICENSE가 Apache-2.0이지만 텍스처 모듈에 Hunyuan 라이선스 헤더가 붙은 코드가 있습니다([mesh_render.py](https://raw.githubusercontent.com/stepfun-ai/Step1X-3D/main/step1x3d_texture/differentiable_renderer/mesh_render.py)). 텍스처 단계를 쓰기 전에 법률 검토.
 
 ### 9.2 비상업 전용 확인
@@ -641,7 +649,7 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 | 3 라이트 v1 | 5.1, 5.2 | 뷰 변환, 노출, 광원 크기·켈빈 |
 | 4 에셋 조달 결정 | 2.6, 9.1~9.4 | 라이선스 화이트리스트, provenance 기록 시작 |
 | 5 히어로 모델링 | 2.3~2.7, 1.2 | `check_assembly()` = `[]`, 베벨·노멀·무결성 |
-| 6 배치 | 7 | 부유·관통·방 경계·문·동선 위반 0건, 4뷰 루브릭 |
+| 6 배치 | 7 | 부유·박힘·관통·천장·방 경계·문·동선 위반 0건, 건물이면 `building_audit` 오류 0건, 4뷰 루브릭 |
 | 7 재질·텍스처 | 3, 4 | `pbr_audit` 0건, 색공간, 타일링, UV·베이크 슬롯 전부 |
 | 8 라이트 v2 | 5.2, 5.3 | 키 각도, 필 비율, 실내 World 기여, 렌더 설정 |
 | 9 디테일·스토리·마모 | 3.4, 7.5, 1.1절 #12 | 원인에 맞는 마모 채널, 스토리 비트 |
@@ -653,7 +661,8 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 ```text
 DONE 조건 (모두 텍스트로 출력해 증명할 것):
 - scene_audit: summary.units_with_issues == 0 (의도한 벽걸이는 목록으로 명시), interpenetrating_pairs == 0
-- 방 경계 검사 OUT_OF_ROOM 0건, check_clearances 위반 0건 (주동선 >= 0.9 m, 문 스윙 영역 비움)
+- 벽 메시가 없으면 방 경계 검사 OUT_OF_ROOM 0건, check_clearances 위반 0건 (주동선 >= 0.9 m, 문 스윙 영역 비움)
+- 건물·여러 방이면 building_audit: summary.errors == 0, liminal_risk != "high"
 - quick_checks: ok == False 항목 0건 (roughness_const는 히어로 재질만 해결)
 - pbr_audit 위반 0건, 베이크 슬롯 전부 확인
 - review_render: clip_pct <= 0.5 (발광체 제외), value_range >= 0.30
@@ -673,9 +682,9 @@ DONE 조건 (모두 텍스트로 출력해 증명할 것):
 |---|---|---|
 | 뷰포트 스크린샷으로 최종 품질 판정 | 렌더와 색·그림자·DOF가 다름 | `execute_blender_code`나 헤드리스로 렌더를 파일로 저장해서 판정(5.3절) |
 | AgX 화면만 보고 노출 OK | 창·하늘 디테일이 날아간 걸 모름 | False Color와 EXR 수치(`clip_pct`)로 판정(5.1절) |
-| scene_audit 통과 = 배치 완료로 착각 | 벽 메시 없는 장면에서 방 밖으로 나감, 동선·방향·스토리는 숫자로 안 잡힘 | `ceiling_z` 지정, 0.5절 방 경계 검사, 4뷰 렌더 비평 |
+| scene_audit 통과 = 배치 완료로 착각 | 벽 메시 없는 장면에서 방 밖으로 나감, 문·창·방 연결의 비상식, 동선·방향·스토리는 scene_audit가 안 잡음 | `ceiling_z` 지정, 0.5절 방 경계 검사, `building_audit`, 4뷰 렌더 비평 |
 | 부모 없이 부품만 흩어 둠 | 좌판이 `floating_or_wall_mounted`로 나옴, 의자 전체 판정 불가 | 부품을 `chair_ROOT` Empty 아래로 묶음 |
-| 이름을 CamelCase·한글로 지음 | 치수 규칙이 적용되지 않거나 다른 규칙에 걸림 | 영어 snake_case(`coffee_table`), `quick_checks`의 `name:*` 확인 |
+| 이름을 한글로 짓거나 종류 단어를 빼먹음 | 치수 규칙이 적용되지 않음(CamelCase는 인식하지만 엔진·파일 규칙과 어긋남) | 영어 snake_case(`coffee_table`), `quick_checks`의 `name:*` 확인 |
 | bpy로 만든 라이트를 그대로 둠 | 칼같이 딱딱한 그림자 | 반경·크기 > 0(`quick_checks`) |
 | 켈빈을 켜고 색도 칠함 | 의도보다 주황·파랑이 과함 | `use_temperature`면 `color`를 흰색으로 |
 | 베이크가 "성공"했다고 믿음 | 일부 재질만 구워지고 나머지는 빈 이미지 | 재질마다 활성 이미지 노드 확인, 결과 이미지를 모두 열어 봄(4.2절) |
@@ -703,7 +712,7 @@ DONE 조건 (모두 텍스트로 출력해 증명할 것):
 - [AAA 제작 플레이북](02_aaa_production_playbook.md) — 게이트 순서
 - [프롬프트 템플릿](03_prompt_templates.md)
 - [실측 치수·간격 기준표](05_reference_dimensions.md) — 한국 프리셋, `KR_SIZE_RULES`
-- [보조 스크립트 README](scripts/README.md) — `scene_audit.py`, `placement_utils.py`, `review_views.py`
+- [보조 스크립트 README](scripts/README.md) — `scene_audit.py`, `placement_utils.py`, `review_views.py`, `building_audit.py`
 - [프로젝트 규칙 템플릿](templates/CLAUDE.md) · [스킬 템플릿](templates/skills/blender-aaa-scene/SKILL.md)
 - [사례 모음](../04_case_studies/01_case_studies.md) · [한국어 자료](../04_case_studies/02_korean_resources.md)
 

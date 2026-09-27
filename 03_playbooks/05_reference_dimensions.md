@@ -25,6 +25,7 @@
 - 신뢰도: **높음** 여러 출처가 일치하거나 1차 자료(법령·제조사 스펙·소스 코드) / **중간** 출처 1~2개, 커뮤니티·실무 SNS / **낮음** 출처 없는 관행값·기억치·계산값.
 - 검증 표시(보완 검증 결과): ✅ 독립 확인 / 🟡 조건부 확인·세부 정정 / ❌ 반박되어 정정값 사용 / ❔ 독립 재확인 못 함(원 조사 등급 유지). 표시가 없으면 독립 검증 대상이 아니었던 값입니다.
 - **코드**라고 적은 값은 오픈소스 저장소의 소스·프롬프트·설정에서 확인한 값입니다. 실측 표준이 아니라 **그 시스템이 쓰는 값**입니다.
+- 약어: **NKBA** 미국 주방·욕실 협회(National Kitchen & Bath Association)의 설계 지침, **IRC** 미국 국제주거건축규약(International Residential Code), **DIN** 독일 표준, **KS** 한국산업표준, **R / T** 계단 단높이(챌면) / 단너비(디딤판).
 
 ### 0.2 시스템마다 좌표·단위 규약이 다릅니다
 
@@ -69,7 +70,7 @@
 | 소파 팔걸이 높이 | 600 | 550~700 | 공통 | [Home Style Calculator](https://homestylecalculator.com/standard-sofa-dimensions/) ("크기와 무관하게 거의 일정"이라고만 함) | 낮음 |
 | 암체어 폭 × 깊이 | 800 × 850 | 폭 710~1000, 깊이 760~1000 | 공통 | 출처 없음(관행값) | 낮음 |
 | 카운터 스툴 좌판(914 조리대용) | 635 | 610~660 | US | [POLYWOOD](https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference), [Barstool Comforts](https://barstoolcomforts.com/heights/), [Rejuvenation](https://www.rejuvenation.com/pages/design-tips/how-to-choose-bar-stool-height/) | 높음 |
-| 카운터 스툴 좌판(한국 850 조리대용) | 600 | 550~620 | KR | 계산값(850 − 250~300) | 낮음 |
+| 카운터 스툴 좌판(한국 850 조리대용) | 600 | 550~620 | KR | 계산값(850 − 230~300, 아래 '스툴 좌판 ~ 상판 간격' 행 기준. 직접 출처 없음) | 낮음 |
 | 바 스툴 좌판(1016~1067 바 카운터용) | 740 | 711~762 | US | [POLYWOOD](https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference), [Froy](https://froy.com/blogs/tips/dining-table-height-bar-height-and-counter-height-guide) | 높음 |
 | 스툴 좌판 ~ 상판 간격 | 254 | 230~305 | 공통 | [Barstool Comforts](https://barstoolcomforts.com/heights/), [Lumens](https://the-edit.lumens.com/the-guides/how-to-choose-seating-height/) | 높음 |
 | 사무용 의자 좌판(조절 범위) | 450 | 400~520 | KR/US | [Sizemarker 사무용 의자](https://www.sizemarker.com/ko/dimensions/standard-office-chair-dimensions)(BIFMA 요약), [블라인드](https://www.teamblind.com/kr/post/%EC%A0%81%EC%A0%88%ED%95%9C-%EC%9D%98%EC%9E%90-%EB%86%92%EC%9D%B4%EC%97%90-%EB%8C%80%ED%95%B4-XBOhgfr2), [한국산업위생학회지](https://www.jksoeh.org/data/issue/JKSOEH/J01901/J01901002.pdf) | 중간 |
@@ -484,7 +485,8 @@
 
 - **치수 측정**: 유닛(최상위 부모) 전체를 **가구 자체 방향 기준**으로 잽니다. `w` = 수평 긴 변, `d` = 수평 짧은 변, `z` = 높이. 옆벽에 붙인 소파·침대·문도, 30°처럼 비스듬히 놓은 가구도 오탐하지 않습니다. 의자·스툴의 `z`는 좌판이 아니라 등받이까지 포함한 전체 높이입니다.
 - **이름 매칭**: CamelCase·구분자를 단어로 나눈 뒤 **단어 단위로** 맞춥니다(`DiningTable` → `dining_table` 규칙). `turntable`·`indoor_plant`는 매칭되지 않고, `door_handle`·`table_lamp`·`desk_lamp`처럼 부속품 단어가 뒤에 붙으면 규칙을 적용하지 않습니다.
-- **구조물·천장**: 이름의 마지막 핵심 단어가 `floor`·`wall`·`ceiling`이면 구조물입니다. 가구가 벽·천장을 뚫으면 관통으로 잡고, `ceiling_z`를 주면 천장 위로 나간 유닛을 `above_ceiling`으로 표시합니다.
+- **구조물·천장**: 이름의 마지막 핵심 단어가 `floor`·`ground`·`wall`·`ceiling`·`terrain`이면 구조물입니다(`floor_lamp`·`wall_shelf`는 가구). 가구가 벽·천장을 뚫으면 관통으로 잡고, `ceiling_z`를 주면 천장 위로 나간 유닛을 `above_ceiling`으로 표시합니다.
+- **컬렉션 범위와 박힘**: 방 내부와 건물 외관을 한 장면에 둘 때는 `audit_scene(ceiling_z=2.30, collection="Room")`처럼 컬렉션을 지정해 천장 규칙을 방 유닛에만 적용합니다(받침면·관통 상대는 장면 전체). 바닥이나 슬래브에 파고든 가구는 '떠 있음'이 아니라 `sunk_into:<상대>=<깊이>m`으로 보고됩니다.
 
 | 키 | 기본 범위(m) | 이 표의 근거 |
 |---|---|---|
@@ -558,7 +560,7 @@ report = audit_scene(floor_z=0.0, ceiling_z=2.30, size_rules=KR_SIZE_RULES)  # �
 - [텍스처링·재질](../02_guides/05_texturing_materials.md): 실측 치수와 텍스처 스케일 맞추기
 - [라이팅·렌더·아트디렉션](../02_guides/06_lighting_rendering_art_direction.md): 카메라 높이·눈높이
 - [학술 연구](../02_guides/11_research_papers.md): Holodeck, SceneSmith, SAGE, Infinigen
-- [보조 스크립트](scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`
+- [보조 스크립트](scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`, `building_audit.py`(문·창·방·계단의 건축 상식 검사)
 - [품질 체크리스트](04_quality_checklists.md) · [프롬프트 템플릿](03_prompt_templates.md) · [AAA 제작 플레이북](02_aaa_production_playbook.md)
 - [프로젝트 규칙 템플릿](templates/CLAUDE.md) · [Claude Code 스킬 템플릿](templates/skills/blender-aaa-scene/SKILL.md)
 - [한국어 자료 모음](../04_case_studies/02_korean_resources.md)

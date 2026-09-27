@@ -13,7 +13,7 @@
 - **Claude Code 기능 배치**: CLAUDE.md는 200줄 이하로 짧게 쓰고, 단계별 레시피는 Skills(SKILL.md 500줄 이하)로 빼고, 채점은 읽기 전용 **비평가 subagent**에게 맡기고, 꼭 지켜야 할 규칙은 **hooks**로 강제하고, `/goal` 조건은 텍스트로 증명할 수 있게 씁니다. Codex는 AGENTS.md와 스킬(`$skill`)로, Gemini CLI는 GEMINI.md와 `includeTools`로 대응합니다. **Codex에서 GPT-6 Astra의 기본 effort는 low이므로 반드시 따로 지정하세요.**
 - **비용 감각**: Claude 이미지 토큰은 ⌈w/28⌉×⌈h/28⌉입니다. ahujasid MCP의 기본 캡처(긴 변 1000px)는 약 756토큰이고, 1920×1080은 Opus 5.5에서 2,691토큰입니다. 툴 호출 60회 정도의 세션을 가정하면 Sonnet 5 약 $2.5, Opus 5.5 약 $4, Fable 5.1 약 $8.7로 추정됩니다(가정 기반 추정). 한 요청에 이미지가 20장을 넘으면 각 변을 2000px 이하로 줄여야 합니다.
 - **타임아웃·조합·보안**: ahujasid 소켓 타임아웃은 180초이고 애드온의 `exec()`에는 제한이 없습니다. 오래 걸리는 렌더와 익스포트는 headless로 돌리세요. 여러 MCP를 붙일 때는 상태 확인 → 기존 에셋 우선 → 유료 생성 전 승인 → 임포트 직후 정리 → 라이선스 기록 순서를 지킵니다. 공식 서버와 ahujasid는 둘 다 `localhost:9876`을 써서 동시에 켤 수 없습니다. `BLENDER_MCP_SAFE_MODE=1`은 샌드박스가 아닙니다.
-- **기대치**: 독립적으로 검증된 'AAA급' AI+MCP 결과물은 찾지 못했습니다(공개 점수가 붙은 최고 사례도 6~7/10). 에이전트는 기능적으로 맞는 오브젝트까지는 만들지만 곡면 가구나 다듬어진 실루엣 같은 미감은 사람이 맡는다고 스킬 저자들이 직접 밝힙니다. 현실적인 목표는 **[에셋·생성 모델 + 에이전트 조립 + 검증 루프 + 사람의 마무리]** 하이브리드입니다.
+- **기대치**: 독립적으로 검증된 'AAA급' AI+MCP 결과물은 찾지 못했습니다(공개 점수가 붙은 최고 사례도 재질·시각 충실도 6/10, 조명 7/10). 에이전트는 기능적으로 맞는 오브젝트까지는 만들지만 곡면 가구나 다듬어진 실루엣 같은 미감은 사람이 맡는다고 스킬 저자들이 직접 밝힙니다. 현실적인 목표는 **[에셋·생성 모델 + 에이전트 조립 + 검증 루프 + 사람의 마무리]** 하이브리드입니다.
 
 ---
 
@@ -57,7 +57,7 @@
 
 ### 2.2 단계별 할 일과 게이트
 
-"라이팅이 정해지기 전에 맞춘 재질과 형태가 확정되기 전에 넣은 디테일은 대부분 다시 만들게 된다"는 것이 순서를 고정하는 이유입니다(RobLe3: *"A perfect material tuned in flat lighting will look wrong once real lighting goes in."*).
+순서를 고정하는 이유는 "라이팅이 정해지기 전에 맞춘 재질, 형태가 확정되기 전에 넣은 디테일은 대부분 다시 만들게 된다"는 데 있습니다(RobLe3: *"A perfect material tuned in flat lighting will look wrong once real lighting goes in."*).
 
 | # | 단계 | 할 일 | 통과 조건(게이트) | 검증 수단 |
 |---|---|---|---|---|
@@ -85,6 +85,8 @@
 게이트 G1(스펙·컨셉), G2(블록아웃·구도), G3(최종 렌더·익스포트 전)에서는
 작업을 멈추고 스크린샷 1장과 3줄 요약을 보여 준 뒤 내 OK를 기다려.
 ```
+
+이 저장소의 [제작 플레이북](../03_playbooks/02_aaa_production_playbook.md)·[프롬프트 템플릿](../03_playbooks/03_prompt_templates.md)·[CLAUDE.md 템플릿](../03_playbooks/templates/CLAUDE.md)은 위의 G3를 G3(최종 렌더)와 G4(익스포트)로 나눠 게이트를 네 곳에 둡니다.
 
 작업 규모에 따라 검증 강도를 고릅니다([claude-3d-harness](https://github.com/MAX-786/claude-3d-harness) 프로필).
 
@@ -237,7 +239,7 @@ print("shading=MATERIAL")
 
 | 순서 | 무엇으로 | 목표 | 왜 이 순서인가 |
 |---|---|---|---|
-| ① 숫자 | [`scene_audit.py`](../03_playbooks/scripts/README.md): 떠 있음, 바닥 관통, 유닛 간 관통, 스케일 미적용·음수 스케일, non-manifold, 재질·UV 없음, 이름 기준 치수 범위 이탈 → JSON. 간격은 `pu.check_clearances()` | `units_with_issues`와 `interpenetrating_pairs`가 0(의도한 벽걸이·천장 조명은 예외로 확인) | 싸고 결정적입니다. VLM이 놓치는 몇 mm 관통도 잡습니다 |
+| ① 숫자 | [`scene_audit.py`](../03_playbooks/scripts/README.md): 떠 있음, 바닥 아래로 박힘(`below_floor`), 다른 물체 속으로 파고듦(`sunk_into`), 천장 위로 뚫림(`above_ceiling`, `ceiling_z`를 줄 때), 유닛 간 관통과 가구–벽·천장 관통, 스케일 미적용·음수 스케일, non-manifold, 재질·UV 없음, 이름 기준 치수 범위 이탈(가구 자체 방향 기준 폭 w·깊이 d·높이 z) → JSON. 간격은 `pu.check_clearances()`. 문·창·방 구조가 있으면 [`building_audit.py`](../03_playbooks/scripts/README.md)도 돌립니다 | `units_with_issues`와 `interpenetrating_pairs`가 0(의도한 벽걸이·천장 조명은 예외로 확인) | 싸고 결정적입니다. VLM이 놓치는 작은 관통(기본 허용 오차 5 mm 초과)도 잡습니다 |
 | ② 눈 | [`review_views.py`](../03_playbooks/scripts/README.md) 4방향 렌더 → 비평가(8.3절) | NEEDS_FIX: NO 또는 SHIP | 숫자로 못 잡는 실루엣, 비율, 분위기를 봅니다 |
 | ③ 사람 | 최종 렌더와 익스포트 결과 | G3 SHIP | VLM 판정과 사람 판정의 일치율은 0.66으로, 사람끼리의 0.79보다 낮습니다([BlenderGym](https://github.com/richard-guyunqi/BlenderGym-Open)) |
 | ④ (선택) 물리 | 소품에 rigid body(active), 가구·바닥에 passive를 걸고 60프레임 시뮬레이션 → 2cm 이상 움직이거나 5° 이상 돌아간 오브젝트를 '불안정' 목록으로 반환 → 시뮬레이션 결과는 적용하지 않고 원위치로 복원 | 불안정 0건 | SceneSmith는 시뮬레이션 뒤 96%가 안정적이었습니다. 이 절차는 연구를 바탕으로 한 작성 예시이며 이 저장소에서 스크립트로 검증하지는 않았습니다 |
@@ -257,7 +259,10 @@ for u in report["units"]:
 print(report["interpenetrations"])
 ```
 
-headless로 돌릴 때는 `blender -b scene.blend --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --out audit.json`입니다. safe mode 때문에 외부 모듈 import가 막히면 파일 내용을 통째로 붙여 넣으세요(끝에서 자동 실행). 판정 규약(최상위 부모 기준 '유닛', 가구 정면 -Y, 구조물 이름 키워드)은 [스크립트 README](../03_playbooks/scripts/README.md)를 확인하세요.
+- 방 안을 검사할 때는 천장 높이와 범위를 함께 줍니다: `audit_scene(floor_z=0.0, ceiling_z=2.30, collection="Room")`. `collection`을 주면 그 컬렉션의 유닛만 보고하고 천장 규칙도 그 유닛에만 적용하므로, 방 내부와 건물 외관이 한 장면에 있어도 따로 검사할 수 있습니다.
+- headless: `blender -b scene.blend --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --ceiling-z 2.3 --collection Room --out audit.json`.
+- safe mode 때문에 외부 모듈 import가 막히면 파일 내용을 통째로 붙여 넣으세요(끝에서 자동 실행).
+- 판정 규약은 [스크립트 README](../03_playbooks/scripts/README.md)에 있습니다. 요점: 최상위 부모 기준으로 '유닛'을 묶고, 가구 정면은 -Y입니다. 치수 규칙은 이름의 **단어**로 고릅니다(`CoffeeTable`·`coffee_table_01` → `coffee_table`, `table_lamp`·`turntable` → 규칙 없음). 구조물은 이름의 **마지막 핵심 단어**로 판정합니다(`Wall_N` → 구조물, `wall_shelf` → 가구).
 
 ### 5.2 `get_scene_info` 10개 제한을 피하는 압축 씬 요약
 
@@ -338,7 +343,7 @@ bpy 5.0.1과 4.2.23 LTS에서 두 번 연속 실행해 오브젝트가 하나만
 
 - 코드 실행 툴이 예외를 삼키지 않게 하고 **traceback 전체**를 모델에 돌려줍니다.
 - 3DCodeBench의 멀티턴 설정은 이전 코드 + traceback으로 **3회**(T=3) 재시도하는 것을 표준으로 씁니다. 3회 실패하면 "기능을 줄인 최소 버전부터 다시"로 전략을 바꾸세요.
-- 참고로 2024년 범용 모델의 Blender 스크립트 구문 오류율은 Claude-3.5-Sonnet 15.6%, GPT-4-Turbo 18.2%였고, 특화 모델 BlenderLLM은 3.4%였습니다([BlenderLLM](https://github.com/FreedomIntelligence/BlenderLLM)). 다만 BlenderLLM은 스스로 '기본 모델링만 가능'하다고 밝힙니다. 최신 모델의 오류율은 이 조사에서 측정되지 않았습니다.
+- 참고로 2024년 범용 모델의 Blender 스크립트 구문 오류율은 15.6~21.4%였고, 특화 모델 BlenderLLM은 3.4%였습니다([BlenderLLM](https://github.com/FreedomIntelligence/BlenderLLM)). 모델별 값은 두 검증 결과가 README 표를 다르게 읽어 어긋납니다([학술 연구 가이드](11_research_papers.md) 4.1절). BlenderLLM은 스스로 '기본 모델링만 가능'하다고 밝힙니다. 최신 모델의 오류율은 이 조사에서 측정되지 않았습니다.
 
 ### 6.3 headless 스크립트를 원본으로: 하이브리드 구조
 
@@ -549,7 +554,7 @@ allowed-tools: Read Bash Glob Grep mcp__blender__execute_blender_code mcp__blend
 
 ### 8.3 비평가 subagent: 만든 쪽이 채점하지 않게
 
-새 컨텍스트에서 시작하는 리뷰어는 결과물을 만든 추론 과정을 보지 않고 결과 자체로 판단합니다. subagent 정의에는 `tools` allowlist, `disallowedTools`, `model`, `mcpServers`, `skills`, `maxTurns`, `effort`를 쓸 수 있습니다. 모델은 'vision과 computer use에 가장 좋은 Opus'로 소개된 Opus 5.5가 무난합니다(모델 선택은 [AI 모델 가이드](01_ai_models_and_clients.md)).
+새 컨텍스트에서 시작하는 리뷰어는 결과물을 만든 추론 과정을 보지 않고 결과 자체로 판단합니다. subagent 정의에는 `tools` allowlist, `disallowedTools`, `model`, `mcpServers`, `skills`, `maxTurns`, `effort`를 쓸 수 있습니다. 모델은 Anthropic이 'vision과 computer use에 가장 좋은 Opus'로 소개한 Opus 5.5가 무난합니다(벤더 자체 소개. 모델 선택은 [AI 모델 가이드](01_ai_models_and_clients.md)).
 
 `.claude/agents/blender-critic.md` (작성 예시):
 
@@ -643,10 +648,12 @@ auto mode와 함께 쓰면 무인 실행이 됩니다. 이때도 G1~G3 사람 �
 
 같은 규칙을 AGENTS.md로 공유하면 세 하네스에서 같은 운영 방식을 쓸 수 있습니다. Agent Skills 포맷(SKILL.md)과 [AGENTS.md](https://github.com/agentsmd/agents.md)가 사실상 공용 표준이 되었습니다.
 
+> **Gemini CLI 주의**: 2026-06-18부터 무료·Google AI Pro·Ultra 사용자의 요청 처리를 멈추고 Antigravity CLI로 넘어갔습니다. 아래 Gemini CLI 설정은 유료 API 키나 Code Assist Standard/Enterprise 사용자에게만 해당합니다([AI 모델 가이드](01_ai_models_and_clients.md)).
+
 | 기능 | Claude Code | Codex (GPT-6 Astra 등) | Gemini CLI |
 |---|---|---|---|
 | 프로젝트 규칙 파일 | CLAUDE.md | AGENTS.md | GEMINI.md 계층(글로벌 `~/.gemini/GEMINI.md`, 워크스페이스, JIT). `context.fileName`에 `["AGENTS.md","GEMINI.md"]` 지정 가능([문서](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md)) |
-| MCP 추가 | `claude mcp add blender uvx mcp-for-blender` | `codex mcp add blender -- uvx mcp-for-blender` (설정 파일 `~/.codex/config.toml`) | settings.json의 `mcpServers`(command, args, env, timeout, trust, includeTools/excludeTools) |
+| MCP 추가 | `claude mcp add blender -- uvx mcp-for-blender` | `codex mcp add blender -- uvx mcp-for-blender` (설정 파일 `~/.codex/config.toml`) | settings.json의 `mcpServers`(command, args, env, timeout, trust, includeTools/excludeTools) |
 | 스킬 | `.claude/skills/<name>/SKILL.md` | `~/.codex/skills/` 또는 저장소 안 `.agents/skills/`, 호출은 `$skill-name`. **공식 문서 미확인**이라 두 경로를 모두 적어 둠([codex docs/skills.md](https://github.com/openai/codex/blob/main/docs/skills.md)는 차단된 공식 사이트로 연결) | 이 조사 범위 밖 |
 | 툴 노출 줄이기 | MCP 툴 정의 지연 로딩(tool search) 기본, `/mcp`로 서버 끄기 | (미확인) | `includeTools`/`excludeTools`(둘 다 있으면 exclude 우선) |
 | 이미지 결과 | MCP 툴 이미지를 인라인으로 표시, 원본은 tool-results에 저장 | (미확인) | text/image/audio/resource 멀티파트 결과 |
@@ -791,6 +798,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 |---|---|---|
 | 공식 Blender Lab 서버 | localhost:9876 | ahujasid와 같은 포트. 실행 파일 이름도 `blender-mcp` |
 | ahujasid MCP for Blender | localhost:9876 | `uvx blender-mcp`는 호환 래퍼로 이 커뮤니티 서버를 실행 |
+| Scenario for Blender 플러그인 내장 MCP | `http://127.0.0.1:9876/mcp` | 위 두 서버와 같은 포트. 셋 중 하나만 켜기 |
 | blender-mcp-pro | 9877 | 유료 서버 |
 | Gaius114 자체 애드온 | HTTP 7234 | `/screenshot`, `/render`가 base64 PNG 반환 |
 | Epic Unreal MCP (UE 5.8) | `http://127.0.0.1:8000/mcp` | AllToolsets 필요 |
@@ -858,7 +866,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 | **VLM 판정은 사람만큼 믿을 수 없다** | BlenderGym: verifier와 사람의 일치율 Claude-3.5-Sonnet 0.66, 사람끼리 0.79 | 순서를 바꿔 두 번 판정하고, 숫자 검사를 먼저, 최종은 사람 |
 | **폐루프가 표준** | SceneCraft, BlenderAlchemy, LL3M, [VIGA](https://github.com/Fugtemypt123/VIGA), CADCodeVerify, SceneReVis, SceneSmith가 모두 '코드 → 실행 → 렌더 → 비평 → 수정' 루프. 원샷은 기준선으로만 쓰임 | 4절의 루프 |
 | **좌표는 솔버, LLM은 관계·제약** | [SceneReVis](https://github.com/Runder-sun/SceneReVis) 비교표(침실+거실 평균) 충돌률: LayoutGPT 40.8%, LayoutVLM 36.8%, I-Design 16.2%, [Holodeck](https://github.com/allenai/Holodeck)(DFS 제약 솔버) 12.7%, SceneReVis(멀티턴 RL) 4.5%. 경쟁 논문이 잰 값이고, 미분 최적화를 쓰는 LayoutVLM도 36.8%였으니 '솔버만 쓰면 해결'로 일반화하지는 마세요 | LLM은 `against_wall`, `in_front_of`, `face_to` 같은 관계를 JSON으로 쓰고, 좌표는 스크립트가 계산합니다([배치 가이드](08_scene_layout_placement.md), `placement_utils.py`) |
-| **계층 단계로 만든다** | [SceneSmith](https://github.com/nepfaff/scenesmith)(ICML 2026 Spotlight): 평면도 → 가구 → 벽 부착물 → 천장 → 소품, 단계마다 designer/critic/orchestrator. 기존 대비 객체 수 3~6배, 객체 간 충돌 0, 시뮬레이션 뒤 96% 안정, 사용자 205명 연구에서 베이스라인 대비 평균 승률 realism 92%·faithfulness 91% | 단계마다 게이트, 소품은 지지면 목록을 먼저 뽑고 그 위에만 배치 |
+| **계층 단계로 만든다** | [SceneSmith](https://github.com/nepfaff/scenesmith)(ICML 2026 Spotlight): 평면도 → 가구 → 벽 부착물 → 천장 → 소품, 단계마다 designer/critic/orchestrator. 기존 대비 객체 수 3~6배, 객체 간 충돌 0(프로젝트 페이지 기준, arXiv 요약은 "2% 미만"), 시뮬레이션 뒤 96% 안정, 사용자 205명 연구에서 베이스라인 대비 평균 승률 realism 92%·faithfulness 91% | 단계마다 게이트, 소품은 지지면 목록을 먼저 뽑고 그 위에만 배치 |
 | **처음부터 만들기보다 검색·재사용** | Holodeck(Objaverse), SceneSmith(HSSD/Objaverse/PartNet-Mobility, SAM3D·Hunyuan3D-2 생성), [SAGE](https://github.com/NVlabs/sage)(TRELLIS·재질 생성·레이아웃 솔버를 별도 서버로) | 유기체·조각은 생성하거나 라이브러리에서 가져오고, 코드는 배치·재질·조명을 맡음 |
 | **파라메트릭 부품 코드** | [3D-GPT](https://github.com/Chuny1/3DGPT)(절차적 생성 함수의 파라미터만 추론), [Scene Language](https://github.com/zzyunzhi/scene-language)(loop·transform 프리미티브), [MeshCoder](https://github.com/InternRobotics/MeshCoder)(파트별 Blender 코드, 100만 쌍 학습), [Procedura](https://arxiv.org/abs/2608.26238)(2026-08: 파트별 파라메트릭 프로그램 + typed mate로 떠 있거나 파고드는 파트를 측정해 거부) | `def make_chair(seat_h=0.45, seat_w=0.5, leg_th=0.035, back_h=0.4)`처럼 함수부터 쓰고, 파트 이름을 붙이고, 파트마다 bbox를 print해 접촉·부유를 스스로 검사 |
 | **API 문서를 검색해 붙인다** | LL3M의 BlenderRAG, 3DCodeBench의 Blender 5.0 API 함정 목록 | 7절 |
@@ -870,7 +878,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 | **편집 연산을 줄이고 상태를 구조화** | SceneReVis 6개 원자 연산, SceneAssistant 매 스텝 이미지 + JSON 상태 | 6.4절 |
 | **VLM에게는 격자 지도를** | TreeSearchGen: 이모지 격자, 가구 0.3m·소품 0.1m | 4.4절 |
 | **모델 버전에 워크플로를 묶지 않는다** | LL3M은 논문에 쓴 Claude Sonnet 3.7이 retire되자(2026-02-19) 서버를 중단했습니다. Scene Language(기본 3.7 Sonnet)와 BlenderGym의 Claude 기준선도 원래 설정으로는 재현되지 않습니다([deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations)) | 프롬프트·툴 정의는 모델 중립적으로 쓰고, 새 모델이 나오면 같은 과제 세트로 회귀 테스트(3DCodeBench 카테고리 일부 활용) |
-| **특화 파인튜닝은 실행률을 올리지만 범위가 좁다** | BlenderLLM: 구문 오류율 3.4%(Claude-3.5-Sonnet 15.6%), 스스로 '기본 모델링만' | AAA 품질에는 프런티어 모델 + 렌더 루프가 현실적 |
+| **특화 파인튜닝은 실행률을 올리지만 범위가 좁다** | BlenderLLM: 구문 오류율 3.4%(범용 모델 15.6~21.4%), 스스로 '기본 모델링만' | AAA 품질에는 프런티어 모델 + 렌더 루프가 현실적 |
 
 참고로 LLM이 만든 씬 프로그램의 오류를 LLM 없이 프로그램 탐색으로 고치는 연구([SIGGRAPH Asia 2025](https://arxiv.org/abs/2510.16147))도 있어서, '좌표·제약 수정은 결정적 알고리즘에 맡긴다'는 방향을 뒷받침합니다. Geometry Nodes를 LLM이 편집할 수 있는 Python으로 바꾸는 [ProcFunc](https://github.com/princeton-vl/procfunc/blob/main/experiments/EXPERIMENTS.md)도 LLM/VLM 편집 실험을 함께 공개했습니다.
 
@@ -930,7 +938,8 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 2) 좌표는 직접 찍지 말고 관계(against_wall, in_front_of, face_to, next_to)를 JSON으로 써.
    좌표는 placement_utils 함수로 계산해. 주 동선 폭은 0.8 m 이상.
 3) 모든 오브젝트는 바닥에 스냅하고, 벽 쪽 가구는 벽 면에서 0.01~0.05 m 띄워.
-4) scene_audit와 check_clearances 결과를 출력해(관통 0건이어야 함).
+4) scene_audit(floor_z=0, ceiling_z=2.4, collection="COL_Room")와 check_clearances 결과를 출력해
+   (관통·박힘·천장 관통 0건이어야 함). 문·창을 만들었으면 building_audit로 문 막힘도 확인해.
 5) 서사 클러스터 2개(예: '읽다 만 책과 식은 커피')에 소품 3~7개씩, 회전 ±7°, 스케일 ±5% 변주.
    모든 표면을 채우지 마. 동선과 카메라 경로는 비워 둬.
 6) 검증 캡처: 탑다운 오쏘, 눈높이 1.6 m 문 쪽 시점, 로우앵글 0.6 m.
@@ -980,7 +989,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 - [에셋·파이프라인·라이선스](10_assets_pipeline_licensing.md) · [학술 연구](11_research_papers.md)
 - [빠른 시작](../03_playbooks/01_quickstart_setup.md) · [AAA 제작 플레이북](../03_playbooks/02_aaa_production_playbook.md) · [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) · [품질 체크리스트](../03_playbooks/04_quality_checklists.md) · [실측 치수표](../03_playbooks/05_reference_dimensions.md)
 - [CLAUDE.md 템플릿](../03_playbooks/templates/CLAUDE.md) · [Blender 스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)
-- [보조 스크립트 사용법](../03_playbooks/scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`
+- [보조 스크립트 사용법](../03_playbooks/scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`, `building_audit.py`
 - [사례 모음](../04_case_studies/01_case_studies.md) · [한국어 자료](../04_case_studies/02_korean_resources.md)
 
 ## 원자료

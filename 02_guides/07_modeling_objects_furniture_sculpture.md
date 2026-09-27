@@ -6,14 +6,14 @@
 > **한국 사용자가 먼저 확인할 것**
 >
 > - **치수는 지역 프리셋으로 넣으세요.** 한국 아파트 천장고는 구축 2,300 mm, 2020년대 신축 2,400~2,500 mm입니다. 싱크대 높이는 850 mm(최근 900 mm 권장도 있음)이고 미국은 914 mm입니다. 매트리스 'K'는 한국 1,600~1,670 mm, 미국 King 1,930 mm, 영국 King 1,500 mm로 나라마다 다릅니다. 그래서 AI에게는 이름 대신 **mm 값**을 주세요. 한국 방문 900×2100은 **문틀 기준**이고 문짝은 약 60 mm 작습니다. 공동주택 공용계단은 높이 **2 m 이내마다 계단참**을 둬야 합니다(3 m가 아님). 자세한 값은 [치수 기준표](../03_playbooks/05_reference_dimensions.md)에 있습니다.
-> - **파트 생성 모델 라이선스를 확인하세요.** [Hunyuan3D-Part 라이선스](https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Part/main/LICENSE)는 "DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA"라고 명시합니다. 한국에서 로컬로 쓰면 라이선스 범위 밖이고, 출력물 사용도 제한됩니다. 검증 에이전트는 ahujasid MCP for Blender의 Hunyuan3D 연동도 같은 문제를 안고 있다고 봤습니다. Tencent Cloud API 약관은 별개이며 (미확인)입니다. [PartPacker](https://raw.githubusercontent.com/NVlabs/PartPacker/main/license.md)는 비상업 연구 전용입니다. 이 문서에 나오는 연구 코드(LL3M, CAD-Recode, Text2CAD, LLaMA-Mesh, ShapeAssembly)도 **상업 사용이 금지**되어 있습니다([8장](#8-연구에서-얻은-교훈)).
-> - **한국어 UI에서는 이름으로 찾는 코드가 깨질 수 있습니다.** 현지화 UI에서는 새로 만든 노드 이름이 번역됩니다(일본어 UI 실패 사례가 확인됨). 노드는 `type`으로 찾고, 오브젝트 이름은 만들 때 영어로 직접 지정하세요. [scene_audit.py](../03_playbooks/scripts/README.md)의 치수 규칙은 `chair`, `table` 같은 **영어 이름 키워드**로 동작합니다.
+> - **파트 생성 모델 라이선스를 확인하세요.** [Hunyuan3D-Part 라이선스](https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Part/main/LICENSE)는 "DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA"라고 명시합니다. 한국에서 로컬 가중치로 쓰면 라이선스 범위 밖이고, 출력물 사용도 제한됩니다. ahujasid MCP for Blender의 Hunyuan3D 연동은 경로가 둘입니다. 로컬 API(기본 `localhost:8081`)는 오픈웨이트를 돌리므로 같은 제외 조항이 적용되고, Tencent Cloud API 경로는 별개 약관을 따르는데 한국 적용 여부는 (미확인)입니다. [PartPacker](https://raw.githubusercontent.com/NVlabs/PartPacker/main/license.md)는 비상업 연구 전용입니다. 이 문서에 나오는 연구 코드(LL3M, CAD-Recode, Text2CAD, LLaMA-Mesh, ShapeAssembly)도 **상업 사용이 금지**되어 있습니다([8장](#8-연구에서-얻은-교훈)).
+> - **한국어 UI에서는 이름으로 찾는 코드가 깨질 수 있습니다.** 현지화 UI에서는 새로 만든 노드 이름이 번역될 수 있습니다(일본어 UI 실패 사례가 있고, 한국어 UI에서 실제로 번역되는지는 미확인). 노드는 `type`으로 찾고, 오브젝트 이름은 만들 때 영어로 직접 지정하세요. [scene_audit.py](../03_playbooks/scripts/README.md)의 치수 규칙은 `chair`, `table` 같은 **영어 이름 키워드**를 단어 단위로 맞춰 동작합니다(한국어 이름은 인식하지 않음).
 
 ## 핵심 요약
 
 - **품질은 파이프라인이 좌우합니다.** 먼저 부품별 치수 명세(JSON)를 만들고, 부품 단위 코드로 짓고, 결정적 검사(치수·접촉·관입·manifold)를 통과시킨 다음, 마지막에 렌더로 눈 검사를 합니다. [build123d-mcp 프롬프트](https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/default_prompt.md)는 이 순서를 "deterministic checks before visual"로 규칙화했고, [blender-image-to-3d 스킬](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md)은 "Render evidence at every gate"를 규칙으로 둡니다.
 - **씬 규약을 먼저 고정하세요.** 1 unit = 1 m, Z-up, 앞면 -Y, 원점은 바닥 접점, 스케일·회전 적용, 영어 부품 이름(`chair_leg_FL`)을 씁니다. 스케일을 적용하지 않으면 bevel·solidify 폭이 축마다 달라집니다.
-- **접근법은 대상에 맞춰 고르세요.** 일반 가구는 bpy 프리미티브·bmesh와 모디파이어로 만듭니다. 조인트·하드웨어처럼 mm 정밀도가 필요하면 build123d, CadQuery, OpenSCAD를 MCP로 씁니다. 변형이 많이 필요하면 Infinigen, Archimesh, Geometry Nodes를 씁니다. 유기 조형은 SDF·메타볼·볼륨이나 AI image-to-3D로 만든 뒤 remesh합니다. 배경 소품은 에셋 라이브러리에서 가져오세요.
+- **접근법은 대상에 맞춰 고르세요.** 일반 가구는 bpy 프리미티브·bmesh와 모디파이어로 만듭니다. 조인트·하드웨어처럼 mm 정밀도가 필요하면 build123d, CadQuery, OpenSCAD를 MCP로 씁니다. 변형이 많이 필요하면 Infinigen, Archimesh, Geometry Nodes를 씁니다. 유기 조형은 SDF(부호 거리 함수, 수식으로 정의한 매끈한 형태)·메타볼·볼륨이나 AI image-to-3D로 만든 뒤 remesh합니다. 배경 소품은 에셋 라이브러리에서 가져오세요.
 - **부품을 빼먹지 않으려면 부품 어휘를 주세요.** [PartNet 계층](https://raw.githubusercontent.com/daerduoCarey/partnet_dataset/master/stats/after_merging_label_ids/Chair-hier.txt)(chair_back / chair_seat / chair_base → leg, bar_stretcher, runner…)을 체크리스트로 주면 스트레처, 에이프런, 등받이 연결재 같은 부품의 누락이 줄어듭니다. 두께도 숫자로 줍니다. 예를 들어 판재는 18 mm, 뒤판은 3~6 mm, 문·서랍 틈은 2~3 mm입니다.
 - **'분해된 의자'는 조립 규칙으로 막습니다.** [ProfRino Assembly Skill](https://github.com/ProfRino/Blender-MCP-Assembly-Skill)의 규칙은 다음과 같습니다. 코드를 쓰기 전에 연결 맵을 만들고, 큐브는 `size=2`로 만들어 scale이 half-extent와 같게 하고, 두 점을 잇는 부재는 Euler 회전 대신 bmesh로 만들고, 연결부는 최소 5 mm 겹칩니다. 이 문서의 [검사 코드](#24-결정적-검사-숫자가-먼저)는 연결 맵을 받아 틈(GAP), 계획에 없는 관통, 바닥과 이어지지 않은 부품(DETACHED)을 잡습니다. Blender 4.2.23 LTS와 5.0.1에서 동작을 확인했습니다.
 - **모디파이어 순서.** transform apply → Mirror → Array → (Solidify) → Boolean → Bevel → (SubSurf) → Weighted Normal(맨 끝) 순서입니다. 제조 모서리에는 bevel을 반드시 넣습니다. 폭은 원목 1~3 mm이고, 크기를 모르면 최대 치수의 0.5%로 둡니다. **Boolean solver 이름이 버전마다 다릅니다**(4.2는 `FAST/EXACT`, 5.0은 `FLOAT/EXACT/MANIFOLD`). 이 문서를 쓰면서 직접 확인했으므로, 런타임에 enum을 읽어서 고르세요.
@@ -71,7 +71,7 @@
 1. **전체 bbox부터 답하게 합니다.** Holodeck은 LLM에게 오브젝트 크기를 `[length, width, height]` cm로 먼저 적게 합니다(예: sofa [200, 100, 80]). 이 값을 기준표로 검사한 다음 모델링 코드에 넘깁니다.
 2. **관계 치수로 묶습니다.** 가구를 따로따로 만들면 서로 어울리지 않는 조합이 나옵니다.
    - 좌판 높이 = 식탁 상판 높이 − 250~305 mm
-   - 스툴 좌판 = 카운터 높이 − 250~300 mm (한국 850 mm 조리대라면 약 550~620 mm, 계산값)
+   - 스툴 좌판 = 카운터 높이 − 230~305 mm(보통 254) (한국 850 mm 조리대라면 약 550~620 mm, 계산값)
    - 협탁 상단 ≈ 매트리스 윗면 ± 50 mm
    - 커피테이블 ≈ 소파 좌판 − 25~50 mm
    - 팔걸이 의자는 팔걸이 윗면이 에이프런 아래로 들어가는지 확인합니다.
@@ -94,7 +94,7 @@
 | 인체 더미 | 남 1,725 / 여 1,596 | — | [사이즈코리아 제8차](https://sizekorea2022.kr/8th_results/)(2022-03 발표, 20~69세 6,839명) |
 
 > [!CAUTION]
-> **Infinigen 치수를 "표준"으로 쓰지 마세요.** [Infinigen ChairFactory](https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py)는 leg_height를 0.45~0.5에서 샘플링합니다. 그런데 좌판이 두께 중앙 기준으로 놓이기 때문에 **좌판 윗면은 약 0.47~0.54 m**가 되어 표준 좌면(0.43~0.46 m)보다 높습니다. 식탁 높이 범위(0.65~0.85)도 넓습니다. 이 값들은 실측 데이터가 아니라 설계자가 정한 랜덤 범위입니다. **부품 구조의 참고로만** 쓰세요(검증 결과 반영).
+> **Infinigen 치수를 "표준"으로 쓰지 마세요.** [Infinigen ChairFactory](https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py)는 leg_height를 0.45~0.5에서 샘플링합니다. 그런데 좌판이 두께 중앙 기준으로 놓이기 때문에 **좌판 윗면은 약 0.47~0.54 m**가 되어 표준 좌면(한국 실무 0.43~0.46 m, 글로벌 가이드 0.43~0.48 m)보다 높습니다. 식탁 높이 범위(0.65~0.85)도 넓습니다. 이 값들은 실측 데이터가 아니라 설계자가 정한 랜덤 범위입니다. **부품 구조의 참고로만** 쓰세요(검증 결과 반영).
 
 ### 2.3 부품 스펙 JSON (코드보다 먼저, 사람이 승인)
 
@@ -141,9 +141,9 @@ LLM이 좌표를 코드 안에서 즉흥적으로 계산하면 부품이 떠 있
 | 층 | 도구 | 잡는 것 | 못 잡는 것 |
 |---|---|---|---|
 | **부품 단위**(가구 하나 안) | 아래 `check_assembly()` (이 문서 전용) | 연결 맵 기준 틈(GAP), 과도한 겹침(TOO_DEEP), 계획에 없는 관통, 바닥과 이어지지 않은 부품(DETACHED) | 모서리끼리만 스치는 접촉(정점-면 거리 기반), 완전 내포 |
-| **유닛 단위**(가구끼리, 가구와 바닥) | [scene_audit.py](../03_playbooks/scripts/README.md) (테스트 완료) | 떠 있음(바닥 근처 5점 레이), 바닥 아래로 박힘, 유닛 간 관통, 스케일 미적용·음수, non-manifold, 재질·UV 없음, 이름 키워드별 치수 범위 이탈 | 같은 유닛 안의 부품끼리 관통(설계상 의도한 결합과 구분할 수 없으므로 일부러 제외) |
+| **유닛 단위**(가구끼리, 가구와 바닥·벽·천장) | [scene_audit.py](../03_playbooks/scripts/README.md) (테스트 완료) | 떠 있음(바닥 근처 5점 레이), 바닥 아래로 박힘(`below_floor`), 다른 물체 속으로 파고듦(`sunk_into`), 유닛 간 관통, 가구–벽·천장 관통, `ceiling_z`를 주면 천장 위로 뚫림(`above_ceiling`), 스케일 미적용·음수, non-manifold, 재질·UV 없음, 이름 키워드별 치수 범위 이탈(가구 방향 기준 폭 w·깊이 d·높이 z) | 같은 유닛 안의 부품끼리 관통(설계상 의도한 결합과 구분할 수 없으므로 일부러 제외) |
 
-> 원자료의 50줄 검사 예시는 bbox 중심에서 아래로 레이를 한 줄만 쏩니다. 그래서 다리 위의 좌판이나 상판처럼 **중심 아래가 비어 있는 부품을 거의 항상 FLOATING으로 오탐**합니다(검증에서 지적됨). 이 저장소는 대신 두 가지 방식을 씁니다. scene_audit.py는 유닛을 묶어 여러 점에서 레이를 쏘고, `check_assembly()`는 BVH 최소 거리와 연결 그래프로 판정합니다. `BVHTree.overlap`이 한 물체가 다른 물체 안에 완전히 들어간 경우를 못 잡는다는 한계는 두 방식 모두에 남아 있습니다.
+> 원자료의 50줄 검사 예시는 bbox 중심에서 아래로 레이를 한 줄만 쏩니다. 그래서 다리 위의 좌판이나 상판처럼 **중심 아래가 비어 있는 부품을 거의 항상 FLOATING으로 오탐**합니다(검증에서 지적됨). 이 저장소는 대신 두 가지 방식을 씁니다. scene_audit.py는 유닛을 묶어 여러 점에서 레이를 쏘고, `check_assembly()`는 BVH(면을 빠르게 찾기 위한 공간 트리)로 잰 최소 거리와 연결 그래프로 판정합니다. `BVHTree.overlap`이 한 물체가 다른 물체 안에 완전히 들어간 경우를 못 잡는다는 한계는 두 방식 모두에 남아 있습니다.
 
 **코드 A. 조립 헬퍼 + 스펙 빌드 + 연결 맵 검사.** 이 문서를 쓰면서 Blender 4.2.23 LTS와 5.0.1(pip `bpy`, 헤드리스)에서 실행해 확인했습니다. `asm_helpers.py`로 저장해서 쓰세요.
 
@@ -292,7 +292,7 @@ print(scene_audit.audit_scene(floor_z=0.0)["summary"])
 
 1. **4방향 렌더.** [review_views.py](../03_playbooks/scripts/README.md)로 위·정면·측면 정사영과 3/4 원근을 렌더합니다. 오브젝트마다 다른 색이 칠해져 틈과 겹침이 잘 보입니다. 한국 기준 인체 더미(1.725 m / 1.596 m)와 문틀(2.1 m)을 임시로 넣고, 최종 렌더 전에 숨깁니다.
 2. **예/아니오 질문으로 비평시킵니다([CADCodeVerify](https://github.com/Kamel773/CAD_Code_Generation), ICLR 2025).** "잘 됐는지 봐 줘"라고 하면 VLM이 관대하게 통과시킵니다. 질문을 먼저 만들게 하고, 각 질문에 근거와 함께 답하게 한 뒤, "아니오" 항목만 수치가 들어간 수정 지시로 바꿉니다(프롬프트는 [13장](#13-프롬프트-예시)).
-3. **레퍼런스 사진이 있으면 실루엣을 수치로 비교합니다.** [blender-image-to-3d](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md)의 게이트는 블록아웃 단계 IoU ≥ 0.85·폭 오차 ±0.05·비율 오차 5% 이내, 형태 단계 IoU ≥ 0.90·±0.03·2% 이내입니다. [world_gate.py](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/world_gate.py)는 10개 밴드의 폭 프로파일과 ref_only(누락)·render_only(여분) 비율을 계산해서, "3 cm 짧음"이나 "축에서 2 cm 벗어남"도 IoU 손실로 드러나게 합니다. [cc-blender-skill reference-analysis-validator](https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/reference-analysis-validator/SKILL.md)는 강체 IoU ≥ 0.90, bbox 크기 드리프트 ≤ 3%, 주요 부품 수 정확히 일치를 기준으로 둡니다. 같은 종류끼리만 비교하세요. 와이어프레임 마스크와 셰이딩 렌더를 비교하면 IoU가 낮게 나옵니다.
+3. **레퍼런스 사진이 있으면 실루엣을 수치로 비교합니다.** [blender-image-to-3d](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md)의 게이트는 블록아웃 단계 IoU(렌더 실루엣과 레퍼런스 실루엣의 겹침 비율, 1이 완전 일치) ≥ 0.85·폭 오차 ±0.05·비율 오차 5% 이내, 형태 단계 IoU ≥ 0.90·±0.03·2% 이내입니다. [world_gate.py](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/world_gate.py)는 10개 밴드의 폭 프로파일과 ref_only(누락)·render_only(여분) 비율을 계산해서, "3 cm 짧음"이나 "축에서 2 cm 벗어남"도 IoU 손실로 드러나게 합니다. [cc-blender-skill reference-analysis-validator](https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/reference-analysis-validator/SKILL.md)는 강체 IoU ≥ 0.90, bbox 크기 드리프트 ≤ 3%, 주요 부품 수 정확히 일치를 기준으로 둡니다. 같은 종류끼리만 비교하세요. 와이어프레임 마스크와 셰이딩 렌더를 비교하면 IoU가 낮게 나옵니다.
 4. **사진에서 스케일을 잡을 때는 카메라부터 맞춥니다.** [blender-production](https://raw.githubusercontent.com/per-simmons/blender-production/master/SKILL.md)의 규칙은 "Solve camera/lens before deforming geometry to fit a photograph"입니다. 문 높이 같은 알려진 치수 하나를 앵커로 삼고, 불확실한 치수는 `[uncertain]`으로 표시합니다.
 
 ### 2.6 결함 원장: 한 번에 하나만 고칩니다
@@ -323,7 +323,7 @@ print(scene_audit.audit_scene(floor_z=0.0)["summary"])
 
 | 도구 | 상태(확인일) | 라이선스 | 강점 | 약점·주의 |
 |---|---|---|---|---|
-| bpy + 모디파이어 (Blender 5.2.2 안정판, 4.5·4.2 LTS) | 2026-09 | GPL | 비파괴라 LLM이 파라미터만 바꿔 반복할 수 있음 | 버전별 API 차이. 스케일 미적용 시 bevel 왜곡 |
+| bpy + 모디파이어 (Blender 5.2.2 = 5.2 LTS 최신, 4.5·4.2 LTS 병행) | 2026-09 | GPL | 비파괴라 LLM이 파라미터만 바꿔 반복할 수 있음 | 버전별 API 차이. 스케일 미적용 시 bevel 왜곡 |
 | [build123d](https://raw.githubusercontent.com/gumyr/build123d/dev/README.md) | 0.13.0 (2026-09-21), Python 3.11~3.14 | Apache-2.0 | OCCT BREP, [조인트](https://github.com/gumyr/build123d/blob/dev/docs/joints.rst)(Rigid/Revolute/Linear/Cylindrical/Ball + `connect_to`)로 틈 없이 조립 | 유기 형상·텍스처에 약함 |
 | [build123d-mcp](https://github.com/pzfreo/build123d-mcp) | PyPI 0.3.90 (2026-09-25) | Apache-2.0 | execute / measure / compare(fit·interference) / validate / design_audit / snapshot / render_view / STEP·STL export | 성능 수치는 도구 저자의 자체 보고 |
 | [AgentCAD](https://github.com/jdilla1277/agentcad) | 0.6.0 (2026-09-11) | Apache-2.0 | run / measure / check-spec / inspect / parts / diff, A/B view, 턴테이블 GIF | **Python 3.10~3.12 전용**. 기계 부품 중심 |
@@ -582,7 +582,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 | 실패 | 원인 | 자동 검사 | 처방 |
 |---|---|---|---|
 | 부품이 떠 있음("분해된 의자") | 좌표 즉흥 계산, 큐브 규약 혼동 | `check_assembly()` → `GAP`, `DETACHED` / scene_audit(유닛 단위) → `floating_or_wall_mounted` | 부모 부품의 면에 스냅. 연결 맵 재작성. 벽걸이·천장등은 의도한 부유인지 확인 |
-| 부품 관입 | 계획에 없는 겹침 | `UNPLANNED_PENETRATION` / scene_audit `interpenetrations`(유닛 간) | 접촉 면까지 이동. 의도한 결합이면 연결 맵에 추가(5~15 mm) |
+| 부품 관입 | 계획에 없는 겹침 | `UNPLANNED_PENETRATION` / scene_audit `interpenetrations`(유닛 간, 가구–벽·천장 포함), 바닥·다른 가구에 박힌 유닛은 `below_floor`·`sunk_into` | 접촉 면까지 이동. 의도한 결합이면 연결 맵에 추가(5~15 mm) |
 | 결합이 너무 깊음 | 장부를 과하게 박음 | `TOO_DEEP` | 겹침 5~15 mm로 조정 |
 | 치수가 절반 또는 두 배 | `size=1` 큐브에 half-extent scale | 스펙 대비 `obj.dimensions` 비교, scene_audit `size_out_of_range` | `box()`처럼 치수를 메시에 굽거나 `size=2` 규칙 |
 | 실린더 방향 틀림 | Euler 축·순서 오류 | bbox가 스펙의 두 점과 맞는지 비교 | `rod()`로 두 점 사이 생성 |
@@ -604,7 +604,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 
 | 이름 | 용도 | 상태 | 주의 |
 |---|---|---|---|
-| [MCP for Blender](https://github.com/ahujasid/mcp-for-blender) (ahujasid, 구 blender-mcp) | 코드 실행으로 부품을 만들고 검사 스크립트를 실행, 뷰포트 캡처 | PyPI `mcp-for-blender` 2.1.0(2026-09-25), 약 29.4k★, MIT, 36개 tool. `uvx blender-mcp`도 호환 래퍼로 동작 | `execute_code` 전에 저장, 작업을 작게 나누기, 소켓 타임아웃 180초. 익명 텔레메트리 기본 ON(`DISABLE_TELEMETRY=true`). `BLENDER_MCP_SAFE_MODE=1`은 샌드박스가 아님. Tripo는 유료 Premium 전용. Hunyuan3D 연동은 한국 라이선스 제외 |
+| [MCP for Blender](https://github.com/ahujasid/mcp-for-blender) (ahujasid, 구 blender-mcp) | 코드 실행으로 부품을 만들고 검사 스크립트를 실행, 뷰포트 캡처 | PyPI `mcp-for-blender` 2.1.0(2026-09-25), 약 29.4k★, MIT, 36개 tool. `uvx blender-mcp`도 호환 래퍼로 동작 | `execute_code` 전에 저장, 작업을 작게 나누기, 소켓 타임아웃 180초. 익명 텔레메트리 기본 ON(`DISABLE_TELEMETRY=true`). `BLENDER_MCP_SAFE_MODE=1`은 샌드박스가 아님. Tripo는 유료 Premium 전용. Hunyuan3D 로컬 API 경로는 한국 라이선스 제외, Tencent Cloud 경로 약관은 (미확인) |
 | Claude 공식 Blender 커넥터(Blender Lab) | 같은 용도의 공식 MCP | 커넥터 v1.0.1, 애드온 `blender_version_min` 5.1.0, GPL-3.0-or-later | **5.1 미만 불가.** 공식·커뮤니티 모두 localhost:9876을 써서 **동시에 켜면 충돌** ([02 Blender MCP](02_blender_mcp.md)) |
 | [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai) | 도구 186개, mesh 품질 분석(non-manifold, loose vertex, zero-area face, duplicate vertex) 내장 | Blender 4.2+(5.1에서 테스트), 148★ | **AGPL-3.0-or-later**. 샌드박스가 파일 쓰기를 막음. 도구가 많아 컨텍스트를 많이 씀 |
 | [build123d-mcp](https://github.com/pzfreo/build123d-mcp) | 정밀 부품, fit·간섭 검사 | 0.3.90 | 단위 mm |
@@ -614,7 +614,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 | [blender-image-to-3d](https://github.com/majidmanzarpour/blender-game-skills) | 컨셉 아트 → 게임 에셋, 11단계(0~10) 게이트, IoU·비율 게이트, validate.py | MIT, 2026-09-24 커밋 1개, 90★. Blender 4.2~5.2 표기 | 커뮤니티 검증 이력이 없는 새 저장소(Claude 공동 커밋). 규칙은 참고용. init_master의 문틀 1.0×2.2 m는 한국 2.1 m로 조정 |
 | [blender-production](https://github.com/per-simmons/blender-production) | 빌드 순서, 증거 기반 QA, 결함 원장, macro/meso/micro | MIT, Blender 5.1.2+, 커밋 1개, 0★ | 성숙도가 낮음. 건축·렌더 중심 |
 | [cc-blender-skill](https://github.com/RobLe3/cc-blender-skill) | Claude Code용 30개 스킬, 치수 참조표(7개 카테고리), 품질 개선 자동 루프 | v1.3.0, MIT, Blender 5.1.1 E2E 검증 | Sonnet 4.6 / Opus 4.7 / Haiku 4.5 시절 기준. bevel 기본 0.02 m는 가구에 큼 |
-| 이 저장소 [스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md) | 스펙 → 빌드 → 감사 → 검토 루프 | — | [scene_audit.py / placement_utils.py / review_views.py](../03_playbooks/scripts/README.md)와 연결 |
+| 이 저장소 [스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md) | 스펙 → 빌드 → 감사 → 검토 루프 | — | [scene_audit.py / placement_utils.py / review_views.py / building_audit.py](../03_playbooks/scripts/README.md)와 연결 |
 
 설치와 보안 설정은 [빠른 시작](../03_playbooks/01_quickstart_setup.md)을 보세요.
 
@@ -747,7 +747,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 - [10 에셋·파이프라인·라이선스](10_assets_pipeline_licensing.md): 에셋 라이브러리, 익스포트, 법규
 - [11 학술 연구](11_research_papers.md): LL3M·CAD 코드 생성·레이아웃 연구 전체
 - [빠른 시작](../03_playbooks/01_quickstart_setup.md) · [AAA 제작 플레이북](../03_playbooks/02_aaa_production_playbook.md) · [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) · [품질 체크리스트](../03_playbooks/04_quality_checklists.md) · [치수 기준표](../03_playbooks/05_reference_dimensions.md)
-- [보조 스크립트](../03_playbooks/scripts/README.md)(`scene_audit.py`, `placement_utils.py`, `review_views.py`) · [CLAUDE.md 템플릿](../03_playbooks/templates/CLAUDE.md) · [스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)
+- [보조 스크립트](../03_playbooks/scripts/README.md)(`scene_audit.py`, `placement_utils.py`, `review_views.py`, 건축 상식 검사 `building_audit.py`) · [CLAUDE.md 템플릿](../03_playbooks/templates/CLAUDE.md) · [스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)
 - [사례 모음](../04_case_studies/01_case_studies.md) · [한국어 자료](../04_case_studies/02_korean_resources.md)
 
 ## 원자료

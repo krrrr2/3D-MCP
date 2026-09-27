@@ -13,7 +13,7 @@
 - Blender: {{5.2.2}} with ENGLISH UI. Helper scripts tested on 4.2.23 LTS and 5.0.1; the official Blender Lab add-on needs 5.1+.
 - MCP server: {{blender = MCP for Blender (ahujasid) | blender-lab = official Blender Lab}} — connect ONE per Blender instance (both use localhost:9876).
 - Dimensions: REGION={{KR}}. Source of truth: 03_playbooks/05_reference_dimensions.md §10 (paste block) and §11 (KR_SIZE_RULES).
-- Helper scripts: {{ABSOLUTE_PATH}}/03_playbooks/scripts (scene_audit.py, placement_utils.py, review_views.py).
+- Helper scripts: {{ABSOLUTE_PATH}}/03_playbooks/scripts (scene_audit.py, placement_utils.py, review_views.py, building_audit.py).
 - Quality profile: {{standard}} (fast: 1 fix round, ≤1280x720 · standard: 2 rounds, 1920x1080 · cinematic: 4 rounds, every stage gated).
 - Budgets: tris {{hero ≤ 8k}}, textures {{2K PBR}}, paid generation {{0 calls}}, tool calls {{80}}.
 - Model/effort: {{Opus 5.5 effort high for spec/layout turns}}. Codex + GPT-6 Astra: set model_reasoning_effort explicitly (Codex default is low).
@@ -23,12 +23,14 @@
 - One furniture piece = one parent Empty (the "unit") + child parts. scene_audit judges units by their top parent,
   so loose parts without a parent will be reported as floating.
 - Names: English snake_case containing the category word: unit `dining_chair_01`, parts `dining_chair_01_leg_FL`.
-  No Korean names. Size rules match whole words (`coffee_table`, `dining_table`, `sofa`, `armchair`); snake_case preferred.
+  No Korean names. Size rules match whole words (`coffee_table`, `dining_table`, `sofa`, `armchair`); CamelCase is split too,
+  and an accessory word after the keyword disables the rule (`table_lamp`, `door_handle`). snake_case preferred.
+  Sizes are measured in the unit's own orientation (w = long side, d = short side, z = height), so rotated furniture is fine.
   Optional engine prefix on units: `SM_dining_chair_01`.
 - Materials `M_<type>_<variant>` (M_wood_oak) · lights `LGT_<role>` (LGT_key) · cameras `CAM_<shot>`.
 - Collections: COL_Blockout, COL_Hero, COL_Props, COL_Lights, COL_Cameras.
-- Structural objects: last word `floor`, `wall` or `ceiling` (`Floor`, `Wall_N`, `ceiling_01`). Audit uses them as supports and checks
-  furniture-vs-structure penetration. Never end a furniture name with `_wall` (`wall_shelf` is fine).
+- Structural objects: last word `floor`, `ground`, `terrain`, `wall` or `ceiling` (`Floor`, `Wall_N`, `ceiling_01`).
+  Audit uses them as supports and checks furniture-vs-structure penetration. Never end a furniture name with `_wall` (`wall_shelf` is fine).
 - Rename imported assets to these rules immediately.
 
 ## 2. Files
@@ -65,7 +67,8 @@
 - Never write coordinates by guessing. Parts: build from spec/spec_sheet.json (sizes in m).
   Rooms: write relations (against_wall, wall_center, facing, in_front_of, center_aligned, distance) in spec/relations.json
   and let the solver / placement_utils compute x, y, yaw.
-- Nothing long through MCP: socket timeout 180 s (MCP for Blender), exec has no timeout, Claude Code idle timeout 5 min.
+- Nothing long through MCP: socket timeout 180 s (MCP for Blender), exec has no timeout, Claude Code idle timeout
+  (CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT) 30 min for stdio servers, 5 min for HTTP servers and claude.ai connectors.
   Final renders, bakes, big exports → headless:
   `blender -b <file>.blend --python-exit-code 1 -P <script>.py -- <args>`  (without the flag, script errors exit 0)
 - Save a version at the end of every stage:
@@ -83,17 +86,26 @@ import sys, importlib, bpy
 sys.path.append(r"{{ABSOLUTE_PATH}}/03_playbooks/scripts")
 import scene_audit, placement_utils as pu, review_views as rv
 for m in (scene_audit, pu, rv): importlib.reload(m)
-rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)  # ceiling_z = room ceiling (KR old apt 2.30). KR: size_rules=KR_SIZE_RULES (05_reference_dimensions.md §11)
+rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30, collection="Room")  # ceiling_z = room ceiling (KR old apt 2.30);
+# collection limits the report (and the ceiling rule) to that collection. KR: size_rules=KR_SIZE_RULES (05_reference_dimensions.md §11)
 print(rep["summary"], [(u["name"], u["issues"]) for u in rep["units"] if u["issues"]], rep["interpenetrations"])
 print(rv.render_review_views(bpy.path.abspath("//review/v001"), engine="BLENDER_WORKBENCH", res=768))  # ABSOLUTE out dir
 ```
-Headless: `blender -b scene.blend --python-exit-code 1 --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --out review/v001/audit.json`
+Headless: `blender -b scene.blend --python-exit-code 1 --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --ceiling-z 2.3 --collection Room --out review/v001/audit.json`
 (no GPU → use engine="CYCLES", samples=16 for review_views).
+Rooms/buildings (walls, doors, windows, stairs): `building_audit.audit_building(collection="House")` → summary errors, warnings,
+liminal_risk. It imports scene_audit.py from the same folder and uses `os`; if safe mode blocks it, run it headless
+(`blender -b house.blend --python .../building_audit.py -- --collection House --out building.json`).
+Naming for it: room floors `Floor_<room type>` (Floor_living, Floor_bedroom_2), outside `Ground`, `Wall_...`, `Door_...`,
+`Window_...`; cut door/window holes with a real Boolean.
 
 ## 5. Verification gates — every stage, in this order
-1. Numbers: scene_audit → issues 0 and interpenetrations [] (except `allowed_exceptions` in acceptance.yaml,
+1. Numbers: scene_audit → issues 0 (floating, below_floor, sunk_into, above_ceiling, size_out_of_range …) and
+   interpenetrations [] incl. furniture vs wall/ceiling (except `allowed_exceptions` in acceptance.yaml,
    e.g. wall/ceiling-mounted items flagged `floating_or_wall_mounted`). Layout: pu.check_clearances(...) → [] ,
    facing dot ≥ 0.9, main walkway ≥ 0.9 m, door swing (≈ door width square) clear.
+   Rooms/buildings: building_audit errors 0 and liminal_risk low (a single room whose door leads to unmodeled
+   space reports door_to_void / no_entrance: add `Ground` outside the door or list it as an allowed exception).
 2. Images: review_views → top/front/side/persp into review/v###/. Judge materials/lighting on a real render
    (Material Preview at least), never on a Solid-mode screenshot.
 3. Critique: [Claude] read-only critic subagent (.claude/agents/blender-critic.md) or template T07:

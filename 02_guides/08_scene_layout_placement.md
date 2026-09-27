@@ -9,7 +9,7 @@
 - **MCP로 이 구조를 직접 구현한 공개 사례**는 NVIDIA SAGE입니다. `server/layout.py`가 FastMCP로 `generate_room_layout`, `place_objects_in_room` 등을 노출하고, 배치는 Holodeck식 제약 + DFS(grid_size=20) + Shapely 충돌 검사로 풉니다([SAGE](https://github.com/NVlabs/sage)). 가장 완성도 높은 "에이전트 + 툴 + 비평" 레퍼런스는 SceneSmith(MIT)이고, 프롬프트 YAML이 그대로 실무 규칙집입니다([SceneSmith](https://github.com/nepfaff/scenesmith)).
 - **배치 실패의 절반은 에셋 정규화 문제입니다.** 단위 m, 원점은 바닥 중앙, 정면 축 통일(Blender는 -Y, glTF 원본은 +Z), 회전·스케일 적용, 균일 스케일만 사용. Holodeck issue #92(정면 정렬), LayoutVLM issue #9(스케일·회전), I-Design의 `+π` 보정이 모두 여기서 나옵니다.
 - **실무 레시피**: 에셋 정규화 → 초점·기능 그룹·동선 먼저 → 앵커 가구부터 계층 배치(바닥 → 벽걸이 → 천장 → 소품) → 객체당 제약 3~5개 → 솔버 → `scene_audit.py`로 관통·부유 검사 → 소품은 rigid body로 안착 → 4뷰 렌더 채점. 종료 조건은 SceneSmith 설정처럼 "6개 항목 모두 9점 이상이면 종료, 최대 3라운드, 점수가 떨어지면 체크포인트로 롤백"을 씁니다.
-- **이 저장소의 테스트된 스크립트를 쓰세요.** [`placement_utils.py`](../03_playbooks/scripts/README.md)(바닥 스냅, 표면 위 올리기, 벽 붙이기, 바라보기, 간격 규칙 검사), `scene_audit.py`(관통·부유·치수 JSON 리포트), `review_views.py`(위·정면·측면·3/4 검토 렌더). Blender 4.2.23 LTS·5.0.1에서 테스트를 통과했습니다. 이 문서의 솔버·안착·산포 예제 코드도 같은 두 버전에서 실행해 확인했습니다.
+- **이 저장소의 테스트된 스크립트를 쓰세요.** [`placement_utils.py`](../03_playbooks/scripts/README.md)(바닥 스냅, 표면 위 올리기, 벽 붙이기, 바라보기, 간격 규칙 검사), `scene_audit.py`(관통·부유·박힘·천장 돌출·치수 JSON 리포트), `review_views.py`(위·정면·측면·3/4 검토 렌더), `building_audit.py`(문·창·방 연결·동선·계단의 건축 상식 검사와 백룸 위험도). Blender 4.2.23 LTS·5.0.1에서 테스트를 통과했습니다. 이 문서의 솔버·안착·산포 예제 코드도 같은 두 버전에서 실행해 확인했습니다.
 - **수치 규칙은 출처마다 다릅니다.** 소파–커피테이블 간격만 해도 SceneSmith 0.3~0.5 m, Infinigen 0.45~0.6 m, 인테리어 가이드 356~457 mm입니다. 범위로 주고, 법규·최소 통로 같은 **하드 제약**과 디자인 관행인 **소프트 선호**를 나눠서 넣으세요.
 - **[한국 사용자]** 한국 아파트는 천장고 2300 mm(구축) 또는 2400~2500 mm(최근 신축), 방문 900×2100 mm(문틀 기준), 매트리스 Q 1500×2000 mm입니다. 'King' 같은 이름 대신 mm 값을 넘기세요. SceneSmith·SceneAssistant가 쓰는 **Hunyuan3D-2 로컬 생성은 한국이 라이선스 적용 지역에서 빠져 있습니다.** Geometry Nodes 코드는 노드·소켓을 이름이 아니라 type·identifier로 찾아야 한국어 UI에서도 깨지지 않습니다.
 - **야외·환경은 좌표가 아니라 산포 파라미터를 LLM에게 맡기세요.** Distribute Points on Faces의 Poisson Disk(Distance Min으로 최소 간격 보장) + 밀도 마스크(길·건물 주변 0) + 3·5·7개 클러스터 + 전경·중경·배경 밀도 차등이 기본입니다.
@@ -35,8 +35,8 @@ SceneReVis 프로젝트 페이지의 비교표입니다(침실+거실 평균, �
 
 다른 벤치마크에서 나온 참고값:
 
-- **SceneSmith**(ICML 2026 Spotlight): 기존 방법보다 객체 3~6배, 객체 간 충돌 0, 물리 시뮬레이션 후 96% 안정, 사용자 205명 연구에서 기준선 대비 평균 사실감 승률 92%·프롬프트 충실도 91%(벤더가 아닌 저자 자체 보고, [프로젝트 페이지](https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html)). arXiv 요약에는 충돌 "2% 미만"으로 적혀 있어([arXiv 2602.09153](https://arxiv.org/abs/2602.09153)) 두 표현을 함께 적습니다.
-- **LayoutVLM 자체 논문**: 11개 방 유형 평균 PSA 58.8로 I-Design보다 40.8점 높고, 사용자 평가 순위도 LayoutGPT·Holodeck보다 좋았습니다([arXiv 2412.02193](https://arxiv.org/html/2412.02193), 검색 요약 기준, 신뢰도 중간). 지표에 따라 순위가 바뀝니다.
+- **SceneSmith**(저장소 설명상 ICML 2026 Spotlight): 기존 방법보다 객체 3~6배, 객체 간 충돌 0, 물리 시뮬레이션 후 96% 안정, 사용자 205명 연구에서 기준선 대비 평균 사실감 승률 92%·프롬프트 충실도 91%(논문 저자 자체 보고, [프로젝트 페이지](https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html)). arXiv 요약에는 충돌 "2% 미만"으로 적혀 있어([arXiv 2602.09153](https://arxiv.org/abs/2602.09153)) 두 표현을 함께 적습니다.
+- **LayoutVLM 자체 논문**: 11개 방 유형 평균 PSA(Physically-Grounded Semantic Alignment, 물리적으로 타당하면서 지시와 맞는 정도) 58.8로 I-Design보다 40.8점 높고, 사용자 평가 순위도 LayoutGPT·Holodeck보다 좋았습니다([arXiv 2412.02193](https://arxiv.org/html/2412.02193), 검색 요약 기준, 신뢰도 중간). 지표에 따라 순위가 바뀝니다.
 - **BlenderGym**: GPT-4o의 배치(Placement) 과제 광도 손실이 11.89로 사람(0.423)의 약 28배였습니다([BlenderGym](https://blendergym.github.io/), 보완 조사, 독립 재검증 없음).
 
 **읽는 법**
@@ -91,10 +91,10 @@ SceneReVis 프로젝트 페이지의 비교표입니다(침실+거실 평균, �
 |---|---|---|---|---|---|---|---|
 | [Holodeck](https://github.com/allenai/Holodeck) (CVPR 2024) | LLM(gpt-4o-2024-05-13) 제약 + DFS(권장)/MILP. 회전 0/90/180/270°, 제약 가중치 global 1.0·relative/direction/alignment 0.5·distance 1.8 | Shapely 2D 충돌 | 없음(AI2-THOR/Unity 2020.3.25f1) | 없음 | Apache-2.0 | OpenAI API | 제약 어휘와 프롬프트 지침([prompts.py](https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py)), DFS 로직([floor_objects.py](https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/floor_objects.py)) |
 | [LayoutVLM](https://github.com/sunfanyunn/LayoutVLM) (CVPR 2025) | VLM(gpt-4o, 보조 gpt-4o-mini)이 그룹별 제약 프로그램 작성 → Adam(lr 0.01, ExponentialLR γ 0.96, 400 iter, 겹침 IoU×1000, 제약×100, 100 iter마다 방 경계 투영). trust-constr·dual_annealing 대안 | 렌더에 좌표 마크·이름 오버레이 | 렌더 스크립트만 | 없음 | **LICENSE 없음(미표기)** | Rotated_IoU CUDA 확장 빌드 | 제약 API 7종(MCP 툴 설계 템플릿), 좌표 오버레이 렌더([grad_solver.py](https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/grad_solver.py)) |
-| [Infinigen Indoors](https://github.com/princeton-vl/infinigen) (CVPR 2024) | Python 제약 언어 + simulated annealing(추가·삭제·포즈·재할당·교환 move) | 하드 제약 + 비용항 | **Blender 네이티브**(.blend 출력) | 없음 | BSD-3 | 방 하나 CPU 약 8분 | 제약 DSL의 모범([home.py v1.16.0](https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py)). **v1.16.0 태그를 checkout할 것**(아래 주의) |
+| [Infinigen Indoors](https://github.com/princeton-vl/infinigen) (CVPR 2024) | Python 제약 언어 + simulated annealing(추가·삭제·포즈·재할당·교환 move) | 하드 제약 + 비용항 | **Blender 네이티브**(.blend 출력) | 없음 | BSD-3 | 단일 방 coarse 단계 CPU 약 8~13분 | 제약 DSL의 모범([home.py v1.16.0](https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py)). **v1.16.0 태그를 checkout할 것**(아래 주의) |
 | [I-Design](https://github.com/atcelen/IDesign) (ECCV 2024) | 디자이너·건축가·엔지니어 에이전트 scene graph → 백트래킹 | GPT-V 렌더 채점 | `place_in_blender.py`로 glb import·배치 | 없음 | 라이선스 미표기 | GPT-4 계열 | Blender 배치 절차. 단 `+π` 보정과 비균일 스케일은 따라 하지 말 것 |
 | [SceneWeaver](https://github.com/Scene-Weaver/SceneWeaver) (NeurIPS 2025) | reason-act-reflect 에이전트가 생성기들을 툴로 조합 | 자체 평가·수정 | Infinigen Blender 소켓 서버(`--socket`), UI에서 실시간 확인 | 소켓 브리지(blender-mcp와 같은 구조) | BSD-3 | `bpy==3.6.0` 고정, AzureOpenAI 기본 | 생성기 여러 개를 툴로 묶는 설계 |
-| [SceneSmith](https://github.com/nepfaff/scenesmith) (ICML 2026 Spotlight) | 5단계(평면도→가구→벽걸이→천장→소품), 단계마다 planner·designer·critic. 가구는 `add_furniture_to_scene_tool(asset_id, x, y, yaw°)`로 z=0 직립 배치 | `check_physics`(VHACD, 관통 임계 1 mm), `check_facing_tool`, `check_reachability`, 5초 물리 시뮬레이션 | Blender `house.blend` 출력, EEVEE Next 렌더 | 자체 툴 호출(MCP 아님) | **MIT** | 전체 파이프라인 GPU 45GB 이상 권장(L40S 테스트), OpenAI API(설정상 gpt-5.2) | 설정값·루브릭·종료/롤백 규칙 전체(4.8·4.9절) |
+| [SceneSmith](https://github.com/nepfaff/scenesmith) (ICML 2026 Spotlight, 저장소 설명 기준. README bibtex는 arXiv) | 5단계(평면도→가구→벽걸이→천장→소품), 단계마다 planner·designer·critic. 가구는 `add_furniture_to_scene_tool(asset_id, x, y, yaw°)`로 z=0 직립 배치 | `check_physics`(VHACD, 관통 임계 1 mm), `check_facing_tool`, `check_reachability`, 5초 물리 시뮬레이션 | Blender `house.blend` 출력, EEVEE Next 렌더 | 자체 툴 호출(MCP 아님) | **MIT** | 전체 파이프라인 GPU 45GB 이상 권장(L40S 테스트), OpenAI API(설정상 gpt-5.2) | 설정값·루브릭·종료/롤백 규칙 전체(4.8·4.9절) |
 | [SAGE](https://github.com/NVlabs/sage) (arXiv 2602.10116, 큐레이션 목록상 CVPR 2026) | LLM이 객체당 Holodeck식 제약 4~5개 → DFS(grid_size=20, 시간 제한 max(300, n×60)초) | Shapely bbox 충돌(가로·세로 전체 치수에 +3.5 cm, 한쪽 약 1.75 cm), 소품은 후보 150개 샘플링 + physics critic | 언급 없음(USD/Isaac 중심) | **FastMCP 서버** | Apache-2.0(구성요소별 별도) | Slurm, Isaac Sim, 자체 모델 서버 | MCP 툴 설계와 배치 알고리즘([layout.py](https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py), [object_placement_planner.py](https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py)) |
 | [SceneReVis](https://github.com/Runder-sun/SceneReVis) (arXiv 2602.09432) | 7B 모델(Qwen2.5-VL 기반, SFT + GRPO)이 add/move/rotate/scale/replace/remove 6개 원자 연산 호출 | overhead + diagonal 2뷰 렌더, voxel 물리(충돌·경계), VLM 0~10 채점 | Blender 4.0.2 렌더 | 없음 | MIT(코드·데이터·가중치) | 3D-FUTURE(승인 필요) | "2뷰 렌더 + 루브릭 + 원자 연산" 루프 |
 | [HSM](https://github.com/3dlg-hcvc/hsm) (3DV 2026) / [SMC](https://github.com/3dlg-hcvc/smc) (3DV 2025) | 방→가구→소품 계층, 반복 배치 패턴(모티프)을 프로그램으로 | support region | SMC는 Blender 3.6 LTS에서 예시 작성 | 없음 | MIT | HSM: 씬당 약 $0.80·약 10분, HSSD 약 72GB(HF 라이선스 동의 필요) | 식탁 세팅·책장·욕실 소품을 `place_row`·`place_stack`·`place_grid` 같은 모티프 함수로 |
@@ -118,7 +118,7 @@ SceneReVis 프로젝트 페이지의 비교표입니다(침실+거실 평균, �
 | [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai) | Transforms(snap), Objects(origin), Physics(rigid body, bake), OpenGL 렌더 피드백 | **AGPL-3.0-or-later** | README 기준 186 tool/27 모듈(저장소 About의 175는 옛 수치). Blender 4.2+ Extension(5.1 테스트). `execute_code` 대신 전용 툴을 쓰게 하면 실패가 국소화됨. 상용 통합 시 AGPL 주의 |
 | [MCP for Blender](https://github.com/ahujasid/mcp-for-blender)(ahujasid, 구 blender-mcp) | 배치 전용 툴(스냅·충돌·물리) **없음** → `execute_blender_code`로 직접 구현 | MIT | 2026-09-16 개명 공지([#366](https://github.com/ahujasid/blender-mcp/issues/366)). README가 "복잡한 작업은 작은 단계로 나눠라"라고 경고. 소켓 타임아웃 180초 |
 | 공식 Blender Lab 서버 | 코드 실행·스크린샷 | GPL-3.0-or-later | Blender 5.1+ 전용. 배치 전용 툴 없음. 자세한 비교는 [Blender MCP 가이드](02_blender_mcp.md) |
-| 이 저장소 스크립트 | 스냅·표면 올리기·벽 붙이기·바라보기·간격 검사·관통/부유 리포트·4뷰 렌더 | 저장소 포함 | 어느 서버에서나 `execute_blender_code` 또는 헤드리스로 동작([사용법](../03_playbooks/scripts/README.md)) |
+| 이 저장소 스크립트 | 스냅·표면 올리기·벽 붙이기·바라보기·간격 검사·관통/부유/박힘 리포트·4뷰 렌더, 건물·방의 문·창·동선 상식 검사(`building_audit.py`) | 저장소 포함 | 어느 서버에서나 `execute_blender_code` 또는 헤드리스로 동작([사용법](../03_playbooks/scripts/README.md)) |
 
 ### 3.3 학습형 모델·기타 연구
 
@@ -133,7 +133,7 @@ SceneReVis 프로젝트 페이지의 비교표입니다(침실+거실 평균, �
 | 도구 | 내용 | 실무 활용 |
 |---|---|---|
 | [SceneEval](https://github.com/3dlg-hcvc/SceneEval) (WACV 2026 Oral, MIT) | 지표 10종. VLM 없이: Collision, Navigability, Out of Bounds, Opening Clearance(v1.1, 2025-10-27 추가). VLM(GPT-4o 기본): Object Count, Attribute, Obj-Obj Relationship, Obj-Architecture Relationship, Support, Accessibility. SceneEval-500 | 10개 지표를 **에이전트의 셀프 체크리스트**로 그대로 씀. 기하 4종은 스크립트, 나머지 6종은 VLM이 판정 |
-| [BlenderGym](https://github.com/richard-guyunqi/BlenderGym-Open) (CVPR 2025 Highlight, LICENSE 없음) | `--task placement` 포함, VLM 20종 이상 지원 | 모델 후보(Claude/GPT/Gemini)의 Blender 배치 편집 능력을 직접 비교할 때 |
+| [BlenderGym](https://github.com/richard-guyunqi/BlenderGym-Open) (CVPR 2025 Highlight, LICENSE 없음) | `--task placement` 포함. README 기준 VLM 20종 이상 지원(공개 리더보드에 결과가 오른 VLM 시스템은 13개) | 모델 후보(Claude/GPT/Gemini)의 Blender 배치 편집 능력을 직접 비교할 때 |
 
 ### 3.5 데이터셋·에셋 라이선스 주의
 
@@ -166,7 +166,7 @@ SceneReVis 프로젝트 페이지의 비교표입니다(침실+거실 평균, �
 
 - 방 치수, 천장고, 문·창 위치를 m로 적습니다. 한국 아파트라면 구축 2300 mm, 최근 신축 2400~2500 mm를 기본값으로 둡니다(6.3절).
 - **금지 영역을 가구보다 먼저 깝니다.** SAGE 프롬프트는 문 회전 약 90 cm와 주요 가구 사이 60~90 cm 동선을 규칙으로 두고, SceneEval도 Opening Clearance와 Navigability를 독립 지표로 둡니다. 나중에 동선을 확보하려 하면 전체를 다시 배치해야 합니다.
-- 조사에서 제안된 예: 문 앞 0.9×0.9 m, 창 앞 깊이 0.6 m, 주동선 폭 0.9 m 띠를 방 폴리곤에서 빼서 배치 가능 영역을 만듭니다. 배치 후에는 5 cm 격자 occupancy map에서 반경 0.25~0.3 m 원판으로 BFS 연결성을 검사하면 "모든 방 입구와 주요 가구 앞에 도달 가능한가"를 숫자로 확인할 수 있습니다.
+- 조사에서 제안된 예: 문 앞 0.9×0.9 m, 창 앞 깊이 0.6 m, 주동선 폭 0.9 m 띠를 방 폴리곤에서 빼서 배치 가능 영역을 만듭니다. 배치 후에는 5 cm 격자 점유 지도(occupancy map)를 만들고, 반경 0.25~0.3 m 원판(사람 몸 크기)이 지나갈 수 있는 칸을 BFS(너비 우선 탐색)로 이어 보면 "모든 방 입구와 주요 가구 앞에 도달 가능한가"를 숫자로 확인할 수 있습니다.
 
 ### 4.1 에셋 정규화 (배치 품질의 절반)
 
@@ -416,8 +416,7 @@ def check_facing(obj, target, thresh=0.9):
 ```python
 import importlib, scene_audit, placement_utils as pu
 importlib.reload(scene_audit)
-rules = {"armchair": {"z": [0.65, 1.10]}, **scene_audit.DEFAULT_SIZE_RULES}   # 'armchair'가 'chair' 규칙에 걸리지 않게 먼저 둔다
-rep = scene_audit.audit_scene(floor_z=0.0, size_rules=rules)
+rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)   # 방 JSON의 천장 2.3 m(한국 구축). 기본 치수 규칙에 armchair 등이 이미 들어 있음
 print(rep["summary"])                    # interpenetrating_pairs 가 0 이어야 함
 print([(u["name"], u["issues"]) for u in rep["units"] if u["issues"]])
 print(pu.check_clearances([              # (A, B, 최소 m, 최대 m 또는 None)
@@ -427,8 +426,11 @@ print(pu.check_clearances([              # (A, B, 최소 m, 최대 m 또는 None
 ]))
 ```
 
-- `scene_audit.py`는 부모 기준 "유닛"마다 월드 좌표 BVH를 만들어 **바운딩박스가 겹치는 쌍만** 면 교차를 검사합니다. 테이블 아래로 들어간 의자(bbox만 겹침)는 관통으로 잡지 않습니다.
-- **API 함정 두 가지**: `BVHTree.FromObject()`는 **오브젝트 로컬 좌표** 트리라서 두 오브젝트를 그대로 비교하면 틀립니다. 월드 변환한 정점으로 `FromPolygons`/`FromBMesh`를 만드세요. `overlap()`은 표면 교차만 잡아서 **한 물체가 다른 물체 안에 완전히 들어간 경우를 놓칩니다.** AABB 겹침 깊이를 함께 보세요([mathutils_bvhtree.cc](https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc)). `Scene.ray_cast(depsgraph, origin, direction, distance)`는 월드 공간 evaluated geometry를 대상으로 합니다([rna_scene_api.cc](https://raw.githubusercontent.com/blender/blender/main/source/blender/makesrna/intern/rna_scene_api.cc)).
+- 위 코드를 4.4절 솔버 결과(암체어 90° 회전 포함)로 만든 상자 장면에 돌리면 관통 0쌍, 치수·부유·천장 경고 0건, 간격 위반 `[]`이 나옵니다(Blender 4.2.23 LTS·5.0.1에서 확인. 재질·UV 경고는 블록아웃이라 제외).
+- `scene_audit.py`는 부모 기준 "유닛"마다 월드 좌표 BVH(면을 빠르게 찾는 공간 트리)를 만들어 **바운딩박스가 겹치는 쌍만** 면 교차를 검사합니다. 테이블 아래로 들어간 의자(bbox만 겹침)는 관통으로 잡지 않습니다. 벽·천장 메시가 있으면 가구–벽·천장 관통도 잡습니다(구조물끼리는 제외).
+- **치수 규칙은 가구 방향 기준입니다.** 루트의 Z 회전을 되돌려 폭 w(수평 긴 변)·깊이 d·높이 z를 재므로 90°나 30° 돌린 소파·암체어도 오탐하지 않습니다. 이름은 단어 단위로 맞춰서 `armchair`는 `chair` 규칙에 걸리지 않고, `table_lamp`·`door_handle`처럼 부속품 단어가 뒤에 붙으면 규칙을 적용하지 않습니다.
+- **박힘과 천장**: 바닥이나 다른 가구 속으로 파고든 유닛은 '떠 있음'이 아니라 `below_floor`·`sunk_into:<상대>=<깊이>m`으로 나오고, `ceiling_z`보다 위로 나간 유닛은 `above_ceiling`으로 나옵니다. 방 내부와 건물 외관을 한 장면에 두면 `collection="Room"`처럼 컬렉션을 지정해 천장 규칙을 방 유닛에만 적용하세요.
+- **API 함정 두 가지**: `BVHTree.FromObject()`는 **오브젝트 로컬 좌표** 트리라서 두 오브젝트를 그대로 비교하면 틀립니다. 월드 변환한 정점으로 `FromPolygons`/`FromBMesh`를 만드세요. `overlap()`은 표면 교차만 잡아서 **한 물체가 다른 물체 안에 완전히 들어간 경우를 놓칩니다.** AABB(축 정렬 바운딩박스) 겹침 깊이를 함께 보세요([mathutils_bvhtree.cc](https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc)). `Scene.ray_cast(depsgraph, origin, direction, distance)`는 월드 공간 evaluated geometry를 대상으로 합니다([rna_scene_api.cc](https://raw.githubusercontent.com/blender/blender/main/source/blender/makesrna/intern/rna_scene_api.cc)).
 - **임계값 참고**: SceneSmith는 관통 임계 1 mm(VHACD 충돌), 충돌 해소 1단계로 무관한 물체 간 world bounds 0.2 m부터 시도, SAGE는 bbox 전체 치수에 +3.5 cm, Vibe3DScene은 관통 기본 임계 0.02 m입니다. 이 저장소 `scene_audit.py`의 기본 접촉·관통 허용 오차는 5 mm입니다.
 - **고폴리 에셋**은 decimate한 프록시로 검사하세요. 느려서 MCP 소켓 타임아웃(ahujasid 180초)에 걸립니다.
 - **벽걸이·천장등은 `floating_or_wall_mounted`로 나옵니다.** 의도한 것인지 확인하고, 벽 쪽은 벽과의 거리로 따로 검증하세요.
@@ -508,8 +510,9 @@ print(settle([O["book_0"], O["book_1"], O["cup"]], [O["floor"], O["side_table"]]
 import bpy
 from review_views import render_review_views
 # GUI(MCP)에서는 Workbench가 가장 빠름. 헤드리스·GPU 없는 서버는 CYCLES.
-# 출력 폴더는 절대 경로로 넘길 것('//review/'를 그대로 넘기면 os.makedirs가 루트 아래 /review 를 만든다)
-paths = render_review_views(bpy.path.abspath("//review/"), engine="BLENDER_WORKBENCH", res=1024)
+# '//review/'처럼 .blend 기준 상대 경로를 줘도 됨(함수 안에서 bpy.path.abspath로 바꾼 뒤 폴더를 만듦).
+# .blend를 저장하지 않은 새 파일이면 Blender 프로세스의 작업 폴더 아래 review/에 생기므로 먼저 저장해 둘 것
+paths = render_review_views("//review/", engine="BLENDER_WORKBENCH", res=1024)
 # → top.png(위 정사영), front.png, side.png, persp.png. 오브젝트마다 다른 색이라 겹침·간격이 잘 보임
 ```
 
@@ -544,6 +547,7 @@ paths = render_review_views(bpy.path.abspath("//review/"), engine="BLENDER_WORKB
 ```text
 DONE 조건: interpenetrations == [] AND 의도치 않은 floating == [] AND keep_out 침범 == []
 AND 주동선 ≥ 0.9 m AND 비평 6개 항목 ≥ 9 (또는 3라운드 도달).
+(방이 여러 개인 건물이면) AND building_audit summary.errors == 0 AND liminal_risk != "high".
 하나라도 위반하면 DONE을 선언하지 말고 수정하거나 해당 객체를 삭제하라.
 ```
 
@@ -791,7 +795,7 @@ def add_scatter(ground, collection, dist_min=4.0, density_max=0.08, seed=0,
 | 소품이 받침면 위 약 4 cm에 떠서 멈춤 | rigid body 기본 충돌 여백 0.04 m | `use_margin=True`, `collision_margin=0.001` (4.7절) |
 | 관통 검사가 "0"인데 물체가 안에 들어가 있음 | `overlap()`은 표면 교차만 잡음 | AABB 포함·겹침 깊이 검사 병행 |
 | 두 물체 BVH 비교 결과가 이상함 | `BVHTree.FromObject`는 로컬 좌표 | 월드 변환 정점으로 트리 생성(`scene_audit.py` 방식) |
-| `scene_audit`이 암체어를 치수 이상으로 보고 | 이름 키워드 `chair`에 armchair가 걸리고, 치수 규칙은 월드 축(x/y) 기준이라 90° 회전하면 폭·깊이가 바뀜 | 4.6절처럼 `{"armchair": {...}, **DEFAULT_SIZE_RULES}`로 먼저 매칭되게 하거나, 회전하는 가구는 z(높이)만 검사 |
+| `scene_audit`이 가구를 치수 이상(`size_out_of_range`)으로 보고 | 이름에 종류 단어가 없거나 다른 단어로 지음(한국어 이름은 인식 안 함), 지역 범위가 맞지 않음. 예전 스크립트의 armchair·90° 회전 오탐은 고쳐짐(단어 단위 매칭, 가구 방향 기준 w/d/z) | 영어 snake_case 이름(`armchair_01`, `coffee_table`), 한국 장면은 [치수표](../03_playbooks/05_reference_dimensions.md) 11절 `KR_SIZE_RULES`를 `size_rules=`로 넘기기 |
 | MCP 호출이 멈추거나 타임아웃 | 한 번에 너무 큰 코드(ahujasid 소켓 180초, 애드온 `exec()`는 제한 없음) | 객체 1~3개 단위의 원자적 호출. 고폴리 검사는 프록시로 |
 | 가구가 벽을 따라 흩어진 "대기실" | 초점·그룹 없음 | 4.2절: 초점 → 그룹 → 동선 → 관계 순서 |
 | 문 앞·창 앞이 막힘 | 배치 후 동선을 고려 | keep-out을 먼저 깔고 솔버의 하드 조건으로 |
