@@ -21,13 +21,16 @@
 
 | # | 요구사항 | 이 저장소에서 다루는 곳 |
 |---|---|---|
-| R1 | AI + MCP로 모델링·텍스처를 예쁘게 만드는 노하우 | `02_guides/`, `03_playbooks/` |
-| R2 | 추천 MCP 서버·도구 자료 | `02_guides/02_mcp_servers.md` |
-| R3 | 오브젝트·가구·조형이 제대로 만들어지기 위한 자료 | `02_guides/06_*`, `03_playbooks/05_reference_dimensions.md` |
-| R4 | 배치(레이아웃)가 제대로 되기 위한 자료 | `02_guides/07_*` |
-| R5 | 다른 사람들이 **어떻게 했는지** (사례) | `04_case_studies/` |
-| R6 | **최대한 많이** 수집 | 13개 주제 병렬 조사 + 주제별 교차검증 + 누락 보완 조사 |
-| R7 | **체계적으로** 정리 | 번호 붙은 폴더 구조, 원자료/가공자료 분리, 검증 기록 |
+| R1 | AI + MCP로 모델링·텍스처를 예쁘게 만드는 노하우 | `02_guides/05_texturing_materials.md`, `02_guides/06_lighting_rendering_art_direction.md`, `02_guides/09_agent_workflow_prompting.md`, `03_playbooks/` 전체 |
+| R2 | 추천 MCP 서버·도구 자료 | `02_guides/02_blender_mcp.md`, `02_guides/03_other_mcp_dcc_cad_engines.md`, `02_guides/04_ai_3d_generation.md` |
+| R3 | 오브젝트·가구·조형이 제대로 만들어지기 위한 자료 | `02_guides/07_modeling_objects_furniture_sculpture.md`, `03_playbooks/05_reference_dimensions.md`, `03_playbooks/scripts/` |
+| R4 | 배치(레이아웃)가 제대로 되기 위한 자료 | `02_guides/08_scene_layout_placement.md`, `03_playbooks/scripts/placement_utils.py` |
+| R5 | 다른 사람들이 **어떻게 했는지** (사례) | `04_case_studies/01_case_studies.md`, `04_case_studies/02_korean_resources.md` |
+| R6 | **최대한 많이** 수집 | 13개 주제 병렬 조사 + 주제별 교차검증 + 6개 공백 보완 조사 (`01_research/`) |
+| R7 | **체계적으로** 정리 | 번호 붙은 폴더 구조, 원자료/가공자료 분리, 검증 기록, 인수인계 문서 |
+| (필요 요소) | 어떤 AI를 쓸지 | `02_guides/01_ai_models_and_clients.md` |
+| (필요 요소) | 설치·연결 방법 | `03_playbooks/01_quickstart_setup.md` |
+| (필요 요소) | 라이선스·상업적 이용 | `02_guides/10_assets_pipeline_licensing.md` |
 
 ## 4. 목적 달성에 필요한 기본 요소 (사용자가 명시하지 않았지만 필요한 것)
 
