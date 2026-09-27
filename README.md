@@ -20,7 +20,7 @@
 8. **품질은 모델보다 '하네스'에서 올라갑니다**: 작은 코드 조각 실행 → 스크린샷/4방향 렌더 → 숫자 게이트 → 한 번에 한 가지 수정, `.blend` 버전 저장, 비평 전용 에이전트 분리. → [에이전트 워크플로 가이드](02_guides/09_agent_workflow_prompting.md), [규칙 템플릿](03_playbooks/templates/CLAUDE.md)
 9. **[한국 사용자 필수] Tencent Hunyuan3D 계열 오픈웨이트**(2.0/2.1/Omni/Part, HY-World, HY-Motion)는 라이선스 적용 지역에서 **대한민국을 제외**하고 출력물 사용도 제한합니다. 한국어 UI에서는 노드 이름이 번역돼 코드가 깨질 수 있으니 영어 UI를 쓰거나 노드를 type으로 찾게 하세요. → [라이선스 가이드](02_guides/10_assets_pipeline_licensing.md)
 10. **"컴퓨터 유즈로 직접 모델링하는 게 낫다"는 대체로 오해입니다.** Astra 공식 사례도 bpy 스크립트로 만들고 컴퓨터 유즈는 화면 확인에 썼고, 화면 클릭 CAD 벤치마크 최고 성공률은 17.5%입니다. 만드는 건 스크립트·MCP, 확인과 API 없는 조작은 컴퓨터 유즈로 나누세요. → [컴퓨터 유즈 vs MCP vs 스크립트](02_guides/12_computer_use_and_other_methods.md)
-11. **"사람이 만든 건물 같은가"도 자동 검사합니다.** 문이 벽에 안 뚫림·열면 벽·허공으로 나감, 창턱 높이 제각각·실내 창, 문 없는 방·창 없는 거실·복도처럼 길쭉한 빈 방의 반복 같은 **백룸식 기묘함**을 [`building_audit.py`](03_playbooks/scripts/README.md)가 잡고 위험도를 매깁니다.
+11. **"사람이 만든 건물 같은가"도 자동 검사합니다.** 문이 벽에 안 뚫림·열면 벽·허공으로 나감·가구가 막음, 창턱 높이 제각각·실내 창, 문 없는 방·창 없는 거실·복도처럼 길쭉한 빈 방의 반복 같은 **백룸식 기묘함**을 [`building_audit.py`](03_playbooks/scripts/README.md)가 잡고 위험도를 매깁니다. **실제 AI가 만든 건물 9개**(GPT-6 Astra 재구성 공간, 같은 아파트를 Fable·GPT-6가 각각 만든 8개)로 검증해 오탐을 고쳤습니다 → [검증 기록](03_playbooks/scripts/validation/README.md)
 12. **보안**: `execute_blender_code`는 임의 Python 실행 권한입니다. 작업 전 저장, `DISABLE_TELEMETRY=true`, 신뢰하는 서버만 쓰세요(safe mode는 샌드박스가 아님). → [빠른 시작](03_playbooks/01_quickstart_setup.md)
 
 ---

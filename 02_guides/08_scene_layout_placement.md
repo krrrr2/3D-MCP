@@ -547,7 +547,7 @@ paths = render_review_views("//review/", engine="BLENDER_WORKBENCH", res=1024)
 ```text
 DONE 조건: interpenetrations == [] AND 의도치 않은 floating == [] AND keep_out 침범 == []
 AND 주동선 ≥ 0.9 m AND 비평 6개 항목 ≥ 9 (또는 3라운드 도달).
-(방이 여러 개인 건물이면) AND building_audit summary.errors == 0 AND liminal_risk != "high".
+(방이 여러 개인 건물이면) AND building_audit summary.errors == 0 AND liminal_risk != "high" AND no_rooms_found 경고 없음.
 하나라도 위반하면 DONE을 선언하지 말고 수정하거나 해당 객체를 삭제하라.
 ```
 

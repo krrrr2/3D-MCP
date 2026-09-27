@@ -273,7 +273,7 @@ Blender 4.2 이상에서 실행할 Python 패키지를 만들어 줘. 300×300 m
 | 여러 한국어 가이드를 섞어 따라 함(공식 커넥터와 커뮤니티 서버를 같이 설치) | 연결 실패, 어느 서버가 응답하는지 불분명 | 둘 다 `localhost:9876`을 씁니다. 하나만 고르세요 → [빠른 시작](../03_playbooks/01_quickstart_setup.md) |
 | 공식 커넥터 애드온이 설치되지 않거나 서버가 시작되지 않음 | Preferences에 애드온이 보이지 않거나, 커넥터는 켜졌는데 도구가 응답하지 않음 | Blender 5.1.0 이상인지, Edit > Preferences에서 Allow Online Access가 켜져 있는지 확인합니다. 드래그 설치가 안 되면 한 번 더 드래그해 봅니다(후기 기준 팁). 드래그 설치와 수동 설치를 섞어 중복 설치하지 않습니다 → [빠른 시작](../03_playbooks/01_quickstart_setup.md) |
 | 한국어 UI Blender에서 에이전트가 쓴 재질 코드가 실패 | `nodes['Principled BSDF']`가 None이거나 KeyError | 노드를 type으로 찾게 하고, 영어 UI를 쓰거나 New Data 번역을 끕니다 → [Blender MCP](../02_guides/02_blender_mcp.md) 12절 |
-| 오브젝트 이름을 한글로 지음(예: '의자', '거실 바닥') | `scene_audit.py` 치수 검사, `building_audit.py`의 방·문·창 판정이 적용되지 않음 | 영어 이름(`chair_01`, `dining_table`, `Floor_living`, `Door_bedroom`)을 쓰게 합니다 → [보조 스크립트](../03_playbooks/scripts/README.md) |
+| 오브젝트 이름을 한글로 지음(예: '의자', '거실 바닥') | `scene_audit.py` 치수 검사(영어 키워드 기준)가 적용되지 않음 | 가구는 영어 이름(`chair_01`, `dining_table`)을 쓰게 합니다. 방·문·창은 `building_audit.py`가 **끝 단어 기준으로 한국어·중국어도 인식**합니다(`거실_바닥`, `현관문`, `거실_창문`; `창가_소파`는 소파로 봄). 애매하면 `obj["role"]`을 넣습니다 → [보조 스크립트](../03_playbooks/scripts/README.md) |
 | MCP for Blender의 Hunyuan3D 연동을 그대로 사용 | 출력물이 라이선스 범위 밖 | 연동을 끄고 약관을 확인한 다른 생성 도구를 씁니다 → [AI 3D 생성](../02_guides/04_ai_3d_generation.md) |
 | Blender 3.0 시절 한국어 강좌 코드를 에이전트에게 그대로 줌 | 5.x에서 경고나 오류(`use_nodes` 폐기 예고, EEVEE 식별자 변경) | Blender 버전을 프롬프트에 명시하고 API 함정 표를 확인합니다 → [Blender MCP](../02_guides/02_blender_mcp.md) 11절 |
 | 헤드라인 수치('10분', '50분', '4주→3분')를 기대치로 삼음 | 실제로는 수정 반복이 수십 번 필요 | 개인·홍보 주장입니다. 영어권의 정직한 기록(10시간·21회 수정, 리뷰어 점수 6~7/10)을 기준으로 일정을 잡습니다 → [사례 모음](./01_case_studies.md) |

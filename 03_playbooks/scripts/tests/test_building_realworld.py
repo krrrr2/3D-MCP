@@ -3,7 +3,7 @@ building_audit.py 실전 패턴 테스트 — 실제 AI 생성 건물(Realsee×G
 검사하며 오탐이 났던 구조를 작은 장면으로 재현한다. 정상 패턴은 아무것도 안 잡혀야 하고, 이상 패턴은 잡혀야 한다.
 
 실행: bpyenv/bin/python 03_playbooks/scripts/tests/test_building_realworld.py
-(검증 기록: 01_research/validation/building_audit_real_scenes.md)
+(검증 기록: 03_playbooks/scripts/validation/README.md)
 """
 
 import os
@@ -334,6 +334,17 @@ def test_door_without_hole_in_merged_walls():
     print("test_door_without_hole_in_merged_walls OK")
 
 
+def test_nothing_recognized_is_not_a_pass():
+    """이름이 Plane·Cube 뿐이라 아무것도 못 알아보면 '오류 0'이 아니라 경고를 낸다 (v1 은 GLB 장면에서 조용히 통과했음)."""
+    reset()
+    box("Plane", (6, 4, 0.02), (3, 2, 0.01))
+    box("Cube", (6, 0.1, 2.4), (3, -0.05, 1.2))
+    box("Cube.001", (0.1, 4, 2.4), (-0.05, 2, 1.2))
+    rep = audit()
+    assert "no_rooms_found" in codes(rep), rep["issues"]
+    print("test_nothing_recognized_is_not_a_pass OK")
+
+
 if __name__ == "__main__":
     test_merged_walls_in_container_groups()
     test_sliding_door_parked_beside_opening()
@@ -345,4 +356,5 @@ if __name__ == "__main__":
     test_stepped_bay_wall_is_not_a_hole()
     test_desk_half_blocks_door_and_wardrobe_covers_window()
     test_door_without_hole_in_merged_walls()
+    test_nothing_recognized_is_not_a_pass()
     print("ALL REAL-WORLD PATTERN TESTS PASSED on Blender", bpy.app.version_string)

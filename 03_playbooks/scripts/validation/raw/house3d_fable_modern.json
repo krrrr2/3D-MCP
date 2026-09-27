@@ -1,0 +1,517 @@
+{
+ "rooms": [
+  {
+   "name": "floor-balcony",
+   "type": "outdoor",
+   "area_m2": 10.38,
+   "size_m": [
+    6.89,
+    2.05
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 2,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 7
+  },
+  {
+   "name": "floor-bath1",
+   "type": "service",
+   "area_m2": 3.36,
+   "size_m": [
+    2.61,
+    2.15
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 2,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-bath2",
+   "type": "service",
+   "area_m2": 4.05,
+   "size_m": [
+    2.84,
+    2.48
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 2,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-bed1",
+   "type": "habitable",
+   "area_m2": 10.01,
+   "size_m": [
+    4.47,
+    4.45
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 3,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-bed2",
+   "type": "habitable",
+   "area_m2": 10.88,
+   "size_m": [
+    4.66,
+    4.6
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 5,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-bed3",
+   "type": "habitable",
+   "area_m2": 12.57,
+   "size_m": [
+    5.01,
+    4.99
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 2,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 5,
+   "windows_total": 2
+  },
+  {
+   "name": "floor-kitchen",
+   "type": "habitable",
+   "area_m2": 7.24,
+   "size_m": [
+    3.8,
+    3.79
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 1,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-living",
+   "type": "habitable",
+   "area_m2": 38.07,
+   "size_m": [
+    11.62,
+    6.19
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 7,
+   "passages": [
+    "floor-vestibule"
+   ],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [
+    "opening-balcony-door"
+   ],
+   "furniture": 27,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-tatami",
+   "type": "unknown",
+   "area_m2": 8.16,
+   "size_m": [
+    3.91,
+    3.6
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 5,
+   "windows_total": 1
+  },
+  {
+   "name": "floor-vestibule",
+   "type": "circulation",
+   "area_m2": 1.63,
+   "size_m": [
+    1.89,
+    1.35
+   ],
+   "ceiling_h_m": 2.72,
+   "doors": 2,
+   "passages": [
+    "floor-living"
+   ],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 1,
+   "windows_total": 0
+  }
+ ],
+ "openings": [
+  {
+   "name": "opening-balcony-door",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 3.56,
+   "at": [
+    2.2,
+    -14.49
+   ],
+   "sides": [
+    "floor-living",
+    "floor-balcony"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-bath1-door",
+   "kind": "door",
+   "wall": "walls#3",
+   "width_m": 0.8,
+   "at": [
+    5.46,
+    -4.37
+   ],
+   "sides": [
+    "floor-living",
+    "floor-bath1"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-bath2-door",
+   "kind": "door",
+   "wall": "walls#2",
+   "width_m": 0.8,
+   "at": [
+    5.34,
+    -9.67
+   ],
+   "sides": [
+    "floor-vestibule",
+    "floor-bath2"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-bed1-door",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 0.6,
+   "at": [
+    5.1,
+    -3.66
+   ],
+   "sides": [
+    "floor-bed1",
+    "floor-living"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-bed2-door",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 0.8,
+   "at": [
+    4.26,
+    -8.06
+   ],
+   "sides": [
+    "floor-bed2",
+    "floor-living"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-bed3-door",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 0.84,
+   "at": [
+    4.87,
+    -10.62
+   ],
+   "sides": [
+    "floor-vestibule",
+    "floor-bed3"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-entry",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 1.0,
+   "at": [
+    0.12,
+    -6.55
+   ],
+   "sides": [
+    "floor-living",
+    "EXTERIOR"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-kitchen-door",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 1.16,
+   "at": [
+    2.92,
+    -4.5
+   ],
+   "sides": [
+    "floor-kitchen",
+    "floor-living"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-tatami-door",
+   "kind": "door",
+   "wall": "walls#0",
+   "width_m": 1.16,
+   "at": [
+    3.8,
+    -3.66
+   ],
+   "sides": [
+    "floor-tatami",
+    "floor-living"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "opening-w-balcony",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 6.76,
+   "at": [
+    3.64,
+    -16.26
+   ],
+   "sill_m": 0.25,
+   "sides": [
+    "floor-balcony",
+    "EXTERIOR"
+   ]
+  },
+  {
+   "name": "opening-w-bath1",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 0.8,
+   "at": [
+    7.89,
+    -4.52
+   ],
+   "sill_m": 1.51,
+   "sides": [
+    "EXTERIOR",
+    "floor-bath1"
+   ]
+  },
+  {
+   "name": "opening-w-bath2",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 0.84,
+   "at": [
+    7.89,
+    -9.6
+   ],
+   "sill_m": 1.51,
+   "sides": [
+    "EXTERIOR",
+    "floor-bath2"
+   ]
+  },
+  {
+   "name": "opening-w-bed1",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 2.6,
+   "at": [
+    6.2,
+    -0.15
+   ],
+   "sill_m": 0.92,
+   "sides": [
+    "EXTERIOR",
+    "floor-bed1"
+   ]
+  },
+  {
+   "name": "opening-w-bed2-bay",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 2.84,
+   "at": [
+    8.73,
+    -7.03
+   ],
+   "sill_m": 0.46,
+   "sides": [
+    "EXTERIOR",
+    "floor-bed2"
+   ]
+  },
+  {
+   "name": "opening-w-bed3-e",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 2.68,
+   "at": [
+    7.89,
+    -12.55
+   ],
+   "sill_m": 0.62,
+   "sides": [
+    "EXTERIOR",
+    "floor-bed3"
+   ]
+  },
+  {
+   "name": "opening-w-bed3-s",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 2.2,
+   "at": [
+    5.8,
+    -14.49
+   ],
+   "sill_m": 0.92,
+   "sides": [
+    "floor-bed3",
+    "floor-balcony"
+   ]
+  },
+  {
+   "name": "opening-w-kitchen",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 2.12,
+   "at": [
+    0.12,
+    -4.35
+   ],
+   "sill_m": 1.01,
+   "sides": [
+    "floor-kitchen",
+    "EXTERIOR"
+   ]
+  },
+  {
+   "name": "opening-w-tatami",
+   "kind": "window",
+   "wall": "walls#0",
+   "width_m": 2.4,
+   "at": [
+    3.08,
+    -0.15
+   ],
+   "sill_m": 0.92,
+   "sides": [
+    "EXTERIOR",
+    "floor-tatami"
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "opening-bath1-door",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_vanity_wide가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "opening-bath1-door",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-it_toilet.001가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "opening-bath2-door",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-it_toilet, item-mo_vanity가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "opening-bed3-door",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_nightstand.004가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "opening-entry",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_bench가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_narrow",
+   "object": "opening-tatami-door",
+   "detail": "item-mo_desk 때문에 문을 지나는 통로가 0.45~0.6 m 로 좁습니다."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "opening-tatami-door",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_vanity_wide가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "window_misaligned",
+   "object": "opening-w-bed3-e",
+   "detail": "walls#0의 다른 창들과 윗선 높이가 0.29 m 다릅니다(창 높이가 제각각인 벽)."
+  }
+ ],
+ "summary": {
+  "rooms": 10,
+  "doors": 9,
+  "windows": 9,
+  "walls": 4,
+  "trim": 5,
+  "errors": 0,
+  "warnings": 8,
+  "liminal_risk": "low",
+  "liminal_reasons": [],
+  "collection": null,
+  "notes": [
+   "직선이 아닌 벽 1개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: walls#0"
+  ],
+  "seconds": 1.2
+ }
+}

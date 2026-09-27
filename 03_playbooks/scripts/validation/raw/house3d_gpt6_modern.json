@@ -1,0 +1,502 @@
+{
+ "rooms": [
+  {
+   "name": "主卧 · 地坪",
+   "type": "habitable",
+   "area_m2": 16.67,
+   "size_m": [
+    6.56,
+    4.57
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 2,
+   "passages": [
+    "阳台 · 地坪"
+   ],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 5,
+   "windows_total": 1
+  },
+  {
+   "name": "主卫 · 地坪",
+   "type": "service",
+   "area_m2": 4.94,
+   "size_m": [
+    2.52,
+    1.96
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 3,
+   "windows_total": 1
+  },
+  {
+   "name": "公卫 · 地坪",
+   "type": "service",
+   "area_m2": 4.05,
+   "size_m": [
+    2.24,
+    1.81
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 2,
+   "windows_total": 1
+  },
+  {
+   "name": "厨房 · 地坪",
+   "type": "habitable",
+   "area_m2": 8.44,
+   "size_m": [
+    2.93,
+    2.88
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 3,
+   "windows_total": 1
+  },
+  {
+   "name": "客餐厅 · 地坪",
+   "type": "habitable",
+   "area_m2": 42.14,
+   "size_m": [
+    11.91,
+    5.96
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 7,
+   "passages": [
+    "阳台 · 地坪"
+   ],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 18,
+   "windows_total": 1
+  },
+  {
+   "name": "榻榻米 / 书房 · 地坪",
+   "type": "habitable",
+   "area_m2": 9.42,
+   "size_m": [
+    3.87,
+    3.34
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 4,
+   "windows_total": 1
+  },
+  {
+   "name": "次卧 1 · 地坪",
+   "type": "habitable",
+   "area_m2": 11.55,
+   "size_m": [
+    3.48,
+    3.32
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 4,
+   "windows_total": 1
+  },
+  {
+   "name": "次卧 2 · 地坪",
+   "type": "habitable",
+   "area_m2": 14.9,
+   "size_m": [
+    4.47,
+    3.33
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 1,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 7,
+   "windows_total": 1
+  },
+  {
+   "name": "阳台 · 地坪",
+   "type": "outdoor",
+   "area_m2": 12.39,
+   "size_m": [
+    7.1,
+    1.74
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 0,
+   "passages": [
+    "主卧 · 地坪",
+    "客餐厅 · 地坪"
+   ],
+   "windows": 4,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 8
+  }
+ ],
+ "openings": [
+  {
+   "name": "bathroom-west · 密封上吊移门",
+   "kind": "door",
+   "wall": "合批 · wall#14",
+   "width_m": 0.8,
+   "at": [
+    5.76,
+    -4.46
+   ],
+   "sides": [
+    "公卫 · 地坪",
+    "客餐厅 · 地坪"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "bedroom1-south · 开启木门",
+   "kind": "door",
+   "wall": "合批 · wall#7",
+   "width_m": 0.84,
+   "at": [
+    5.23,
+    -3.58
+   ],
+   "sides": [
+    "次卧 1 · 地坪",
+    "客餐厅 · 地坪"
+   ],
+   "open_leaf": true
+  },
+  {
+   "name": "bedroom2-west · 密封上吊移门",
+   "kind": "door",
+   "wall": "合批 · wall#8",
+   "width_m": 0.92,
+   "at": [
+    4.28,
+    -8.02
+   ],
+   "sides": [
+    "客餐厅 · 地坪",
+    "次卧 2 · 地坪"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "ensuite-west · 密封上吊移门",
+   "kind": "door",
+   "wall": "合批 · wall#12",
+   "width_m": 0.76,
+   "at": [
+    5.48,
+    -9.55
+   ],
+   "sides": [
+    "主卧 · 地坪",
+    "主卫 · 地坪"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "kitchen-south · 开启木门",
+   "kind": "door",
+   "wall": "合批 · wall#2",
+   "width_m": 1.08,
+   "at": [
+    2.26,
+    -5.77
+   ],
+   "sides": [
+    "厨房 · 地坪",
+    "客餐厅 · 地坪"
+   ],
+   "open_leaf": true
+  },
+  {
+   "name": "master-west · 密封上吊移门",
+   "kind": "door",
+   "wall": "合批 · wall#8",
+   "width_m": 0.92,
+   "at": [
+    4.28,
+    -9.57
+   ],
+   "sides": [
+    "主卧 · 地坪",
+    "客餐厅 · 地坪"
+   ],
+   "open_leaf": false
+  },
+  {
+   "name": "study-south · 开启木门",
+   "kind": "door",
+   "wall": "合批 · wall#7",
+   "width_m": 1.0,
+   "at": [
+    3.6,
+    -3.58
+   ],
+   "sides": [
+    "榻榻米 / 书房 · 地坪",
+    "客餐厅 · 地坪"
+   ],
+   "open_leaf": true
+  },
+  {
+   "name": "west · 开启木门",
+   "kind": "door",
+   "wall": "合批 · wall#0",
+   "width_m": 1.12,
+   "at": [
+    0.1,
+    -6.8
+   ],
+   "sides": [
+    "客餐厅 · 地坪",
+    "EXTERIOR"
+   ],
+   "open_leaf": true
+  },
+  {
+   "name": "细金属框玻璃窗#0",
+   "kind": "window",
+   "wall": "合批 · wall#0",
+   "width_m": 1.32,
+   "at": [
+    0.1,
+    -15.38
+   ],
+   "sill_m": 0.17,
+   "sides": [
+    "EXTERIOR",
+    "阳台 · 地坪"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#1",
+   "kind": "window",
+   "wall": "合批 · wall#3",
+   "width_m": 0.92,
+   "at": [
+    0.91,
+    -2.84
+   ],
+   "sill_m": 0.86,
+   "sides": [
+    "EXTERIOR",
+    "厨房 · 地坪"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#2",
+   "kind": "window",
+   "wall": "合批 · wall#1",
+   "width_m": 3.32,
+   "at": [
+    2.36,
+    -14.53
+   ],
+   "sill_m": 0.02,
+   "sides": [
+    "客餐厅 · 地坪",
+    "阳台 · 地坪"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#3",
+   "kind": "window",
+   "wall": "合批 · wall#5",
+   "width_m": 1.48,
+   "at": [
+    3.11,
+    -0.1
+   ],
+   "sill_m": 0.86,
+   "sides": [
+    "EXTERIOR",
+    "榻榻米 / 书房 · 地坪"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#4",
+   "kind": "window",
+   "wall": "合批 · wall#1",
+   "width_m": 2.2,
+   "at": [
+    5.66,
+    -14.53
+   ],
+   "sill_m": 0.02,
+   "sides": [
+    "主卧 · 地坪",
+    "阳台 · 地坪"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#5",
+   "kind": "window",
+   "wall": "合批 · wall#5",
+   "width_m": 1.8,
+   "at": [
+    6.44,
+    -0.1
+   ],
+   "sill_m": 0.86,
+   "sides": [
+    "EXTERIOR",
+    "次卧 1 · 地坪"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#6",
+   "kind": "window",
+   "wall": "合批 · wall#15",
+   "width_m": 1.32,
+   "at": [
+    7.2,
+    -15.38
+   ],
+   "sill_m": 0.17,
+   "sides": [
+    "阳台 · 地坪",
+    "EXTERIOR"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#7",
+   "kind": "window",
+   "wall": "合批 · wall#16",
+   "width_m": 0.92,
+   "at": [
+    8.0,
+    -9.59
+   ],
+   "sill_m": 0.86,
+   "sides": [
+    "主卫 · 地坪",
+    "EXTERIOR"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#8",
+   "kind": "window",
+   "wall": "合批 · wall#17",
+   "width_m": 0.84,
+   "at": [
+    8.0,
+    -4.51
+   ],
+   "sill_m": 0.86,
+   "sides": [
+    "公卫 · 地坪",
+    "EXTERIOR"
+   ]
+  },
+  {
+   "name": "细金属框玻璃窗#9",
+   "kind": "window",
+   "wall": "合批 · wall#18",
+   "width_m": 2.52,
+   "at": [
+    8.75,
+    -6.97
+   ],
+   "sill_m": 0.54,
+   "sides": [
+    "次卧 2 · 地坪",
+    "EXTERIOR"
+   ]
+  }
+ ],
+ "issues": [
+  {
+   "severity": "warning",
+   "code": "door_narrow",
+   "object": "bathroom-west · 密封上吊移门",
+   "detail": "公卫陶瓷坐便器 때문에 문을 지나는 통로가 0.45~0.6 m 로 좁습니다."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "bathroom-west · 密封上吊移门",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 公卫平板浴室柜与直线镜가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "bedroom2-west · 密封上吊移门",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 浅橡木餐椅 3가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "ensuite-west · 密封上吊移门",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 主卫浅款平板浴室柜与直线镜가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "door_clearance",
+   "object": "kitchen-south · 开启木门",
+   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 哑光平板双门冰箱가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+  },
+  {
+   "severity": "warning",
+   "code": "window_awkward_sill",
+   "object": "细金属框玻璃窗#0",
+   "detail": "창턱 높이 0.17 m: 바닥까지 내린 창(0)도 일반 창(0.3 m 이상)도 아닌 어정쩡한 높이입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "window_blocked",
+   "object": "细金属框玻璃窗#1",
+   "detail": "창 면적의 40%를 가구가 가립니다(厨房平板洗切柜与金属龙头 40%)."
+  },
+  {
+   "severity": "warning",
+   "code": "window_awkward_sill",
+   "object": "细金属框玻璃窗#6",
+   "detail": "창턱 높이 0.17 m: 바닥까지 내린 창(0)도 일반 창(0.3 m 이상)도 아닌 어정쩡한 높이입니다."
+  }
+ ],
+ "summary": {
+  "rooms": 9,
+  "doors": 8,
+  "windows": 10,
+  "walls": 19,
+  "trim": 7,
+  "errors": 0,
+  "warnings": 8,
+  "liminal_risk": "low",
+  "liminal_reasons": [],
+  "collection": null,
+  "notes": [
+   "외부 지면(Ground/Terrain)이 없어 모델 바깥은 '모델링되지 않은 외부'로 보았습니다.",
+   "직선이 아닌 벽 2개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: 合批 · wall#15, 合批 · wall#18"
+  ],
+  "seconds": 2.7
+ }
+}

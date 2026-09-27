@@ -1,0 +1,268 @@
+{
+ "rooms": [
+  {
+   "name": "FLOOR_Photography",
+   "type": "unknown",
+   "area_m2": 17.92,
+   "size_m": [
+    5.53,
+    3.27
+   ],
+   "ceiling_h_m": 2.77,
+   "doors": 0,
+   "windows": 0,
+   "furniture": 63
+  },
+  {
+   "name": "FLOOR_Game",
+   "type": "unknown",
+   "area_m2": 12.04,
+   "size_m": [
+    4.08,
+    2.98
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "windows": 0,
+   "furniture": 54
+  },
+  {
+   "name": "FLOOR_LivingDining",
+   "type": "habitable",
+   "area_m2": 26.32,
+   "size_m": [
+    8.53,
+    3.32
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "windows": 0,
+   "furniture": 44
+  },
+  {
+   "name": "FLOOR_Bar",
+   "type": "unknown",
+   "area_m2": 10.36,
+   "size_m": [
+    4.42,
+    2.37
+   ],
+   "ceiling_h_m": 3.02,
+   "doors": 0,
+   "windows": 0,
+   "furniture": 24
+  },
+  {
+   "name": "FLOOR_Corridor",
+   "type": "circulation",
+   "area_m2": 44.89,
+   "size_m": [
+    7.56,
+    6.37
+   ],
+   "ceiling_h_m": 3.02,
+   "doors": 4,
+   "windows": 0,
+   "furniture": 27
+  },
+  {
+   "name": "FAS-WRAP-FLOOR",
+   "type": "unknown",
+   "area_m2": 0.01,
+   "size_m": [
+    0.52,
+    0.45
+   ],
+   "ceiling_h_m": 2.75,
+   "doors": 0,
+   "windows": 0,
+   "furniture": 0
+  }
+ ],
+ "issues": [
+  {
+   "severity": "warning",
+   "code": "door_size",
+   "object": "DOOR_Game_hinged_leaf",
+   "detail": "문 폭 0.16 m (상식 범위 0.6~2.0 m)"
+  },
+  {
+   "severity": "error",
+   "code": "door_blocked",
+   "object": "DOOR_Game_hinged_leaf",
+   "detail": "문 앞 통로를 FRAME_Game_R가 막고 있습니다."
+  },
+  {
+   "severity": "error",
+   "code": "door_blocked",
+   "object": "DOOR_Game_hinged_leaf",
+   "detail": "문 앞 통로를 FRAME_Game_R가 막고 있습니다."
+  },
+  {
+   "severity": "warning",
+   "code": "door_size",
+   "object": "DOOR_LivingDining_hinged_leaf",
+   "detail": "문 폭 0.24 m (상식 범위 0.6~2.0 m)"
+  },
+  {
+   "severity": "error",
+   "code": "door_blocked",
+   "object": "DOOR_LivingDining_hinged_leaf",
+   "detail": "문 앞 통로를 FRAME_LivingDining_R가 막고 있습니다."
+  },
+  {
+   "severity": "error",
+   "code": "door_blocked",
+   "object": "DOOR_LivingDining_hinged_leaf",
+   "detail": "문 앞 통로를 FRAME_LivingDining_R가 막고 있습니다."
+  },
+  {
+   "severity": "error",
+   "code": "door_to_void",
+   "object": "DOOR_Service_closed_hinged_leaf",
+   "detail": "문 한쪽 아래에 바닥도 지면도 없습니다(허공으로 나가는 문)."
+  },
+  {
+   "severity": "error",
+   "code": "door_to_void",
+   "object": "DOOR_East_entrance_hinged_leaf",
+   "detail": "문 한쪽 아래에 바닥도 지면도 없습니다(허공으로 나가는 문)."
+  },
+  {
+   "severity": "error",
+   "code": "sealed_room",
+   "object": "FLOOR_Photography",
+   "detail": "문이 하나도 없는 밀폐된 방입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "windowless_room",
+   "object": "FLOOR_Photography",
+   "detail": "창이 없는 방입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "windowless_room",
+   "object": "FLOOR_Game",
+   "detail": "창이 없는 방입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "windowless_room",
+   "object": "FLOOR_LivingDining",
+   "detail": "창이 없는 거실·침실 등 생활 공간입니다."
+  },
+  {
+   "severity": "error",
+   "code": "sealed_room",
+   "object": "FLOOR_Bar",
+   "detail": "문이 하나도 없는 밀폐된 방입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "windowless_room",
+   "object": "FLOOR_Bar",
+   "detail": "창이 없는 방입니다."
+  },
+  {
+   "severity": "error",
+   "code": "sealed_room",
+   "object": "FAS-WRAP-FLOOR",
+   "detail": "문이 하나도 없는 밀폐된 방입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "windowless_room",
+   "object": "FAS-WRAP-FLOOR",
+   "detail": "창이 없는 방입니다."
+  },
+  {
+   "severity": "warning",
+   "code": "empty_room",
+   "object": "FAS-WRAP-FLOOR",
+   "detail": "가구가 하나도 없는 빈 방입니다."
+  },
+  {
+   "severity": "error",
+   "code": "no_entrance",
+   "object": "(building)",
+   "detail": "외부로 통하는 문이 하나도 없습니다."
+  },
+  {
+   "severity": "error",
+   "code": "wall_gap",
+   "object": "WALL_578_Photography",
+   "detail": "WALL_57C_Corridor와 벽 끝 사이에 0.12 m 틈이 있습니다(모서리가 뚫려 보임)."
+  },
+  {
+   "severity": "error",
+   "code": "wall_gap",
+   "object": "WALL_57C_Corridor",
+   "detail": "WALL_578_Photography와 벽 끝 사이에 0.12 m 틈이 있습니다(모서리가 뚫려 보임)."
+  },
+  {
+   "severity": "error",
+   "code": "wall_gap",
+   "object": "WALL_57F_Corridor",
+   "detail": "WALL_57D_Corridor와 벽 끝 사이에 0.03 m 틈이 있습니다(모서리가 뚫려 보임)."
+  },
+  {
+   "severity": "error",
+   "code": "wall_gap",
+   "object": "WALL_LivingBay_North_lower",
+   "detail": "WALL_58D_LivingDining와 벽 끝 사이에 0.01 m 틈이 있습니다(모서리가 뚫려 보임)."
+  },
+  {
+   "severity": "error",
+   "code": "wall_gap",
+   "object": "WALL_LivingBay_North_upper",
+   "detail": "WALL_58D_LivingDining와 벽 끝 사이에 0.02 m 틈이 있습니다(모서리가 뚫려 보임)."
+  },
+  {
+   "severity": "error",
+   "code": "wall_gap",
+   "object": "WALL_599_Game",
+   "detail": "WALL_living_south_west와 벽 끝 사이에 0.03 m 틈이 있습니다(모서리가 뚫려 보임)."
+  },
+  {
+   "severity": "error",
+   "code": "wall_short_of_ceiling",
+   "object": "WALL_Bar_observed_south_entry_return",
+   "detail": "벽 위와 천장 사이가 0.23 m 비어 있습니다."
+  },
+  {
+   "severity": "error",
+   "code": "wall_short_of_ceiling",
+   "object": "WALL_Bar_entry_south_return_connection",
+   "detail": "벽 위와 천장 사이가 0.23 m 비어 있습니다."
+  },
+  {
+   "severity": "warning",
+   "code": "seat_faces_wall",
+   "object": "BAR-CHAIR-03",
+   "detail": "앉는 방향 0.21 m 앞이 벽입니다(벽을 보고 앉는 배치)."
+  },
+  {
+   "severity": "warning",
+   "code": "seat_faces_wall",
+   "object": "LIV.OrangeStool",
+   "detail": "앉는 방향 0.30 m 앞이 벽입니다(벽을 보고 앉는 배치)."
+  }
+ ],
+ "summary": {
+  "rooms": 6,
+  "doors": 4,
+  "windows": 0,
+  "walls": 33,
+  "errors": 18,
+  "warnings": 10,
+  "liminal_risk": "high",
+  "liminal_reasons": [
+   "생활 공간의 절반 이상에 창이 없음",
+   "복도 면적 비율 40%",
+   "갈 수 없거나 밀폐된 방",
+   "어디로도 안 가는 문"
+  ],
+  "collection": null
+ }
+}

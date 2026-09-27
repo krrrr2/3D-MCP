@@ -97,7 +97,10 @@ Rooms/buildings (walls, doors, windows, stairs): `building_audit.audit_building(
 liminal_risk. It imports scene_audit.py from the same folder and uses `os`; if safe mode blocks it, run it headless
 (`blender -b house.blend --python .../building_audit.py -- --collection House --out building.json`).
 Naming for it: room floors `Floor_<room type>` (Floor_living, Floor_bedroom_2), outside `Ground`, `Wall_...`, `Door_...`,
-`Window_...`; cut door/window holes with a real Boolean.
+`Window_...` (Korean/Chinese names also work when the last word is the role: 거실_바닥, 현관문). Door/window holes must
+really exist in the wall (Boolean or split wall pieces). Keep walls, doors and windows as separate objects in the working
+.blend (merge by material only in exports); when a name can't say it, set obj["role"] = "floor"/"wall"/"door"/"window".
+A report with `no_rooms_found` is not a pass.
 
 ## 5. Verification gates — every stage, in this order
 1. Numbers: scene_audit → issues 0 (floating, below_floor, sunk_into, above_ceiling, size_out_of_range …) and

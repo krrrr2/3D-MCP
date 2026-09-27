@@ -14,11 +14,15 @@ scene_audit.py 가 '떠 있음·관통·치수' 같은 물리 오류를 잡는�
   가구   : 앉는 가구(앞뒤가 있는 것)가 코앞의 벽을 보고 있음
   종합   : 백룸 위험도(liminal_risk) — 창 없는 방·복도 과다·빈 방·반복·밀폐 방 등 이유와 함께
 
-판정은 이름보다 **형상**을 우선합니다 (실제 AI 생성 장면에서 검증하며 바꾼 설계, 2026-09-27).
+판정은 이름보다 **형상**을 우선합니다 (실제 AI 생성 건물 9개 장면으로 검증하며 바꾼 설계, 2026-09-27,
+03_playbooks/scripts/validation/README.md).
   - 방 연결: 문 오브젝트뿐 아니라 방 바닥 가장자리에서 벽 쪽으로 레이를 쏴서 문짝 없는 출입구(개구부)를 찾는다
-  - 문·창 구멍: 벽 BVH 를 가로지르는 레이로 실제 구멍 폭을 잰다(열린 문, 벽을 나눠 만든 출입구도 처리)
-  - 벽 방향: 루트 회전이 아니라 정점 분포(PCA)로 구한다(좌표에 직접 박힌 회전 벽도 처리). 곡선 벽은 직선 벽 전용 검사에서 뺀다
-  - 틈·천장 틈: 틈 위치를 레이가 실제로 통과할 때만 보고한다(다른 조각이 메운 경우 제외)
+  - 문·창 구멍: 벽을 가로지르는 레이로 실제 구멍을 찾는다. 벽 오브젝트의 축, 문·창 자신의 축, 주변 벽면 법선,
+    열린 문짝의 경첩 쪽 등 여러 가설 중 "문·창과 붙어 있고 폭이 맞는 구멍"을 고른다
+    (90° 열린 문, 구멍 옆에 겹쳐 둔 미닫이, 벽 전체가 메시 하나인 장면, 곡선 벽에서도 동작)
+  - 창 높이: 창 오브젝트(커튼·창틀 장식 포함)가 아니라 실제 구멍의 아래·위
+  - 틈·천장 틈: 틈 위치를 레이가 실제로 통과하고 양쪽 0.6 m 까지 트였을 때만 보고(격자 천장·다른 조각이 가리면 제외)
+  - 가져온 장면(glTF·three.js): house/floors/openings 같은 묶음 그룹은 풀고, 합친 벽은 조각별로, 합친 창은 창별로 나눈다
 
 근거
   - 문 앞 비움 구역 = 문 폭 × 문 폭 (NVlabs SAGE 배치 솔버), 문은 방과 방/외부를 잇고 창은 외벽에 둔다 (Holodeck, Infinigen Indoors)
@@ -33,7 +37,9 @@ scene_audit.py 가 '떠 있음·관통·치수' 같은 물리 오류를 잡는�
   문·창     : Door_..., Window_... (door_handle, window_sill 처럼 뒤에 부속품 단어가 오면 부속품)
   마감재    : FRAME_/JAMB_/CASING_/SKIRT_/BASEBOARD_/COVE_/THRESHOLD_ 등 → 가구 검사에서 제외
   계단      : stair / stairs / staircase 가 들어간 부모 아래에 단(step)을 자식 메시로
-  이름으로 못 정하면 컬렉션 이름(.../Walls, .../Floors, .../Ceilings, .../Openings, .../Trim)을 참고, 그래도 없으면 가구
+  한국어·중국어: 끝 단어로 판정 (거실_바닥, 현관문, 거실_창문, 主卧 · 地坪, 开启木门 / 창가_소파·双门冰箱 은 가구)
+  이름으로 못 정하면 컬렉션 이름(.../Walls, .../Floors, .../Ceilings, ..._Ceiling_Grid, .../Trim)을 참고, 그래도 없으면 가구
+  방 바닥을 하나도 못 찾으면 no_rooms_found 경고 ("오류 0"이 통과가 아님)
 
 사용
   import building_audit; rep = building_audit.audit_building(collection="House")
@@ -1142,6 +1148,11 @@ def audit_building(collection=None, limits=None):
         if rtype in ("habitable", "unknown", "interior") and not info["furniture"]:
             add("warning", "empty_room", name, "가구가 하나도 없는 빈 방입니다.")
         row["windows_total"] = n_windows
+    if not floors:
+        # 조용한 통과 방지: 아무것도 못 알아봤는데 '오류 0'이 나오면 안 된다
+        add("warning", "no_rooms_found", "(building)",
+            "방 바닥을 하나도 찾지 못해 방·동선 검사를 못 했습니다(오류 0 이어도 통과가 아님). "
+            "바닥 이름(Floor_거실, 거실_바닥 …)이나 obj['role']='floor' 를 확인하세요.")
     if floors and (doors or any(r["passages"] for r in rooms_out)) and not has_entrance:
         add("error", "no_entrance", "(building)", "외부로 통하는 문·출입구가 하나도 없습니다.")
 

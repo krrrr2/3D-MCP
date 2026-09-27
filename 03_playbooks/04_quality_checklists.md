@@ -441,7 +441,7 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 - [ ] `[필수][A]` **바닥 아래로 박힘·다른 물체 속으로 파고듦 0**: `below_floor`, `sunk_into`.
 - [ ] `[필수][A]` **유닛 간 관통 0**: `interpenetrations` 빈 목록. 완전히 들어간 물체는 `bbox_overlap_depth_m`로 보조 확인.
 - [ ] `[필수][A]` **벽·천장 관통 0**: 벽·천장 메시가 있으면 `interpenetrations`에 가구–벽·천장 쌍이 없고, `audit_scene(ceiling_z=2.30)`의 `above_ceiling` 0건. 벽 메시가 없으면 0.5절 방 경계 검사(`OUT_OF_ROOM` 0건). [KR] 구축 아파트 천장 2300 mm에서 키 큰 수납(PAX 2360 등)을 특히 확인.
-- [ ] **건물·여러 방이면 건축 상식 검사**: [스크립트] `building_audit.audit_building(collection=...)`의 `summary.errors` 0, `liminal_risk`가 `high`가 아님(문이 벽에 뚫렸는지, 열면 벽·허공인지, 문 없는 방·창 없는 거실·복도형 빈 방 반복 등). 이름 규칙(`Floor_living`, `Wall_N`, `Door_01`, `Window_01`)은 [scripts/README](scripts/README.md)를 따릅니다.
+- [ ] **건물·여러 방이면 건축 상식 검사**: [스크립트] `building_audit.audit_building(collection=...)`의 `summary.errors` 0, `liminal_risk`가 `high`가 아님(문이 벽에 뚫렸는지, 열면 벽·허공인지, 문 없는 방·창 없는 거실·복도형 빈 방 반복 등). **`no_rooms_found` 경고가 있으면 통과가 아닙니다**(방을 못 알아봐서 오류가 0으로 나온 것). 이름 규칙(`Floor_living`, `Wall_N`, `Door_01`, `Window_01`, 한국어는 `거실_바닥`·`현관문`처럼 끝 단어가 역할)은 [scripts/README](scripts/README.md)를 따릅니다.
 - [ ] **한 유닛 안의 부품 관통**은 `check_assembly()`로(scene_audit는 일부러 제외).
 - [ ] **소품은 받침면 위에**: `placement_utils.drop_to_surface()`로 가장 높은 받침면에 올리거나, rigid body로 2~5 cm 위에서 떨어뜨려 안착시킨 뒤 변환을 굳힘. 안착 후 45° 이상 기울었거나 1 m 이상 이동했으면 실패로 보고 다시 배치(SceneSmith 소품 설정, [base_manipuland_agent.yaml](https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml)).
 - [ ] **고폴리 에셋은 decimate 프록시로 검사**: 그대로 돌리면 MCP 소켓 타임아웃(180초)에 걸립니다.
@@ -662,7 +662,7 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 DONE 조건 (모두 텍스트로 출력해 증명할 것):
 - scene_audit: summary.units_with_issues == 0 (의도한 벽걸이는 목록으로 명시), interpenetrating_pairs == 0
 - 벽 메시가 없으면 방 경계 검사 OUT_OF_ROOM 0건, check_clearances 위반 0건 (주동선 >= 0.9 m, 문 스윙 영역 비움)
-- 건물·여러 방이면 building_audit: summary.errors == 0, liminal_risk != "high"
+- 건물·여러 방이면 building_audit: summary.errors == 0, liminal_risk != "high", no_rooms_found 경고 없음
 - quick_checks: ok == False 항목 0건 (roughness_const는 히어로 재질만 해결)
 - pbr_audit 위반 0건, 베이크 슬롯 전부 확인
 - review_render: clip_pct <= 0.5 (발광체 제외), value_range >= 0.30
