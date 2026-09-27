@@ -8,7 +8,7 @@
 - **'AAA급'은 없었습니다.** 공개 점수가 붙은 최고 사례인 PhiloLabs의 Fable 5.1 에이전트 스웜 Union Square 디지털 트윈도 조정하지 않은 리뷰어 점수가 재질 6, 시각 충실도 6, 조명 7/10이었습니다(목표 8.5~9). "세부가 꽤 틀린다", "화면이 거칠고 건물에 오류가 있다"고 작성자 스스로 밝힌 사례가 많습니다.
 - **잘된 사례의 공통 구조.** ① 사람이 만든 에셋과 실측 데이터(CC0 모듈러 키트, Fab 팩, City Sample, OSM·LiDAR·스캔)에서 출발하고, ② 유기체·캐릭터는 이미지→3D로 베이스를 만든 뒤 에이전트가 UV·리깅·텍스처를 손보고, ③ '예쁘다'를 체크리스트로 쪼개고(Vizuara 6항목), ④ 탑다운·눈높이·플레이어 시점 스크린샷으로 검증하고, ⑤ 빌더와 리뷰어를 분리하고, ⑥ 사람이 결함 목록을 주며 2~21회 반복했습니다.
 - **가구·인테리어는 순서가 같았습니다.** 벽·바닥·천장·개구부 같은 구조 → 주요 가구 → 소품. 가구는 개별 오브젝트로 나누고, 근거 없는 방은 지어내지 말고 기록합니다(Realsee 공개 프롬프트). 천장고나 문 폭 같은 치수 하나를 앵커로 받습니다. 그래도 세부 정확도는 부족하다는 평이 대부분입니다.
-- **실패는 반복됩니다.** 임포트 스케일 100배(서로 무관한 두 사례), 이미지→3D 결과가 작게 들어옴, 떠 있거나 파고드는 부품, 옆에서 보면 얇은 캐릭터, 핀 구멍 누락, 뒤집힌 벽 와인딩, 1~3m마다 반복되는 텍스처, 연결되지 않은 노멀맵, 틀린 캡처 경로가 여러 사례에서 나왔습니다. 숫자로 잡을 수 있는 것은 이 저장소의 [`scene_audit.py`·`placement_utils.py`·`review_views.py`](../03_playbooks/scripts/README.md)(Blender 4.2.23 LTS·5.0.1에서 테스트 통과)로 먼저 잡으세요.
+- **실패는 반복됩니다.** 임포트 스케일 100배(서로 무관한 두 사례), 이미지→3D 결과가 작게 들어옴, 떠 있거나 파고드는 부품, 옆에서 보면 얇은 캐릭터, 핀 구멍 누락, 뒤집힌 벽 와인딩, 1~3m마다 반복되는 텍스처, 연결되지 않은 노멀맵, 틀린 캡처 경로가 여러 사례에서 나왔습니다. 숫자로 잡을 수 있는 것은 이 저장소의 [`scene_audit.py`·`placement_utils.py`·`review_views.py`](../03_playbooks/scripts/README.md)(Blender 4.2.23 LTS·5.0.1에서 테스트 통과)로 먼저 잡으세요. 문이 벽에 안 뚫렸거나 열면 벽에 막히는 문, 갈 수 없는 방 같은 건축 상식 오류는 [`building_audit.py`](../03_playbooks/scripts/README.md)가 잡습니다.
 - **모델 비교는 거의 모두 n=1이고 결과가 엇갈립니다.** 같은 Blender 과제에서 Astra가 시간·토큰을 덜 썼다는 보고, 제품 비율·연출은 Opus 5.5가 낫다는 보고, 3D 렌더는 Astra가 크게 이겼다는 보고가 함께 있습니다. 절대 순위 대신 작업 유형별로 고르세요. **Codex에서 Astra의 기본 effort는 low**라서, effort를 밝히지 않은 비교는 걸러서 봐야 합니다.
 - **비용·시간 감각.** 짧은 반복 1회 2분39초~5분59초(Simon Willison), 원프롬프트 게임 24분·$9.90(Nipale), 테니스 게임 프로토타입 52분·세션 4시간23분(Robo Open), 사람 디렉션 10시간·21회(SpenserFX), 협동 게임 첫 반복 39시간(How to Suck). 대부분 작성자 자기 보고입니다.
 - **SNS의 '포토리얼'을 조심하세요.** 상당수는 Blender 그레이박스·프리비즈 위에 Seedance 2.5 같은 AI 비디오를 입힌 것이라 3D 에셋 품질과는 다른 이야기입니다. 이 문서는 해당 사례에 **[AI 영상]** 을 붙였습니다.
@@ -115,7 +115,7 @@ ID 앞 글자는 분야입니다. **A** 인테리어·가구·건축, **P** 제�
 | E12 | 2026-09-10 | MMMvinki | 미명시 | blender-mcp 애드온(GUI 모드), Blender 4.5, Three.js | 어린왕자 행성 8개(각 5,120 tris), 22본 캐릭터, 소품 | - | 검증 인프라가 상당히 필요 | 1차 공개 | [GitHub](https://github.com/MMMvinki/little-prince-planet-world) |
 | E13 | 2026-09 | 다나와 DPG 정리(국내외 사례) | Astra | Blender, Codex, computer use | Backrooms 분위기 3D 영상, 도시 게임 | 프롬프트 약 5개로 30분 + 내보내기 20분 / 게임 5일 | 품질 검증 없음 | 2차 요약 | [다나와](https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609) |
 | E14 | 2026-09-23 | Vaibhav Sisinty(큐레이션) | Opus 5.5 | UE 외 | 출시 당일 데모 모음: 클레이메이션, 3D 게임, 광학 실험실, UE 도시 전체 | - | 개별 세부 미확인 | 2차 요약 | [X](https://x.com/VaibhavSisinty/status/2102667276252282952) |
-| E15 | 2026-06-17 | Epic Games(State of Unreal 2026) | Claude, Gemini | UE 5.8 실험적 MCP | 워크스루(프롭 배치, 절차적 도시, 조명 아트 디렉션, 보도 기준) | - | UE6 통합 발표 내용은 미확인 | 2차 요약 | [YouTube](https://www.youtube.com/watch?v=AlV__BFg8qk) |
+| E15 | 2026-06-17(보도 기준, 미확인) | Epic Games(State of Unreal 2026) | Claude, Gemini | UE 5.8 실험적 MCP | 워크스루(프롭 배치, 절차적 도시, 조명 아트 디렉션, 보도 기준) | - | UE6 통합 발표 내용은 미확인 | 2차 요약 | [YouTube](https://www.youtube.com/watch?v=AlV__BFg8qk) |
 | E16 | 2025-03 | Siddharth Ahuja | Claude(Claude Desktop, 당시 모델) | BlenderMCP 원조, Poly Haven, Hyper3D Rodin | "드래곤이 지키는 던전" 로우폴리 씬, HDRI·바위·식생을 가져온 해변 씬 | - | 바이럴, 생태계의 출발점(현재 약 29.4k stars) | 1차 공개 | [GitHub](https://github.com/ahujasid/blender-mcp) |
 | G1 | 2026-09-01 | Nipale-ai | Fable 5.1(effort high) | Blender 5.2 headless, FLUX.2, LTX-2.5, ACE-Step, three.js, Playwright | HTML 1개(4.4MB) 아레나 게임: 메시 12개 GLB, 홀로 빌보드 영상, 신스웨이브 루프 | 24분, $9.90, 75턴, 출력 95,832 토큰 | 재시도 없이 1라운드 통과 | 검증됨 | [GitHub](https://github.com/Nipale-ai/fable-5-1-one-prompt-game) |
 | G2 | 2026-09-05~ | az9713 | Astra(Codex) | Unity 6000.5.7f1 + URP 17.5.0, Blender 5.2.1, Meshy API | 'Robo Open' 테니스(토이 로봇 2체, 16본 리그, Windows 실행 파일) | 프로토타입 52분, 세션 4시간23분, Meshy 30크레딧 | 프로토타입 수준, 실패 22건 공개 | 검증됨(정정 반영) | [GitHub](https://github.com/az9713/gpt-6-astra-tennis-game) |
@@ -228,7 +228,7 @@ ID 앞 글자는 분야입니다. **A** 인테리어·가구·건축, **P** 제�
 
 **잘된 점**: "사용자는 1차 버그 탐지자가 아니다"라는 원칙으로, 떠 있는 쿠션·지지 없는 조명·바닥에서 뜬 가구가 최종 결과에 남지 않게 했습니다.
 **한계**: Codex용 스킬이고 결과 품질 수치는 없습니다(조사 단계의 'Sol·Opus 5.5도 명시'는 원문에 없음).
-**교훈**: 물리 논리 검사는 에이전트가 먼저 하게 하세요. 이 저장소의 [`scene_audit.py`](../03_playbooks/scripts/README.md)가 떠 있음(`floating_or_wall_mounted`)·바닥 관통·유닛 간 관통을 숫자로 잡습니다.
+**교훈**: 물리 논리 검사는 에이전트가 먼저 하게 하세요. 이 저장소의 [`scene_audit.py`](../03_playbooks/scripts/README.md)가 떠 있음(`floating_or_wall_mounted`), 바닥이나 다른 물체 속으로 박힘(`sunk_into`), 유닛 간 관통, 가구가 벽·천장 오브젝트를 뚫음, 지정한 천장 높이(`ceiling_z=2.30` 등) 위로 솟음을 숫자로 잡습니다. 방만 따로 보려면 `collection="Room"`처럼 컬렉션 범위를 지정합니다.
 
 #### A4. 같은 평면도로 4가지 인테리어 스타일 비교 (2026-09-05~08 · Astra vs Fable 5.1 · 1차 공개)
 
@@ -240,7 +240,7 @@ ID 앞 글자는 분야입니다. **A** 인테리어·가구·건축, **P** 제�
 
 **어떻게**: MCP 서버로 SketchUp에 Ruby 스크립트를 실행해 ① 앞·뒤 사진으로 집 재현, ② 치수가 적힌 평면도로 모델링, ③ 오픈소스 19쪽 도면 세트로 농가 전체를 지었습니다([daily.dev 요약](https://daily.dev/posts/i-tested-gpt-astra-for-3d-modeling---this-is-getting-serious-to6zgaa2h)).
 **결과**: 모델당 17~22분에 외관은 인상적이었지만, 인테리어 정확도가 떨어지고 치수가 빠졌으며 **문 여는 방향이 틀렸습니다**. 토큰을 많이 써서 Plus 주간 할당량을 하루에 소진했습니다. 제작자 평은 "아직 사람 모델러를 대체할 수준은 아니지만 가까워지고 있다"입니다.
-**교훈**: 문 스윙 방향, 개구부 치수 같은 인테리어 요소는 스펙에 명시하고 따로 검사해야 합니다. 치수 기준은 [실측 치수표](../03_playbooks/05_reference_dimensions.md)를 쓰세요.
+**교훈**: 문 스윙 방향, 개구부 치수 같은 인테리어 요소는 스펙에 명시하고 따로 검사해야 합니다. 치수 기준은 [실측 치수표](../03_playbooks/05_reference_dimensions.md)를 쓰세요. 문이 벽에 실제로 뚫렸는지, 열면 벽·허공으로 나가는지는 [`building_audit.py`](../03_playbooks/scripts/README.md)로 검사할 수 있습니다(문은 `Door_...`, 방 바닥은 `Floor_living`처럼 이름 규칙을 지켜야 함).
 
 #### 사진·평면도 한 장에서 가구가 있는 공간으로 (A2, A7~A12)
 
@@ -267,7 +267,7 @@ and use sensible camera moves to show these effects.
 - 월넛 커피 테이블: 상판 1200×600×30mm, 다리 400mm, 5° 벌어짐
 - 나선 계단: 20단, 단 높이 250mm, 반경 1.5m, 30mm 오크 트레드(단 높이는 레시피 값이니 실제 설계는 [실측 치수표](../03_playbooks/05_reference_dimensions.md)의 계단 기준으로 확인하세요)
 - 프리미티브를 좌판에 섞은 의자 5종 변형
-- 스케치는 '해석 먼저' 프롬프트로 처리하고, 사람이 만든 모델은 GH2 슬라이더 그래프로 역설계합니다. 'Random scatter … No overlaps'(5×5m 영역에 구 200개) 레시피와, `get_viewport_image`로 스케치 각도에 맞춰 비교하라는 안내도 있습니다.
+- 스케치는 '해석 먼저' 프롬프트로 처리하고, 사람이 만든 모델은 Grasshopper 2(GH2) 슬라이더 그래프로 역설계합니다. 'Random scatter … No overlaps'(5×5m 영역에 구 200개) 레시피와, `get_viewport_image`로 스케치 각도에 맞춰 비교하라는 안내도 있습니다.
 
 **교훈**: 가구·건축 요소는 치수를 숫자로 주면 형태가 안정됩니다. 결과를 파라메트릭 그래프로 남기면 비율을 나중에 바꿀 수 있습니다.
 
@@ -292,11 +292,11 @@ and use sensible camera moves to show these effects.
 
 1. **구조 → 주요 가구 → 소품** 순서로 짓습니다(A3, A6, A8).
 2. 가구는 **개별 오브젝트**로 나누고 이름을 붙입니다(A2, A9). 이 저장소 스크립트는 의자 부품을 하나의 부모 아래 묶는 규약을 씁니다([스크립트 규약](../03_playbooks/scripts/README.md)).
-3. **치수 앵커**를 하나 받습니다(천장고나 문 폭). 한국 아파트·가구 규격은 [실측 치수표](../03_playbooks/05_reference_dimensions.md)에 따로 있습니다.
+3. **치수 앵커**를 하나 받습니다(천장고나 문 폭). 한국 아파트·가구 규격은 [실측 치수표](../03_playbooks/05_reference_dimensions.md)에 따로 있습니다. 천장고를 정했으면 `scene_audit.audit_scene(ceiling_z=2.30)`처럼 넘겨 천장을 뚫는 가구를 잡습니다.
 4. **근거 없는 공간·요소는 만들지 말고 기록**합니다(A3). 사진 재구성에서 지어내기가 흔합니다(A19).
-5. 가구를 숨긴 **탑다운 평면도**와 입구에서 각 방으로 가는 동선을 확인합니다(A3). 간격은 [`placement_utils.check_clearances()`](../03_playbooks/scripts/README.md)로 숫자 검사합니다.
+5. 가구를 숨긴 **탑다운 평면도**와 입구에서 각 방으로 가는 동선을 확인합니다(A3). 가구 간격은 [`placement_utils.check_clearances()`](../03_playbooks/scripts/README.md)로, 갈 수 없는 방·문 없는 방은 [`building_audit.py`](../03_playbooks/scripts/README.md)로 숫자 검사합니다.
 6. 문·서랍이 움직여야 하면 처음부터 **관절 구조**를 요구합니다(A5, A7).
-7. 문 스윙 방향·치수 누락은 모델이 자주 틀리므로 스펙에 적고 검사합니다(A13).
+7. 문 스윙 방향·치수 누락은 모델이 자주 틀리므로 스펙에 적고 검사합니다(A13). 열면 벽에 막히거나 허공으로 나가는 문은 `building_audit.py`가 잡습니다.
 
 ### 2.2 제품·하드서피스·기계·CAD
 
@@ -323,7 +323,13 @@ and use sensible camera moves to show these effects.
 **한계**: 저자가 곡면 가구, 프로파일 컷, 다듬어진 실루엣, 사람 얼굴, 얇은 금속의 스펙큘러 플레어를 범위 밖으로 밝혔습니다. Sonnet 4.6·Opus 4.7·Haiku 4.5 기준이라 최신 모델에서는 재검증이 필요합니다. rendering 스킬에 5.x에서 없어진 EEVEE 속성(`use_gtao`, `use_bloom` 등)이 남아 있습니다. **공식 Blender Lab MCP로 "이전했다"는 서술은 틀렸습니다.** PR #1은 제3자가 올린 미병합 PR이고, main은 여전히 ahujasid 서버(9876)를 씁니다.
 **교훈**: 치수표 + 고정 순서 + 시각 검증 + 실패 진단 루프를 스킬로 묶으면 하드서피스 소품은 재현 가능한 품질이 나옵니다. 미감은 여전히 사람 몫입니다.
 
-**같이 볼 스킬**: [ProfRino/Blender-MCP-Assembly-Skill](https://github.com/ProfRino/Blender-MCP-Assembly-Skill)은 의자가 '분해되어 보이는' 문제를 막는 규칙집입니다(의자 조립 Before/After 예시). 연결부·접촉면·최소 겹침(5mm)을 먼저 계획하고, cube는 `size=2`로 만들어 scale 값이 half-extent와 같게 하고(LLM의 대표 버그가 size=1 + scale로 치수가 절반이 되는 것), 방향성 부재는 Euler 회전 대신 bmesh로 두 점 사이를 잇고, 스케일 직후 transform을 적용하고, `verify_bounds()`·`verify_overlap()`·`audit_all()`을 호출합니다. LICENSE 파일은 없고 정량 평가도 없습니다.
+**같이 볼 스킬**: [ProfRino/Blender-MCP-Assembly-Skill](https://github.com/ProfRino/Blender-MCP-Assembly-Skill)은 의자가 '분해되어 보이는' 문제를 막는 규칙집입니다(의자 조립 Before/After 예시). 규칙은 다음과 같습니다.
+- 연결부·접촉면·최소 겹침(5mm)을 먼저 계획합니다.
+- cube는 `size=2`로 만들어 scale 값이 half-extent(절반 길이)와 같게 합니다. LLM의 대표 버그는 size=1에 scale을 줘서 치수가 절반이 되는 것입니다.
+- 다리·봉 같은 방향성 부재는 Euler 회전 대신 bmesh로 두 점 사이를 잇습니다.
+- 스케일 직후 transform을 적용하고, `verify_bounds()`·`verify_overlap()`·`audit_all()`을 호출합니다.
+
+LICENSE 파일은 없고 정량 평가도 없습니다. 이 저장소의 `scene_audit.py`는 한 유닛(부모) **안의** 부품 틈·관통은 검사하지 않으므로, 부품 조립은 [오브젝트 모델링 가이드](../02_guides/07_modeling_objects_furniture_sculpture.md) 2.4절의 `check_assembly()`로 확인하세요.
 
 #### P12. Onshape MCP 도면 → CAD (Opus 4.7 · 검증됨)
 
@@ -354,7 +360,7 @@ and use sensible camera moves to show these effects.
 | P10 Gaius114 | research 스킬로 spec_sheet → 분해 계획을 plan_validator로 검증 → execute → render → analyze → iterate | 형상을 만들기 전 **계획 검증 게이트**로 한 번에 통째로 만들 때의 실패를 줄임 |
 | P11 KANA 꽃집 | 의미 있는 구조 레이어로 분해, 자판기 패널과 병·캔까지 분리, 요소마다 타이밍·속도 다르게, 분해 상태에서 멈췄다가 역재생, 분해 구간은 중립 스튜디오 배경, **모든 오브젝트와 컬렉션에 이름** | 편집 파일 비공개. 계층 분해·이름 요구가 배치·편집에 유리하다는 예 |
 | P14 FreeCAD MCP | Claude Desktop 자연어 → FreeCAD 안에서 Python 실행 → 스크린샷 피드백 | CAD MCP 중 가장 많이 쓰임(2.5k★) |
-| P15 Cordyceps | GH 캔버스 구성·배선 → Rhino bake → 포토리얼 재질 → 조명·렌더 → 카메라 오빗 | 품질 평가 없음 |
+| P15 Cordyceps | Grasshopper(GH) 캔버스 구성·배선 → Rhino bake → 포토리얼 재질 → 조명·렌더 → 카메라 오빗 | 품질 평가 없음 |
 
 ### 2.3 환경·도시·레벨
 
@@ -374,11 +380,11 @@ and use sensible camera moves to show these effects.
 | M6 TRELLIS(Replicate) | 약 1분, 알아볼 수 있고 가볍고 부드러움, 색만 있음, "looked good, just small" |
 
 4. 실제 도시 데이터: Cesium for Unreal v2.27(소스 빌드) + Google Photorealistic 3D Tiles, NYC Building Footprints(heightroof), 2017 NYC 1-ft LiDAR DEM(EPSG:2263 피트 → ×0.3048), Blender-OSM(OSM 높이 태그는 약 31%에만 있음), Epic City Sample. Cesium 가로 수준 설정은 가이드가 MaximumScreenSpaceError 6(히어로 샷 4), MaximumCachedBytes 1GB, ForbidHoles true를 권했지만, BUILD-LOG는 비행 중에는 4가 너무 공격적이라 8로 되돌렸습니다(4는 정지 히어로 샷에만).
-5. 사실감 패스: 변주, PBR 노멀, 데칼, 장식, 거리 소품. 가장 사실적인 결과는 깊은 베벨 릴리프와 청동 장식(2번째 머티리얼 슬롯)으로 돌과 금속의 대비를 준 **아르데코 블록**이었습니다([REALISM-GUIDE](https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/REALISM-GUIDE.md)). 파리 오스만 블록은 파사드 변형 12, 톤 5, 가로수 20, 가로등 12, 벤치 6, 주차 차량 5대입니다. PCG로는 글래스 grammar 타워 49개(7×7, 147 ISM, 빈 스폰 0, 파사드 틴트 5종)를 City Sample 프로젝트 안의 빈 Startup 맵에 세웠고, 같은 날 글래스 타워 14개를 실제 City Sample 레벨에 배치했습니다([PCG-GUIDE](https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/PCG-GUIDE.md)).
+5. 사실감 패스: 변주, PBR 노멀, 데칼, 장식, 거리 소품. 가장 사실적인 결과는 깊은 베벨 릴리프와 청동 장식(2번째 머티리얼 슬롯)으로 돌과 금속의 대비를 준 **아르데코 블록**이었습니다([REALISM-GUIDE](https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/REALISM-GUIDE.md)). 파리 오스만 블록은 파사드 변형 12, 톤 5, 가로수 20, 가로등 12, 벤치 6, 주차 차량 5대입니다. PCG(절차적 콘텐츠 생성)로는 글래스 grammar 타워 49개(7×7, ISM(Instanced Static Mesh) 147개, 빈 스폰 0, 파사드 틴트 5종)를 City Sample 프로젝트 안의 빈 Startup 맵에 세웠고, 같은 날 글래스 타워 14개를 실제 City Sample 레벨에 배치했습니다([PCG-GUIDE](https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/PCG-GUIDE.md)).
 
 **실패와 수정**
 - Boeing 787 메시가 100배(약 6km)로 들어옴 → `RelativeScale3D=0.01`
-- 조명: 골든아워 PPV 노출 11이 클리핑 → PPV를 빼고 오토 노출 + 4000K·피치 -8° 골든아워 → 너무 주황빛이라 6500K·피치 -38°·강도 6으로 복귀
+- 조명: 골든아워 PPV(Post Process Volume) 노출 11이 클리핑 → PPV를 빼고 오토 노출 + 4000K·피치 -8° 골든아워 → 너무 주황빛이라 6500K·피치 -38°·강도 6으로 복귀
 - 노멀 강도 8과 1.5는 과했고 0.3이 적정
 - City Sample chair-kit은 폭 축이 달라 조립이 들쭉날쭉
 - Cesium 스플랫 서브시스템 크래시 → 엔진 쪽 패치, Cesium 타일셋에 FocusOnActors를 쓰면 크래시
@@ -417,7 +423,7 @@ and use sensible camera moves to show these effects.
 
 #### E5. [한국 추정] ChatGPT 채팅만으로 만든 300×300m 호수 숲 → UE HISM (2026-09-13~14 · 검증됨)
 
-**어떻게**: 50×50m 셀 36개로 나누고 seed 42로 결정적으로 생성합니다. 반복 오브젝트는 메시 데이터블록을 공유합니다. `01_build_scene.py`(Blender 4.2+) → `02_export_unreal.py`(셀·에셋 ID별 FBX와 배치 매니페스트) → UE에서 `03_import_unreal.py`. 반복 에셋은 셀·에셋 ID별 HISM, 고유 오브젝트는 Static Mesh Actor로 보냅니다.
+**어떻게**: 50×50m 셀 36개로 나누고 seed 42로 결정적으로 생성합니다. 반복 오브젝트는 메시 데이터블록을 공유합니다. `01_build_scene.py`(Blender 4.2+) → `02_export_unreal.py`(셀·에셋 ID별 FBX와 배치 매니페스트) → UE에서 `03_import_unreal.py`. 반복 에셋은 셀·에셋 ID별 HISM(Hierarchical Instanced Static Mesh), 고유 오브젝트는 Static Mesh Actor로 보냅니다.
 **결과**: 지형, 호수·연못, 트레일, 나무 3,800그루(랜드마크 포함 3,839), 인스턴스 16,573개, 재사용 메시 127개, 랜드마크 영역 12곳(호숫가 마을, 캠프장, 과수원, 전망대). 순수 Python 테스트 30개(지오메트리, 배치, 결정성, Blender→UE 변환). MIT.
 **한계**: 콜리전, LOD, World Partition은 범위 밖이고, Blender·UE 런타임 실행은 검증 기록에 없습니다. '한국 사례'라는 근거는 README_KO뿐이고, README는 "ChatGPT 대화, Codex 아님"이라고만 적었으며 Astra라는 이름은 저장소 이름에만 나옵니다.
 **교훈**: 채팅만으로도 **코드 패키지 형태**로 받으면 대규모 배치가 됩니다. 반복 요소는 인스턴싱, 생성은 seed 고정, 검증은 테스트로.
@@ -488,7 +494,7 @@ Claude Code가 커스텀 스킬과 탐색·설계·리뷰 에이전트로 존 5�
 
 #### G11. Paper Ember Duel: Rodin MCP + Blender + Godot 보스전 (2026-09-10~13 · 1차 공개)
 
-GPT-6/Codex로 기획과 코드를 쓰고, Hyper3D Rodin MCP에서 'Gen-2.5 Medium / Raw' 백만 면급 원본을 생성했습니다(웹의 Extreme-High는 의도적으로 피함). BANG으로 캐릭터를 메시 부품 8개로 나눴고(자동 스키닝은 아님), Blender에서 메시 연결, 폴리곤 감소, 스킨 웨이트, 무기 그립 위치를 손으로 보정한 뒤 Godot 4.7.2(Compatibility 렌더러)로 가져갔습니다. 플레이 가능한 Mac 빌드가 나왔습니다. README는 "프로젝트 코드와 아트는 통일된 오픈소스 라이선스가 없고 상업적 재사용은 불허"라고 명시합니다. 교훈: **생성 원본은 고폴리라서 엔진 투입 전 감면이 필수**이고, 캐릭터 분해·웨이트는 여전히 손이 갑니다.
+GPT-6/Codex로 기획과 코드를 쓰고, Hyper3D Rodin MCP에서 'Gen-2.5 Medium / Raw' 백만 면급 원본을 생성했습니다(웹의 Extreme-High는 의도적으로 피함). BANG으로 캐릭터를 메시 부품 8개로 나눴습니다(자동 스키닝은 아님). 그다음 Blender에서 메시 연결, 폴리곤 감소, 스킨 웨이트, 무기 그립 위치를 손으로 보정해 Godot 4.7.2(Compatibility 렌더러)로 가져갔습니다. 플레이 가능한 Mac 빌드가 나왔습니다. README는 "프로젝트 코드와 아트는 통일된 오픈소스 라이선스가 없고 상업적 재사용은 불허"라고 명시합니다. 교훈: **생성 원본은 고폴리라서 엔진 투입 전 감면이 필수**이고, 캐릭터 분해·웨이트는 여전히 손이 갑니다.
 
 #### G12. Godot AI MCP로 만든 사이버펑크 HUD의 마찰 로그 (2026-04-15 · 검증됨, 부분)
 
@@ -499,7 +505,7 @@ GPT-6/Codex로 기획과 코드를 쓰고, Hyper3D Rodin MCP에서 'Gen-2.5 Medi
 | 사례 | 무엇을·어떻게 | 한계·교훈 |
 |---|---|---|
 | G4 Givros 카트 레이서 | 프롬프트: Blender에서 메시·UV·베이크 텍스처 마감 → 최적화된 MeshPart로 임포트 → 게임 안에서 스케일·피벗·재질·콜리전 검증 → 실제 게임플레이 스크린샷을 보며 반복, **플레이스홀더 금지** | 2차 요약. Roblox 공식 [studio-rust-mcp-server](https://github.com/Roblox/studio-rust-mcp-server)는 2026-04-03 아카이브, 지금은 Studio 내장 MCP 권장 |
-| G6·G7 Chong-U | 2025-03 Cursor + Claude로 BP 클래스 생성·컴포넌트·노드 연결·컴파일해 Flappy Bird 클론. 2026-09 Fable 5.1 Unity + Blender 테니스 영상('FABLE 5.1 Is Here And It's PERFECT For Vibe Coding Games') | Unreal MCP 붐의 시작. 그래픽보다 게임플레이 프로토타이핑 |
+| G6·G7 Chong-U | 2025-03 Cursor + Claude로 블루프린트(BP) 클래스 생성·컴포넌트·노드 연결·컴파일해 Flappy Bird 클론. 2026-09 Fable 5.1 Unity + Blender 테니스 영상('FABLE 5.1 Is Here And It's PERFECT For Vibe Coding Games') | Unreal MCP 붐의 시작. 그래픽보다 게임플레이 프로토타이핑 |
 | G8 Cagri Kacmaz | 동일한 PROMPT.md, 수동 QA·인터랙션 테스트·녹화로 비교 | 작성자가 "과학적 벤치마크 아님"이라고 명시 |
 | G9·G10 Astra 게임 붐 | Void Explorer(성계 2,048, 행성 1만+), 약 45분 만에 만든 게임 | 45분 게임은 에셋을 모델링하지 않고 **이미지 생성으로 그래픽을 해결**. AAA가 목표라면 이 트릭은 프리비즈에서만 |
 | G13 Andy.G | 모든 Lua 코드 작성, 오브젝트 생성, 속성 변경을 Claude Code가 MCP로 | 결과 품질 미확인 |
@@ -578,7 +584,7 @@ the silhouette... normal maps, bump or restrained displacement only for micro-de
 6항목 바(클라이언트의 "very, very beautiful"을 쪼갠 것): ① 히어로 에셋에 3단계 스케일 디테일(맨 프리미티브 금지) ② 파티클·대기·아웃포커스 전경 ③ 표면을 뚫고 들어가는 매치컷 ④ 모든 샷에 카메라와 피사체 움직임 ⑤ 문장마다 시각적 증거 ⑥ 섹션별 팔레트와 조명 테마. 수정 지시 예: "s30: washed grey, tissue must be warm and matte; s06: fist is a cluster of balls".
 
 **결과**: 심장 챕터(8분3초, 10,964프레임)를 청크 709개로 나눠 A10G 약 50대에서 84분에 렌더, 실패 0, 합성 5분 추가. 수정은 보통 2라운드였고, 모델 자체 리뷰보다 사람 눈이 결정적이었습니다.
-**함정**: headless에서 GPU 컴포지터가 segfault → CPU로 전환, OptiX 대신 OIDN, 카메라 배치 전에 초점 거리를 재서 청크가 새까맣게 나옴, shape key 레이캐스트가 basis가 아닌 활성 키 기준으로 계산됨.
+**함정**: headless에서 GPU 컴포지터가 segfault → CPU로 전환, 디노이저는 OptiX 대신 OIDN(Intel Open Image Denoise), 카메라 배치 전에 초점 거리를 재서 청크가 새까맣게 나옴, shape key 레이캐스트가 basis가 아닌 활성 키 기준으로 계산됨.
 **한계**: 교육 영상용(비실시간)이고 Modal 비용은 밝히지 않았습니다. **LICENSE 파일이 없어 라이선스 미지정**입니다.
 **교훈**: "작은 모델도 뭔가 만들긴 하지만 이 바를 넘으려면 훨씬 많은 라운드가 필요하다." **'예쁘다'를 체크리스트로 쪼개면** 수정이 두 번이면 끝납니다.
 
@@ -641,11 +647,17 @@ Poly Haven 운영자 Greg Zaal이 [이슈 #361](https://github.com/ahujasid/blen
 
 #### T5. asset-studio: 로컬 RTX 5090 텍스트 → 게임용 에셋 (2026-09 · 검증됨)
 
-프롬프트를 '단일 객체, 단색 배경, 3/4 view, soft-lit, 텍스트 없음'으로 다시 쓰고 → Qwen-Image-2512 Lightning 8(1328², 8 step)로 레퍼런스 → Pixal3D/TRELLIS.2(balanced 1024 또는 quality 1536 cascade, 후보 2개)로 master(최대 1M tri, 4096² PBR) → Blender에서 meshoptimizer로 decimate, UV 재전개, color/metal-rough/normal 베이크, LOD 50%/25%, convex hull → Khronos validator. MCP 도구(generate, status, artifacts, retry, open_in_blender)로 Claude Code에서 호출합니다. crate는 954,901 → 7,998 tri로 11.1분, 펌프는 997,520 → 19,803 tri로 15.6분, 예산만 바꾼 재최적화는 약 80초. Godot 4.7.2 임포트를 테스트했습니다. 0BSD. **주의**: 기본 matting이 gated 비상업 라이선스인 BRIA RMBG-2.0이라 상업용이면 알파 PNG를 직접 넣으세요.
+1. 프롬프트를 '단일 객체, 단색 배경, 3/4 view, soft-lit, 텍스트 없음'으로 다시 씁니다.
+2. Qwen-Image-2512 Lightning 8(1328², 8 step)로 레퍼런스 이미지를 만듭니다.
+3. Pixal3D/TRELLIS.2(balanced 1024 또는 quality 1536 cascade, 후보 2개)로 master 메시(최대 1M tri, 4096² PBR)를 만듭니다.
+4. Blender에서 meshoptimizer로 decimate, UV 재전개, color/metal-rough/normal 베이크, LOD 50%/25%, convex hull 콜리전을 만듭니다.
+5. Khronos validator로 검사합니다.
+
+MCP 도구(generate, status, artifacts, retry, open_in_blender)로 Claude Code에서 호출합니다. crate는 954,901 → 7,998 tri로 11.1분, 펌프는 997,520 → 19,803 tri로 15.6분, 예산만 바꾼 재최적화는 약 80초. Godot 4.7.2 임포트를 테스트했습니다. 0BSD. **주의**: 기본 matting이 gated 비상업 라이선스인 BRIA RMBG-2.0이라 상업용이면 알파 PNG를 직접 넣으세요.
 
 #### T6. image-to-3dlab: 로컬 백엔드 5종 비교 (2026-09 · 검증됨)
 
-Pixal3D, Hunyuan3D-MLX 2종, TRELLIS.2, Stable Fast 3D를 같은 입력으로 돌렸습니다. Pixal3D는 "Best results… one pass, no repaint needed"로 색 채도 보존이 가장 좋았고, TRELLIS.2는 충실도가 가장 높지만 Mac(M5)에서 15~35분이 걸리고 플랫 아트에서 색 오류가 났으며, Hunyuan MLX는 geometry가 가장 깨끗했지만 **한국·EU·영국에서 쓸 수 없게 게이트**를 걸었습니다. Finish 단계는 voxel remesh → decimate(예: 90만 → 4만 면) → 선택적 Hunyuan 2.1 PBR 리페인트(약 6분) → JPEG 2048 재인코딩(32MB → 5MB 미만)이고, 결과물마다 `.provenance.json`을 붙여 라이선스를 추적합니다. RMBG-2.0은 라이선스 문제로 기본 비활성입니다. 저장소 코드는 Apache-2.0이지만 README가 "Qwen-Image 2.1 … Those weights are non-commercial"이라고 밝혀, **텍스트→이미지를 거친 결과물은 비상업**으로 분류됩니다.
+Pixal3D, Hunyuan3D-MLX 2종, TRELLIS.2, Stable Fast 3D를 같은 입력으로 돌렸습니다. Pixal3D는 "Best results… one pass, no repaint needed"로 색 채도 보존이 가장 좋았습니다. TRELLIS.2는 충실도가 가장 높지만 Mac(M5)에서 15~35분이 걸리고 플랫 아트에서 색 오류가 났습니다. Hunyuan MLX는 geometry가 가장 깨끗했지만, 저자가 **한국·EU·영국에서는 쓸 수 없게 막아 두었습니다**(라이선스 적용 지역 제외). Finish 단계는 voxel remesh → decimate(예: 90만 → 4만 면) → 선택적 Hunyuan 2.1 PBR 리페인트(약 6분) → JPEG 2048 재인코딩(32MB → 5MB 미만)이고, 결과물마다 `.provenance.json`을 붙여 라이선스를 추적합니다. RMBG-2.0은 라이선스 문제로 기본 비활성입니다. 저장소 코드는 Apache-2.0이지만 README가 "Qwen-Image 2.1 … Those weights are non-commercial"이라고 밝혀, **텍스트→이미지를 거친 결과물은 비상업**으로 분류됩니다.
 
 #### T4. [한국 추정] Blender 노드 셰이더가 UE로 안 넘어가 텍스처 PBR로 전환 (2026-02 · 1차 공개)
 
@@ -683,7 +695,7 @@ Claude MCP(Blender 모델링) + Nano Banana MCP(PBR 텍스처) + Unreal 브리�
 | blender-design-master | 2026-08-25 | 읽기 전용 visual-critic과 점수 게이트(평균 8, 최저 7)를 둔 멀티에이전트. Codex Level 0 테스트에서 Final Gate 평균 7.4로 **미통과**([GitHub](https://github.com/Bniya-cn/blender-design-master)) | 1차 공개, 라이선스 미선언 |
 | 배칭 측정 | 2026-09-09 | 동일 변환 50개를 개별 호출하면 1,949 토큰, 배치 1회면 1,018 토큰(페이로드 47.77% 감소)([GitHub](https://github.com/mohakmalviya/blender-astra-mcp)) | 1차 공개. 전체 비용이 47.77% 준다는 뜻은 아님 |
 | 3dviz-pro-max 스킬 | 2026-09-11 | 'Frames, not assurances' 원칙, 전후 평가 기준선 21 → 19→23→23→25점(30점 만점, n=1)([GitHub](https://github.com/viettranx/3dviz-pro-max)) | 1차 공개 |
-| [한국] 소켓 상주형 BlenderMCP | 2026(추정) | 블렌더를 띄워 둔 채 소켓으로 명령, 명령당 0.1~1초(기존 10~15초)라고 주장([GitHub](https://github.com/Aryeon0228/BlenderMCP)) | 자기 보고 |
+| [한국] 소켓 상주형 BlenderMCP | 2026(추정) | 블렌더를 띄워 둔 채 소켓으로 명령, 명령당 0.1~1초라고 주장(비교 대상은 ahujasid 서버가 아니라 명령마다 Blender를 새로 띄우는 방식의 10~15초)([GitHub](https://github.com/Aryeon0228/BlenderMCP)) | 자기 보고 |
 | [한국] Unreal + Blender 통합 MCP | 미확인 | 중앙 서버(8300)에서 Blender(8400)·Unreal(8500)로 Python 명령 중계, LangChain 메모리([설계 문서](https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md)) | 1차 공개(한국어 문서) |
 
 ### 2.9 연구·벤치마크형 사례
@@ -692,7 +704,7 @@ Claude MCP(Blender 모델링) + Nano Banana MCP(PBR 텍스처) + Unreal 브리�
 
 | 사례 | 어떻게 | 결과·교훈 |
 |---|---|---|
-| [SceneSmith](https://github.com/nepfaff/scenesmith)(ICML 2026 Spotlight, MIT) | 단계마다 planner가 designer → critic(6항목 0~10점) → designer 사이클을 최대 3회, 모두 9점 이상이면 조기 종료, 점수가 떨어지면 체크포인트 롤백을 고려. 위치·회전을 바꿀 때마다 `check_physics`. 151단어 프롬프트로 커뮤니티 센터 전체(탁구대 옆 라켓 같은 맥락 배치) | 충돌 2% 미만, 물리 안정 96%, 사용자 205명 연구에서 사실감 승률 92%. 기본 에이전트 GPT-5, GPU 45GB 이상 권장. 에셋 생성에 Hunyuan3D-2 옵션이 있어 **한국에서는 다른 소스로 교체** |
+| [SceneSmith](https://github.com/nepfaff/scenesmith)(저장소 설명상 ICML 2026 Spotlight, MIT) | 단계마다 planner가 designer → critic(6항목 0~10점) → designer 사이클을 최대 3회, 모두 9점 이상이면 조기 종료, 점수가 떨어지면 체크포인트 롤백을 고려. 위치·회전을 바꿀 때마다 `check_physics`. 151단어 프롬프트로 커뮤니티 센터 전체(탁구대 옆 라켓 같은 맥락 배치) | 객체 간 충돌 0, 물리 시뮬레이션 후 안정 96%, 사용자 205명 연구에서 기준선 대비 평균 사실감 승률 92%(프로젝트 페이지, 저자 자체 보고). 기본 에이전트 GPT-5, GPU 45GB 이상 권장. 에셋 생성에 Hunyuan3D-2 옵션이 있어 **한국에서는 다른 소스로 교체** |
 | [SAGE](https://github.com/NVlabs/sage)(NVIDIA, Apache-2.0) | 레이아웃을 FastMCP 툴로 노출. LLM이 객체마다 제약 4~5개를 쓰고 DFS 솔버가 bbox 충돌(전체 치수 +3.5cm)과 문 차단 영역을 고려해 풀고, 소품은 후보 150개 중 physics critic으로 거름 | 'MCP 서버 + 제약 솔버 + 물리 critic'이 1만 씬 규모로 동작. 프롬프트 규칙: 점유율 30~40%, 동선 60~90cm |
 | [SceneWeaver](https://github.com/Scene-Weaver/SceneWeaver)(NeurIPS 2025, BSD-3) | Infinigen Blender를 소켓 서버로 띄우고 에이전트가 붙어 도구를 반복 호출하며 자기 평가·수정, 사용자는 Blender UI에서 실시간 확인 | blender-mcp와 같은 소켓 브리지 구조의 학술 레퍼런스 |
 | [Vibe3DScene](https://github.com/3DSceneAgent/Vibe3DScene)(Apache-2.0) | LangGraph + 자체 MCP 서버·애드온(ahujasid 서버는 감사 목록에만 있음), 기본 VLM 시각 검사에 형상 관통 검사(기본 임계 0.02m) 추가 | **"VLM 눈만으로는 관통을 못 잡는다"**를 기하 검사로 보완 |
@@ -702,10 +714,10 @@ Claude MCP(Blender 모델링) + Nano Banana MCP(PBR 텍스처) + Unreal 브리�
 | [VIGA](https://github.com/Fugtemypt123/VIGA)(MIT) | Generator가 계획·코드 실행·에셋 검색으로 씬 코드를 쓰고 Verifier가 다중 시점 렌더를 목표와 비교, 계획·코드 diff·렌더 이력을 메모리에 누적 | 원샷 대비 BlenderGym +35%, BlenderBench +125%(검색 요약). 레퍼런스 이미지 → 씬 재현 루프의 대표 구현 |
 | [LL3M](https://github.com/threedle/ll3m) | 계획 → 문서 검색(BlenderRAG) → 코드 → 디버그 → 자동 개선 → 사용자 가이드 개선(Claude Sonnet 3.7) | 모델이 retire되어 **서버 중단**. 저장소는 클라이언트뿐이고 비상업 데모 라이선스. 모델 의존 서비스의 수명 위험 |
 | [BlenderAlchemy](https://github.com/ianhuang0630/BlenderAlchemyOfficial)(ECCV 2024) | VLM이 재질 노드 스크립트 편집 후보를 내고 렌더를 비교해 트리 탐색(깊이 4 × 폭 8), 개선이 없으면 되돌림 | 한 번에 코드를 쓰는 것보다 **시각 평가 반복**이 목표 재질에 잘 수렴. MCP 루프에 '후보 N개 → 렌더 → VLM 선택'을 넣는 근거 |
-| [3DCodeBench](https://github.com/gaoypeng/3dcodebench) | Claude Code·Codex·Gemini CLI 하네스가 Blender 5.0으로 212개 카테고리 모델링, 트라이얼 82,042건·transcript 2,767개 공개 | 멀티턴 오류 피드백으로 실행 가능률 0.69 → 0.97(검색 요약). 렌더에 성공해도 떠 있거나 분리된 부품이 흔함 |
+| [3DCodeBench](https://github.com/gaoypeng/3dcodebench) | Claude Code·Codex·Gemini CLI 하네스가 Blender 5.0으로 212개 카테고리 모델링, 트라이얼 82,042건·transcript 2,767개 공개 | 멀티턴 오류 피드백으로 실행 가능률 0.69 → 0.97, 렌더에 성공해도 떠 있거나 분리된 부품이 흔함(둘 다 논문 요약에만 있고 GitHub README에는 없어 **미확인**) |
 | [La Forge](https://github.com/drakkB/scoreia-forge-results)(ScoreIA) | 8개 모델이 MCP 도구만으로 공용 부품을 조립해 3D 기사와 걷기·회전·베기 애니메이션을 만들고, 프로그램이 cm·도 단위로 채점 | 수치는 5.2절. Forge 전용 MCP의 부품 조립이라 모델링·텍스처 품질은 재지 않음 |
 | [MineBench](https://github.com/Ammaar-Alam/minebench/pull/152) | Astra Pro(max reasoning, 출력 상한 128k)가 복셀 도구로 벤치 프롬프트 15개 전부 생성 | 평균 25분53.5초, 총 약 $34.71, 평균 JSON 128.53 MiB |
-| [Unreal Agent Benchmark](https://github.com/44-99/unreal-agent-benchmark) | 과제 3개(Coastal Village Explorer 60분/$15 등)와 100점 채점표, 컴파일·PIE·저장 후 재오픈·Win64 패키징·패키지 실행·스모크 테스트 6개 게이트 | 공식 점수는 아직 없음. **스크린샷 데모와 실제 제품의 차이**를 보는 비판적 기준 |
+| [Unreal Agent Benchmark](https://github.com/44-99/unreal-agent-benchmark) | 과제 3개(Coastal Village Explorer 60분/$15 등)와 100점 채점표, 컴파일·PIE(에디터 안 플레이 테스트)·저장 후 재오픈·Win64 패키징·패키지 실행·스모크 테스트 6개 게이트 | 공식 점수는 아직 없음. **스크린샷 데모와 실제 제품의 차이**를 보는 비판적 기준 |
 
 ### 2.10 비판적으로 볼 사례
 
@@ -740,7 +752,7 @@ Claude MCP(Blender 모델링) + Nano Banana MCP(PBR 텍스처) + Unreal 브리�
 | 2 | **생성은 역할을 나눠서** | C1 얼굴·옷은 Meshy 우세, C6·C7 생성 베이스 + 에이전트 후처리, P1·P9 하드서피스는 코드 | 유기체·캐릭터는 이미지→3D, 가구·기계는 파라메트릭 코드, 조립·UV·리깅은 에이전트([AI 3D 생성](../02_guides/04_ai_3d_generation.md)) |
 | 3 | **'예쁘다'를 체크리스트로** | V1 6항목 바(수정 2라운드), E2 리뷰어별 점수와 목표치 | 품질 기준을 항목·수치로 쓰고 샷마다 판정([품질 체크리스트](../03_playbooks/04_quality_checklists.md)) |
 | 4 | **에이전트에게 '눈'을 먼저 단다** | E1 CaptureViewport 디코드, G1 자체 뷰어, G5 여러 각도 스크린샷 | 변경마다 캡처 → 파일로 저장 → 판독 → 수정. 탑다운(겹침)·눈높이(미관)·플레이어 시점(스케일 감각) 3각도. Blender에서는 [`review_views.py`](../03_playbooks/scripts/README.md) |
-| 5 | **숫자 검사를 먼저** | A6 물리 논리 QA, 3DCodeBench '렌더 성공해도 떠 있는 부품 흔함', Vibe3DScene 관통 검사 | [`scene_audit.py`](../03_playbooks/scripts/README.md)로 떠 있음·관통·스케일·치수를 0건으로 만든 뒤 렌더 비평 |
+| 5 | **숫자 검사를 먼저** | A6 물리 논리 QA, 3DCodeBench '렌더 성공해도 떠 있는 부품 흔함'(논문 요약, 미확인), Vibe3DScene 관통 검사 | [`scene_audit.py`](../03_playbooks/scripts/README.md)로 떠 있음·박힘·관통·스케일·치수를 0건으로 만든 뒤 렌더 비평. 건물·방이 있으면 [`building_audit.py`](../03_playbooks/scripts/README.md)로 문·창·방 연결도 검사 |
 | 6 | **빌더와 리뷰어 분리 + 증거** | E2 "빌더는 자기 작업을 채점하지 않는다", A5 "근거 프레임 없는 지적 금지", V5 번호 붙은 타임랩스 | 읽기 전용 비평가, 실사진과 같은 시점 비교, 단계별 스크린샷 보존([에이전트 워크플로](../02_guides/09_agent_workflow_prompting.md)) |
 | 7 | **스크립트를 원본으로** | V2 headless + 스킬, E11 "MCP 수정은 원본에 반영", E5 seed 고정, T3 MCP·headless 바이트 동일 | MCP는 점검·실험 레이어. 재현이 필요한 빌드는 `build_*.py` + `blender -b` |
 | 8 | **엔진 제약을 숫자로** | 2.4절 Jonathan Plumb(15,000 tri, 전방축, 콜리전), G4 "플레이스홀더 금지" | 삼각형 예산, 전방축, 피벗, 콜리전, 이름 규칙을 프롬프트에 |
@@ -769,8 +781,8 @@ AI 사례에서 남은 문제(반복 텍스처, 밋밋한 표면)는 사람 AAA 
 |---|---|---|---|---|
 | 1 | 임포트 스케일 100배 | E1 Boeing 787 약 6km, G2 2m 로봇이 200m | FBX 내보내기에 `apply_scale_options='FBX_SCALE_UNITS'`, UE에서 `RelativeScale3D=0.01`, 크기를 아는 픽스처로 먼저 테스트. "스케일 오류는 이후 모든 것을 조용히 망가뜨린다" | `scene_audit.py`(이름 기준 치수 범위, 스케일 미적용) |
 | 2 | 이미지→3D 결과가 작고 축이 다름 | E1 TRELLIS "just small", 약 1.4m로 들어오고 Y-up(사례 요약) | 임포트 직후 bounds 실측, 축 확인, 목표 크기로 정규화(G2는 1.8m, 발을 지면에) | `placement_utils.snap_to_floor()` |
-| 3 | 떠 있거나 분리된 부품 | E2 떠 있는 옥상 박스, 폭발한 의자(ProfRino), A6 떠 있는 쿠션, 3DCodeBench | 연결부·접촉면을 먼저 계획, cube `size=2`, 스케일 적용, 부품은 부모로 묶기 | `scene_audit.py`(floating), `placement_utils.drop_to_surface()` |
-| 4 | 관통·겹침 | P2 스페이서가 액추에이터와 겹침, 도넛 스프링클이 접시를 뚫음(신뢰도 낮음) | 형상 관통 검사(Vibe3DScene 0.02m), 간격 규칙 | `scene_audit.py`(interpenetrations), `check_clearances()` |
+| 3 | 떠 있거나 분리된 부품 | E2 떠 있는 옥상 박스, 폭발한 의자(ProfRino), A6 떠 있는 쿠션, 3DCodeBench | 연결부·접촉면을 먼저 계획, cube `size=2`, 스케일 적용, 부품은 부모로 묶기 | `scene_audit.py`(floating, `sunk_into`), `placement_utils.drop_to_surface()`. 한 유닛 안의 부품 틈은 `scene_audit.py`가 보지 않으므로 [오브젝트 모델링](../02_guides/07_modeling_objects_furniture_sculpture.md) 2.4절 `check_assembly()` |
+| 4 | 관통·겹침 | P2 스페이서가 액추에이터와 겹침, 도넛 스프링클이 접시를 뚫음(신뢰도 낮음) | 형상 관통 검사(Vibe3DScene 0.02m), 간격 규칙 | `scene_audit.py`(유닛 간 `interpenetrations`, 가구–벽·천장 관통), `check_clearances()` |
 | 5 | 옆에서 보면 얇음 | C5 몸통 깊이 1.45배로 수정 | 정면·측면·3/4·후면 렌더를 매 반복 | `review_views.py`(side) |
 | 6 | 움직이지만 기계적으로 틀림 | P2 핀 구멍 없음, 받침대 미접촉, 날이 축에서 빠지기 전 옆으로 이동 | 관절·결합을 숫자로 검사, 분해 애니메이션으로 확인 | [오브젝트 모델링](../02_guides/07_modeling_objects_furniture_sculpture.md) |
 | 7 | 벽이 사라짐·도로 마킹 뒤집힘 | E2 와인딩 반전, z 미러링 | 노멀 방향·백페이스 확인, 고정 시점 비교 | `review_views.py` |
@@ -784,11 +796,11 @@ AI 사례에서 남은 문제(반복 텍스처, 밋밋한 표면)는 사람 AAA 
 | 15 | 얼굴·옷 디테일 부족 | C1 Astra 직접 모델링 | 생성 모델 베이스 + 에이전트 후처리 | [AI 3D 생성](../02_guides/04_ai_3d_generation.md) |
 | 16 | 딱딱한 애니메이션 | G17 11일째 해결 못함, C5 | 모캡(C14) 하이브리드 | - |
 | 17 | 사진 재구성에서 지어내기·세부 오류 | A19 지적, E8 건물 오류, A8 "세부가 꽤 틀림" | "근거 없는 공간·요소는 만들지 말고 기록", 레퍼런스와 같은 시점 비교 | [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) |
-| 18 | 인테리어 치수 누락·문 방향 오류 | A13 SketchUp 테스트 | 치수·문 스윙을 스펙에 명시, 간격 규칙 검사 | `check_clearances()`, [실측 치수표](../03_playbooks/05_reference_dimensions.md) |
+| 18 | 인테리어 치수 누락·문 방향 오류 | A13 SketchUp 테스트 | 치수·문 스윙을 스펙에 명시, 간격 규칙 검사 | `check_clearances()`, `building_audit.py`(안 뚫린 문, 열면 벽·허공인 문), [실측 치수표](../03_playbooks/05_reference_dimensions.md) |
 | 19 | 에셋 정면·축 규약 불일치 | E1 chair-kit 폭 축, Holodeck #92, LayoutVLM #9, I-Design +π | 에셋 정면 축과 실측 스케일을 정규화하고 메타데이터로 유지 | `placement_utils.face_towards()`(정면 -Y 규약) |
 | 20 | headless 렌더 함정 | V1 GPU 컴포지터 segfault, OptiX, 초점 거리, shape key 레이캐스트 | CPU 컴포지터, OIDN, 카메라 배치 후 초점 측정 | - |
 | 21 | MCP 도구에 빈틈 | G12 씬 인스턴싱 없음, ahujasid에 렌더 전용 도구 없음(이슈 #61 not planned) | `execute_blender_code`나 스크립트로 우회, 렌더→확인 절차를 스킬로 | [Blender MCP](../02_guides/02_blender_mcp.md) |
-| 22 | 엔진 MCP 설정에서 하루를 날림 | E1 자동 시작 꺼짐, 포트 8000 충돌, 비활성 툴셋 약 28개, GLB 임포트 불가 | 설정 체크리스트 | [빠른 시작](../03_playbooks/01_quickstart_setup.md), [기타 MCP](../02_guides/03_other_mcp_dcc_cad_engines.md) |
+| 22 | 엔진 MCP 설정 함정마다 시간을 날림(원문 'cost an hour') | E1 자동 시작 꺼짐, 포트 8000 충돌, 비활성 툴셋 약 28개, GLB 임포트 불가 | 설정 체크리스트 | [빠른 시작](../03_playbooks/01_quickstart_setup.md), [기타 MCP](../02_guides/03_other_mcp_dcc_cad_engines.md) |
 | 23 | 외부 생성 API 실패 | G2 Meshy 자동 리깅 422 | 재제출 대신 대체 경로(Blender 스크립트 리그), 원장 대조 후 재시도 | - |
 | 24 | 토큰·비용 폭증 | 같은 과제 Opus 507K(zavrenn), 스크린샷 누적 | 편집을 한 번의 배치로(페이로드 47.77% 감소), 큰 이미지·로그는 파일로, effort 조절 | [AI 모델·비용](../02_guides/01_ai_models_and_clients.md) |
 | 25 | 모델 은퇴로 서비스 중단 | LL3M(Sonnet 3.7 retire) | 워크플로를 특정 모델 버전에 묶지 않기 | - |
@@ -826,12 +838,12 @@ AI 사례에서 남은 문제(반복 텍스처, 밋밋한 표면)는 사람 AAA 
 
 | 벤치마크 | 무엇을 재나 | 결과 | 주의 |
 |---|---|---|---|
-| La Forge(2026-09-24) | MCP 도구만으로 3D 기사 조립·애니, 프로그램 채점 | 6개 캠페인 단순평균 Opus 5.5 99.8, Fable 5.1 99.4, Astra 97.9, Grok 4.7 96.2, GPT-6 Sol 94.6, DeepSeek flash 91.3, Sonnet 5 81.1, Haiku 4.5 40.4. 시간·공간 동시 제약(taille-3)은 Opus 5.5 100, Astra 88.1, Sonnet 5 19.5 | 하네스가 모델마다 다름, 심판을 Opus로 작성, 모델 신원은 자기 신고, 모델링·텍스처 품질은 측정 안 함 |
+| La Forge(2026-09-24) | MCP 도구만으로 3D 기사 조립·애니, 프로그램 채점 | 6개 캠페인 단순평균(이 조사가 계산) Opus 5.5 99.8, Fable 5.1 99.4, Astra 97.9, Grok 4.7 96.2, GPT-6 Sol 94.6, DeepSeek flash 91.3, Sonnet 5 81.1, Haiku 4.5 40.4. 시간·공간 동시 제약(taille-3)은 Opus 5.5 100, Astra 88.1, Sonnet 5 19.5 | 하네스가 모델마다 다름, 심판을 Opus로 작성, 모델 신원은 자기 신고, 모델링·텍스처 품질은 측정 안 함 |
 | [Arena Code](https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/code.json)(2026-09-25) | 웹·앱 코드 사람 투표 Elo | Opus 5.5 max 1827±18, Astra max 1792±11, Fable 5.1 max 1751±10 | 3D 전용 아님, Opus 5.5 표본 1,607표 |
 | [Design Arena 3D](https://modelgrep.com/best/3d) | Three.js/WebGL 3D 장면 코드 투표 | Astra 1464, Kimi K3 1417, Fable 5.1 1415 | 집계 사이트 경유, Opus 5.5 없음, 신뢰도 낮음 |
 | [3DHarnessBench](https://github.com/llada60/3DHarnessBench)(2026-09) | 3D 물체 → Blender 코드 복원, 접근 조건 4가지 | Opus 5가 Active Visual·Full 3D Interaction 1위, 함수 호출 접근이 늘수록 모든 모델 개선 | Opus 5.5·Fable 5.1 미평가 |
 | CADGenBench(P13) | build123d-mcp로 CAD 생성·편집 | Opus 5 0.677, GPT-5.6 Sol 0.532, Gemini 3.7 Flash 0.508 | 도구 저자 자체 평가 |
-| BenchCAD | 4뷰 렌더 → CadQuery | 공식 재채점(도구 없음) 최고 Gemini 3.1 Pro IoU 0.289. OpenAI 발표 'Astra 95.9%'는 도구를 쓴 조건의 다른 척도 **(벤더 자체 보고)** | 두 수치를 같은 표에 두지 말 것 |
+| BenchCAD | 4뷰 렌더 → CadQuery | 공식 재채점(도구 없음, 0~1 척도) 최고 Gemini 3.1 Pro IoU 0.289, 벤더 보고(†) 최고는 Claude Mythos 5 0.384. OpenAI 발표 'Astra 95.9%'는 도구를 쓴 조건의 다른 척도 **(벤더 자체 보고, 원문 미확인)** | 두 수치를 같은 표에 두지 말 것 |
 | MineBench | 복셀 건축 | Astra Pro 15/15 생성, 평균 25분53.5초, $34.71 | 순위 점수 미확인 |
 
 ### 5.3 사례에서 보이는 경향 (잠정)
@@ -938,11 +950,11 @@ P2와 A4에서 가져온 프로토콜입니다.
 
 ### 7.3 한국어 UI에서 사례 코드가 깨지는 문제
 
-해외 사례 코드는 영어 UI를 전제로 `nodes["Principled BSDF"]`처럼 노드를 **이름**으로 찾는 경우가 많습니다. 한국어·일본어 UI에서 새로 만든 데이터의 이름이 번역되면 `KeyError`가 납니다. 일본어 UI 사례(2.8절, 로컬 9B 모델)는 노드를 `type`으로 찾는 방식으로 해결했습니다. 이 저장소의 [보조 스크립트](../03_playbooks/scripts/README.md)도 노드를 타입으로 찾도록 만들어 한국어 UI에서 동작합니다. Preferences에서 새 데이터 이름 번역(New Data)을 끄는 방법도 있습니다([에이전트 워크플로](../02_guides/09_agent_workflow_prompting.md)).
+해외 사례 코드는 영어 UI를 전제로 `nodes["Principled BSDF"]`처럼 노드를 **이름**으로 찾는 경우가 많습니다. 한국어·일본어 UI에서 새로 만든 데이터의 이름이 번역되면 `KeyError`가 납니다. 일본어 UI 사례(2.8절, 로컬 9B 모델)는 노드를 `type`으로 찾는 방식으로 해결했습니다. 이 저장소의 [보조 스크립트](../03_playbooks/scripts/README.md)도 노드를 타입으로 찾도록 만들어 한국어 UI에서 동작합니다. 다만 오브젝트 이름은 영어로 지어야 합니다. `scene_audit.py`는 이름의 영어 단어(`chair`, `SM_Armchair_A`처럼 snake_case·CamelCase 모두 인식)로 치수 규칙을 고르고, 한국어 이름('의자')은 인식하지 않습니다. Preferences에서 새 데이터 이름 번역(New Data)을 끄는 방법도 있습니다([에이전트 워크플로](../02_guides/09_agent_workflow_prompting.md)).
 
 ### 7.4 치수
 
-사례 대부분은 미국·일본·중국 공간을 기준으로 만들었습니다. 한국 아파트의 천장고, 문, 주방 상판, 침대 규격은 다를 수 있으니 [실측 치수표](../03_playbooks/05_reference_dimensions.md)의 한국 기준으로 스펙을 주세요.
+사례 대부분은 미국·일본·중국 공간을 기준으로 만들었습니다. 한국 아파트의 천장고, 문, 주방 상판, 침대 규격은 다를 수 있으니 [실측 치수표](../03_playbooks/05_reference_dimensions.md)의 한국 기준으로 스펙을 주세요. 예를 들어 구축 아파트(천장고 2300 mm)라면 `scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30, collection="Room")`으로 천장을 뚫는 가구를 잡을 수 있습니다. 예컨대 높이 236 cm짜리 IKEA PAX 옷장은 2300 mm 천장에 들어가지 않습니다.
 
 ---
 
@@ -962,7 +974,7 @@ P2와 A4에서 가져온 프로토콜입니다.
 | 사례 스크립트를 다른 공간·에셋에 그대로 실행 | Realsee처럼 공간 전용인 경우가 많음 | 방법(순서·규칙)만 가져오고 코드는 새로 |
 | 벤더 쇼케이스를 평균 품질로 기대 | 선별된 결과 | 1차 공개·검증 사례(E2의 6~7/10)를 기준선으로 |
 | "Blender MCP"가 어느 서버인지 확인하지 않음 | 공식 Blender Lab 서버와 ahujasid 서버는 도구 구성이 다르고 둘 다 9876 포트 | 사례의 서버를 확인하고 한 Blender에 서버 하나만([Blender MCP](../02_guides/02_blender_mcp.md)) |
-| 오래된 사례 코드를 최신 Blender에서 실행 | EEVEE 식별자(4.2~4.x `BLENDER_EEVEE_NEXT`, 5.x `BLENDER_EEVEE`), `use_gtao` 등 제거된 속성, 5.0의 `use_nodes` 폐기 예고 | 버전 함정 표([Blender MCP](../02_guides/02_blender_mcp.md)) 확인. 현재 안정판은 5.2.2(2026-09-14) |
+| 오래된 사례 코드를 최신 Blender에서 실행 | EEVEE 식별자(4.2~4.x `BLENDER_EEVEE_NEXT`, 5.x `BLENDER_EEVEE`), `use_gtao` 등 제거된 속성, 5.0의 `use_nodes` 폐기 예고 | 버전 함정 표([Blender MCP](../02_guides/02_blender_mcp.md)) 확인. 현재 안정판은 5.2.2(2026-09-14, 5.2 계열은 LTS) |
 | 논문·데모 서비스를 따라 하다 막힘 | 쓰던 모델이 retire(LL3M) | 모델 설정을 바꾸고 워크플로를 특정 모델에 묶지 않음 |
 | 한국에서 Hunyuan3D 사례를 그대로 재현 | 라이선스 적용 지역에서 한국 제외 | 7.2절 대안으로 교체 |
 
@@ -979,7 +991,7 @@ P2와 A4에서 가져온 프로토콜입니다.
 - [에이전트 워크플로·프롬프팅](../02_guides/09_agent_workflow_prompting.md) · [에셋·파이프라인·라이선스](../02_guides/10_assets_pipeline_licensing.md) · [학술 연구](../02_guides/11_research_papers.md)
 - [빠른 시작](../03_playbooks/01_quickstart_setup.md) · [AAA 제작 플레이북](../03_playbooks/02_aaa_production_playbook.md) · [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) · [품질 체크리스트](../03_playbooks/04_quality_checklists.md) · [실측 치수표](../03_playbooks/05_reference_dimensions.md)
 - [CLAUDE.md 템플릿](../03_playbooks/templates/CLAUDE.md) · [Blender 스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)
-- [보조 스크립트 사용법](../03_playbooks/scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`
+- [보조 스크립트 사용법](../03_playbooks/scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`, `building_audit.py`
 - [한국어 자료 모음](02_korean_resources.md)
 
 ## 원자료
@@ -988,4 +1000,4 @@ P2와 A4에서 가져온 프로토콜입니다.
 - [`01_research/raw/11_case-studies.verify.json`](../01_research/raw/11_case-studies.verify.json): 독립 검증. 반영한 주요 정정: UE 5.8 Unreal MCP는 '실험적', Blender Lab MCP는 GPL-3.0, mcp-for-blender의 Tripo는 Premium 전용·텔레메트리 기본 수집, PR #353 미병합·#359 거절, per-simmons의 TRELLIS 평가·조명 순서·'cost an hour'·LICENSE 없음, Robo Open 실패 22건·v0.3 사람 플레이테스트, How to Suck 주간 한도 해석, Vizuara 라이선스 미지정, openerai는 한국어 재패키징, octopus7 한국·Astra 추정, flopperam 로컬판 UE 5.5~5.7, Godot HUD '약 2시간' 미확인, zavrenn 토큰 배율 주의, Tripo 카탈로그 48% 브리프, AI Forge 신뢰도 낮음
 - [`01_research/raw/G3_videos_cases.gap.json`](../01_research/raw/G3_videos_cases.gap.json): 영상·소셜·벤더 워크스루 보완 조사(사례 28)
 - 사례 배열을 통합한 나머지 원자료: [`01_ai-models`](../01_research/raw/01_ai-models.research.json)(사례 12), [`02_blender-mcp`](../01_research/raw/02_blender-mcp.research.json)(7), [`03_dcc-cad-mcp`](../01_research/raw/03_dcc-cad-mcp.research.json)(9), [`04_engine-mcp`](../01_research/raw/04_engine-mcp.research.json)(7), [`05_ai-3d-generation`](../01_research/raw/05_ai-3d-generation.research.json)(8), [`06_texturing-materials`](../01_research/raw/06_texturing-materials.research.json)(10), [`07_aaa-rendering-lighting`](../01_research/raw/07_aaa-rendering-lighting.research.json)(6), [`08_modeling-objects`](../01_research/raw/08_modeling-objects.research.json)(8), [`09_scene-layout`](../01_research/raw/09_scene-layout.research.json)(8), [`10_agent-workflow`](../01_research/raw/10_agent-workflow.research.json)(8), [`12_assets-pipeline-licensing`](../01_research/raw/12_assets-pipeline-licensing.research.json)(6), [`13_research-papers`](../01_research/raw/13_research-papers.research.json)(7), [`G2_korean_resources`](../01_research/raw/G2_korean_resources.gap.json)(10), [`G4_licensing_pricing`](../01_research/raw/G4_licensing_pricing.gap.json)(3), [`G5_aaa_practice`](../01_research/raw/G5_aaa_practice.gap.json)(7), [`G6_benchmarks_models`](../01_research/raw/G6_benchmarks_models.gap.json)(3)
-- 정정에 반영한 검증 파일: [`01_ai-models.verify`](../01_research/raw/01_ai-models.verify.json)(Stefan 수치 미확인, 신뢰도 낮은 출처 목록, Higgsfield 풍차 미확인, Stefan Tripo 게시물 ID 불일치), [`02_blender-mcp.verify`](../01_research/raw/02_blender-mcp.verify.json)(cc-blender-skill 공식 서버 이전 서술 반박, MindStudio·GameDev Academy 신뢰도 낮음, claude-3d-harness 옥상 사례), [`05_ai-3d-generation.verify`](../01_research/raw/05_ai-3d-generation.verify.json)(sketch-to-3d-codex 미테스트, rodin-via-blender·aigeboku 증빙 없음, TRELLIS.2 결함률 철회), [`06_texturing-materials.verify`](../01_research/raw/06_texturing-materials.verify.json)(blender-kiln 갤러리는 스크립트 경로, Poly Haven 버그 경로), [`08_modeling-objects.verify`](../01_research/raw/08_modeling-objects.verify.json)(kitchen-twin DSL 각색, Home Wizard 모델명, CADGenBench 해석, IKEA 의자·침대·Adam Keating 누락 보완), [`09_scene-layout.verify`](../01_research/raw/09_scene-layout.verify.json)(Vibe3DScene 자체 서버, SAGE 수치), [`10_agent-workflow.verify`](../01_research/raw/10_agent-workflow.verify.json)(Bniya-cn Final Gate 7.4·라이선스 없음, kiln Iron Rules 31), [`12_assets-pipeline-licensing.verify`](../01_research/raw/12_assets-pipeline-licensing.verify.json)(image-to-3dlab Qwen-Image 비상업, Hunyuan 국제 엔드포인트), [`13_research-papers.verify`](../01_research/raw/13_research-papers.verify.json)(La Forge 한계, LL3M 코드 비공개), [`G4_licensing_pricing.verify`](../01_research/raw/G4_licensing_pricing.verify.json)(NoAI 태그 인과 정정)
+- 정정에 반영한 검증 파일: [`01_ai-models.verify`](../01_research/raw/01_ai-models.verify.json)(Stefan 수치 미확인, 신뢰도 낮은 출처 목록, Higgsfield 풍차 미확인, Stefan Tripo 게시물 ID 불일치, BenchCAD 'Astra 95.9%'와 3DCodeBench 0.69→0.97 미확인), [`02_blender-mcp.verify`](../01_research/raw/02_blender-mcp.verify.json)(cc-blender-skill 공식 서버 이전 서술 반박, MindStudio·GameDev Academy 신뢰도 낮음, claude-3d-harness 옥상 사례), [`05_ai-3d-generation.verify`](../01_research/raw/05_ai-3d-generation.verify.json)(sketch-to-3d-codex 미테스트, rodin-via-blender·aigeboku 증빙 없음, TRELLIS.2 결함률 철회), [`06_texturing-materials.verify`](../01_research/raw/06_texturing-materials.verify.json)(blender-kiln 갤러리는 스크립트 경로, Poly Haven 버그 경로), [`08_modeling-objects.verify`](../01_research/raw/08_modeling-objects.verify.json)(kitchen-twin DSL 각색, Home Wizard 모델명, CADGenBench 해석, IKEA 의자·침대·Adam Keating 누락 보완), [`09_scene-layout.verify`](../01_research/raw/09_scene-layout.verify.json)(Vibe3DScene 자체 서버, SAGE 수치), [`10_agent-workflow.verify`](../01_research/raw/10_agent-workflow.verify.json)(Bniya-cn Final Gate 7.4·라이선스 없음, kiln Iron Rules 31), [`12_assets-pipeline-licensing.verify`](../01_research/raw/12_assets-pipeline-licensing.verify.json)(image-to-3dlab Qwen-Image 비상업, Hunyuan 국제 엔드포인트), [`13_research-papers.verify`](../01_research/raw/13_research-papers.verify.json)(La Forge 한계, LL3M 코드 비공개, SceneSmith 충돌 0·승률은 기준선 대비 평균, 3DCodeBench trial·transcript 수), [`G4_licensing_pricing.verify`](../01_research/raw/G4_licensing_pricing.verify.json)(NoAI 태그 인과 정정)

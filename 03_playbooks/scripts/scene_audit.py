@@ -145,6 +145,12 @@ def _is_structure(name, structure_names):
     return bool(tokens) and tokens[-1] in structure_names
 
 
+# 공개 이름 (다른 스크립트·문서 예제에서 사용)
+is_structure = _is_structure
+name_tokens = _name_tokens
+size_rule_for = _size_rule_for
+
+
 def _oriented_size(root, verts):
     """유닛 루트의 Z 회전(yaw)을 되돌린 좌표계에서 잰 (w, d, h). w >= d."""
     yaw = root.matrix_world.to_euler("XYZ").z

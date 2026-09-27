@@ -152,7 +152,7 @@ if __name__ != "quick_checks":
 - `ok: False`는 "확인 필요"입니다. `roughness_const`는 거의 모든 초기 재질에서 뜨는 경고라서 히어로·근경 재질만 고치면 됩니다.
 - 이 테스트에서 `bpy.data.lights.new()`로 만든 Point 라이트의 반경 기본값이 **0**, Sun 각도 기본값이 **0.526°**, 팩토리 설정의 EEVEE 레이트레이싱이 **꺼짐**인 것을 두 버전에서 모두 확인했습니다. 광원 크기 0은 에이전트가 만든 장면에서 기본으로 생기는 결함입니다.
 
-### 0.5 방 경계 검사: 벽·천장 관통 (테스트 완료)
+### 0.5 방 경계 검사: 벽 메시가 없을 때 (테스트 완료)
 
 > **업데이트(2026-09-27)**: 이 절을 쓸 때의 `scene_audit.py`는 벽·천장을 관통 검사에서 빼서 벽 속 소파·천장을 뚫은 옷장을 놓쳤습니다. 지금은 스크립트를 고쳐 **벽·천장 메시가 있으면 가구–구조물 관통을 잡고, `audit_scene(ceiling_z=2.30)`으로 천장 위 돌출도 잡습니다**(테스트 통과). 아래 코드는 벽 메시 없이 바닥만 만든 블록아웃 단계처럼 **방 경계를 숫자로만 정한 경우**의 보조 검사로 쓰세요. SceneEval의 "Out of Bounds" 지표와 같은 검사입니다. 구조물 판정은 `scene_audit`과 같은 규칙(이름의 마지막 핵심 단어)을 써서, 방 밖으로 나간 `floor_lamp`·`wall_shelf`를 구조물로 착각해 건너뛰지 않습니다(4.2.23 LTS·5.0.1에서 확인).
 
@@ -162,7 +162,7 @@ room = dict(xmin=0.0, xmax=4.0, ymin=0.0, ymax=3.2, ceiling=2.3)   # 방 안쪽 
 tol = 0.005
 STRUCT = ("floor", "ground", "wall", "ceiling", "terrain")          # scene_audit 기본 구조물 단어
 for u in rep["units"]:
-    if scene_audit._is_structure(u["name"], STRUCT):                  # 'Floor'·'Wall_N'만 건너뜀. 'floor_lamp'는 검사
+    if scene_audit.is_structure(u["name"], STRUCT):                  # 'Floor'·'Wall_N'만 건너뜀. 'floor_lamp'는 검사
         continue
     (x0, y0, z0), (x1, y1, z1) = u["bbox_min"], u["bbox_max"]
     if (x0 < room["xmin"] - tol or x1 > room["xmax"] + tol or y0 < room["ymin"] - tol
