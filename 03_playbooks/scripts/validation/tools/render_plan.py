@@ -1,6 +1,7 @@
 """검사 결과를 눈으로 확인하기 위한 평면도 렌더 (천장·지붕 숨김, 역할별 색: 벽 검정·문 빨강·창 파랑·가구 무작위).
 
-사용: python render_plan.py -- scene.blend out.png <중심 x> <중심 y> <보이는 폭 m> [자를 높이 m=2.3]
+사용: python render_plan.py -- scene.blend out.png <중심 x> <중심 y> <보이는 폭 m> [자를 높이 m=2.3] [--swings] [--entry-swing in|out|any] [--res 900]
+  --swings : building_audit 로 문 여는 방향을 정해 궤적(1/4 원)과 열린 문짝을 그린다 (초록 = 문제없음, 빨강 = 부딪힘)
 GPU 없는 서버에서도 되도록 Cycles CPU 로 그린다 (EEVEE·Workbench 는 EGL 필요).
 """
 import os
@@ -13,12 +14,24 @@ from mathutils import Vector
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 import building_audit as ba  # noqa: E402
 
-args = sys.argv[sys.argv.index("--") + 1:]
+argv = sys.argv[sys.argv.index("--") + 1:]
+swings = "--swings" in argv
+entry = argv[argv.index("--entry-swing") + 1] if "--entry-swing" in argv else "any"
+args = [a for i, a in enumerate(argv) if not a.startswith("--") and (i == 0 or argv[i - 1] not in ("--entry-swing", "--res"))]
 bpy.ops.wm.open_mainfile(filepath=args[0])
 out = os.path.abspath(args[1])
 cx, cy, span = float(args[2]), float(args[3]), float(args[4])
 cut = float(args[5]) if len(args) > 5 else 2.3
 sc = bpy.context.scene
+SYMBOLS = "_door_swings"
+if swings:
+    rep = ba.audit_building(limits={"entry_swing": entry})
+    ba.add_swing_symbols(rep, collection=SYMBOLS)
+    for op in rep["openings"]:
+        sw = op.get("swing") or {}
+        if op["kind"] == "door":
+            r_ = sw.get("recommended") or {}
+            print(f"door {op['name']}: {sw.get('kind')} -> {r_.get('opens_into')} ({r_.get('max_open_deg')}°) | {sw.get('why')}")
 
 for o in sc.objects:                       # 평면도: 천장·지붕·자를 높이 위는 숨김
     if o.type != "MESH":
@@ -48,6 +61,8 @@ def mat(key, rgba):
 
 
 for root in ba._unit_roots():
+    if any(c.name == SYMBOLS for c in root.users_collection):
+        continue                          # 문 궤적 기호는 자기 색 유지
     r = ba._role(root)
     rgba = COLORS.get(r) or (random.uniform(.3, 1), random.uniform(.3, .9), random.uniform(.2, .6), 1)
     m = mat(r if r in COLORS else "f_" + root.name, rgba)
@@ -75,7 +90,8 @@ sc.cycles.samples = 12
 sc.cycles.use_denoising = False
 sc.render.use_compositing = False
 sc.render.use_sequencer = False
-sc.render.resolution_x = sc.render.resolution_y = 900
+res = int(argv[argv.index("--res") + 1]) if "--res" in argv else 900
+sc.render.resolution_x = sc.render.resolution_y = res
 sc.render.filepath = out
 bpy.ops.render.render(write_still=True)
 print("saved", out)

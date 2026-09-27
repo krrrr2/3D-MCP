@@ -174,7 +174,13 @@
     "公卫 · 地坪",
     "客餐厅 · 地坪"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "sliding",
+    "recommended": null,
+    "why": "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "bedroom1-south · 开启木门",
@@ -189,7 +195,35 @@
     "次卧 1 · 地坪",
     "客餐厅 · 地坪"
    ],
-   "open_leaf": true
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "次卧 1 · 地坪",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.831,
+        -3.46
+       ],
+       "closed_dir": [
+        1.0,
+        -0.0
+       ],
+       "open_dir": [
+        0.0,
+        1.0
+       ],
+       "leaf_m": 0.8,
+       "floor_z": 0.012
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "次卧 1 · 地坪"
+   }
   },
   {
    "name": "bedroom2-west · 密封上吊移门",
@@ -204,7 +238,13 @@
     "客餐厅 · 地坪",
     "次卧 2 · 地坪"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "sliding",
+    "recommended": null,
+    "why": "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "ensuite-west · 密封上吊移门",
@@ -219,7 +259,13 @@
     "主卧 · 地坪",
     "主卫 · 地坪"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "sliding",
+    "recommended": null,
+    "why": "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "kitchen-south · 开启木门",
@@ -234,7 +280,35 @@
     "厨房 · 地坪",
     "客餐厅 · 地坪"
    ],
-   "open_leaf": true
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "客餐厅 · 地坪",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        1.776,
+        -6.003
+       ],
+       "closed_dir": [
+        0.976,
+        0.22
+       ],
+       "open_dir": [
+        0.22,
+        -0.976
+       ],
+       "leaf_m": 1.04,
+       "floor_z": 0.012
+      }
+     ]
+    },
+    "why": "모델에 열린 방향 그대로 · 규칙상으로는 厨房 · 地坪 쪽이 더 자연스러움",
+    "modeled_opens_into": "客餐厅 · 地坪"
+   }
   },
   {
    "name": "master-west · 密封上吊移门",
@@ -249,7 +323,13 @@
     "主卧 · 地坪",
     "客餐厅 · 地坪"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "sliding",
+    "recommended": null,
+    "why": "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "study-south · 开启木门",
@@ -264,7 +344,35 @@
     "榻榻米 / 书房 · 地坪",
     "客餐厅 · 地坪"
    ],
-   "open_leaf": true
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "客餐厅 · 地坪",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        3.123,
+        -3.7
+       ],
+       "closed_dir": [
+        1.0,
+        -0.0
+       ],
+       "open_dir": [
+        -0.0,
+        -1.0
+       ],
+       "leaf_m": 0.96,
+       "floor_z": 0.012
+      }
+     ]
+    },
+    "why": "열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로 · 규칙상으로는 榻榻米 / 书房 · 地坪 쪽이 더 자연스러움",
+    "modeled_opens_into": "客餐厅 · 地坪"
+   }
   },
   {
    "name": "west · 开启木门",
@@ -279,7 +387,51 @@
     "客餐厅 · 地坪",
     "EXTERIOR"
    ],
-   "open_leaf": true
+   "open_leaf": true,
+   "swing": {
+    "kind": "double",
+    "recommended": {
+     "opens_into": "EXTERIOR",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        0.018,
+        -6.251
+       ],
+       "closed_dir": [
+        -0.071,
+        -0.997
+       ],
+       "open_dir": [
+        -0.997,
+        0.071
+       ],
+       "leaf_m": 0.53,
+       "floor_z": 0.02
+      },
+      {
+       "hinge_xy": [
+        -0.058,
+        -7.329
+       ],
+       "closed_dir": [
+        0.071,
+        0.997
+       ],
+       "open_dir": [
+        -0.997,
+        0.071
+       ],
+       "leaf_m": 0.53,
+       "floor_z": 0.02
+      }
+     ]
+    },
+    "why": "열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "EXTERIOR"
+   }
   },
   {
    "name": "细金属框玻璃窗#0",
@@ -441,30 +593,6 @@
   },
   {
    "severity": "warning",
-   "code": "door_clearance",
-   "object": "bathroom-west · 密封上吊移门",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 公卫平板浴室柜与直线镜가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "bedroom2-west · 密封上吊移门",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 浅橡木餐椅 3가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "ensuite-west · 密封上吊移门",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 主卫浅款平板浴室柜与直线镜가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "kitchen-south · 开启木门",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 哑光平板双门冰箱가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
    "code": "window_awkward_sill",
    "object": "细金属框玻璃窗#0",
    "detail": "창턱 높이 0.17 m: 바닥까지 내린 창(0)도 일반 창(0.3 m 이상)도 아닌 어정쩡한 높이입니다."
@@ -489,7 +617,7 @@
   "walls": 19,
   "trim": 7,
   "errors": 0,
-  "warnings": 8,
+  "warnings": 4,
   "liminal_risk": "low",
   "liminal_reasons": [],
   "collection": null,
@@ -497,6 +625,6 @@
    "외부 지면(Ground/Terrain)이 없어 모델 바깥은 '모델링되지 않은 외부'로 보았습니다.",
    "직선이 아닌 벽 2개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: 合批 · wall#15, 合批 · wall#18"
   ],
-  "seconds": 2.7
+  "seconds": 2.9
  }
 }

@@ -51,6 +51,7 @@
 | "스크립트로 가구 배치 실수를 잡나? 건물 조형은?" | 데모로 확인 후 `scene_audit.py` 개선: 박힘(`sunk_into`)을 떠 있음으로 오탐하던 문제 수정, 컬렉션 범위 검사(`collection=`) 추가 |
 | "한국 기준이 아니라 사람이 만든 것처럼 상식적인지, 백룸처럼 기묘한 걸 잡아야" | `building_audit.py` 신규: 문·창·방 연결·동선·벽·계단·앉는 방향의 상식 검사 + 백룸 위험도. 정상 집 0건, 이상한 집은 넣은 기묘함 전부 검출(테스트) |
 | "컴퓨터 유즈가 직접 모델링하는 게 낫다는데?" | 웹 조사 후 `02_guides/12_computer_use_and_other_methods.md` 작성. 결론: 만드는 건 스크립트·MCP, 컴퓨터 유즈는 확인·API 없는 조작용 |
+| "문은 건물 디자인 생각해서 어느 쪽으로 열려야 합당할지 정하고, 렌더링까지 하면 되지?" | 맞음. `building_audit`가 여닫이문마다 4가지 방향을 실제로 돌려 보고 설계 규칙으로 추천, 모델에 열어 둔 방향은 존중하되 부딪히면 경고. Fable 설계 데이터와 여는 쪽 24/24 일치, Fable 코드의 경첩 반전 버그 발견. 평면도에 궤적을 그려 렌더 |
 | "네트워크 정책 때문에 안 되는 건 빼고 2번(실제 AI 건물로 검증)만" | `building_audit.py` v2. Realsee×GPT-6 Astra 재구성 공간(v1 오류 18·경고 10 → 오류 0·경고 1), house-3d의 같은 아파트를 Fable·GPT-6가 만든 8개 장면(v1은 방을 하나도 못 알아보고 '오류 0' → 최종 오류 0~1·경고 6~9, 남은 지적은 좌표·렌더·원본 데이터로 확인한 실제 문제). 합친 벽·가져온 GLB 그룹·한중 이름·격자 천장·열린/미닫이 문 처리, `tests/test_building_realworld.py` 추가. 기록: `03_playbooks/scripts/validation/` |
 
 ## 4. 주요 결정과 이유
@@ -82,7 +83,7 @@
 1. ~~3~5그룹 문서 전수 검토~~ → **완료**(2026-09-27 재실행).
 2. **네트워크 허용 범위를 넓혀 5절 항목 재확인**: Claude Code on the web 환경 설정(클라우드 환경 메뉴 → Edit → Network access)에서 arxiv.org, docs.blender.org, projects.blender.org, dev.epicgames.com, openai.com, youtube.com 등을 허용하면 1차 출처로 확인 가능. 확인 결과는 `01_research/raw/`에 새 JSON으로 추가하고 `build_catalog.py` 재실행.
 3. **실제 Blender GUI + MCP로 스크립트 검증**: `sys.path` import가 safe mode에서 되는지, Workbench 검토 렌더, blender-mcp `execute_blender_code`에서 `scene_audit.py` 붙여 넣기 실행.
-4. ~~`building_audit.py`를 실제 AI 생성 건물로 검증~~ → **완료**(2026-09-27, 9개 장면). 남은 것: 실제 AI가 만든 **다층 건물·경사 지붕·곡선 벽** 장면 확보 후 재검증, 문 여는 방향(스윙) 인식, 합친 벽의 벽 단위 두께·틈 검사. 검증 도구는 `03_playbooks/scripts/validation/tools/`.
+4. ~~`building_audit.py`를 실제 AI 생성 건물로 검증~~ → **완료**(2026-09-27, 9개 장면). ~~문 여는 방향~~ → **설계 규칙으로 추천·검사 완료**(Fable 설계 데이터와 여는 쪽 24/24 일치). 남은 것: 실제 AI가 만든 **다층 건물·경사 지붕·곡선 벽** 장면 확보 후 재검증, 합친 벽의 벽 단위 두께·틈 검사, 이름 없는 유리문의 여닫이/미닫이 구분. 검증 도구는 `03_playbooks/scripts/validation/tools/`.
 5. **가이드 안의 테스트된 코드 블록을 `03_playbooks/scripts/`로 이동 + 테스트 추가**: `check_assembly()`(07 가이드, 부품 연결 맵 검사), `provenance_tools`·`make_ucx`/`make_lods`(10 가이드), 재질 감사·베이크 코드(05 가이드 4.7·7.3절), `review_render()`(06 가이드).
 6. **Blender 5.2(Python 3.13 bpy)에서 스크립트 테스트**: 현재는 4.2.23 LTS·5.0.1만 테스트.
 7. **한국어 검색 보강**: 네이버 카페·디스콰이엇·요즘IT 등에서 한국 사례 추가 수집과 G2 결과 독립 확인.
@@ -102,6 +103,7 @@
 | 8 | README, 인수인계 문서 |
 | 9 | 추가 요청: `building_audit.py`(건축 상식·백룸 위험도), 컴퓨터 유즈 가이드(12), PR 생성 |
 | 10 | `building_audit.py` v2: 실제 AI 건물 9개 장면으로 검증·오탐 수정, 실전 패턴 테스트, 검증 기록(`03_playbooks/scripts/validation/`) |
+| 11 | 문 여는 방향: 설계 규칙으로 추천(방 안쪽·모서리 경첩·좁은 욕실 바깥·문끼리 충돌 회피·현관 지역 관례), 궤적 검사, `open_door()`·`add_swing_symbols()`, 평면도 렌더(`render_plan.py --swings`) |
 
 ## 8. 이어서 작업하는 법
 

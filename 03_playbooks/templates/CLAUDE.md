@@ -101,6 +101,12 @@ Naming for it: room floors `Floor_<room type>` (Floor_living, Floor_bedroom_2), 
 really exist in the wall (Boolean or split wall pieces). Keep walls, doors and windows as separate objects in the working
 .blend (merge by material only in exports); when a name can't say it, set obj["role"] = "floor"/"wall"/"door"/"window".
 A report with `no_rooms_found` is not a pass.
+Door swing: decide it like an architect, then verify — use `rep["openings"][i]["swing"]["recommended"]` (opens into the
+room it serves, hinge at the corner so the open leaf rests on a wall, small bathrooms open outward if the leaf can't
+reach 90°, doors never swing into each other; entry per local custom: `limits={"entry_swing": "out"}` for KR/JP
+apartments). Apply it with `building_audit.open_door(leaf_obj, leaf, 85)`; `door_swing_*` warnings must be 0.
+Show the swings on the top-view review render with `building_audit.add_swing_symbols(rep)` (delete the
+`_door_swings` collection before the beauty render).
 
 ## 5. Verification gates — every stage, in this order
 1. Numbers: scene_audit → issues 0 (floating, below_floor, sunk_into, above_ceiling, size_out_of_range …) and

@@ -190,7 +190,13 @@
     "floor-living",
     "floor-balcony"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "sliding",
+    "recommended": null,
+    "why": "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "opening-bath1-door",
@@ -205,7 +211,35 @@
     "floor-living",
     "floor-bath1"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "floor-bath1",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        5.551,
+        -3.99
+       ],
+       "closed_dir": [
+        -0.0,
+        -1.0
+       ],
+       "open_dir": [
+        1.0,
+        -0.0
+       ],
+       "leaf_m": 0.76,
+       "floor_z": -0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "opening-bath2-door",
@@ -220,7 +254,35 @@
     "floor-vestibule",
     "floor-bath2"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "floor-vestibule",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        5.247,
+        -9.29
+       ],
+       "closed_dir": [
+        -0.0,
+        -1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.0
+       ],
+       "leaf_m": 0.76,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "좁은 방(floor-bath2)은 안쪽으로 80°까지만 열려(item-it_toilet) 바깥여닫이로 · 열린 문짝이 같은 방의 다른 문 앞을 가리지 않게",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "opening-bed1-door",
@@ -235,7 +297,35 @@
     "floor-bed1",
     "floor-living"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "floor-bed1",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.818,
+        -3.533
+       ],
+       "closed_dir": [
+        1.0,
+        0.0
+       ],
+       "open_dir": [
+        -0.0,
+        1.0
+       ],
+       "leaf_m": 0.56,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "floor-bed1"
+   }
   },
   {
    "name": "opening-bed2-door",
@@ -250,7 +340,35 @@
     "floor-bed2",
     "floor-living"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "floor-bed2",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.35,
+        -7.678
+       ],
+       "closed_dir": [
+        -0.0,
+        -1.0
+       ],
+       "open_dir": [
+        1.0,
+        -0.0
+       ],
+       "leaf_m": 0.76,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "floor-bed2"
+   }
   },
   {
    "name": "opening-bed3-door",
@@ -265,7 +383,57 @@
     "floor-vestibule",
     "floor-bed3"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "floor-bed3",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        5.268,
+        -10.751
+       ],
+       "closed_dir": [
+        -1.0,
+        -0.0
+       ],
+       "open_dir": [
+        0.0,
+        -1.0
+       ],
+       "leaf_m": 0.8,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로",
+    "modeled_opens_into": "floor-bed3",
+    "modeled_conflict": {
+     "hit": "item-mo_nightstand.004",
+     "max_open_deg": 70,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.468,
+        -10.751
+       ],
+       "closed_dir": [
+        1.0,
+        0.0
+       ],
+       "open_dir": [
+        0.0,
+        -1.0
+       ],
+       "leaf_m": 0.8,
+       "floor_z": 0.0
+      }
+     ]
+    }
+   }
   },
   {
    "name": "opening-entry",
@@ -280,7 +448,35 @@
     "floor-living",
     "EXTERIOR"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "EXTERIOR",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -0.03,
+        -7.03
+       ],
+       "closed_dir": [
+        -0.0,
+        1.0
+       ],
+       "open_dir": [
+        -1.0,
+        -0.0
+       ],
+       "leaf_m": 0.96,
+       "floor_z": -0.16
+      }
+     ]
+    },
+    "why": "floor-living 쪽은 item-mo_bench에 걸려(30°) 반대로",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "opening-kitchen-door",
@@ -295,7 +491,51 @@
     "floor-kitchen",
     "floor-living"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "double",
+    "recommended": {
+     "opens_into": "floor-kitchen",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        2.836,
+        -3.94
+       ],
+       "closed_dir": [
+        -0.006,
+        -1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.006
+       ],
+       "leaf_m": 0.55,
+       "floor_z": 0.0
+      },
+      {
+       "hinge_xy": [
+        2.83,
+        -5.059
+       ],
+       "closed_dir": [
+        0.006,
+        1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.006
+       ],
+       "leaf_m": 0.55,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "opening-tatami-door",
@@ -310,7 +550,51 @@
     "floor-tatami",
     "floor-living"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "double",
+    "recommended": {
+     "opens_into": "floor-tatami",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.36,
+        -3.533
+       ],
+       "closed_dir": [
+        -1.0,
+        0.0
+       ],
+       "open_dir": [
+        0.0,
+        1.0
+       ],
+       "leaf_m": 0.55,
+       "floor_z": 0.0
+      },
+      {
+       "hinge_xy": [
+        3.24,
+        -3.533
+       ],
+       "closed_dir": [
+        1.0,
+        -0.0
+       ],
+       "open_dir": [
+        0.0,
+        1.0
+       ],
+       "leaf_m": 0.55,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "floor-tatami"
+   }
   },
   {
    "name": "opening-w-balcony",
@@ -451,45 +735,15 @@
  "issues": [
   {
    "severity": "warning",
-   "code": "door_clearance",
-   "object": "opening-bath1-door",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_vanity_wide가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "opening-bath1-door",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-it_toilet.001가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "opening-bath2-door",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-it_toilet, item-mo_vanity가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "opening-bed3-door",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_nightstand.004가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
-   "code": "door_clearance",
-   "object": "opening-entry",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_bench가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
-  },
-  {
-   "severity": "warning",
    "code": "door_narrow",
    "object": "opening-tatami-door",
    "detail": "item-mo_desk 때문에 문을 지나는 통로가 0.45~0.6 m 로 좁습니다."
   },
   {
    "severity": "warning",
-   "code": "door_clearance",
-   "object": "opening-tatami-door",
-   "detail": "문 앞 여유 공간(문 폭 × 문 폭)에 item-mo_vanity_wide가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음)."
+   "code": "door_swing_conflict",
+   "object": "opening-bed3-door",
+   "detail": "모델의 문짝은 floor-bed3 쪽으로 열려 item-mo_nightstand.004에 70°에서 부딪힙니다. floor-bed3 쪽으로, 경첩 (5.27, -10.75) 여세요."
   },
   {
    "severity": "warning",
@@ -505,13 +759,13 @@
   "walls": 4,
   "trim": 5,
   "errors": 0,
-  "warnings": 8,
+  "warnings": 3,
   "liminal_risk": "low",
   "liminal_reasons": [],
   "collection": null,
   "notes": [
    "직선이 아닌 벽 1개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: walls#0"
   ],
-  "seconds": 1.2
+  "seconds": 1.9
  }
 }

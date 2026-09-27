@@ -4,7 +4,9 @@ building_audit.py - "사람이 설계한 건물처럼 말이 되는가"를 점�
 scene_audit.py 가 '떠 있음·관통·치수' 같은 물리 오류를 잡는다면, 이 스크립트는
 백룸(Backrooms)처럼 기묘한 결과를 만드는 **건축적 비상식**을 잡는다.
 
-  문     : 벽에 구멍이 없음, 바닥에서 뜸, 문을 열면 바로 벽, 허공·낭떠러지로 나감, 같은 방으로 되돌아옴, 가구가 막음, 크기 이상
+  문     : 벽에 구멍이 없음, 바닥에서 뜸, 문을 열면 바로 벽, 허공·낭떠러지로 나감, 같은 방으로 되돌아옴, 가구가 막음, 크기 이상,
+           여는 방향 — 설계 규칙(방 안쪽·모서리 경첩·좁은 욕실 바깥·문끼리 충돌 회피·현관 지역 관례)으로 추천하고
+           그 궤적이 가구·벽·다른 문에 부딪히는지 검사 (open_door() 로 적용, add_swing_symbols() 로 평면도에 표시)
   창문   : 벽에 구멍이 없음, 어정쩡한 창턱 높이, 천장을 파고듦, 실내 벽에 난 창(방↔방), 창 바로 앞이 벽, 가구가 가림,
            같은 벽 창들의 높이가 제각각, 유리 없는 창 구멍
   방     : 드나들 곳이 없는 밀폐된 방, 입구에서 갈 수 없는 방, 창 없는 생활 공간, 복도처럼 길쭉한 방, 천장 없음·이상,
@@ -131,7 +133,9 @@ LIMITS = {
     "seat_front_wall": 0.50, "repeat_rooms": 3, "min_room_area": 1.0,
     "passage_min": 0.60, "window_opening_min": 0.30, "open_edge_min": 0.60, "sample_step": 0.20,
     "guard_drop": 1.00, "open_exterior_max": 2.50, "min_column_h": 1.00,
-    "glazed_door_w_max": 6.00, "passage_narrow": 0.45, "window_blocked_frac": 0.25, "door_clearance_max_w": 1.30,
+    "glazed_door_w_max": 6.00, "passage_narrow": 0.45, "window_blocked_frac": 0.25,
+    "swing_min_deg": 80, "small_room_m2": 4.5, "single_leaf_max_w": 1.10, "hinged_max_w": 2.00, "rest_on_wall": 0.35,
+    "entry_swing": "any",   # 현관(밖으로 난 문) 여는 쪽: "in" | "out"(한국·일본 아파트 관례) | "any"
 }
 
 
@@ -213,6 +217,10 @@ def _role(obj):
     return "furniture"
 
 
+SLIDING_WORDS = {"sliding", "slider", "slide", "pocket", "barn", "folding", "bifold"}
+SLIDING_CJK = ("移门", "推拉", "滑门", "折叠门", "미닫이", "슬라이딩", "접이", "引き戸")
+PRIVATE_ROOMS = {"bed", "bedroom", "study", "office", "guest", "master", "kids", "nursery", "den", "library", "tatami"}
+PRIVATE_CJK = ("卧", "书房", "침실", "안방", "서재", "공부방", "아이방", "寝室", "書斎")
 CURTAIN_WORDS = {"curtain", "curtains", "drape", "drapes", "drapery", "blind", "blinds", "sheer", "sheers", "shade", "shades"}
 
 
@@ -791,6 +799,289 @@ def audit_building(collection=None, limits=None):
         box_faces = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
         return bool(BVHTree.FromPolygons(corners, box_faces).overlap(fu["bvh"]))
 
+    def room_rank(name):
+        """문이 '어느 방 것'인가: 욕실·수납 > 침실·서재 > 거실·주방 > 복도 > 외부."""
+        if name is None or name == "EXTERIOR" or name not in room_info:
+            return 0.0
+        root = room_info[name]["unit"]["root"]
+        rt = _room_type(root)
+        if rt == "service":
+            return 4.0
+        if rt in ("habitable", "unknown", "interior"):
+            private = set(_toks(root.name)) & PRIVATE_ROOMS or any(w in root.name for w in PRIVATE_CJK)
+            return 3.5 if private else 3.0
+        return {"circulation": 1.0, "outdoor": 0.5}.get(rt, 2.0)
+
+    def door_kind(o, width):
+        nm = o["name"]
+        if set(_toks(nm)) & SLIDING_WORDS or any(w in nm for w in SLIDING_CJK) or (glazed(o) and width > 1.3) \
+                or width > L["hinged_max_w"]:
+            return "sliding"
+        return "double" if width > L["single_leaf_max_w"] else "hinged"
+
+    def swing_leaf(h, closed, opened, length, fz, top, obstacles):
+        """경첩 h 에서 문짝(길이 length)을 closed → opened 방향으로 10°씩 열며 부딪히는 각도와 물체를 찾는다."""
+        heights = [fz + x for x in (0.1, 0.5, 1.0, 1.5, 1.9) if fz + x < top - 0.03] or [fz + 0.5]
+        pad = Vector((length + 0.3, length + 0.3, 0.0))
+        near = _near(obstacles, Vector((h.x, h.y, fz)) - pad, Vector((h.x, h.y, top)) + pad)
+        for deg in range(10, 91, 10):
+            a = math.radians(deg)
+            d = closed * math.cos(a) + opened * math.sin(a)
+            for z in heights:
+                hit = _cast(near, Vector((h.x, h.y, z)), d, length)
+                if hit is not None:
+                    return deg - 10, hit[2]["name"]
+        return 90, None
+
+    def swing_options(o, r, names):
+        W, c, n, al, t = r["width"], r["c"], r["n"], r["along"], r["t"]
+        kind = door_kind(o, W)
+        if kind == "sliding":
+            return kind, []
+        obstacles = (solids + by_role.get("stair", []) + by_role.get("railing", []) +
+                     [u for u in doors if u is not o] +
+                     [fu for fu in furniture if fu["bbox"][1].z - fu["bbox"][0].z >= 0.03 and not _is_curtain(fu["name"])])
+        opts = []
+        for si, s_ in enumerate(r["sides"]):
+            if s_["kind"] == "void":
+                continue                           # 허공 쪽으로는 열 수 없다
+            d = s_["dir"]
+            fz = s_["top"] if s_["top"] is not None else r["zmin"]
+            top = r["hole"][1] if r.get("hole") else r["zmax"]
+            hinge_sets = [(1,), (-1,)] if kind == "hinged" else [(1, -1)]
+            leaf_len = (W - 0.04) if kind == "hinged" else (W / 2 - 0.03)
+            for hs_set in hinge_sets:
+                leaves, worst, hit_by, rests = [], 90, None, False
+                for hs in hs_set:
+                    h = c + al * hs * (W / 2 - 0.02) + d * (t / 2 + 0.03)
+                    h = Vector((h.x, h.y, fz))
+                    closed = -al * hs
+                    deg, hit = swing_leaf(h, closed, d, leaf_len, fz, top, obstacles)
+                    if deg < worst:
+                        worst, hit_by = deg, hit
+                    # 열린 문짝이 옆벽에 붙는가 (경첩이 벽 모서리 쪽)
+                    wall_hit = _cast(_near(solids, h - Vector((0.6, 0.6, 0)), h + Vector((0.6, 0.6, 2.0))),
+                                     Vector((h.x, h.y, fz + 1.0)), al * hs, 0.6)
+                    rests = rests or (wall_hit is not None and wall_hit[1] <= L["rest_on_wall"])
+                    leaves.append({"hinge": h, "closed": closed, "open": d, "len": leaf_len})
+                # 90° 열린 문짝이 다른 문 앞을 가리지 않는 쪽 (동점일 때 기준)
+                away = 2.0
+                for hc, hnames in hole_rooms:          # 같은 방으로 난 다른 문만
+                    if names[si] not in hnames or (Vector((hc.x, hc.y, 0)) - Vector((c.x, c.y, 0))).length < 0.05:
+                        continue
+                    for lf in leaves:
+                        a_ = Vector((lf["hinge"].x, lf["hinge"].y, 0))
+                        b_ = a_ + lf["open"] * lf["len"]
+                        pt = Vector((hc.x, hc.y, 0))
+                        tt = max(0.0, min(1.0, (pt - a_).dot(b_ - a_) / max((b_ - a_).length_squared, 1e-9)))
+                        away = min(away, (a_ + (b_ - a_) * tt - pt).length)
+                opts.append({"side": si, "into": names[si], "hs": hs_set, "leaves": leaves, "max_deg": worst,
+                             "hit": hit_by, "rests": rests, "fz": fz, "away": round(away, 1),
+                             "clear": worst >= L["swing_min_deg"]})
+        return kind, opts
+
+    def side_pref(opt, names):
+        me, other = names[opt["side"]], names[1 - opt["side"]]
+        entry = "EXTERIOR" in (me, other) or any(x in room_info and _room_type(room_info[x]["unit"]["root"]) == "outdoor"
+                                                 for x in (me, other))
+        if entry:
+            outward = me == "EXTERIOR" or (me in room_info and _room_type(room_info[me]["unit"]["root"]) == "outdoor")
+            if L["entry_swing"] == "out":
+                return 1 if outward else 0
+            if L["entry_swing"] == "in":
+                return 0 if outward else 1
+            return 0
+        rm, ro = room_rank(me), room_rank(other)
+        if rm != ro:
+            return 1 if rm > ro else 0
+        am = _top_area(room_info[me]["unit"]) if me in room_info else 1e9
+        ao = _top_area(room_info[other]["unit"]) if other in room_info else 1e9
+        return 1 if am < ao else 0                # 같은 급이면 작은 방 쪽으로
+
+    def opt_score(opt, names):
+        outward_entry = opt["into"] == "EXTERIOR"
+        pref = side_pref(opt, names)
+        me = opt["into"]
+        # 좁은 욕실·수납: 안쪽으로 90°까지 다 안 열리면(변기·세면대에 걸림) 바깥여닫이가 낫다
+        if pref and me in room_info and _room_type(room_info[me]["unit"]["root"]) == "service" \
+                and _top_area(room_info[me]["unit"]) < L["small_room_m2"] and opt["max_deg"] < 90:
+            pref = 0
+        return (opt["clear"], pref, opt["rests"], opt["max_deg"], opt.get("away", 0.0), not outward_entry)
+
+    def leaf_pose(o, r):
+        """문 조립품에서 문짝(가장 큰 얇은 세로 판)을 찾아 (중심, 긴 축, 길이)를 돌려준다. 문틀·손잡이는 무시."""
+        dg = bpy.context.evaluated_depsgraph_get()
+        best = None
+        full_h = r["zmax"] - r["zmin"]
+        for m, (bmn, bmx) in o["per_mesh"]:
+            h = bmx.z - bmn.z
+            if h < 0.6 * full_h:
+                continue
+            V, _P = sa._world_verts_and_polys(m, dg)
+            if len(V) < 4:
+                continue
+            mx = sum(v.x for v in V) / len(V)
+            my = sum(v.y for v in V) / len(V)
+            sxx = sum((v.x - mx) ** 2 for v in V)
+            syy = sum((v.y - my) ** 2 for v in V)
+            sxy = sum((v.x - mx) * (v.y - my) for v in V)
+            ang = 0.5 * math.atan2(2 * sxy, sxx - syy)
+            la = Vector((math.cos(ang), math.sin(ang), 0.0))
+            na = Vector((-la.y, la.x, 0.0))
+            ls = [v.dot(la) for v in V]
+            ns = [v.dot(na) for v in V]
+            length, thick = max(ls) - min(ls), max(ns) - min(ns)
+            if thick > length:
+                la, length, thick = na, thick, length
+            if thick > 0.12 or length < 0.3:
+                continue                                  # 얇은 판이 아님 (문틀·손잡이 등)
+            if best is None or length * h > best[0]:
+                best = (length * h, Vector((mx, my, 0.0)), la, length)
+        return best
+
+    def modeled_option(o, r, opts):
+        """모델에서 문짝이 열려(또는 살짝 열려) 있으면 그 방향(여는 쪽·경첩)을 읽는다."""
+        if not opts:
+            return None
+        pose = leaf_pose(o, r)
+        if pose is None:
+            return None
+        _a, p, la, length = pose
+        if abs(la.dot(r["along"])) > math.cos(math.radians(12)):
+            return None                                   # 닫혀 있음 → 모델에 방향 정보 없음
+        c = Vector((r["c"].x, r["c"].y, 0.0))
+        side_sign = 1 if (p - c).dot(r["n"]) > 0 else -1
+        ends = [p + la * (length / 2), p - la * (length / 2)]
+        jambs = [c + r["along"] * (r["width"] / 2), c - r["along"] * (r["width"] / 2)]
+        hinge_end = min(ends, key=lambda e: min((e - j).length for j in jambs))
+        hs = 1 if (hinge_end - c).dot(r["along"]) > 0 else -1
+        for opt in opts:
+            if r["sides"][opt["side"]]["dir"].dot(r["n"]) * side_sign > 0 and (len(opt["hs"]) == 2 or opt["hs"][0] == hs):
+                return opt
+        return None
+
+    def sector_points(leaf):
+        pts = []
+        for k in range(1, 5):
+            rr = leaf["len"] * k / 4
+            for deg in range(0, 91, 15):
+                a = math.radians(deg)
+                q = leaf["hinge"] + (leaf["closed"] * math.cos(a) + leaf["open"] * math.sin(a)) * rr
+                pts.append(q)
+        return pts
+
+    def in_sector(q, leaf):
+        v = Vector((q.x - leaf["hinge"].x, q.y - leaf["hinge"].y, 0.0))
+        return v.length <= leaf["len"] and v.dot(leaf["closed"]) >= -1e-3 and v.dot(leaf["open"]) >= -1e-3
+
+    def collide(oa, ob):
+        if oa is None or ob is None or abs(oa["fz"] - ob["fz"]) > 0.5:
+            return False
+        return any(in_sector(q, lb) for la in oa["leaves"] for q in sector_points(la) for lb in ob["leaves"]) or \
+            any(in_sector(q, la) for lb in ob["leaves"] for q in sector_points(lb) for la in oa["leaves"])
+
+    def fmt_opt(opt, names):
+        into = opt["into"] or "?"
+        hinge = " / ".join(f"({lf['hinge'].x:.2f}, {lf['hinge'].y:.2f})" for lf in opt["leaves"])
+        return f"{into} 쪽으로, 경첩 {hinge}"
+
+    def evaluate_swings(jobs):
+        states = []
+        for o, r, names, row in jobs:
+            kind, opts = swing_options(o, r, names)
+            ranked = sorted(opts, key=lambda x: opt_score(x, names), reverse=True)
+            modeled = modeled_option(o, r, opts)
+            chosen = modeled if modeled is not None and modeled["clear"] else (ranked[0] if ranked else None)
+            states.append({"o": o, "names": names, "row": row, "kind": kind, "ranked": ranked, "modeled": modeled,
+                           "chosen": chosen})
+        # 두 문이 열리며 서로 부딪히면 다른 조합을 찾는다
+        for i, a in enumerate(states):
+            for b in states[i + 1:]:
+                if not collide(a["chosen"], b["chosen"]):
+                    continue
+                best = None
+                for oa in [x for x in a["ranked"] if x["clear"]] or [a["chosen"]]:
+                    for ob in [x for x in b["ranked"] if x["clear"]] or [b["chosen"]]:
+                        if not collide(oa, ob):
+                            sc = (opt_score(oa, a["names"]), opt_score(ob, b["names"]))
+                            if best is None or sc > best[0]:
+                                best = (sc, oa, ob)
+                if best is not None:
+                    for st_, new_ in ((a, best[1]), (b, best[2])):
+                        if new_ is not st_["chosen"]:
+                            st_["avoid"] = (b if st_ is a else a)["o"]["name"]
+                    a["chosen"], b["chosen"] = best[1], best[2]
+                else:
+                    add("warning", "door_swing_collide", f"{a['o']['name']}, {b['o']['name']}",
+                        "두 문이 어느 방향으로 열어도 서로 부딪힙니다(하나를 미닫이로 바꾸거나 위치를 옮기세요).")
+        for st in states:
+            o, names, row, ch = st["o"], st["names"], st["row"], st["chosen"]
+            info = {"kind": st["kind"]}
+            if st["kind"] == "sliding":
+                info["recommended"] = None
+                info["why"] = "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)"
+            elif ch is None:
+                info["recommended"] = None
+                info["why"] = "열 수 있는 쪽이 없음(양쪽 다 허공)"
+            else:
+                why = []
+                if not ch["clear"]:
+                    why.append(f"어느 쪽도 {L['swing_min_deg']}° 이상 못 엶")
+                elif side_pref(ch, names):
+                    why.append("방 안쪽(그 방의 문)으로" if "EXTERIOR" not in names else f"현관 규칙({L['entry_swing']})")
+                if ch["rests"]:
+                    why.append("열면 문짝이 옆벽에 붙음")
+                if st["modeled"] is not None and st["modeled"] is ch:
+                    why.append("모델에 열린 방향 그대로")
+                if st.get("avoid"):
+                    why.insert(0, f"{st['avoid']}와 부딪히지 않게 바꿈")
+                # 규칙상 가장 자연스러운 쪽(부딪힘 무시)과 다르면 그 이유를 적는다
+                ideal_side = max(st["ranked"], key=lambda x: opt_score(x, names)[1:])["into"]
+                ideal = max((x for x in st["ranked"] if x["into"] == ideal_side), key=lambda x: x["max_deg"])
+                if ideal is not ch and ideal["into"] != ch["into"]:
+                    if not ideal["clear"]:
+                        why.insert(0, f"{ideal['into']} 쪽은 {ideal['hit']}에 걸려({ideal['max_deg']}°) 반대로")
+                    elif st["modeled"] is ch:
+                        why.append(f"규칙상으로는 {ideal['into']} 쪽이 더 자연스러움")
+                # 좁은 욕실 규칙으로 바깥여닫이가 된 경우
+                raw = max(st["ranked"], key=lambda x: (side_pref(x, names), x["max_deg"]))
+                if side_pref(raw, names) and raw["into"] != ch["into"] and raw["clear"] and raw["max_deg"] < 90 \
+                        and raw["into"] in room_info and _room_type(room_info[raw["into"]]["unit"]["root"]) == "service":
+                    why.insert(0, f"좁은 방({raw['into']})은 안쪽으로 {raw['max_deg']}°까지만 열려({raw['hit']}) 바깥여닫이로")
+                # 같은 쪽 다른 경첩과 동점인데 '다른 문 앞을 안 가림'으로 정해진 경우
+                twin = [x for x in st["ranked"] if x is not ch and x["into"] == ch["into"] and x["clear"]
+                        and opt_score(x, names)[:4] == opt_score(ch, names)[:4] and x.get("away", 0) < ch.get("away", 0)]
+                if twin:
+                    why.append("열린 문짝이 같은 방의 다른 문 앞을 가리지 않게")
+                if why == ["양쪽 다 가능"] or not why:
+                    why = ["규칙상 동점(어느 경첩이든 가능)"]
+                info["recommended"] = {
+                    "opens_into": ch["into"], "max_open_deg": ch["max_deg"], "rests_on_wall": ch["rests"],
+                    "leaves": [{"hinge_xy": [round(lf["hinge"].x, 3), round(lf["hinge"].y, 3)],
+                                "closed_dir": [round(lf["closed"].x, 3), round(lf["closed"].y, 3)],
+                                "open_dir": [round(lf["open"].x, 3), round(lf["open"].y, 3)],
+                                "leaf_m": round(lf["len"], 3), "floor_z": round(lf["hinge"].z, 3)} for lf in ch["leaves"]]}
+                info["why"] = " · ".join(why)
+                if not ch["clear"]:
+                    worst = max(st["ranked"], key=lambda x: x["max_deg"])
+                    add("warning", "door_swing_blocked", o["name"],
+                        f"어느 쪽으로 열어도 부딪힙니다(가장 잘 열리는 방향도 {worst['max_deg']}°, {worst['hit']}). "
+                        "미닫이·포켓도어로 바꾸거나 가구를 옮기세요.")
+                elif st["modeled"] is not None and not st["modeled"]["clear"]:
+                    m = st["modeled"]
+                    add("warning", "door_swing_conflict", o["name"],
+                        f"모델의 문짝은 {m['into']} 쪽으로 열려 {m['hit']}에 {m['max_deg']}°에서 부딪힙니다. "
+                        f"{fmt_opt(ch, names)} 여세요.")
+            info["modeled_opens_into"] = st["modeled"]["into"] if st["modeled"] is not None else None
+            m_ = st["modeled"]
+            if m_ is not None and not m_["clear"]:                # 평면도에 빨간 호로 그릴 수 있게
+                info["modeled_conflict"] = {"hit": m_["hit"], "max_open_deg": m_["max_deg"], "leaves": [
+                    {"hinge_xy": [round(lf["hinge"].x, 3), round(lf["hinge"].y, 3)],
+                     "closed_dir": [round(lf["closed"].x, 3), round(lf["closed"].y, 3)],
+                     "open_dir": [round(lf["open"].x, 3), round(lf["open"].y, 3)],
+                     "leaf_m": round(lf["len"], 3), "floor_z": round(lf["hinge"].z, 3)} for lf in m_["leaves"]]}
+            row["swing"] = info
+
     def glazed(u):
         words = ("glass", "glazing", "glazed", "玻璃", "유리")
         for m in u["meshes"]:
@@ -801,6 +1092,8 @@ def audit_building(collection=None, limits=None):
 
     # --- 문
     door_holes = []
+    hole_rooms = []
+    swing_jobs = []
     for o in doors:
         r = opening_report(o, "door")
         if r is None:
@@ -862,19 +1155,13 @@ def audit_building(collection=None, limits=None):
                         f"{', '.join(who)} 때문에 문을 지나는 통로가 {L['passage_narrow']}~{L['passage_min']} m 로 좁습니다.")
                 else:
                     add("error", "door_blocked", o["name"], f"문을 지나자마자(0.6 m 안) {', '.join(who)}가 통로를 막고 있습니다.")
-            elif r["width"] <= L["door_clearance_max_w"]:
-                # 여닫이 문 앞 여유 공간(문 폭 × 문 폭, 최대 1 m — SAGE 배치 솔버의 문 앞 비움 구역)
-                # 벽에 붙은 얇은 물건(그림·스위치·후크)은 문짝이 스치지 않으므로 제외
-                standing = [fu for fu in near_f if not (min(fu["frame"]["length"], fu["frame"]["thick"]) < 0.10
-                                                        and fu["bbox"][0].z > fz + 0.25)]
-                hit = [fu["name"] for fu in standing if intrudes(fu, origin, s["dir"], r["along"], min(max(r["width"], 0.8), 1.0),
-                                                                 r["width"], fz + 0.05, fz + 2.0)]
-                if hit:
-                    add("warning", "door_clearance", o["name"],
-                        f"문 앞 여유 공간(문 폭 × 문 폭)에 {', '.join(hit)}가 걸립니다(여닫이라면 문이 부딪히거나 동선이 좁음).")
         a, b = names
-        openings_out.append({"name": o["name"], "kind": "door", "wall": r["wall"]["name"], "width_m": round(r["width"], 2),
-                             "at": [round(r["c"].x, 2), round(r["c"].y, 2)], "sides": names, "open_leaf": r["open_leaf"]})
+        row = {"name": o["name"], "kind": "door", "wall": r["wall"]["name"], "width_m": round(r["width"], 2),
+               "at": [round(r["c"].x, 2), round(r["c"].y, 2)], "sides": names, "open_leaf": r["open_leaf"]}
+        openings_out.append(row)
+        if r["cut"]:
+            swing_jobs.append((o, r, names, row))
+            hole_rooms.append((r["c"], names))
         if a is not None and a == b and a != "EXTERIOR":
             add("warning", "door_same_room", o["name"], f"문 양쪽이 같은 방({a})입니다. 의미 없는 문.")
         if not r["cut"]:
@@ -891,6 +1178,9 @@ def audit_building(collection=None, limits=None):
         if a and b and a != b:
             graph.setdefault(a, set()).add(b)
             graph.setdefault(b, set()).add(a)
+
+    # --- 문 여는 방향: 설계 상식으로 정하고, 정한 방향의 실제 궤적을 검사
+    evaluate_swings(swing_jobs)
 
     # --- 창문
     window_rows = []
@@ -1356,6 +1646,79 @@ def audit_building(collection=None, limits=None):
         },
     }
     return report
+
+
+# ----------------------------------------------------------------------------- 문 여는 방향 적용·표시
+
+def open_door(obj, leaf, angle_deg=90.0):
+    """리포트의 추천(openings[i]["swing"]["recommended"]["leaves"][k])대로 문짝 obj 를 경첩 기준으로 연다.
+    obj 는 닫힌 상태로 구멍에 들어 있는 문짝(또는 문짝 그룹)이어야 한다. 양개문은 문짝마다 따로 호출."""
+    from mathutils import Matrix
+    h = Vector((leaf["hinge_xy"][0], leaf["hinge_xy"][1], 0.0))
+    closed = Vector((leaf["closed_dir"][0], leaf["closed_dir"][1], 0.0))
+    opened = Vector((leaf["open_dir"][0], leaf["open_dir"][1], 0.0))
+    sign = 1.0 if closed.cross(opened).z > 0 else -1.0
+    rot = Matrix.Translation(h) @ Matrix.Rotation(math.radians(angle_deg) * sign, 4, "Z") @ Matrix.Translation(-h)
+    obj.matrix_world = rot @ obj.matrix_world
+    bpy.context.view_layer.update()
+    return obj
+
+
+def add_swing_symbols(report, collection="_door_swings", line_w=0.05, lift=0.06):
+    """평면도 검토용: 추천된 문 여는 궤적(1/4 원)과 열린 문짝을 바닥 위에 그린다. 초록 = 문제없음, 빨강 = 부딪힘.
+    review_views 위 정사영이나 validation/tools/render_plan.py 로 렌더하면 설계 도면의 문 기호처럼 보인다."""
+    col = bpy.data.collections.get(collection) or bpy.data.collections.new(collection)
+    if col.name not in bpy.context.scene.collection.children:
+        bpy.context.scene.collection.children.link(col)
+    mats = {}
+    for key, rgba in (("ok", (0.1, 0.8, 0.2, 1.0)), ("bad", (0.95, 0.1, 0.1, 1.0))):
+        m = bpy.data.materials.get(collection + "_" + key) or bpy.data.materials.new(collection + "_" + key)
+        m.diffuse_color = rgba
+        if m.node_tree is None:
+            m.use_nodes = True
+        bsdf = next((nd for nd in m.node_tree.nodes if nd.type == "BSDF_PRINCIPLED"), None)
+        if bsdf is not None:
+            bsdf.inputs[0].default_value = rgba
+            for key_ in ("Emission Color", "Emission"):          # 스스로 빛나게 (그림자 속에서도 보이게)
+                if key_ in bsdf.inputs:
+                    bsdf.inputs[key_].default_value = rgba
+                    break
+            if "Emission Strength" in bsdf.inputs:
+                bsdf.inputs["Emission Strength"].default_value = 1.5
+        mats[key] = m
+    made = []
+    todo = []
+    for op in report.get("openings", []):
+        sw = op.get("swing") or {}
+        rec = sw.get("recommended")
+        if rec:
+            todo += [(op, k, lf, rec["max_open_deg"] >= LIMITS["swing_min_deg"]) for k, lf in enumerate(rec["leaves"])]
+        if sw.get("modeled_conflict"):                           # 모델에 열어 둔 방향이 부딪히면 빨강으로 함께
+            todo += [(op, "m%d" % k, lf, False) for k, lf in enumerate(sw["modeled_conflict"]["leaves"])]
+    for op, k, lf, ok in todo:
+        h = Vector((lf["hinge_xy"][0], lf["hinge_xy"][1], lf["floor_z"] + lift))
+        c = Vector((lf["closed_dir"][0], lf["closed_dir"][1], 0.0))
+        o_ = Vector((lf["open_dir"][0], lf["open_dir"][1], 0.0))
+        L_, w = lf["leaf_m"], line_w
+        verts, faces = [], []
+        for i in range(13):                                  # 호(arc): 닫힌 위치 → 90° 열린 위치
+            a = math.radians(90 * i / 12)
+            d = c * math.cos(a) + o_ * math.sin(a)
+            verts += [h + d * (L_ - w), h + d * L_]
+        faces += [(2 * i, 2 * i + 1, 2 * i + 3, 2 * i + 2) for i in range(12)]
+        b = len(verts)                                        # 열린 문짝(90°)
+        side = c * (line_w * 1.6)
+        verts += [h, h + o_ * L_, h + o_ * L_ + side, h + side]
+        faces.append((b, b + 1, b + 2, b + 3))
+        me = bpy.data.meshes.new(f"swing_{op['name']}_{k}")
+        me.from_pydata([tuple(v) for v in verts], [], faces)
+        me.update()
+        me.materials.append(mats["ok" if ok else "bad"])
+        ob = bpy.data.objects.new(f"swing_{op['name']}_{k}", me)
+        ob["role"] = "trim"                                   # 검사 대상 아님
+        col.objects.link(ob)
+        made.append(ob)
+    return made
 
 
 def main():

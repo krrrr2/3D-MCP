@@ -344,6 +344,95 @@ def test_nothing_recognized_is_not_a_pass():
     assert "no_rooms_found" in codes(rep), rep["issues"]
     print("test_nothing_recognized_is_not_a_pass OK")
 
+# ----------------------------------------------------------------------------- 문 여는 방향 (설계 규칙)
+
+def swing(rep, name):
+    return next(o for o in rep["openings"] if o["name"] == name)["swing"]
+
+
+def test_door_swing_follows_design_rules():
+    """방 문은 그 방 안쪽으로, 경첩은 벽 모서리 쪽(열면 옆벽에 붙음). 안쪽이 막히면 반대쪽, 양쪽 다 막히면 경고."""
+    two_rooms(mid_holes=[(0.2, 1.1, FT, FT + 2.1)], south_holes_a=[(1.0, 2.2, FT + 0.9, FT + 2.1)],
+              south_holes_b=[(4.0, 5.2, FT + 0.9, FT + 2.1)])
+    door = box("Door_bedroom", (0.04, 0.86, 2.08), (3.05, 0.65, FT + 1.04))
+    box("Window_a", (1.16, 0.02, 1.16), (1.6, -0.05, FT + 1.5))
+    box("Window_b", (1.16, 0.02, 1.16), (4.6, -0.05, FT + 1.5))
+    rep = audit()
+    rec = swing(rep, "Door_bedroom")["recommended"]
+    assert rec["opens_into"] == "Floor_bedroom" and rec["rests_on_wall"] and rec["leaves"][0]["hinge_xy"][1] < 0.4, rec
+    assert not {"door_swing_blocked", "door_swing_conflict"} & codes(rep), rep["issues"]
+    # 추천대로 문짝을 열면 침실 쪽(+x)으로 남쪽 벽을 따라 놓인다
+    ba.open_door(door, rec["leaves"][0], 90)
+    bb = [door.matrix_world @ v.co for v in door.data.vertices]
+    assert min(v.x for v in bb) > 3.0 and max(v.x for v in bb) > 3.8 and max(v.y for v in bb) < 0.35, bb
+    # 침실 쪽에 옷장을 두면 거실 쪽으로 여는 것을 추천 (문제 아님)
+    door.matrix_world = __import__("mathutils").Matrix.Translation((3.05, 0.65, FT + 1.04))
+    box("wardrobe", (0.6, 0.6, 2.0), (3.6, 0.6, FT + 1.0))
+    rep = audit()
+    assert swing(rep, "Door_bedroom")["recommended"]["opens_into"] == "Floor_living", swing(rep, "Door_bedroom")
+    assert "door_swing_blocked" not in codes(rep, "Door_bedroom"), rep["issues"]
+    # 거실 쪽도 막으면 → 어느 쪽으로도 못 연다
+    box("console", (0.5, 0.6, 0.8), (2.6, 0.6, FT + 0.4))
+    rep = audit()
+    assert "door_swing_blocked" in codes(rep, "Door_bedroom"), rep["issues"]
+    add = ba.add_swing_symbols(rep)
+    assert add and all(o.users_collection[0].name == "_door_swings" for o in add)
+    print("test_door_swing_follows_design_rules OK")
+
+
+def test_modeled_open_door_hits_furniture():
+    """모델에서 이미 열어 둔 문짝의 궤적이 옷장에 걸리면, 반대쪽으로 열라고 알려 준다."""
+    two_rooms(mid_holes=[(0.2, 1.1, FT, FT + 2.1)], south_holes_a=[(1.0, 2.2, FT + 0.9, FT + 2.1)],
+              south_holes_b=[(4.0, 5.2, FT + 0.9, FT + 2.1)])
+    box("Door_bedroom", (0.86, 0.04, 2.08), (3.53, 0.24, FT + 1.04))           # 침실 쪽으로 90° 열린 문짝
+    box("wardrobe", (0.5, 0.5, 2.0), (3.6, 0.9, FT + 1.0))
+    box("Window_a", (1.16, 0.02, 1.16), (1.6, -0.05, FT + 1.5))
+    box("Window_b", (1.16, 0.02, 1.16), (4.6, -0.05, FT + 1.5))
+    rep = audit()
+    sw = swing(rep, "Door_bedroom")
+    assert sw["modeled_opens_into"] == "Floor_bedroom" and sw["recommended"]["opens_into"] == "Floor_living", sw
+    assert "door_swing_conflict" in codes(rep, "Door_bedroom"), rep["issues"]
+    print("test_modeled_open_door_hits_furniture OK")
+
+
+def test_entry_door_regional_rule_and_sliding():
+    """현관 여는 쪽은 지역 관례 설정을 따른다(한국·일본 아파트 = 밖). 미닫이는 궤적 검사를 하지 않는다."""
+    two_rooms(mid_holes=[(0.5, 1.4, FT, FT + 2.1)], south_holes_a=[(1.0, 2.2, FT + 0.9, FT + 2.1)],
+              south_holes_b=[(4.0, 5.2, FT + 0.9, FT + 2.1)])
+    box("Door_sliding_bedroom", (0.04, 0.86, 2.08), (3.05, 0.95, FT + 1.04))
+    box("wardrobe", (0.6, 0.6, 2.0), (3.6, 0.95, FT + 1.0))                     # 여닫이였다면 부딪힘
+    box("Window_a", (1.16, 0.02, 1.16), (1.6, -0.05, FT + 1.5))
+    box("Window_b", (1.16, 0.02, 1.16), (4.6, -0.05, FT + 1.5))
+    bpy.context.view_layer.update()
+    out = ba.audit_building(limits={"entry_swing": "out"})
+    inn = ba.audit_building(limits={"entry_swing": "in"})
+    assert swing(out, "Door_entry")["recommended"]["opens_into"] == "EXTERIOR", swing(out, "Door_entry")
+    assert swing(inn, "Door_entry")["recommended"]["opens_into"] == "Floor_living", swing(inn, "Door_entry")
+    sl = swing(inn, "Door_sliding_bedroom")
+    assert sl["kind"] == "sliding" and not {"door_swing_blocked", "door_swing_conflict"} & codes(inn, "Door_sliding_bedroom")
+    print("test_entry_door_regional_rule_and_sliding OK")
+
+
+def test_doors_do_not_swing_into_each_other():
+    """욕실 한 모서리에 문 두 개: 둘 다 욕실 안쪽으로 열면 서로 부딪히므로 한쪽을 바꾼다."""
+    reset()
+    floor("Floor_bath", 0, 2, 0, 2)
+    floor("Floor_hall", -1.6, -0.1, 0, 3)
+    floor("Floor_bedroom", 0, 3, 2.1, 4)
+    xy_box("Ceiling", -1.7, 3.1, -0.2, 4.1, TOP, TOP + 0.15)
+    boxes_mesh("Wall_bath_W", wall_rects(-0.1, 0, 0, 2.0, [(1.1, 1.9, FT, FT + 2.1)]))
+    boxes_mesh("Wall_bath_N", wall_rects(-0.1, 3.1, 2.0, 2.1, [(0.1, 0.9, FT, FT + 2.1)]))
+    boxes_mesh("Wall_bath_S", wall_rects(-0.1, 2.1, -0.1, 0))
+    boxes_mesh("Wall_bath_E", wall_rects(2.0, 2.1, 0, 2.0))
+    box("Door_w", (0.04, 0.76, 2.08), (-0.05, 1.5, FT + 1.04))
+    box("Door_n", (0.76, 0.04, 2.08), (0.5, 2.05, FT + 1.04))
+    box("toilet", (0.4, 0.6, 0.8), (1.6, 0.4, FT + 0.4))
+    rep = audit()
+    assert "door_swing_collide" not in codes(rep), rep["issues"]
+    a, b = swing(rep, "Door_w")["recommended"], swing(rep, "Door_n")["recommended"]
+    assert not (a["opens_into"] == b["opens_into"] == "Floor_bath"), (a, b)
+    print("test_doors_do_not_swing_into_each_other OK")
+
 
 if __name__ == "__main__":
     test_merged_walls_in_container_groups()
@@ -357,4 +446,8 @@ if __name__ == "__main__":
     test_desk_half_blocks_door_and_wardrobe_covers_window()
     test_door_without_hole_in_merged_walls()
     test_nothing_recognized_is_not_a_pass()
+    test_door_swing_follows_design_rules()
+    test_modeled_open_door_hits_furniture()
+    test_entry_door_regional_rule_and_sliding()
+    test_doors_do_not_swing_into_each_other()
     print("ALL REAL-WORLD PATTERN TESTS PASSED on Blender", bpy.app.version_string)

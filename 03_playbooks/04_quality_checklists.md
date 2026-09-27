@@ -458,6 +458,7 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 권장 기본값은 [치수표](05_reference_dimensions.md) 8절(출처 간 충돌 정리)을 따릅니다. 확인은 [스크립트] `placement_utils.check_clearances([(A, B, 최소, 최대), …])`(평면 AABB 사이 거리)와 [눈] 위 정사영.
 
 - [ ] `[필수]` **주동선**: 하드 760 mm 이상, 기본 900 mm. SceneSmith 프롬프트 0.7~1.0 m, SAGE 주요 가구 사이 60~90 cm.
+- [ ] `[필수]` **문 여는 방향을 정하고 궤적 비우기**: 방 문은 그 방 안쪽으로, 경첩은 벽 모서리 쪽, 좁은 욕실은 바깥여닫이, 두 문이 서로 부딪히지 않게. [스크립트] `building_audit`의 `swing.recommended`대로 `open_door()`로 열고 `door_swing_*` 경고 0. 궤적(문 폭 반지름 1/4 원)에 가구 없음.
 - [ ] `[필수]` **문 앞 비우기**: 문 스윙 영역(약 문 폭 × 문 폭)에 가구 없음. SAGE 솔버는 문 폭 × 문 폭 정사각형을 막고, "90 cm 회전반경"은 프롬프트 문구입니다([object_placement_planner.py](https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py)).
 - [ ] **창 앞**: 이유 없이 막지 않음(SAGE 솔버는 창 앞 여유를 계산하지 않으므로 직접 keep-out을 둠).
 - [ ] **소파–커피테이블 350~450 mm**(기본 400). 출처별로 SceneSmith 0.3~0.5 m, Infinigen 0.45~0.6 m로 다릅니다.

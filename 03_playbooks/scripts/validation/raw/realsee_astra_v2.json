@@ -106,7 +106,35 @@
     "FLOOR_Game",
     "FLOOR_Corridor"
    ],
-   "open_leaf": true
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_Game",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -3.564,
+        2.987
+       ],
+       "closed_dir": [
+        0.005,
+        1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.005
+       ],
+       "leaf_m": 0.88,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "FLOOR_Game"
+   }
   },
   {
    "name": "DOOR_LivingDining_hinged_leaf",
@@ -121,7 +149,35 @@
     "FLOOR_LivingDining",
     "FLOOR_Corridor"
    ],
-   "open_leaf": true
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_LivingDining",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -0.912,
+        5.94
+       ],
+       "closed_dir": [
+        -1.0,
+        0.005
+       ],
+       "open_dir": [
+        0.005,
+        1.0
+       ],
+       "leaf_m": 0.92,
+       "floor_z": -0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "FLOOR_LivingDining"
+   }
   },
   {
    "name": "DOOR_Service_closed_hinged_leaf",
@@ -136,7 +192,35 @@
     "FLOOR_Corridor",
     "EXTERIOR"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_Corridor",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -0.542,
+        5.646
+       ],
+       "closed_dir": [
+        -0.005,
+        -1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.005
+       ],
+       "leaf_m": 0.88,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "열면 문짝이 옆벽에 붙음",
+    "modeled_opens_into": null
+   }
   },
   {
    "name": "DOOR_East_entrance_hinged_leaf",
@@ -151,7 +235,35 @@
     "EXTERIOR",
     "FLOOR_Corridor"
    ],
-   "open_leaf": false
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_Corridor",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.02,
+        -0.413
+       ],
+       "closed_dir": [
+        0.187,
+        0.982
+       ],
+       "open_dir": [
+        -0.982,
+        0.187
+       ],
+       "leaf_m": 0.88,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "열면 문짝이 옆벽에 붙음",
+    "modeled_opens_into": null
+   }
   }
  ],
  "issues": [
@@ -180,6 +292,6 @@
    "외부 지면(Ground/Terrain)이 없어 모델 바깥은 '모델링되지 않은 외부'로 보았습니다.",
    "직선이 아닌 벽 1개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: WALL_57D_Corridor"
   ],
-  "seconds": 97.1
+  "seconds": 91.1
  }
 }
