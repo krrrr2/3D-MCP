@@ -14,7 +14,7 @@
 |---|---|---|
 | 조사 (13개 주제) | ✅ 완료 | 주제마다 조사 에이전트 1 + 독립 검증 에이전트 1 |
 | 공백 보완 조사 (8개) | ✅ 완료 | 치수·라이선스는 독립 재검증까지. G7(컴퓨터 유즈)은 메인 에이전트가 직접 조사. G8(공식 Blender Lab MCP)은 소스 정독 + 실제 구동 검증 |
-| 원자료 보존 | ✅ | `01_research/raw/` 37개 JSON (수정 금지) + 실제 구동 응답 원본 `01_research/handson/blender_lab_mcp/raw/` |
+| 원자료 보존 | ✅ | `01_research/raw/` 38개 JSON (수정 금지) + 실제 구동 응답 원본 `01_research/handson/blender_lab_mcp/raw/` |
 | 출처 카탈로그·검증 로그 | ✅ 자동 생성 | 고유 URL 약 1,470개 |
 | 가이드 12편 · 플레이북 5편 · 템플릿 2 · 사례집 2 | ✅ 작성 | 약 13,800줄 |
 | 문서 교차 검토 | ✅ 완료 | 5개 그룹 모두 독립 검토 완료(3~5그룹은 한도 해제 후 재실행). 아래 3절 참고 |
@@ -71,7 +71,7 @@
 
 ## 5. 확인하지 못한 것 (중요도 순)
 
-1. **공식 Blender Lab MCP의 남은 부분**: v1.0.1 변경 내용과 v1.0.3 스크린샷 수정의 구체 내용, v1.0.2 이후 HTTP 모드 보안 설정 변경 여부, Claude Desktop 커넥터가 지금 배포하는 버전, GUI 모드(스크린샷·UI 이동·지연 응답) 실제 동작. 소스·백그라운드 동작은 2026-09-27에 확인 완료([검증 기록](../01_research/handson/blender_lab_mcp/README.md) 4절).
+1. **공식 Blender Lab MCP의 남은 부분**: v1.0.1 변경 내용, v1.0.2·v1.0.3의 전체 변경 내용(특히 HTTP 설정. 2026-08-06 공식 커밋까지는 그대로), 커넥터(v1.0.1)가 SDK 2.x 문제의 영향을 받는지, GUI 모드(스크린샷·UI 이동·지연 응답) 실제 동작. 소스·백그라운드 동작과 후속 확인(v1.0.3 도구 26개, 커넥터 v1.0.1, Windows 설치 실패 원인)은 2026-09-27에 완료([검증 기록](../01_research/handson/blender_lab_mcp/README.md) 4절, `raw/G8_blender_lab_mcp.verify.json`).
 2. **UE 5.8 출시일(2026-06-17)**, Unity 공식 MCP 요건·요금, Roblox 내장 MCP 도구 목록(공식 문서 차단).
 3. **`BLENDER_MCP_SAFE_MODE=1`(ahujasid)에서 `sys.path` 추가 후 import가 되는지**. 공식 서버에서는 된다는 것을 확인했습니다.
 4. 한국어 UI에서 노드 이름이 실제로 번역되는지(일본어 UI 사례로 추정, 설정 `use_translate_new_dataname`의 존재는 확인).
@@ -108,6 +108,7 @@
 | 10 | `building_audit.py` v2: 실제 AI 건물 9개 장면으로 검증·오탐 수정, 실전 패턴 테스트, 검증 기록(`03_playbooks/scripts/validation/`) |
 | 11 | 문 여는 방향: 설계 규칙으로 추천(방 안쪽·모서리 경첩·좁은 욕실 바깥·문끼리 충돌 회피·현관 지역 관례), 궤적 검사, `open_door()`·`add_swing_symbols()`, 평면도 렌더(`render_plan.py --swings`) |
 | 12 | 공식 Blender Lab MCP 소스 정독·실제 구동 검증(`01_research/handson/blender_lab_mcp/`, 원자료 G8), Blender MCP 가이드 4절·10.5절·빠른 시작 개정, 스크립트 테스트 5.2.2 LTS 통과, 제외 항목 정리 |
+| 13 | 공식 MCP 남은 항목 후속 확인(v1.0.3 도구 수, 커넥터 버전, 공식 커밋 2026-08-06까지 비교, Windows 설치 실패 원인), 원자료 `G8_blender_lab_mcp.verify.json` |
 
 ## 8. 이어서 작업하는 법
 

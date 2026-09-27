@@ -24,6 +24,7 @@
 | [보완] 실측 치수 표준 | 13 | 7 | 1 | 2 | 0 | 0 | 0 |
 | [보완] 가격·라이선스·법규 | 17 | 10 | 0 | 4 | 0 | 0 | 0 |
 | [보완] 컴퓨터 유즈 vs MCP vs 스크립트 | 17 | 5 | 0 | 3 | 0 | 0 | 0 |
+| [보완] 공식 Blender Lab MCP 소스 정독·실제 구동 | 2 | 4 | 0 | 3 | 0 | 0 | 1 |
 
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
 
@@ -790,4 +791,29 @@
 - 가장 중요한 보정: (1) OSWorld 원본(2024)과 OSWorld 2.0은 다른 벤치마크라 수치를 이어 비교하면 안 된다. (2) 3DHarnessBench는 '단계마다 모든 모델이 단조 향상'이 아니라 '함수 호출 접근이 풍부해지면 개선되지만 폭이 모델마다 크게 다름'이다. (3) GUI vs CLI의 69.3%는 검증기 기반으로 스킬을 고친 조건이다. (4) WeaveBench에서 GUI만·CLI만 쓰면 3.5% 이하라 하이브리드 결론을 강하게 뒷받침한다.
 - CLI-Anything이 GUI vs CLI 논문의 CLI 스킬 층으로 쓰였다는 점은 가이드의 5번 방법(에이전트용 CLI 래퍼)과 3절 근거를 연결한다.
 - Codex 컴퓨터 유즈의 CLI 지원 여부, CADWorld 평가 에이전트 수(7개), VideoCAD 영상 개수(41,005)는 이번에 확인하지 못했다.
+
+## [보완] 공식 Blender Lab MCP 소스 정독·실제 구동
+
+### 주장별 판정
+
+| 판정 | 주장 | 정정·메모 | 근거 |
+|---|---|---|---|
+| 🟡 부분 | v1.0.2(2026-09-08)는 MCP SDK <2 고정으로 SDK 2.x 비호환을 고쳤다 | 릴리스 노트 문구('Make sure the system uses the MCP SDK <2')는 검색 요약으로만 확인. 문제 자체는 이 저장소에서 재현했고, 공식 저장소 기반 파생판도 2026-09-06 에 같은 이유로 'pin MCP v1' 커밋을 넣었다(독립 정황). 2026-08-06 공식 커밋 시점의 pyproject 는 아직 mcp[cli]>=1.2.0 (상한 없음). | <https://projects.blender.org/lab/blender_mcp/releases> <https://github.com/bpy-dev/blender-mcp/commit/e26ab0a9d556e5b076cd2d6fce93d2fbe4cd82b4> |
+| 🟡 부분 | v1.0.3(2026-09-11)은 오래된 스크린샷 도구 문제를 고쳤다 | 릴리스 노트('Fix the long standing screenshot capture tool')와 배포물(blender-1.0.3.mcpb 5.2 MiB, mcp-1.0.3.zip 18 KiB)은 검색 요약. 관련 공식 커밋으로 2026-08-06 Campbell Barton 'Fix: screenshot size limit didn't account for the JSON envelope'(MCP 메시지 1 MB 한도에 JSON 포장분 2 KiB 여유를 둠)를 확인했으나, 이것이 v1.0.3 수정의 전부인지는 미확인. | <https://projects.blender.org/lab/blender_mcp/releases> <https://github.com/bpy-dev/blender-mcp/commit/4309a39646e644261624bfcd2bca669b343b7621> |
+| 🟡 부분 | HTTP 모드 설정(CORS 전체 허용, DNS 리바인딩 보호 꺼짐)은 v1.0.0 이후에도 같다 | 공식 커밋 기준 2026-08-06(4309a39)까지 mcp/blmcp/__init__.py 는 98b0e49 와 동일(diff 없음). v1.0.2·v1.0.3 에서 바뀌었는지는 미확인. | <https://github.com/bpy-dev/blender-mcp> <https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59> |
+| 🟡 부분 | Windows 설치 실패(이슈 #24)의 원인 | Claude Desktop 커넥터 v1.0.1 설치 시 uv 가 editable 빌드 중 "error in 'egg_base' option: '.' does not exist or is not a directory" 로 실패(Windows 11, Blender 5.1.1, 2026-04-29). 설치 경로 'Claude Extensions' 의 공백이 %20 으로 넘어가는 문제가 겹친다는 분석. 공식 이슈 #24 는 '특정 클라이언트 문제'로 닫힘(검색 요약), Claude Code 이슈는 'not planned'로 닫힘(직접 열람). | <https://github.com/anthropics/claude-code/issues/54798> <https://projects.blender.org/lab/blender_mcp/issues/24> |
+| ❔ 미확인 | 커넥터(v1.0.1) 사용자도 MCP SDK 2.x 문제의 영향을 받는다 | MCPB 번들이 uv 로 의존성을 새로 받는 구조라 영향 가능성이 있으나, Claude Desktop 이 의존성을 어떻게 해석·고정하는지 확인할 방법이 없었다. 추정으로만 표시. | <https://claude.com/connectors/blender> |
+| ❔ 미확인 | v1.0.1 의 변경 내용 | 릴리스 페이지 차단, 검색 결과에도 v1.0.1 항목 없음. | <https://projects.blender.org/lab/blender_mcp/releases> |
+| ❔ 미확인 | GUI 모드의 스크린샷·UI 이동·지연 응답 동작 | GUI 없는 환경. 외부 스모크 테스트(macOS, v1.0.3)는 26개 도구 인벤토리와 CPU 렌더를 확인했고, Metal GPU 초기화가 멈춰 GPU 가속은 검증하지 못했다고 적었다. 공식 위키 Setup 페이지는 그쪽에서도 403. | <https://github.com/devotionn/blender-codex-lab/pull/1> |
+| ✅ 확인 | 공식 서버 도구는 26개다(README 목록 24개 + search_api_docs·search_manual_docs) | 외부 스모크 테스트(2026-09-22, v1.0.3, 커밋 2cea8d5, Blender 5.2.2 LTS macOS)가 'The live inventory contained 26 tools'. 공식 커밋 ae48b71(2026-08-06)이 만든 readme_tools.rst 도 26개를 나열. | <https://github.com/devotionn/blender-codex-lab/pull/1> <https://github.com/bpy-dev/blender-mcp> |
+| ✅ 확인 | Claude 'Blender' 커넥터는 v1.0.1 이다 | 2026-09-27 커넥터 페이지 직접 열람: Version 1.0.1, Blender Lab, April 2026, Anthropic verified. 애드온 안내 링크는 lab.blender.org/mcp-server/#addon. 즉 공식 릴리스(v1.0.3)보다 커넥터 표기 버전이 뒤처져 있다. | <https://claude.com/connectors/blender> <https://lab.blender.org/mcp-server/> |
+
+### 검증자가 지적한 누락 항목
+
+- **bpy-dev/blender-mcp (공식 서버 파생판)** — 공식 저장소 커밋을 2026-08-06 까지 담고 있어 미러(2026-05)보다 최신 공식 코드를 볼 수 있다. 자체적으로 헤드리스 실행·런타임 API 조회·벤치마크 등을 추가한 비공식 배포판이므로 공식 도구 목록의 근거로 쓰면 안 된다. <https://github.com/bpy-dev/blender-mcp>
+
+### 메모
+
+- 이 파일은 독립 검증이 아니라 메인 에이전트의 후속 확인이다. 판정은 같은 기준(확인/부분/미확인)을 따랐다.
+- 원문 사이트(projects.blender.org, lab.blender.org)는 이번에도 연결되지 않았다.
 

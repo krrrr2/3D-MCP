@@ -46,7 +46,7 @@
 | Claude 커넥터 | 공식 커넥터([커넥터 페이지](https://claude.com/connectors/blender): Made by Blender Lab, v1.0.1, 2026-04 등록, Anthropic verified) | 아님. MCP를 직접 설정 |
 | 소스·배포 | [projects.blender.org/lab/blender_mcp](https://projects.blender.org/lab/blender_mcp)(git 소스, .mcpb 번들), GitHub 미러 [bpype/blender_mcp](https://github.com/bpype/blender_mcp) | [GitHub](https://github.com/ahujasid/blender-mcp), PyPI [`mcp-for-blender`](https://pypi.org/project/mcp-for-blender/) |
 | 라이선스 | GPL-3.0-or-later ([manifest](https://raw.githubusercontent.com/bpype/blender_mcp/main/addon/blender_mcp_addon/blender_manifest.toml)) | MIT (무료, 유료 Premium 티어 별도) |
-| 버전 | v1.0.0 = 2026-04-27(미러 커밋). v1.0.2(2026-09-08, MCP SDK <2 고정)·v1.0.3(2026-09-11, 스크린샷 수정)은 [릴리스 페이지](https://projects.blender.org/lab/blender_mcp/releases) 검색 요약 기준 | 2.1.0 (2026-09-25). GitHub Releases 없이 롤링 배포 |
+| 버전 | v1.0.0 = 2026-04-27(미러 커밋). v1.0.2(2026-09-08, MCP SDK <2 고정)·v1.0.3(2026-09-11, 스크린샷 수정)은 [릴리스 페이지](https://projects.blender.org/lab/blender_mcp/releases) 검색 요약 기준. **Claude 커넥터 페이지는 2026-09-27에도 v1.0.1**(직접 확인) | 2.1.0 (2026-09-25). GitHub Releases 없이 롤링 배포 |
 | Blender 요구 | **5.1.0 이상**(manifest `blender_version_min`) | 3.0 이상, Python 3.10+, uv |
 | 구조 | MCP 클라이언트 ⇄ stdio ⇄ MCP 서버 프로세스 ⇄ TCP `localhost:9876`(null-byte 구분 JSON) ⇄ 애드온(GUI는 `bpy.app.timers`, 백그라운드는 `--command blender_mcp`). HTTP 전송도 지원(기본 `127.0.0.1:8000`) | MCP 클라이언트 ⇄ stdio ⇄ FastMCP 서버 ⇄ TCP `localhost:9876`(JSON `{type, params}`) ⇄ 애드온(`bpy.app.timers` 큐로 메인 스레드에서 실행) |
 | tool 수 | **26개**(실측. README 목록 24개 + `search_api_docs`·`search_manual_docs`), prompt·resource 없음 | 36개 + prompt 1개 (`asset_creation_strategy`) |
@@ -187,11 +187,11 @@ tool_timeout_sec = 600
 
 ## 4. 공식 Blender Lab 서버 상세
 
-2026-09-27에 공식 서버를 **소스 전체를 읽고 실제로 띄워서** 확인했습니다. 소스는 GitHub 미러 [bpype/blender_mcp](https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59)의 커밋 98b0e49(2026-05-05, v1.0.0 계열)이고, 환경은 pip `bpy` 5.2.2 LTS입니다. 26개 도구 중 24개를 MCP 클라이언트로 직접 불렀습니다. 절차·원본 응답·재현 도구는 [실제 구동 검증 기록](../01_research/handson/blender_lab_mcp/README.md)에 있습니다. blender.org와 projects.blender.org는 조사 환경에서 차단돼 있어서, 최신 릴리스(v1.0.2·v1.0.3) 정보는 검색 결과 요약만 봤습니다.
+2026-09-27에 공식 서버를 **소스 전체를 읽고 실제로 띄워서** 확인했습니다. 소스는 GitHub 미러 [bpype/blender_mcp](https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59)의 커밋 98b0e49(2026-05-05, v1.0.0 계열)이고, 환경은 pip `bpy` 5.2.2 LTS입니다. 26개 도구 중 24개를 MCP 클라이언트로 직접 불렀습니다. 절차·원본 응답·재현 도구는 [실제 구동 검증 기록](../01_research/handson/blender_lab_mcp/README.md)에 있습니다. blender.org와 projects.blender.org는 조사 환경에서 차단돼 있어서, 최신 릴리스(v1.0.2·v1.0.3) 정보는 검색 결과 요약만 봤습니다. 대신 다음으로 보완했습니다([후속 확인](../01_research/raw/G8_blender_lab_mcp.verify.json)). 공식 커밋을 2026-08-06까지 담은 파생 저장소 [bpy-dev/blender-mcp](https://github.com/bpy-dev/blender-mcp)의 git 이력과 비교했고, v1.0.3을 macOS에서 돌려 본 [외부 스모크 테스트](https://github.com/devotionn/blender-codex-lab/pull/1)(2026-09-22, 도구 26개)와 대조했습니다.
 
 ### 4.1 먼저 알아 둘 것 (실측)
 
-1. **버전은 v1.0.2 이상을 쓰세요.** v1.0.0 계열은 의존성이 `mcp[cli]>=1.2.0`뿐입니다. 그래서 MCP 파이썬 SDK 2.0(2026-07-28) 이후 새로 설치하면 2.x가 깔리고, 서버가 import 단계에서 죽습니다(`No module named 'mcp.server.fastmcp'`). 클라이언트에는 `Connection closed`만 보여 원인을 찾기 어렵습니다. 검색 요약에 따르면 [v1.0.2(2026-09-08)](https://projects.blender.org/lab/blender_mcp/releases)가 "MCP SDK <2" 고정으로 이 문제를 고쳤습니다. 옛 태그를 써야 하면 `mcp[cli]<2`를 함께 고정하세요(4.3절).
+1. **버전은 v1.0.2 이상을 쓰세요.** v1.0.0 계열은 의존성이 `mcp[cli]>=1.2.0`뿐입니다. 그래서 MCP 파이썬 SDK 2.0(2026-07-28) 이후 새로 설치하면 2.x가 깔리고, 서버가 import 단계에서 죽습니다(`No module named 'mcp.server.fastmcp'`). 클라이언트에는 `Connection closed`만 보여 원인을 찾기 어렵습니다. 검색 요약에 따르면 [v1.0.2(2026-09-08)](https://projects.blender.org/lab/blender_mcp/releases)가 "MCP SDK <2" 고정으로 이 문제를 고쳤습니다. 공식 코드를 담은 파생판도 같은 이유로 2026-09-06에 [MCP v1 고정](https://github.com/bpy-dev/blender-mcp/commit/e26ab0a9d556e5b076cd2d6fce93d2fbe4cd82b4)을 넣었습니다. 옛 태그를 써야 하면 `mcp[cli]<2`를 함께 고정하세요(4.3절).
 2. **Allow Online Access를 켜야 합니다.** 끈 상태면 애드온이 `Online access must be enabled in the system preferences`라며 시작하지 않습니다. 명령줄에서는 `--online-mode`를 씁니다.
 3. **오류는 대부분 정상 응답 안의 `status: "error"`로 옵니다.** 코드 예외, 렌더 실패, 없는 오브젝트가 모두 그렇습니다. MCP `isError`가 true인 경우는 스크린샷 실패와 연결 실패뿐이었습니다. 에이전트 규칙에 "결과의 status를 확인하라"를 넣으세요.
 4. **렌더 도구는 지정한 폴더에 저장하지 않습니다.** 파일 이름만 떼어 `bpy.app.tempdir/blender_mcp/`에 저장하는데, 이 폴더는 Blender를 끄면 지워집니다. 필요하면 렌더 직후 `execute_blender_code`로 복사하세요. `render_viewport_to_path`는 이름과 달리 뷰포트 캡처가 아니라 현재 렌더 설정으로 하는 F12 렌더입니다.
@@ -201,7 +201,7 @@ tool_timeout_sec = 600
 
 ### 4.2 도구 26개
 
-미러 README 목록은 24개입니다. 실제 서버는 문서 검색 2개를 더해 **26개**를 돌려줍니다. `search_api_docs`·`search_manual_docs`는 2026-04-16 커밋으로 v1.0.0 전부터 있었습니다. prompts와 resources는 없습니다. 서버 instructions(약 5,900자)와 도구 스키마(약 14,700자)를 합치면, 영어 기준 대략 5천 토큰 안팎이 컨텍스트에 들어갑니다.
+미러 README 목록은 24개입니다. 실제 서버는 문서 검색 2개를 더해 **26개**를 돌려줍니다. v1.0.3도 26개입니다(외부 스모크 테스트, 공식 `readme_tools.rst` 2026-08-06). `search_api_docs`·`search_manual_docs`는 2026-04-16 커밋으로 v1.0.0 전부터 있었습니다. prompts와 resources는 없습니다. 서버 instructions(약 5,900자)와 도구 스키마(약 14,700자)를 합치면, 영어 기준 대략 5천 토큰 안팎이 컨텍스트에 들어갑니다.
 
 | 범주 | 도구 (R = readOnly, D = destructive 표시) | 실측 동작 |
 |---|---|---|
@@ -228,7 +228,9 @@ tool_timeout_sec = 600
 
 한국·일본 커뮤니티 후기([Threads @dddesign.io](https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko), [zenn](https://zenn.dev/shintama/articles/blender-official-mcp-claude?locale=en), [classmethod](https://dev.classmethod.jp/en/articles/claude-blender-connector-desktop-and-code/))에는 설치 링크를 Blender 창에 두 번 드래그하는 방법이 나옵니다. 1회차에 저장소가 추가되고 2회차에 애드온이 설치된다는 것인데, 위 1~2단계를 드래그로 하는 것과 같습니다. stefancrm 키트는 **두 경로(드래그 설치와 수동 설치)로 중복 설치하면 같은 ID의 애드온이 둘 생긴다**고 경고합니다. 한 경로만 쓰세요.
 
-**Claude Desktop**: 설정 → 커넥터에서 'blender'를 검색해 설치하고, 위 애드온을 설치합니다. 커넥터 페이지 표기는 v1.0.1입니다. 이 커넥터가 SDK 2.x 문제의 영향을 받았는지는 확인하지 못했습니다. 연결이 곧바로 끊기면 4.1절 1번을 의심하세요.
+**Claude Desktop**: 설정 → 커넥터에서 'blender'를 검색해 설치하고, 위 애드온을 설치합니다([커넥터 페이지](https://claude.com/connectors/blender)의 애드온 안내 링크는 `lab.blender.org/mcp-server/#addon`).
+- 커넥터 버전은 2026-09-27에 직접 확인했을 때도 **v1.0.1**입니다. 공식 최신 v1.0.3보다 뒤처져 있습니다. 이 커넥터가 SDK 2.x 문제의 영향을 받는지는 확인하지 못했습니다(추정: 번들이 uv로 의존성을 받는 구조라 가능성 있음). 연결이 곧바로 끊기면 4.1절 1번을 의심하고, 수동 설정(아래)으로 v1.0.2 이상을 쓰세요.
+- **Windows에서 커넥터 설치가 실패하는 사례**: `uv.exe exited with code 1` / `error in 'egg_base' option: '.' does not exist or is not a directory`(Windows 11, Blender 5.1.1, 커넥터 v1.0.1). 설치 경로 `Claude Extensions`의 공백이 `%20`으로 넘어가는 문제가 겹친다는 분석이 있습니다. 공식 이슈([#24](https://projects.blender.org/lab/blender_mcp/issues/24))는 '특정 클라이언트 문제'로, [Claude Code 이슈](https://github.com/anthropics/claude-code/issues/54798)는 'not planned'로 닫혔습니다. 이럴 때는 수동 설정(git 소스 + uv)이 우회로입니다(검증된 해결책은 아님).
 
 **Claude Code 등 수동 설정**: 공식 README의 서버 설치는 `pip install git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp`입니다. 다만 v1.0.0·v1.0.1을 받게 되면 SDK 2.x 문제에 걸리므로, 태그를 지정하거나 `mcp<2`를 함께 고정하세요.
 
@@ -259,7 +261,7 @@ uvx --with 'mcp[cli]<2' --from 'git+https://projects.blender.org/lab/blender_mcp
 ### 4.4 HTTP 모드와 로컬 LLM
 
 - `blender-mcp --transport http`의 기본 주소는 **`127.0.0.1:8000`, 경로 `/`**입니다(streamable-http, stateless). `--port 9191`은 [로컬 LLM 문서](https://github.com/bpype/blender_mcp/blob/main/readme_local_llm.rst)의 예시 값입니다. 8000은 blender-open-mcp와 Unreal 5.8 공식 MCP의 기본 포트와 겹칩니다(9.1절).
-- llama.cpp 웹 UI처럼 브라우저에서 붙는 클라이언트를 위해 **CORS를 전부 허용(`*`)하고 DNS 리바인딩 보호를 끕니다.** 인증도 없습니다. curl로 Origin 헤더를 외부 도메인(evil.example)으로 바꿔 initialize 없이 `execute_blender_code`를 불렀더니 실행됐습니다. `Host: attacker.example`도 통과했습니다. 실제 브라우저로 재현하지는 않았습니다. 그래도 HTTP 모드를 켜 둔 동안에는 브라우저로 연 웹페이지가 Blender 코드를 실행할 수 있는 구조로 보고, **쓸 때만 켜고, `--host 0.0.0.0`은 쓰지 마세요.** 평소에는 stdio(기본값)를 쓰면 됩니다.
+- llama.cpp 웹 UI처럼 브라우저에서 붙는 클라이언트를 위해 **CORS를 전부 허용(`*`)하고 DNS 리바인딩 보호를 끕니다.** 공식 커밋 기준 2026-08-06까지 이 설정 파일은 바뀌지 않았습니다(v1.0.2·v1.0.3은 미확인). 인증도 없습니다. curl로 Origin 헤더를 외부 도메인(evil.example)으로 바꿔 initialize 없이 `execute_blender_code`를 불렀더니 실행됐습니다. `Host: attacker.example`도 통과했습니다. 실제 브라우저로 재현하지는 않았습니다. 그래도 HTTP 모드를 켜 둔 동안에는 브라우저로 연 웹페이지가 Blender 코드를 실행할 수 있는 구조로 보고, **쓸 때만 켜고, `--host 0.0.0.0`은 쓰지 마세요.** 평소에는 stdio(기본값)를 쓰면 됩니다.
 - 저장소의 `chat_client`는 OpenAI 호환 `llama-server`(기본 :8080)와 Anthropic API(`ANTHROPIC_API_KEY`)에 붙습니다. llama.cpp 빌드 8218 이상에서 `llama-server --jinja --hf-repo ... --hf-file ...` 사용이 확인됐습니다.
 - 로컬 모델에는 '분석과 간단한 편집' 정도만 기대하세요. 복잡한 모델링 품질은 frontier 모델과 차이가 큽니다.
 
@@ -280,10 +282,10 @@ uvx --with 'mcp[cli]<2' --from 'git+https://projects.blender.org/lab/blender_mcp
 
 ### 4.6 아직 확인하지 못한 것
 
-- v1.0.1의 변경 내용, v1.0.3("Fix the long standing screenshot capture tool")의 구체 내용
-- v1.0.2 이후 HTTP 모드 보안 설정이 바뀌었는지(확인한 소스는 v1.0.0 계열)
-- Claude Desktop 커넥터가 현재 배포하는 버전과 SDK 2.x 문제 영향 여부
-- GUI 모드의 스크린샷·UI 이동·지연 응답의 실제 동작(GUI 없는 환경이라 미검증), Windows 설치 실패 이슈([#24](https://projects.blender.org/lab/blender_mcp/issues/24))의 원인
+- v1.0.1의 변경 내용. v1.0.3 스크린샷 수정의 전체 내용도 확인하지 못했습니다. 관련된 공식 커밋으로 2026-08-06 [스크린샷 크기 한도 수정](https://github.com/bpy-dev/blender-mcp/commit/4309a39646e644261624bfcd2bca669b343b7621)은 확인했습니다. MCP 메시지 1 MB 한도에 JSON 포장분 여유 2 KiB를 두는 수정입니다
+- v1.0.2·v1.0.3에서 HTTP 모드 보안 설정이 바뀌었는지(2026-08-06까지는 그대로)
+- Claude Desktop 커넥터(v1.0.1)가 SDK 2.x 문제의 영향을 받는지
+- GUI 모드의 스크린샷·UI 이동·지연 응답의 실제 동작. GUI 없는 환경이라 검증하지 못했습니다. 외부 스모크 테스트(macOS)도 GPU 가속은 검증하지 못했다고 적었습니다
 
 ---
 
@@ -753,6 +755,7 @@ and use exact socket names returned. Never guess enum identifiers.
 | 헤드리스 서버에서 렌더 도구를 부르자 Blender가 죽음 | EEVEE + EGL 없음 | 렌더 엔진을 Cycles CPU로 바꾼 뒤 호출(4.1절) |
 | 공식 서버에서 코드가 실패했는데 에이전트가 성공으로 보고 | 오류가 `isError`가 아닌 `status: "error"`로 옴 | 에이전트 규칙에 status 확인을 넣기(4.1절) |
 | `spawn uvx ENOENT` | GUI 클라이언트의 PATH | uvx 절대경로(9.5절) |
+| Windows에서 공식 커넥터 설치 실패 `error in 'egg_base' option` | 커넥터 v1.0.1의 uv 빌드 + 설치 경로 공백 문제(분석) | git 소스 + uv 수동 설정으로 우회(4.3절) |
 | 큰 씬에서 AI가 일부 오브젝트를 모름 | `get_scene_info` 10개 제한, 치수 정보 없음 | 압축 요약 스크립트, `get_object_info`, `scene_audit.py`(9.3절) |
 | 180초 뒤 실패하거나 Blender가 멈춤 | 긴 코드, 고해상도 다운로드, 렌더를 메인 스레드에서 실행 | 5~20줄 청크, 1k/2k 텍스처, 헤드리스 렌더(9.2절) |
 | `KeyError: 'Principled BSDF'` | 한국어 UI의 New Data 번역 | type으로 찾기, New Data 번역 끄기(12절) |
@@ -793,3 +796,4 @@ and use exact socket names returned. Never guess enum identifiers.
 - [`01_research/raw/10_agent-workflow.verify.json`](../01_research/raw/10_agent-workflow.verify.json): 독립 검증(safe mode 범위, 스크린샷 기본값, `use_auto_smooth` 4.1, `use_translate_new_dataname` 확인 등)
 - [`01_research/raw/G8_blender_lab_mcp.gap.json`](../01_research/raw/G8_blender_lab_mcp.gap.json): 공식 Blender Lab 서버 소스 정독·실제 구동 검증(항목 14, 노하우 6, 출처 23)
 - [`01_research/handson/blender_lab_mcp/`](../01_research/handson/blender_lab_mcp/README.md): 위 검증의 절차, 도구 목록·호출 응답 원본, 재현 도구
+- [`01_research/raw/G8_blender_lab_mcp.verify.json`](../01_research/raw/G8_blender_lab_mcp.verify.json): 남은 미확인 항목 후속 확인(판정 9: 확인 2 · 부분 4 · 미확인 3, 메인 에이전트 수행)

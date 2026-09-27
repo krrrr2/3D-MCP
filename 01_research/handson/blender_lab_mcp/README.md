@@ -121,13 +121,26 @@ result = {"summary": rep["summary"], "issues": rep["issues"][:20]}
 - PyPI `blender-mcp`(2.0.0)는 ahujasid 서버로 넘겨 주는 래퍼입니다. 공식 서버의 패키지 이름도 `blender-mcp`라서 **PyPI 이름으로는 공식 서버를 받을 수 없습니다.**
 - 공식 예시와 LLM 통합 테스트의 과제는 모두 **분석·점검형**입니다. 데이터블록 이름 오타 수정, 재질 사용처 찾기, 폴리곤 이상치, 아마추어에 변형되지 않는 메시, 체크리스트 검증 같은 것들입니다.
 
-## 4. 확인하지 못한 것
+## 4. 후속 확인과 남은 것
 
-- v1.0.1의 변경 내용과 v1.0.3 스크린샷 수정의 구체 내용(릴리스 페이지 원문 차단)
-- v1.0.2 이후 HTTP 모드의 CORS·DNS 리바인딩 설정 변경 여부(미러가 v1.0.0 계열)
-- Claude Desktop 'Blender' 커넥터(v1.0.1 표기)가 SDK 2.x 문제의 영향을 받았는지, 지금 몇 버전을 배포하는지
-- GUI 모드의 지연 응답(`check_is_finished`)·스크린샷·UI 이동 도구의 실제 동작(GUI 없는 환경)
-- 실제 blender 실행 파일이 필요한 공식 통합 테스트(`tests/test_blender_mcp_with_blender.py`)와 LLM 통합 테스트
+사용자 요청으로 남은 항목을 한 번 더 확인했습니다. 원자료는 [`../../raw/G8_blender_lab_mcp.verify.json`](../../raw/G8_blender_lab_mcp.verify.json)에 있고, 독립 검증이 아니라 메인 에이전트가 확인한 것입니다. projects.blender.org·lab.blender.org는 이번에도 연결되지 않았습니다.
+
+| 항목 | 결과 | 근거 |
+|---|---|---|
+| v1.0.3의 도구 수 | **26개로 같음** | [외부 스모크 테스트](https://github.com/devotionn/blender-codex-lab/pull/1)(2026-09-22, v1.0.3, Blender 5.2.2 LTS macOS), 공식 `readme_tools.rst`(2026-08-06) |
+| Claude 커넥터 버전 | **v1.0.1**(2026-09-27 커넥터 페이지 직접 확인). 공식 최신 v1.0.3보다 뒤처짐 | [커넥터 페이지](https://claude.com/connectors/blender) |
+| SDK 2.x 문제 | 공식 코드를 담은 파생판도 2026-09-06에 같은 이유로 MCP v1 고정. 2026-08-06 공식 코드의 의존성은 아직 상한 없음 | [bpy-dev/blender-mcp](https://github.com/bpy-dev/blender-mcp) git 이력 |
+| v1.0.3 스크린샷 수정 | 관련 공식 커밋 확인: 스크린샷 크기 한도에 JSON 포장분 2 KiB 여유(2026-08-06). v1.0.3 수정의 전부인지는 미확인 | 파생판에 포함된 공식 커밋 4309a39 |
+| HTTP 모드 설정 | 2026-08-06 공식 커밋까지 서버 설정 파일 변경 없음. v1.0.2·v1.0.3은 미확인 | 같은 git 이력 비교 |
+| Windows 설치 실패 | 커넥터 v1.0.1이 uv 빌드 중 `egg_base` 오류로 실패. 설치 경로 공백 문제가 겹친다는 분석. 공식·Claude Code 이슈 모두 클라이언트 문제로 닫힘 | [Claude Code 이슈](https://github.com/anthropics/claude-code/issues/54798), [공식 #24](https://projects.blender.org/lab/blender_mcp/issues/24)(검색 요약) |
+
+아직 남은 것:
+
+- v1.0.1의 변경 내용
+- v1.0.2·v1.0.3의 전체 변경 내용(특히 HTTP 설정)
+- 커넥터(v1.0.1)가 SDK 2.x 문제의 영향을 받는지
+- GUI 모드의 스크린샷·UI 이동·지연 응답 실제 동작
+- 실제 blender 실행 파일이 필요한 공식 통합 테스트와 LLM 통합 테스트
 
 ## 5. 다시 해 보려면
 
