@@ -86,6 +86,7 @@ def render_review_views(out_dir, engine="CYCLES", samples=16, res=768, margin=1.
     color_mode: "random" = 오브젝트마다 다른 색(배치·겹침 확인용), "materials" = 실제 재질 그대로.
     """
     scene = bpy.context.scene
+    out_dir = bpy.path.abspath(out_dir)  # "//review/" 같은 .blend 기준 상대 경로도 허용
     os.makedirs(out_dir, exist_ok=True)
     mn, mx = _scene_bounds(frame_ignore)
     center = (mn + mx) / 2

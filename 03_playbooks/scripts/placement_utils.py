@@ -31,6 +31,7 @@ def _unit_meshes(obj):
 
 def world_bbox(obj):
     """obj 와 모든 자식 메시(모디파이어 적용 상태)의 월드 좌표 AABB."""
+    bpy.context.view_layer.update()  # location 을 직접 바꾼 직후에도 최신 matrix_world 를 쓰도록
     depsgraph = bpy.context.evaluated_depsgraph_get()
     pts = []
     for m in _unit_meshes(obj):
@@ -133,6 +134,7 @@ def place_against_wall(obj, wall_y, gap=0.02):
 def face_towards(obj, target_point):
     """Z 축 회전만 바꿔서 obj 의 앞면(-Y)이 target_point 를 향하게 한다."""
     target_point = Vector(target_point)
+    bpy.context.view_layer.update()  # 직전에 location 을 바꿨어도 새 위치 기준으로 계산
     loc = obj.matrix_world.translation
     dx, dy = target_point.x - loc.x, target_point.y - loc.y
     if abs(dx) < 1e-9 and abs(dy) < 1e-9:

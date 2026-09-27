@@ -6,7 +6,7 @@
 
 - **연구 세대가 한두 세대 전입니다.** 확인한 논문은 대부분 GPT-4o/GPT-4V, Claude 3.5~3.7, GPT-5 세대로 실험했습니다. **GPT-6 Astra, Claude Fable 5.1, Opus 5.5를 직접 평가한 동료심사 논문은 찾지 못했습니다.** 논문 수치는 절대값이 아니라 "어느 방향이 효과가 있나"를 판단하는 근거로만 쓰세요.
 - **7대 합의**: ① 렌더→비평 폐루프 ② 생성보다 검증에 연산 투자 ③ 좌표는 솔버, LLM은 관계·제약 ④ 처음부터 만들기보다 검색·재사용 ⑤ 파라메트릭 부품 코드 ⑥ 계층 단계 생성 + 물리 검증 ⑦ LLM은 렌더를 보지 않고는 결과를 상상하지 못함.
-- **모델을 바꾸는 것보다 하네스를 고치는 효과가 더 큽니다.** 이미지→Blender 역설계 에이전트 VIGA는 원샷 대비 BlenderGym +35.32%, BlenderBench +124.70%였고(arXiv 요약 기준), CAD 벤치에서는 build123d-mcp 도구만 붙여도 같은 모델의 점수가 0.360에서 0.457로 올랐습니다(도구 저자 자체 보고, 2026-06). 3DHarnessBench에서도 도구 접근 범위를 넓히자 모든 모델이 개선됐습니다.
+- **모델을 바꾸는 것보다 하네스를 고치는 효과가 더 큽니다.** 이미지→Blender 역설계 에이전트 VIGA는 원샷 대비 BlenderGym +35.32%, BlenderBench +124.70%였고(arXiv 요약 기준), CAD 벤치에서는 build123d-mcp 도구만 붙여도 같은 모델의 점수가 0.360에서 0.457로 올랐습니다(도구 저자 자체 보고, 2026-06). 3DHarnessBench에서도 함수 호출로 대상에 접근하게 하자 모든 모델이 개선됐습니다. 다만 추가 시점만 요청하게 한 조건(Active Visual)에서는 일부 모델이 오히려 나빠졌으니 모델별로 A/B 테스트하세요(5.3절).
 - **배치는 "충돌을 하드 조건으로 막고 배치 후 따로 검사"가 핵심입니다.** 같은 비교표(SceneReVis 측정)에서 충돌률은 LLM 직접 좌표 40.8% → 제약 솔버 12.7% → 렌더·평가·수정 루프 + 물리 보상 4.5%였습니다. 미분 최적화(충돌이 soft 손실 항)를 쓴 LayoutVLM도 36.8%였으니 "솔버만 쓰면 된다"로 일반화하면 안 됩니다.
 - **아직 안 되는 것**: GPT-4o의 Blender 배치 편집 오차는 사람의 약 28배(BlenderGym)였고, VLM 검증기와 사람의 판정 일치율은 0.66(사람끼리 0.79)에 그쳤습니다. FreeCAD GUI를 클릭해 장기 작업을 하는 에이전트는 최고 17.5%로 전문가 87.0%에 크게 못 미쳤습니다. 메시 좌표를 토큰으로 직접 뽑는 방식(LLaMA-Mesh 등)은 저폴리에 머뭅니다.
 - **최신 모델을 같은 조건으로 비교한 통제 벤치마크는 없습니다.** OpenAI가 발표한 BenchCAD "Astra 95.9%"(도구 사용, 벤더 자체 보고)와 공식 재채점 최고점 "Gemini 3.1 Pro 0.289"(도구 없음, IoU)는 척도가 달라 나란히 놓으면 안 됩니다. 절대 순위 대신 **과제별 잠정 선택**만 하세요([AI 모델 가이드](01_ai_models_and_clients.md)).
@@ -172,7 +172,7 @@ BlenderGym 재질 과제에서 GPT-4o의 광도 손실은 3.653으로 사람(0.6
 | [BlenderGym](https://github.com/richard-guyunqi/BlenderGym-Open) (CVPR 2025 Highlight, 2025-04) | 시작 씬 → 목표 씬 Blender 코드 편집. 수작업 씬 245개, 5개 과제(블렌드셰이프·배치·절차적 지오메트리·조명·절차적 재질) | generator + verifier VLM. PL·N-CLIP·Chamfer, 낮을수록 좋음 | 없음(2025 모델: GPT-4o, Claude 3.5, Gemini 1.5 Flash, Qwen2-VL 등) | 리더보드는 VLM 시스템 13개 + Human(조사 원본의 "20개 이상"은 정정). 대부분 과제 1위 GPT-4o, 배치는 PL/CD 기준 Gemini-1.5-flash, N-CLIP 기준 GPT-4o. 사람과의 격차는 3절 | 높음(프로젝트 페이지). 평가에 쓴 Claude 모델은 retire |
 | BlenderBench ([VIGA](https://github.com/Fugtemypt123/VIGA), 2026) | 다단계 3D 편집(Level 1~3) | 에이전트 | 없음 | VIGA 원샷 대비 +124.70%(arXiv 요약 기준) | 중간 |
 | [3DCodeBench](https://github.com/gaoypeng/3dcodebench) / 3DCodeArena (arXiv 2606.01057, 2026-06-01) | Blender 5.0 bpy 절차적 객체 모델링. 212 카테고리 × 60 seed = 12,720 인스턴스(Infinigen 레퍼런스) | text→3D, image→3D, 멀티턴(traceback 피드백, T=3), 코딩 에이전트 하네스(Claude Code·Codex·Gemini CLI·agy). 실행 가능률, SigLIP-2/DINOv3, Chamfer/Uni3D, LLM 심판, 사람 선호 Elo | 없음(GPT-5.5·Opus 4.7·Gemini 3.1 Pro 세대) | trial 82,042개, 생성 스크립트 81,605개, 에이전트 transcript 2,767개 공개(README 확인). 멀티턴 오류 피드백으로 평균 실행 가능률 0.69 → 0.97, Opus 4.7·GPT-5.5·GPT-5.4는 재시도 후 1.000, Elo 1위 GPT-5.5 1163(Gemini 3.1 Pro보다 16점 높음)(arXiv 요약 기준, **README에는 없어 미확인**) | 구조는 높음, 수치는 중간. 라이선스 표기가 README(MIT)와 [LICENSE](https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/LICENSE)(Apache 2.0)로 어긋나고 factory 스크립트는 Infinigen BSD-3 → LICENSE 파일 기준으로 인용 |
-| [3DHarnessBench](https://github.com/llada60/3DHarnessBench) (arXiv 2609.06535, 2026-09) | 3D 대상을 Blender Python으로 복원 | 단일 뷰 → 멀티뷰 → Active Visual(임의 시점 요청) → Full 3D Interaction(함수 호출로 대상 접근) | Astra는 GitHub 설정에 있음(arXiv v1 요약 목록엔 없음). Opus 5.5·Fable 5.1 없음 | 접근 범위가 넓을수록 모든 모델 개선. Opus 5가 Active Visual·Full 3D 모두 1위, Fable 5·GPT-5.6 Sol·Kimi K3·Qwen3.8 Max가 2군, Gemini 3.1 Pro·MiniMax M3는 Active Visual에서 약함([arXiv 요약](https://arxiv.org/html/2609.06535v1)). "최고 Uni3D 0.927"은 (미확인). SKILL.md·MCP 어댑터·뷰포트 전용 서비스 등 하네스 자산 공개 | 중간 |
+| [3DHarnessBench](https://github.com/llada60/3DHarnessBench) (arXiv 2609.06535, 2026-09) | 3D 대상을 Blender Python으로 복원 | 단일 뷰 → 멀티뷰 → Active Visual(임의 시점 요청) → Full 3D Interaction(함수 호출로 대상 접근) | Astra는 GitHub 설정에 있음(arXiv v1 요약 목록엔 없음). Opus 5.5·Fable 5.1 없음 | 함수 호출 접근(Full 3D Interaction)을 열수록 모든 모델 개선. Active Visual은 모델에 따라 도움이 되기도, 해가 되기도 함. Opus 5가 Active Visual·Full 3D 모두 1위, Fable 5·GPT-5.6 Sol·Kimi K3·Qwen3.8 Max가 2군, Gemini 3.1 Pro·MiniMax M3는 Active Visual에서 약함([arXiv 요약](https://arxiv.org/html/2609.06535v1)). "최고 Uni3D 0.927"은 (미확인). SKILL.md·MCP 어댑터·뷰포트 전용 서비스 등 하네스 자산 공개 | 중간 |
 | [SGP-Bench](https://github.com/sgp-bench/sgp-bench) (ICLR 2025 Spotlight) | 렌더 없이 SVG·CAD 프로그램 의미 이해 | 질의응답 | 없음 | 2절 7번 참조. Symbolic Instruction Tuning(72K) 제안 | 높음 |
 | [VoxelCodeBench](https://github.com/facebookresearch/VoxelCodeBench) (Meta, arXiv 2604.02580) | Python 코드로 복셀 3D 장면 생성 | Unreal Engine 자동 실행 + 다중 카메라 스크린샷 평가. Claude(Bedrock)·Gemini·OpenAI 지원 | (미확인) | 모델별 결과 (미확인) | 중간 |
 | [BenchCAD 공식](https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md) (2026-06 갱신) | 4뷰 렌더 → CadQuery(Vision2Code), Vision-QA, Code-QA. 106개 부품군·17,900 프로그램 | **도구 없음**, 원시 출력 직접 재채점. IoU-score = voxel IoU × 실행률(0~1) | 없음 | Gemini 3.1 Pro 0.289, Opus 4.7 0.269, Sonnet 4.6 0.222, GPT-5.3 0.179. 벤더 보고 † 행: Mythos 5 0.384, Opus 4.8 0.273 | 높음 |
@@ -294,7 +294,7 @@ bpy.ops.object.shade_smooth_by_angle(angle=0.5236)                    # use_auto
 | ⑤ 4시점 렌더 | 위(정사영)·정면·측면·3/4 | VIGA 다중 시점, TreeSearchGen 격자 지도 | `review_views.py` | 4장 생성 |
 | ⑥ 체크리스트 비평 | 예/아니오 질문 + 큰 구조 문제만 | CADCodeVerify, 3DCodeBench 비평 프롬프트, BlenderGym 검증기 | [품질 체크리스트](../03_playbooks/04_quality_checklists.md) | `NEEDS_FIX: NO` |
 | ⑦ 후보 비교·되돌리기 | 후보 2~3개 렌더 비교, 나빠지면 스냅샷 복귀 | BlenderAlchemy 트리 탐색·가설 되돌리기, BlenderGym 검증 연산 | `save_as_mainfile(copy=True)` | 이전보다 나은 후보만 채택 |
-| ⑧ 로그 | 계획·코드 diff·렌더 경로·남은 문제·모델/버전 기록 | VIGA 진화형 메모리, SceneWeaver 단계 기록 | `progress.md` | 다음 턴이 최근 3회분을 읽음 |
+| ⑧ 로그 | 계획·코드 diff·렌더 경로·남은 문제·모델/버전 기록 | VIGA 진화형 메모리, SceneWeaver 단계 기록 | `PROGRESS.md` | 다음 턴이 최근 3회분을 읽음 |
 
 ### ① 레퍼런스·컨셉 이미지를 먼저 확보
 
@@ -377,32 +377,32 @@ bpy.ops.object.shade_smooth_by_angle(angle=0.5236)                    # use_auto
 - 예산이 허락하면 후보 2~3개를 만들어 렌더하고 비교 판정(토너먼트)으로 고릅니다. BlenderGym 결과대로 **총 예산이 클수록 생성보다 검증에 더 씁니다**.
 - 종료 조건 예: `NEEDS_FIX: NO` 2회 연속 또는 최대 5회(조사자 제안), 또는 SceneSmith식 "항목별 점수 모두 기준 이상이면 종료, 최대 3라운드, 점수가 떨어지면 체크포인트로 롤백"([배치 가이드 4.9절](08_scene_layout_placement.md)).
 
-④~⑦을 한 번에 돌리는 코드입니다. `execute_blender_code`는 호출마다 새 네임스페이스에서 실행되므로 매번 경로 추가와 import를 합니다(`engine="CYCLES"`로 Blender 4.2.23 LTS, 5.0.1의 pip `bpy` 헤드리스 실행 확인. Workbench는 GPU가 있는 GUI에서 쓰세요).
+④~⑦을 한 번에 돌리는 코드입니다. `execute_blender_code`는 호출마다 새 네임스페이스에서 실행되므로 매번 경로 추가와 import를 합니다. 스냅샷은 작업 `.blend`와 같은 폴더에 저장해서 `os`로 폴더를 만들 필요가 없게 했습니다(`engine="CYCLES"`로 바꿔 Blender 4.2.23 LTS, 5.0.1의 pip `bpy` 헤드리스에서 실행 확인. Workbench는 GUI Blender에서 쓰세요).
 
 ```python
-import sys, os, json, bpy
+import sys, json, importlib, bpy
 sys.path.append(r"C:\path\to\3D-MCP\03_playbooks\scripts")   # 이 저장소를 받은 위치
-import importlib, scene_audit, review_views
+import scene_audit, review_views
 importlib.reload(scene_audit); importlib.reload(review_views)
 
-n = 3                                             # 반복 번호
-root = bpy.path.abspath("//")                    # 작업 .blend를 먼저 저장해 둘 것
-os.makedirs(os.path.join(root, "snap"), exist_ok=True)   # 폴더가 없으면 저장이 실패함
-bpy.ops.wm.save_as_mainfile(filepath=os.path.join(root, "snap", f"v{n:02d}.blend"), copy=True)
+n = 3                                                          # 반복 번호
+name = bpy.path.display_name_from_filepath(bpy.data.filepath)  # 작업 .blend를 먼저 한 번 저장해 둘 것
+snap = bpy.path.abspath(f"//{name}_snap_v{n:02d}.blend")       # .blend와 같은 폴더라 새 폴더가 필요 없음
+bpy.ops.wm.save_as_mainfile(filepath=snap, copy=True)           # 작업 파일은 그대로, 사본만 저장
 
-report = scene_audit.audit_scene(floor_z=0.0)     # 숫자 검사 먼저
+report = scene_audit.audit_scene(floor_z=0.0)                  # 숫자 검사 먼저
 print(json.dumps(report["summary"], ensure_ascii=False))
 for u in report["units"]:
     if u["issues"]:
         print(u["name"], u["issues"])
 
-paths = review_views.render_review_views(         # 그다음 4방향 검토 렌더
-    os.path.join(root, "review", f"v{n:02d}"),
-    engine="BLENDER_WORKBENCH")                   # GUI 연결 시. 헤드리스·GPU 없음이면 "CYCLES"
-print(paths)
+paths = review_views.render_review_views(                      # 그다음 4방향 검토 렌더(출력 폴더는 함수가 만듦)
+    bpy.path.abspath(f"//review/v{n:02d}"),
+    engine="BLENDER_WORKBENCH")                                # GUI 연결 시. 헤드리스·GPU 없음이면 "CYCLES"
+print(snap, paths)
 ```
 
-> `BLENDER_MCP_SAFE_MODE=1`(ahujasid 서버)은 파일 I/O를 막아 import·스냅샷 저장·렌더 저장이 실패할 수 있습니다. 신뢰하는 로컬 작업에서만 끄거나, 스크립트 내용을 붙여 넣는 방식을 쓰세요([스크립트 사용법](../03_playbooks/scripts/README.md)). safe mode는 샌드박스가 아닙니다.
+> **`BLENDER_MCP_SAFE_MODE=1`(ahujasid 서버)과 이 코드**: safe mode는 `open()`·`os` 같은 직접 파일 I/O, 프로세스, 네트워크를 막지만 `save_as_mainfile`·렌더처럼 **bpy를 통한 저장·렌더는 허용**합니다(검증에서 정정된 내용). 그래서 위 코드는 `os`를 쓰지 않습니다. 다만 `sys.path`에 경로를 추가한 뒤 외부 모듈을 import하는 방식이 safe mode에서 통과하는지는 확인하지 못했습니다(미확인). 막히면 스크립트 파일 내용을 그대로 붙여 넣으세요([스크립트 사용법](../03_playbooks/scripts/README.md)). safe mode는 샌드박스가 아닙니다.
 
 ### ⑧ 계획·코드 diff·렌더 이력 로그
 

@@ -641,7 +641,7 @@ auto mode와 함께 쓰면 무인 실행이 됩니다. 이때도 G1~G3 사람 �
 
 ## 9. Codex·Gemini CLI 대응 기능
 
-같은 규칙을 AGENTS.md로 공유하면 세 하니스에서 같은 운영 방식을 쓸 수 있습니다. Agent Skills 포맷(SKILL.md)과 [AGENTS.md](https://github.com/agentsmd/agents.md)가 사실상 공용 표준이 되었습니다.
+같은 규칙을 AGENTS.md로 공유하면 세 하네스에서 같은 운영 방식을 쓸 수 있습니다. Agent Skills 포맷(SKILL.md)과 [AGENTS.md](https://github.com/agentsmd/agents.md)가 사실상 공용 표준이 되었습니다.
 
 | 기능 | Claude Code | Codex (GPT-6 Astra 등) | Gemini CLI |
 |---|---|---|---|
@@ -862,7 +862,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 | **처음부터 만들기보다 검색·재사용** | Holodeck(Objaverse), SceneSmith(HSSD/Objaverse/PartNet-Mobility, SAM3D·Hunyuan3D-2 생성), [SAGE](https://github.com/NVlabs/sage)(TRELLIS·재질 생성·레이아웃 솔버를 별도 서버로) | 유기체·조각은 생성하거나 라이브러리에서 가져오고, 코드는 배치·재질·조명을 맡음 |
 | **파라메트릭 부품 코드** | [3D-GPT](https://github.com/Chuny1/3DGPT)(절차적 생성 함수의 파라미터만 추론), [Scene Language](https://github.com/zzyunzhi/scene-language)(loop·transform 프리미티브), [MeshCoder](https://github.com/InternRobotics/MeshCoder)(파트별 Blender 코드, 100만 쌍 학습), [Procedura](https://arxiv.org/abs/2608.26238)(2026-08: 파트별 파라메트릭 프로그램 + typed mate로 떠 있거나 파고드는 파트를 측정해 거부) | `def make_chair(seat_h=0.45, seat_w=0.5, leg_th=0.035, back_h=0.4)`처럼 함수부터 쓰고, 파트 이름을 붙이고, 파트마다 bbox를 print해 접촉·부유를 스스로 검사 |
 | **API 문서를 검색해 붙인다** | LL3M의 BlenderRAG, 3DCodeBench의 Blender 5.0 API 함정 목록 | 7절 |
-| **실행 오류는 traceback으로 3회 재시도** | [3DCodeBench](https://github.com/gaoypeng/3dcodebench)(2026-06, Blender 5.0, 212 카테고리, Claude Code/Codex/Gemini CLI 하니스, trial 82,042개와 에이전트 transcript 2,767개 공개): 멀티턴 설정 T=3 | 6.2절 |
+| **실행 오류는 traceback으로 3회 재시도** | [3DCodeBench](https://github.com/gaoypeng/3dcodebench)(2026-06, Blender 5.0, 212 카테고리, Claude Code/Codex/Gemini CLI 하네스, trial 82,042개와 에이전트 transcript 2,767개 공개): 멀티턴 설정 T=3 | 6.2절 |
 | **비평은 큰 구조 문제만** | 3DCodeBench 비평 프롬프트: '사소한 미감에 대한 과도한 반복을 피하라' | 4.5절 종료 조건 |
 | **작업 메모리를 파일로** | VIGA: 계획·코드 diff·렌더 이력 메모리로 파인튜닝 없이 자기교정 | PROGRESS.md(8.6절) |
 | **후보 탐색과 되돌리기** | [BlenderAlchemy](https://github.com/ianhuang0630/BlenderAlchemyOfficial)(ECCV 2024): 후보 편집 여러 개 → VLM이 렌더 비교로 선택 → 나아지지 않으면 이전 가설로 복귀 | 편집 전 저장, 나빠지면 직전 버전으로(6.5절) |

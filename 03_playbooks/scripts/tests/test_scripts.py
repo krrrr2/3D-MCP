@@ -89,13 +89,58 @@ def test_audit_detects_problems():
     assert not u["DiningTable"]["issues"] or all(not i.startswith(("floating", "size")) for i in u["DiningTable"]["issues"]), u["DiningTable"]
     assert "floating_or_wall_mounted" not in u["Chair_ok"]["issues"], u["Chair_ok"]
     assert "floating_or_wall_mounted" in u["Chair_floating"]["issues"], u["Chair_floating"]
-    assert any(i.startswith("size_out_of_range:sofa.y") for i in u["Sofa_bad"]["issues"]), u["Sofa_bad"]
+    assert any(i.startswith("size_out_of_range:sofa.d") for i in u["Sofa_bad"]["issues"]), u["Sofa_bad"]
     assert any(i.startswith("unapplied_scale") for i in u["Scaled_thing"]["issues"]), u["Scaled_thing"]
     pairs = {(p["a"], p["b"]) for p in rep["interpenetrations"]}
     assert ("DiningTable", "Box_intersect") in pairs or ("Box_intersect", "DiningTable") in pairs, rep["interpenetrations"]
     # 의자를 테이블 아래로 넣어도(바운딩박스는 겹치지만 면은 교차 안 함) 관통으로 잡으면 안 된다
     assert not any("Chair_ok" in (p["a"], p["b"]) for p in rep["interpenetrations"]), rep["interpenetrations"]
     print("test_audit_detects_problems OK")
+
+
+def test_names_rotation_structures():
+    # 이름 매칭: 단어 단위 + 부속품 제외 + CamelCase
+    R = sa.DEFAULT_SIZE_RULES
+    assert sa._size_rule_for("SM_DiningTable.001", R)[0] == "dining_table"
+    assert sa._size_rule_for("Armchair_A", R)[0] == "armchair"
+    assert sa._size_rule_for("bar_stool_02", R)[0] == "bar_stool"
+    assert sa._size_rule_for("counter_stool", R)[0] == "counter_stool"
+    assert sa._size_rule_for("Sofa_3seat", R)[0] == "sofa"
+    for name in ("door_handle", "table_lamp", "desk_lamp", "indoor_plant", "turntable", "bedside_lamp", "chair_cushion"):
+        assert sa._size_rule_for(name, R)[0] is None, name
+    # 구조물 판정: 마지막 핵심 단어 기준
+    S = ("floor", "ground", "wall", "ceiling", "terrain")
+    for name in ("Floor", "Wall_N", "floor_plane", "Ceiling_01", "north_wall"):
+        assert sa._is_structure(name, S), name
+    for name in ("wall_shelf", "WallLamp", "floor_lamp", "ground_cover_plant"):
+        assert not sa._is_structure(name, S), name
+
+    reset()
+    box("Floor", (10, 10, 0.02), (0, 0, -0.01))
+    box("Ceiling", (10, 10, 0.02), (0, 0, 2.31))                      # 천장 하면 2.30
+    s = box("Sofa_rotated", (2.2, 0.9, 0.85), (0, 2.0, 0.425))
+    s.rotation_euler.z = math.radians(90)                             # 90° 회전해도 폭·깊이 오탐 없어야 함
+    a = box("Armchair_A", (0.85, 0.85, 0.9), (2.0, 0.0, 0.45))        # chair 규칙에 걸리면 안 됨
+    s2 = box("Sofa_diag", (2.2, 0.9, 0.85), (-2.5, -2.5, 0.425))
+    s2.rotation_euler.z = math.radians(30)                            # 임의 각도에서도 w/d 유지
+    box("Wardrobe_tall", (1.0, 0.6, 2.36), (4.0, 4.0, 1.18))           # 2.36 m: 천장 2.30 을 뚫음
+    box("Wall_E", (0.1, 10, 2.3), (5.0, 0, 1.15))
+    box("Cabinet_sunk", (0.5, 0.4, 0.8), (4.9, -3.0, 0.4))       # 벽 속으로 10 cm 박힘
+    bpy.context.view_layer.update()
+
+    rep = sa.audit_scene(floor_z=0.0, ceiling_z=2.30)
+    u = units_by_name(rep)
+    assert not any(i.startswith("size_out_of_range") for i in u["Sofa_rotated"]["issues"]), u["Sofa_rotated"]
+    assert not any(i.startswith("size_out_of_range") for i in u["Sofa_diag"]["issues"]), u["Sofa_diag"]
+    assert abs(u["Sofa_diag"]["size_wdh_m"][0] - 2.2) < 1e-3 and abs(u["Sofa_diag"]["size_wdh_m"][1] - 0.9) < 1e-3
+    assert u["Armchair_A"]["size_rule"] == "armchair" and not u["Armchair_A"]["issues"][1:], u["Armchair_A"]
+    assert any(i.startswith("above_ceiling") for i in u["Wardrobe_tall"]["issues"]), u["Wardrobe_tall"]
+    assert "floating_or_wall_mounted" not in u["Sofa_rotated"]["issues"]
+    pairs = {frozenset((p["a"], p["b"])) for p in rep["interpenetrations"]}
+    assert frozenset(("Cabinet_sunk", "Wall_E")) in pairs, rep["interpenetrations"]
+    assert frozenset(("Floor", "Wall_E")) not in pairs          # 구조물끼리는 검사 안 함
+    assert not any("Sofa_rotated" in p for p in pairs), pairs    # 바닥에 딱 붙은 것은 관통 아님
+    print("test_names_rotation_structures OK")
 
 
 def test_placement_fixes():
@@ -152,6 +197,10 @@ def test_review_renders():
     with tempfile.TemporaryDirectory(prefix="review_") as out:
         paths = rv.render_review_views(out, engine="CYCLES", samples=2, res=128)
         assert len(paths) == 4 and all(os.path.getsize(p) > 0 for p in paths), paths
+        # .blend 기준 상대 경로 "//review/" 도 저장 폴더 아래로 풀려야 한다
+        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(out, "t.blend"))
+        paths = rv.render_review_views("//review/", engine="CYCLES", samples=1, res=64)
+        assert all(p.startswith(os.path.join(out, "review")) and os.path.getsize(p) > 0 for p in paths), paths
     # 임시 카메라/조명/월드/재질이 남지 않아야 한다
     assert not any(o.name.startswith("_REVIEW_") for o in bpy.data.objects)
     assert not any(m.name.startswith("_REVIEW_") for m in bpy.data.materials)
@@ -161,6 +210,7 @@ def test_review_renders():
 
 if __name__ == "__main__":
     test_audit_detects_problems()
+    test_names_rotation_structures()
     test_placement_fixes()
     test_review_renders()
     print("ALL TESTS PASSED on Blender", bpy.app.version_string)

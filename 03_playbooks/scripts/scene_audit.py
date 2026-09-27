@@ -8,17 +8,20 @@ scene_audit.py - AI가 만든 Blender 장면의 형태/배치 오류를 자동 �
   - 서로 관통(interpenetration): 바운딩박스가 겹치고 실제 면끼리 교차
   - 스케일 미적용 / 음수 스케일
   - Non-manifold 엣지, 재질 없음, UV 없음
-  - 이름 키워드(chair, table, sofa ...) 기준 치수 범위 벗어남
+  - 이름 키워드(chair, table, sofa ...) 기준 치수 범위 벗어남 (가구 자체 방향 기준 폭 w·깊이 d·높이 z 로 비교)
+  - (선택) 천장 위로 뚫고 나감(above_ceiling), 벽·천장 등 구조물과의 관통
 
 사용법
   1) blender-mcp 의 execute_blender_code 에 파일 전체를 붙여 넣으면 결과 JSON 이 출력됩니다.
   2) 헤드리스: blender -b scene.blend --python scene_audit.py -- --floor-z 0 --out report.json
   3) 모듈: from scene_audit import audit_scene; report = audit_scene(floor_z=0.0)
 
-Blender 4.2 LTS 이상 / 5.0 에서 동작하도록 작성했습니다 (bpy 5.0.1 로 테스트).
+Blender 4.2 LTS 이상 / 5.x 에서 동작하도록 작성했습니다 (bpy 4.2.23 LTS, 5.0.1 로 테스트).
 """
 
 import json
+import math
+import re
 import sys
 
 import bmesh
@@ -26,22 +29,41 @@ import bpy
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
-# 이름에 키워드가 들어간 유닛의 전체 치수 허용 범위 (미터, [min, max]).
-# 근거: 03_playbooks/05_reference_dimensions.md. 여유 있게 잡은 "명백한 오류" 탐지용 범위입니다.
+# 이름에 키워드가 들어간 유닛의 치수 허용 범위 (미터, [min, max]).
+#   w = 수평 긴 변, d = 수평 짧은 변 (가구 자체 방향 기준이라 90° 돌려도 같은 값), z = 높이
+# 근거: 03_playbooks/05_reference_dimensions.md (한국·미국·유럽 값을 모두 포함하도록 넓게 잡은 "명백한 오류" 탐지용 범위)
 DEFAULT_SIZE_RULES = {
     "dining_table": {"z": [0.68, 0.80]},
     "coffee_table": {"z": [0.30, 0.55]},
+    "console_table": {"z": [0.70, 0.95]},
+    "bar_table": {"z": [0.95, 1.12]},
+    "bedside_table": {"z": [0.40, 0.80]},
+    "nightstand": {"z": [0.40, 0.80]},
     "desk": {"z": [0.68, 0.80]},
     "table": {"z": [0.35, 0.80]},
+    "bar_stool": {"z": [0.68, 1.30]},
+    "counter_stool": {"z": [0.50, 1.20]},
     "stool": {"z": [0.40, 0.85]},
-    "chair": {"z": [0.70, 1.20], "x": [0.35, 0.80], "y": [0.35, 0.80]},
-    "sofa": {"z": [0.60, 1.10], "y": [0.70, 1.20], "x": [1.20, 3.50]},
-    "bed": {"z": [0.30, 1.40], "x": [0.85, 2.30], "y": [1.85, 2.40]},
-    "door": {"z": [1.95, 2.50], "x": [0.60, 1.20]},
+    "armchair": {"z": [0.60, 1.10], "w": [0.60, 1.10], "d": [0.60, 1.10]},
+    "chair": {"z": [0.70, 1.20], "w": [0.35, 0.80], "d": [0.35, 0.80]},
+    "sofa": {"z": [0.60, 1.10], "w": [1.20, 3.50], "d": [0.70, 1.20]},
+    "bed": {"z": [0.30, 1.40], "w": [1.85, 2.45], "d": [0.80, 2.30]},
+    "wardrobe": {"z": [1.60, 2.45], "d": [0.33, 0.70]},
+    "bookshelf": {"z": [0.70, 2.40], "d": [0.20, 0.45]},
+    "bookcase": {"z": [0.70, 2.40], "d": [0.20, 0.45]},
+    "double_door": {"z": [1.95, 2.50]},
+    "door": {"z": [1.80, 2.50], "w": [0.60, 1.20]},
+    "bar_counter": {"z": [0.98, 1.10]},
     "counter": {"z": [0.84, 0.96]},
-    "bookshelf": {"z": [0.70, 2.40], "y": [0.20, 0.45]},
 }
 
+# 키워드 바로 뒤에 이 단어가 오면 "그 가구의 부속품/다른 물건"으로 보고 규칙을 적용하지 않는다.
+# 예: door_handle, table_lamp, chair_cushion, desk_lamp
+ACCESSORY_TOKENS = {
+    "handle", "knob", "lamp", "light", "plant", "cushion", "pillow", "cover", "rug", "mat",
+    "leg", "legs", "top", "seat", "back", "backrest", "arm", "frame", "panel", "part", "decor",
+    "cloth", "runner", "vase", "clock", "sign", "stopper", "hinge", "lock",
+}
 
 def _mesh_objects_under(root):
     objs = [root] + list(root.children_recursive)
@@ -86,13 +108,52 @@ def _mesh_stats(obj):
     return non_manifold, ngons, tris
 
 
+def _name_tokens(name):
+    """'SM_DiningTable.001' -> ['sm', 'dining', 'table', '001'] (CamelCase·구분자·숫자 분리)."""
+    name = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", name)
+    return [t for t in re.split(r"[^a-z0-9]+", name.lower()) if t]
+
+
 def _size_rule_for(name, rules):
-    lname = name.lower().replace(" ", "_").replace("-", "_")
-    # 긴 키워드 우선 (dining_table 이 table 보다 먼저 매칭되도록)
-    for key in sorted(rules, key=len, reverse=True):
-        if key in lname:
-            return key, rules[key]
+    """이름 토큰에 규칙 키워드가 '단어 단위로 연속해서' 들어 있으면 그 규칙을 돌려준다.
+
+    - 긴 키워드 우선 (dining_table 이 table 보다 먼저)
+    - indoor_plant 의 'door', turntable 의 'table' 처럼 단어 일부만 같은 경우는 매칭하지 않음
+    - door_handle, table_lamp 처럼 키워드 뒤에 부속품 단어가 오면 매칭하지 않음
+    """
+    tokens = _name_tokens(name)
+    for key in sorted(rules, key=lambda k: (len(k.split("_")), len(k)), reverse=True):
+        kt = key.split("_")
+        n = len(kt)
+        for i in range(len(tokens) - n + 1):
+            if tokens[i:i + n] == kt:
+                nxt = tokens[i + n] if i + n < len(tokens) else None
+                if nxt in ACCESSORY_TOKENS:
+                    continue
+                return key, rules[key]
     return None, None
+
+
+_TRAILING_NOISE = re.compile(r"^(\d+|[a-z]|north|south|east|west|left|right|front|back|main|plane|slab|mesh|geo)$")
+
+
+def _is_structure(name, structure_names):
+    """이름의 '마지막 핵심 단어'가 구조물 단어인지. Wall_N, Floor_01, floor_plane -> 구조물 / wall_shelf, wall_lamp -> 가구."""
+    tokens = _name_tokens(name)
+    while len(tokens) > 1 and _TRAILING_NOISE.match(tokens[-1]):
+        tokens.pop()
+    return bool(tokens) and tokens[-1] in structure_names
+
+
+def _oriented_size(root, verts):
+    """유닛 루트의 Z 회전(yaw)을 되돌린 좌표계에서 잰 (w, d, h). w >= d."""
+    yaw = root.matrix_world.to_euler("XYZ").z
+    c, s = math.cos(-yaw), math.sin(-yaw)
+    xs = [v.x * c - v.y * s for v in verts]
+    ys = [v.x * s + v.y * c for v in verts]
+    zs = [v.z for v in verts]
+    dx, dy = max(xs) - min(xs), max(ys) - min(ys)
+    return max(dx, dy), min(dx, dy), max(zs) - min(zs)
 
 
 def _is_supported(unit, others, floor_z, tol):
@@ -121,12 +182,16 @@ def _is_supported(unit, others, floor_z, tol):
     return False, None
 
 
-def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor", "ground", "wall", "ceiling")):
+def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
+                structure_names=("floor", "ground", "wall", "ceiling", "terrain")):
     """장면을 점검해서 dict 리포트를 반환한다.
 
     floor_z: 바닥 높이(m). None 이면 바닥 판정은 레이캐스트 결과만 사용.
+    ceiling_z: 천장 높이(m). 주면 이보다 위로 나간 유닛을 above_ceiling 으로 표시 (예: 한국 구축 아파트 2.3).
     tol: 접촉/관통 판정 허용 오차(m). 기본 5mm.
-    ignore_names: 이 단어가 이름에 들어간 유닛은 떠있음/관통 검사에서 제외(바닥, 벽 등 구조물).
+    structure_names: 이 단어가 이름에 들어간 유닛은 구조물(바닥·벽·천장)로 본다.
+        구조물은 떠있음·치수 검사에서 빠지고 받침면으로만 쓰이며, 구조물끼리의 관통은 검사하지 않는다.
+        가구가 벽·천장을 뚫고 들어간 경우(가구–구조물 관통)는 검사한다.
     """
     size_rules = DEFAULT_SIZE_RULES if size_rules is None else size_rules
     depsgraph = bpy.context.evaluated_depsgraph_get()
@@ -153,7 +218,7 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
         })
 
     report = {"units": [], "interpenetrations": [], "summary": {}}
-    ignored = lambda name: any(k in name.lower() for k in ignore_names)
+    ignored = lambda name: _is_structure(name, structure_names)
 
     # 2) 유닛별 검사
     for u in units:
@@ -175,6 +240,8 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
                 issues.append(f"no_uv:{m.name}")
 
         if not ignored(root.name):
+            if ceiling_z is not None and bmax.z > ceiling_z + tol:
+                issues.append(f"above_ceiling:{round(bmax.z - ceiling_z, 4)}m")
             if floor_z is not None and bmin.z < floor_z - tol:
                 issues.append(f"below_floor:{round(floor_z - bmin.z, 4)}m")
             supported, support = _is_supported(u, [o for o in units if o is not u], floor_z, tol)
@@ -183,10 +250,12 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
         else:
             support = None
 
-        key, rule = _size_rule_for(root.name, size_rules)
+        w, d, h = _oriented_size(root, u["verts"])
+        key, rule = _size_rule_for(root.name, size_rules) if not ignored(root.name) else (None, None)
         if rule:
+            measured = {"w": w, "d": d, "z": h}
             for axis, (lo, hi) in rule.items():
-                val = getattr(dims, axis)
+                val = measured[axis]
                 if not (lo <= val <= hi):
                     issues.append(f"size_out_of_range:{key}.{axis}={round(val, 3)}m (expected {lo}-{hi})")
 
@@ -194,6 +263,8 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
             "name": root.name,
             "parts": [m.name for m in u["meshes"]],
             "dimensions_m": [round(dims.x, 4), round(dims.y, 4), round(dims.z, 4)],
+            "size_wdh_m": [round(w, 4), round(d, 4), round(h, 4)],
+            "size_rule": key,
             "bbox_min": [round(c, 4) for c in bmin],
             "bbox_max": [round(c, 4) for c in bmax],
             "supported_by": support,
@@ -204,8 +275,8 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
     for i in range(len(units)):
         for j in range(i + 1, len(units)):
             a, b = units[i], units[j]
-            if ignored(a["root"].name) or ignored(b["root"].name):
-                continue
+            if ignored(a["root"].name) and ignored(b["root"].name):
+                continue  # 구조물끼리(벽–바닥 등)는 검사하지 않음
             depth = _bbox_overlap_depth(a["bbox"], b["bbox"])
             if depth <= tol:
                 continue
@@ -223,6 +294,7 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
         "units_with_issues": n_issue_units,
         "interpenetrating_pairs": len(report["interpenetrations"]),
         "floor_z": floor_z,
+        "ceiling_z": ceiling_z,
         "tolerance_m": tol,
     }
     return report
@@ -230,15 +302,17 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ignore_names=("floor",
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    floor_z, out, tol = None, None, 0.005
+    floor_z, ceiling_z, out, tol = None, None, None, 0.005
     for k, v in zip(argv[::2], argv[1::2]):
         if k == "--floor-z":
             floor_z = float(v)
+        elif k == "--ceiling-z":
+            ceiling_z = float(v)
         elif k == "--out":
             out = v
         elif k == "--tol":
             tol = float(v)
-    report = audit_scene(floor_z=floor_z, tol=tol)
+    report = audit_scene(floor_z=floor_z, ceiling_z=ceiling_z, tol=tol)
     text = json.dumps(report, ensure_ascii=False, indent=2)
     if out:
         with open(out, "w", encoding="utf-8") as f:
