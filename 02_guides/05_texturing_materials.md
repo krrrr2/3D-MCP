@@ -1233,7 +1233,7 @@ RTX 4090(24GB)은 TRELLIS.2와 Hunyuan Paint의 경계선입니다. VRAM이 부�
 - [학술 연구](11_research_papers.md)
 - 플레이북: [빠른 시작](../03_playbooks/01_quickstart_setup.md) · [AAA 제작 플레이북](../03_playbooks/02_aaa_production_playbook.md) · [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) · [품질 체크리스트](../03_playbooks/04_quality_checklists.md) · [실측 치수표](../03_playbooks/05_reference_dimensions.md)
 - 템플릿: [CLAUDE.md](../03_playbooks/templates/CLAUDE.md) · [스킬 blender-aaa-scene](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)
-- 스크립트: [scene_audit.py · placement_utils.py · review_views.py](../03_playbooks/scripts/README.md)(Blender 4.2.23 LTS·5.0.1 테스트 통과)
+- 스크립트: [scene_audit.py · placement_utils.py · review_views.py](../03_playbooks/scripts/README.md)(Blender 4.2.23 LTS·5.0.1·5.2.2 LTS 테스트 통과)
 - 사례: [사례 모음](../04_case_studies/01_case_studies.md) · [한국어 자료](../04_case_studies/02_korean_resources.md)
 
 ## 원자료

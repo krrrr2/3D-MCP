@@ -4,7 +4,7 @@
 
 - 조사 규모: 13개 주제 조사 + 주제별 독립 교차검증 + 7개 공백 보완 조사 → 항목 약 550개, 사례 약 180건, 실측 치수 136행, 고유 출처 URL 약 1,500개
 - 문서의 모든 외부 링크는 원자료에 실제로 있는 URL인지 스크립트로 확인했습니다([`check_docs.py`](01_research/tools/check_docs.py)).
-- 함께 들어 있는 [보조 스크립트](03_playbooks/scripts/README.md)(형태·배치 검사, 건축 상식 검사, 배치 함수, 검토 렌더)는 Blender 4.2.23 LTS와 5.0.1에서 테스트를 통과했습니다.
+- 함께 들어 있는 [보조 스크립트](03_playbooks/scripts/README.md)(형태·배치 검사, 건축 상식 검사, 배치 함수, 검토 렌더)는 Blender 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트를 통과했습니다.
 
 ---
 
@@ -12,7 +12,7 @@
 
 1. **'아스트라' = OpenAI GPT-6 Astra**(2026-09-03), **'페이블' = Claude Fable 5.1**(2026-09-01), **Opus 5.5**(2026-09-22)입니다. 셋 중 절대 1위는 없습니다. 모델 비교는 대부분 개인 테스트(n=1)이고 결과가 엇갈립니다. 공간·치수·CAD·사진 재구성은 Astra, 긴 장면 빌드·룩뎁·정밀 배치는 Opus 5.5, 가장 어려운 계획은 Fable 5.1 식으로 **작업별로 고르세요.** effort는 꼭 직접 지정합니다(Codex의 Astra 기본값은 low). → [AI 모델 가이드](02_guides/01_ai_models_and_clients.md)
 2. **독립적으로 'AAA급'이라고 검증된 AI+MCP 결과물은 아직 없습니다.** 공개 점수가 붙은 최고 사례도 재질·시각 충실도 6/10 수준입니다. 좋은 결과는 **[검증된 에셋·생성 모델] + [AI의 조립·배치·세팅] + [숫자·렌더 검증 루프] + [사람의 마무리]** 조합에서 나왔습니다. → [사례 모음](04_case_studies/01_case_studies.md)
-3. **Blender MCP는 두 종류입니다.** Claude 공식 커넥터는 Blender Lab(Blender 개발진)이 만든 서버(Blender 5.1+, GPL)이고, 커뮤니티 표준은 ahujasid의 MCP for Blender(약 29.4k stars, 36개 tool, 에셋·AI 생성 연동)입니다. 둘 다 포트 9876을 써서 **동시에 켜면 안 됩니다.** → [Blender MCP 가이드](02_guides/02_blender_mcp.md)
+3. **Blender MCP는 두 종류입니다.** Claude 공식 커넥터는 Blender Lab(Blender 개발진)이 만든 서버(Blender 5.1+, GPL)이고, 커뮤니티 표준은 ahujasid의 MCP for Blender(약 29.4k stars, 36개 tool, 에셋·AI 생성 연동)입니다. 둘 다 포트 9876을 써서 **동시에 켜면 안 됩니다.** 공식 서버는 실제로 띄워서 확인했습니다. 도구는 26개이고 분석·점검용입니다. v1.0.0 계열은 MCP SDK 2.x와 맞지 않으니 **v1.0.2 이상**을 쓰세요. HTTP 모드는 인증 없이 CORS를 전부 허용합니다. → [Blender MCP 가이드](02_guides/02_blender_mcp.md) 4절, [구동 검증 기록](01_research/handson/blender_lab_mcp/README.md)
 4. **LLM이 좌표를 직접 찍으면 배치가 망가집니다.** 한 비교에서 충돌률이 LLM 직접 좌표(LayoutGPT) 40.8%, 제약+솔버(Holodeck) 12.7%, 렌더→평가→수정 루프(SceneReVis) 4.5%였습니다. LLM은 "벽에 붙여, 소파를 바라보게" 같은 **관계 제약**만 쓰고, 좌표는 솔버·스크립트가 풀고, 충돌·부유 검사 후 위에서 본 렌더로 비평하는 구조가 정답으로 수렴했습니다. → [배치 가이드](02_guides/08_scene_layout_placement.md)
 5. **가구·오브젝트는 '스펙 먼저'**: 부품별 치수 JSON → 부품 단위 코드 → 숫자 검사 → 렌더 검사 순서입니다. 치수는 추측하지 말고 [실측 치수표](03_playbooks/05_reference_dimensions.md)의 mm 값을 넘기세요(한국 천장고 2300/2400~2500, 싱크대 850, 매트리스 Q 1500×2000 등). → [모델링 가이드](02_guides/07_modeling_objects_furniture_sculpture.md)
 6. **유기체·조형·캐릭터는 AI가 코드로 직접 빚기 어렵습니다.** Rodin·Tripo·Meshy·TRELLIS.2 같은 **이미지→3D 생성기**로 형태를 만들고, 에이전트는 정리·리토폴·UV·배치를 맡깁니다. 입력 이미지 품질(단일 물체, 단색 배경, 3/4 뷰)이 결과의 절반입니다. → [AI 3D 생성 가이드](02_guides/04_ai_3d_generation.md)
@@ -54,10 +54,11 @@
   verification_log.md    교차검증 결과: 확인/부분/반박/미확인 (자동 생성)
   research_method.md     조사 방법·한계·신뢰도 정책
   tools/                 카탈로그 생성·문서 링크 검사 스크립트
+  handson/               직접 실행해 확인한 기록 (공식 Blender Lab MCP 구동 검증: 응답 원본·재현 도구)
 02_guides/             주제별 가이드 12편 (분석·정리)
 03_playbooks/          실전 적용: 빠른 시작, 제작 플레이북, 프롬프트, 체크리스트, 치수표
   templates/             에이전트 규칙(CLAUDE.md/AGENTS.md), Claude Code 스킬
-  scripts/               Blender 검사·배치 스크립트 4종 + 테스트 (4.2 LTS·5.0 통과)
+  scripts/               Blender 검사·배치 스크립트 4종 + 테스트 (4.2 LTS·5.0·5.2 LTS 통과)
 04_case_studies/       사례 모음, 한국어 자료
 05_handoff/            진행 상태·결정 기록·다음 작업
 ```

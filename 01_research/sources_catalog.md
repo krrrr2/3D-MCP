@@ -25,8 +25,9 @@
 - [[보완] AAA 실무·공식 변경사항](#g5_aaa_practice) — 출처 39개
 - [[보완] 벤치마크·모델 비교](#g6_benchmarks_models) — 출처 40개
 - [[보완] 컴퓨터 유즈 vs MCP vs 스크립트](#g7_computer_use) — 출처 11개
+- [[보완] 공식 Blender Lab MCP 소스 정독·실제 구동](#g8_blender_lab_mcp) — 출처 23개
 
-항목·사례에 인용된 URL까지 합친 고유 URL 수: **1495개**
+항목·사례에 인용된 URL까지 합친 고유 URL 수: **1517개**
 
 <a id="01_ai-models"></a>
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
@@ -1143,4 +1144,35 @@
 | 9 | MindStudio: Claude + Blender MCP what it can't do | blog (검색 요약) |  |  | <https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance> |
 | 10 | AI타임스: 코덱스 윈도우 컴퓨터 유즈 | news ko |  |  | <https://www.aitimes.com/news/articleView.html?idxno=211135> |
 | 11 | GPT 6 x 블렌더 3D = 이제는 바이브 모델링 시대 (YouTube) | video ko (제목만) |  |  | <https://www.youtube.com/watch?v=_S4SaiNBlRk> |
+
+<a id="g8_blender_lab_mcp"></a>
+## [보완] 공식 Blender Lab MCP 소스 정독·실제 구동
+
+주제 원문: [보완] 공식 Blender Lab MCP 서버 소스 정독과 실제 구동 검증 (2026-09-27, 메인 에이전트 직접 수행)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | bpype/blender_mcp 미러 커밋 98b0e49 (2026-05-05) | source mirror (git clone 후 전수… | 2026-05-05 | 공식 서버·애드온·테스트 전체 소스 | <https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59> |
+| 2 | mcp/README.md (설치·예시) | official readme (미러) | 2026-05 | 설치 원문, 예시 과제 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/README.md> |
+| 3 | readme.md (구조·도구 목록) | official readme (미러) | 2026-05 | 구조도, 24개 도구 목록 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme.md> |
+| 4 | mcp/pyproject.toml | source | 2026-04-27 | 의존성 mcp[cli]>=1.2.0 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/pyproject.toml> |
+| 5 | mcp/manifest.json (MCPB) | source | 2026-04-27 | MCPB 0.4, uv 실행 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/manifest.json> |
+| 6 | mcp/blmcp/__init__.py (전송·HTTP 설정) | source | 2026-04 | HTTP 기본값, CORS, DNS 리바인딩 설정 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/__init__.py> |
+| 7 | tools_helpers/connection.py | source | 2026-04 | 300초 타임아웃, 환경변수 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/connection.py> |
+| 8 | tools_helpers/blender_cli.py | source | 2026-04 | 120초, BLENDER_PATH, 번호 사본 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/blender_cli.py> |
+| 9 | render_thumbnail_to_path_toolcode.py | source | 2026-04 | 출력 경로 강제, 썸네일 설정 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools/render_thumbnail_to_path_toolcode.py> |
+| 10 | data/prompts.yml (서버 instructions) | source | 2026-04 | 모델에 주입되는 규칙 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/data/prompts.yml> |
+| 11 | addon/blender_mcp_addon/__init__.py | source | 2026-04 | 온라인 접근 검사, 환경설정, CLI 명령 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/__init__.py> |
+| 12 | addon blender_manifest.toml | source | 2026-04-27 | id mcp, 5.1.0+, network 권한 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/blender_manifest.toml> |
+| 13 | addon mcp_to_blender_server.py | source | 2026-04 | 타이머·10 MiB·10초·예외 처리 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/mcp_to_blender_server.py> |
+| 14 | addon weak_sandbox.py | source | 2026-04 | 막는 것 목록과 한계 명시 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/weak_sandbox.py> |
+| 15 | addon cli.py | source | 2026-04 | --command blender_mcp | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/cli.py> |
+| 16 | readme_local_llm.rst | official doc (미러) | 2026-04 | llama.cpp, HTTP 9191 예시 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme_local_llm.rst> |
+| 17 | Makefile (환경변수·테스트 목록) | source | 2026-04 | BLENDER_MCP_HOST/PORT 등 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/Makefile> |
+| 18 | tests/integration/test_blender_mcp_with_llm.py | source | 2026-04 | 의도된 사용 사례 | <https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/tests/integration/test_blender_mcp_with_llm.py> |
+| 19 | Releases - blender_mcp (v1.0.2 2026-09-08 'Make sure the system uses the MCP SDK <2', v1.… | official release page (WebSea… | 2026-09 | 최신 버전과 SDK 고정 수정 | <https://projects.blender.org/lab/blender_mcp/releases> |
+| 20 | Blender Lab 확장 저장소 | official extensions repositor… | 2026 | 애드온 설치 원문 | <https://lab.blender.org/> |
+| 21 | PyPI mcp (릴리스 날짜: 2.0.0 = 2026-07-28, 2.2.0·1.30.0 = 2026-09-07) | package registry (JSON API 직접… | 2026-09-07 | 비호환이 시작된 시점 | <https://pypi.org/project/mcp/> |
+| 22 | MCP Python SDK v2 migration guide | official docs (오류 메시지에 인용된 UR… | 2026 | FastMCP→MCPServer 개명 | <https://py.sdk.modelcontextprotocol.io/v2/migration/> |
+| 23 | PyPI blender-mcp 2.0.0 (ahujasid 래퍼) | package registry (JSON API 직접… | 2026-09-16 | 이름 충돌 | <https://pypi.org/project/blender-mcp/> |
 

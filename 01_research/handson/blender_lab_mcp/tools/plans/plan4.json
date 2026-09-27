@@ -1,0 +1,30 @@
+[
+ [
+  "building_audit",
+  "execute_blender_code",
+  {
+   "code": "import sys, time\nsys.path.insert(0, '/home/user/3D-MCP/03_playbooks/scripts')\nimport building_audit as ba\nt=time.time()\nrep = ba.audit_building()\nfrom collections import Counter\ndoors=[o for o in rep['openings'] if o['kind']=='door']\nresult = {'sec': round(time.time()-t,1), 'summary': rep['summary'], 'codes': dict(Counter(i['code'] for i in rep['issues'])), 'n_doors': len(doors), 'swing_sample': [(o['name'], ((o.get('swing') or {}).get('recommended') or {}).get('opens_into'), (o.get('swing') or {}).get('why')) for o in doors][:4]}"
+  }
+ ],
+ [
+  "cam",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nc=bpy.data.objects.new('mcp_cam', bpy.data.cameras.new('mcp_cam'))\nbpy.context.scene.collection.objects.link(c)\nc.location=(5,-8,11); c.rotation_euler=(0.75,0,0.45)\nsc=bpy.context.scene\nsc.camera=c\nsc.render.engine='CYCLES'\nsc.cycles.device='CPU'\nsc.cycles.samples=8\nresult={}"
+  }
+ ],
+ [
+  "thumb",
+  "render_thumbnail_to_path",
+  {
+   "output_path": "/anything/ignored/thumb.png"
+  }
+ ],
+ [
+  "copy",
+  "execute_blender_code",
+  {
+   "code": "import bpy, os, shutil\nsrc=os.path.join(bpy.app.tempdir,'blender_mcp','thumb.png')\nshutil.copy(src, '${SCRATCH}/offmcp/out/thumb.png')\nresult={'copied': os.path.getsize('${SCRATCH}/offmcp/out/thumb.png')}"
+  }
+ ]
+]

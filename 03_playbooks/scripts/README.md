@@ -14,7 +14,7 @@ AI가 만든 장면에서 가장 자주 나오는 **형태·배치 오류**(떠 
 | `tests/test_scripts.py`, `tests/test_building_audit.py`, `tests/test_building_realworld.py` | 자동 테스트 (마지막 것은 실제 AI 장면에서 오탐이 났던 구조·문 여는 방향 등 15가지) |
 | `validation/` | 실제 AI 건물 검증 기록·원자료(JSON)·재현 도구 |
 
-**검증**: Blender **4.2.23 LTS**와 **5.0.1**(pip `bpy` 모듈, 헤드리스)에서 모든 테스트 통과. 5.x에서 폐기 예정인 `use_nodes` 경고가 나지 않게 했고, 한국어 UI에서 노드 이름이 번역되어도 동작하도록 노드를 이름이 아니라 타입으로 찾습니다.
+**검증**: Blender **4.2.23 LTS**, **5.0.1**, **5.2.2 LTS**(pip `bpy` 모듈, 헤드리스)에서 모든 테스트 통과. 5.x에서 폐기 예정인 `use_nodes` 경고가 나지 않게 했고, 한국어 UI에서 노드 이름이 번역되어도 동작하도록 노드를 이름이 아니라 타입으로 찾습니다.
 
 ## 규약 (스크립트가 가정하는 것)
 
@@ -46,6 +46,16 @@ print(report["interpenetrations"])
 ```
 
 **(b) 파일 내용을 그대로 붙여 넣기**: `scene_audit.py` 전체를 붙여 넣으면 끝에서 자동으로 점검을 실행하고 JSON을 출력합니다.
+
+> **공식 Blender Lab 서버**에서는 (a) 방식이 그대로 동작합니다. 2026-09-27에 실제로 띄워서 `building_audit.audit_building()`을 실행해 봤고, 오브젝트 1,019개 장면에서 0.8초 걸렸습니다([검증 기록](../../01_research/handson/blender_lab_mcp/README.md)). 이 서버는 print 대신 **`result` 변수에 dict를 넣어야** 값을 돌려받습니다(print 출력은 `stdout` 필드로 따로 옴). 예외가 나도 MCP 오류가 아니라 `status: "error"` 응답으로 오니 그것도 확인하세요.
+>
+> ```python
+> import sys
+> sys.path.insert(0, "/절대경로/3D-MCP/03_playbooks/scripts")
+> import building_audit as ba
+> rep = ba.audit_building()
+> result = {"summary": rep["summary"], "issues": rep["issues"][:30]}
+> ```
 
 > ahujasid MCP for Blender의 `BLENDER_MCP_SAFE_MODE=1`은 `open()`·`os` 같은 **직접** 파일 I/O, 프로세스 실행, 네트워크를 막습니다. bpy를 통한 저장·렌더·import/export는 허용됩니다(교차검증 결과, `02_guides/02_blender_mcp.md` 보안 절 참고). 다만 `sys.path`를 바꿔 이 저장소 모듈을 import하는 방식이 허용되는지는 **미확인**이고, `review_views.py`는 `os.makedirs`를 쓰므로 safe mode 사전 검사에 걸릴 수 있습니다. 막히면 (b) 붙여 넣기 방식이나 헤드리스(사용법 2)를 쓰세요.
 

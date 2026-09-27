@@ -1,0 +1,371 @@
+{
+ "topic": "[보완] 공식 Blender Lab MCP 서버 소스 정독과 실제 구동 검증 (2026-09-27, 메인 에이전트 직접 수행)",
+ "method_note": "blender.org·projects.blender.org 는 네트워크 정책으로 차단되어 GitHub 미러(bpype/blender_mcp, 커밋 98b0e49 = 2026-05-05, v1.0.0 계열)를 git clone 해 서버·애드온·테스트 소스를 전부 읽고, pip bpy 5.2.2 LTS 안에서 공식 애드온의 백그라운드 서버를 띄운 뒤 공식 MCP 서버에 MCP 클라이언트로 붙어 26개 도구 중 24개를 실제 호출했다(스크린샷·UI 이동 도구는 백그라운드 모드라 '사용 불가' 응답까지만 확인). v1.0.2·v1.0.3 정보는 WebSearch 결과 요약뿐이고 릴리스 페이지 원문은 열지 못했다. 실행 기록·원본 응답은 01_research/handson/blender_lab_mcp/ 에 있다.",
+ "summary_ko": [
+  "도구는 26개다(README 목록 24개 + search_api_docs·search_manual_docs). 문서 검색 도구는 2026-04-16 커밋으로 v1.0.0 이전부터 있었다.",
+  "v1.0.0(미러 소스)은 의존성이 'mcp[cli]>=1.2.0' 뿐이라 2026-07-28 MCP 파이썬 SDK 2.0 출시 이후 새로 설치하면 import 단계에서 죽는다(실측). 검색 요약상 v1.0.2(2026-09-08)가 'MCP SDK <2' 고정으로 고쳤다.",
+  "애드온은 Blender 의 Allow Online Access(--online-mode)가 꺼져 있으면 시작을 거부한다(실측).",
+  "execute_blender_code 의 보호 장치는 스스로 '진짜 샌드박스가 아님'이라고 밝힌 약한 차단뿐이다. sys.exit·wm.quit_blender·read_factory_settings 등은 막지만 raise SystemExit 한 줄로 백그라운드 Blender 가 종료되고, 파일·OS 접근도 막지 않는다(실측).",
+  "HTTP 모드(--transport http, 기본 127.0.0.1:8000, 경로 /)는 CORS 전체 허용·DNS 리바인딩 보호 꺼짐·인증 없음이라, 외부 Origin/Host 헤더를 붙인 요청으로도 코드가 실행됐다(curl 로 확인).",
+  "렌더 도구는 output_path 의 디렉터리를 무시하고 bpy.app.tempdir/blender_mcp/<파일명> 에 저장하며, Blender 가 끝나면 그 폴더와 함께 지워진다. render_viewport_to_path 는 OpenGL 뷰포트 캡처가 아니라 현재 렌더 설정으로 하는 F12 렌더다.",
+  "GPU·EGL 없는 리눅스에서 EEVEE 로 렌더 도구를 부르면 Blender 프로세스가 통째로 죽는다(Cycles CPU 는 정상).",
+  "오류는 MCP isError 가 아니라 정상 응답 안의 status:'error' 로 돌아오는 경우가 대부분이라, 에이전트 규칙에 'status 를 확인하라'를 넣어야 한다.",
+  "이 저장소 building_audit.py 를 execute_blender_code 로 sys.path 에 넣어 import 해 실행하면 그대로 동작한다(house-3d Fable 현대식 0.8초)."
+ ],
+ "items": [
+  {
+   "name": "도구 26개와 안전 표시(annotations)",
+   "category": "tool_list",
+   "what_it_is": "readOnlyHint: get_blendfile_summary_* 5종과 _for_cli 5종, get_objects_summary, get_object_detail_summary, get_python_api_docs, search_api_docs, search_manual_docs, get_screenshot_* 3종, render_viewport_to_path. destructiveHint: execute_blender_code, execute_blender_code_for_cli, jump_to_* 4종, render_thumbnail_to_path. prompts·resources 는 0개. 서버 instructions 약 5,900자 + 도구 스키마 약 14,700자.",
+   "how_to_use": "클라이언트의 자동 승인은 readOnly 도구에만 주고, destructive 도구는 확인을 받게 한다.",
+   "strengths": "읽기/파괴 구분이 도구 단위로 명시됨",
+   "weaknesses": "render_thumbnail_to_path 는 destructive, render_viewport_to_path 는 readOnly 로 표시가 엇갈림",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme.md",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/__init__.py",
+    "https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59"
+   ]
+  },
+  {
+   "name": "MCP 파이썬 SDK 2.x 비호환(v1.0.0 계열)",
+   "category": "compatibility",
+   "what_it_is": "서버가 from mcp.server.fastmcp import FastMCP 를 쓰는데 mcp 2.x 에서 FastMCP 가 MCPServer 로 바뀌어 import 가 실패한다. pyproject 는 mcp[cli]>=1.2.0 만 요구하고 잠금 파일이 없어, 2.0.0(2026-07-28) 이후 새로 설치하면 최신 2.x 가 깔린다. MCPB 번들도 uv run blender-mcp 로 같은 의존성 해석을 한다.",
+   "how_to_use": "v1.0.2 이상 사용. 옛 태그를 써야 하면 uvx --with 'mcp[cli]<2' 또는 pip install 'mcp[cli]<2'. 증상: 클라이언트에는 'Connection closed' 만 보임.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/pyproject.toml",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/manifest.json",
+    "https://pypi.org/project/mcp/",
+    "https://py.sdk.modelcontextprotocol.io/v2/migration/",
+    "https://projects.blender.org/lab/blender_mcp/releases"
+   ]
+  },
+  {
+   "name": "Allow Online Access 필수",
+   "category": "install",
+   "what_it_is": "애드온의 서버 시작·자동 시작·CLI 명령 모두 bpy.app.online_access 를 확인하고, 꺼져 있으면 'Online access must be enabled in the system preferences' 로 거부한다. 백그라운드에서는 --online-mode 를 쓰라고 안내한다. 소스 주석은 localhost 를 온라인으로 볼지 '회색 지대'라고 적었다.",
+   "how_to_use": "Preferences > System > Network > Allow Online Access 를 켠다. 명령줄은 blender --online-mode.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/__init__.py"
+   ]
+  },
+  {
+   "name": "설치(공식 README 원문)",
+   "category": "install",
+   "what_it_is": "서버: pip install git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp. 애드온: Blender Lab 확장 저장소 https://lab.blender.org/ 를 Preferences > Get Extensions > Repositories 에 추가하고 MCP 애드온을 찾아 설치·활성화. 확장 id 'mcp', blender_version_min 5.1.0, network 권한.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/README.md",
+    "https://lab.blender.org/",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/blender_manifest.toml"
+   ]
+  },
+  {
+   "name": "백그라운드 모드 --command blender_mcp",
+   "category": "architecture",
+   "what_it_is": "애드온이 register_cli_command('blender_mcp') 를 등록한다. blender --background --online-mode file.blend --command blender_mcp [--host] [--port] 로 GUI 없이 서버를 띄울 수 있다. 이때는 요청을 하나씩 끝까지 처리하고(지연 응답 check_is_finished 불가), 스크린샷·UI 이동 도구는 'Not available in background mode' 를 돌려준다.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/cli.py",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/__init__.py"
+   ]
+  },
+  {
+   "name": "타임아웃·크기 제한",
+   "category": "limits",
+   "what_it_is": "MCP 서버→애드온 소켓 대기 300초(connection.py _TIMEOUT), _for_cli 서브프로세스 120초(blender_cli.py _CLI_TIMEOUT), 애드온이 클라이언트 요청을 읽을 때 10초(_CLIENT_TIMEOUT, 실행 시간 제한 아님), 요청 최대 10 MiB(초과 시 'Request exceeds 10485760 byte limit'). 응답 크기 제한은 없음(12 MB 문자열 반환 확인). 호스트·포트는 BLENDER_MCP_HOST/BLENDER_MCP_PORT(기본 localhost:9876).",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/connection.py",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/blender_cli.py",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/mcp_to_blender_server.py",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/Makefile"
+   ]
+  },
+  {
+   "name": "약한 샌드박스(weak_sandbox.py)",
+   "category": "security",
+   "what_it_is": "sys.exit 와 bpy.ops.wm.quit_blender / read_factory_settings / read_factory_userpref / read_userpref 만 막는다. 소스 설명: 'this isn't really a sandbox', 의지가 있으면 우회 가능한 'slap on the wrist'. 실행기는 Exception 만 잡아서 raise SystemExit 은 그대로 Blender 를 종료시킨다(백그라운드 실측). os·파일·네트워크 제한 없음.",
+   "how_to_use": "작업 전 저장, 버전별 사본, 파괴적 코드는 클라이언트 훅·권한 규칙으로 막는다.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/weak_sandbox.py",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/mcp_to_blender_server.py"
+   ]
+  },
+  {
+   "name": "HTTP 전송 모드",
+   "category": "security",
+   "what_it_is": "--transport http (streamable-http, stateless, 경로 /, 기본 --host 127.0.0.1 --port 8000). llama.cpp 웹 UI 같은 브라우저 클라이언트를 위해 CORS allow_origins=* 를 붙이고 DNS 리바인딩 보호를 끈다. 인증 없음. 외부 Origin 헤더로 initialize 없이 tools/call execute_blender_code 가 실행됐고, 임의 Host 헤더도 통과했다. 로컬 LLM 문서의 --port 9191 은 예시다.",
+   "how_to_use": "필요할 때만 켜고 끝나면 끈다. --host 0.0.0.0 금지. 평소에는 stdio(기본) 사용. 8000 은 blender-open-mcp·Unreal 5.8 공식 MCP 기본 포트와 겹친다.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/__init__.py",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme_local_llm.rst"
+   ]
+  },
+  {
+   "name": "렌더 도구 출력 경로",
+   "category": "gotcha",
+   "what_it_is": "render_thumbnail_to_path·render_viewport_to_path 는 os.path.join(bpy.app.tempdir, 'blender_mcp', basename(output_path)) 에 저장하고 그 경로를 돌려준다. tempdir 은 Blender 세션 임시 폴더라 종료 시 삭제된다. 썸네일은 긴 변 320px, Cycles 16샘플. EEVEE 샘플 조정 분기는 'BLENDER_EEVEE_NEXT' 만 검사해 5.x('BLENDER_EEVEE')에서는 적용되지 않는다.",
+   "how_to_use": "렌더 직후 execute_blender_code 로 원하는 위치에 복사하거나, 이미지 확인은 스크린샷 도구(GUI)나 헤드리스 렌더 스크립트를 쓴다.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools/render_thumbnail_to_path_toolcode.py"
+   ]
+  },
+  {
+   "name": "_for_cli 도구와 저장 안 된 변경",
+   "category": "architecture",
+   "what_it_is": "_for_cli 는 BLENDER_PATH(기본 'blender') 로 blender --background FILE --python-expr 코드를 실행한다. 실행 중인 Blender 가 같은 파일을 열고 있고 수정 중이면 FILE_mcp_0001.blend 같은 번호 사본을 저장해 그것을 분석하고 끝나면 지운다(실측).",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/blender_cli.py"
+   ]
+  },
+  {
+   "name": "번들 문서와 검색",
+   "category": "docs",
+   "what_it_is": "Blender 5.1 Python API RST 2,173개(15 MB)와 매뉴얼 RST 2,217개(13 MB)를 서버 패키지에 포함. search_* 는 공백으로 나눈 모든 토큰이 문단·경로·제목에 있어야 맞는 AND 검색(정규식 불가, 영어 불용어 제거, 영어 문서라 한국어 질의는 0건). 'bevel modifier segments' 는 0건, 'bevel segments' 는 bpy.ops.mesh.bevel 적중.",
+   "how_to_use": "짧은 영어 키워드 2~3개로 검색하고, 클래스 이름을 알면 get_python_api_docs('bpy.types.BevelModifier') 로 바로 연다.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/data/prompts.yml",
+    "https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59"
+   ]
+  },
+  {
+   "name": "이름 충돌(PyPI blender-mcp)",
+   "category": "gotcha",
+   "what_it_is": "공식 서버 pyproject 이름도 blender-mcp 지만 PyPI 의 blender-mcp(2.0.0)는 ahujasid 의 mcp-for-blender 로 넘겨 주는 래퍼다. pip install blender-mcp / uvx blender-mcp 로는 공식 서버를 받을 수 없다.",
+   "urls": [
+    "https://pypi.org/project/blender-mcp/",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/pyproject.toml"
+   ]
+  },
+  {
+   "name": "공식 예시 과제와 LLM 통합 테스트",
+   "category": "use_case",
+   "what_it_is": "README 예시: 데이터블록 이름 오타 수정(Pebble Scattering), 'pebbles' 재질을 쓰는 오브젝트 찾기, Classroom 장면에서 카메라 기준 폴리곤 이상치 찾기. LLM 통합 테스트: 이름 오타, 재질 사용처, 최고 폴리곤 오브젝트, 아마추어에 변형되지 않는 메시, 체크리스트 검증. → 생성보다 분석·점검용으로 설계.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/README.md",
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/tests/integration/test_blender_mcp_with_llm.py"
+   ]
+  },
+  {
+   "name": "로컬 LLM 경로",
+   "category": "local_llm",
+   "what_it_is": "chat_client.py 가 openai(llama-server, 기본 :8080) 와 claude(ANTHROPIC_API_KEY) 백엔드를 지원. llama.cpp 웹 UI 는 blender-mcp --transport http --port 9191 에 붙인다. 요구: llama.cpp 8218+, Blender 5.1.",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme_local_llm.rst"
+   ]
+  }
+ ],
+ "know_how": [
+  {
+   "tip": "공식 서버는 v1.0.2 이상을 쓰고, 옛 태그라면 mcp<2 를 함께 고정한다",
+   "why": "v1.0.0 계열은 mcp 2.x 에서 import 실패(실측), 클라이언트에는 'Connection closed' 만 보여 원인 찾기가 어렵다",
+   "urls": [
+    "https://projects.blender.org/lab/blender_mcp/releases",
+    "https://pypi.org/project/mcp/"
+   ]
+  },
+  {
+   "tip": "에이전트 규칙에 '도구 결과의 status 가 error 인지 확인' 을 넣는다",
+   "why": "코드 예외·렌더 실패·오브젝트 없음 등이 isError=false 인 정상 응답 안의 status:'error' 로 온다(실측)",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/mcp_to_blender_server.py"
+   ]
+  },
+  {
+   "tip": "렌더 도구 결과 파일은 바로 복사한다",
+   "why": "Blender 임시 폴더에 저장되고 종료 시 사라진다(실측)",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools/render_thumbnail_to_path_toolcode.py"
+   ]
+  },
+  {
+   "tip": "GPU 없는 서버·컨테이너에서는 렌더 엔진을 Cycles CPU 로 바꾼 뒤 렌더 도구를 부른다",
+   "why": "EEVEE 는 EGL 이 없으면 Blender 가 죽는다(실측)",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools/render_thumbnail_to_path_toolcode.py"
+   ]
+  },
+  {
+   "tip": "HTTP 모드는 필요할 때만, 127.0.0.1 에만, 쓰고 나면 끈다",
+   "why": "CORS * + DNS 리바인딩 보호 꺼짐 + 인증 없음 → 다른 Origin/Host 로도 코드 실행(curl 실측)",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/__init__.py"
+   ]
+  },
+  {
+   "tip": "검증 스크립트는 sys.path 에 저장소 경로를 넣고 import 해서 돌린다",
+   "why": "약한 샌드박스는 import·파일 접근을 막지 않아 그대로 동작한다(building_audit 0.8초 실측)",
+   "urls": [
+    "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/weak_sandbox.py"
+   ]
+  }
+ ],
+ "case_studies": [],
+ "sources": [
+  {
+   "title": "bpype/blender_mcp 미러 커밋 98b0e49 (2026-05-05)",
+   "url": "https://github.com/bpype/blender_mcp/commit/98b0e49d98321d321c7e631389200f513f765d59",
+   "source_type": "source mirror (git clone 후 전수 열람)",
+   "date": "2026-05-05",
+   "why_useful": "공식 서버·애드온·테스트 전체 소스"
+  },
+  {
+   "title": "mcp/README.md (설치·예시)",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/README.md",
+   "source_type": "official readme (미러)",
+   "date": "2026-05",
+   "why_useful": "설치 원문, 예시 과제"
+  },
+  {
+   "title": "readme.md (구조·도구 목록)",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme.md",
+   "source_type": "official readme (미러)",
+   "date": "2026-05",
+   "why_useful": "구조도, 24개 도구 목록"
+  },
+  {
+   "title": "mcp/pyproject.toml",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/pyproject.toml",
+   "source_type": "source",
+   "date": "2026-04-27",
+   "why_useful": "의존성 mcp[cli]>=1.2.0"
+  },
+  {
+   "title": "mcp/manifest.json (MCPB)",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/manifest.json",
+   "source_type": "source",
+   "date": "2026-04-27",
+   "why_useful": "MCPB 0.4, uv 실행"
+  },
+  {
+   "title": "mcp/blmcp/__init__.py (전송·HTTP 설정)",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/__init__.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "HTTP 기본값, CORS, DNS 리바인딩 설정"
+  },
+  {
+   "title": "tools_helpers/connection.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/connection.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "300초 타임아웃, 환경변수"
+  },
+  {
+   "title": "tools_helpers/blender_cli.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools_helpers/blender_cli.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "120초, BLENDER_PATH, 번호 사본"
+  },
+  {
+   "title": "render_thumbnail_to_path_toolcode.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/tools/render_thumbnail_to_path_toolcode.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "출력 경로 강제, 썸네일 설정"
+  },
+  {
+   "title": "data/prompts.yml (서버 instructions)",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/blmcp/data/prompts.yml",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "모델에 주입되는 규칙"
+  },
+  {
+   "title": "addon/blender_mcp_addon/__init__.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/__init__.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "온라인 접근 검사, 환경설정, CLI 명령"
+  },
+  {
+   "title": "addon blender_manifest.toml",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/blender_manifest.toml",
+   "source_type": "source",
+   "date": "2026-04-27",
+   "why_useful": "id mcp, 5.1.0+, network 권한"
+  },
+  {
+   "title": "addon mcp_to_blender_server.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/mcp_to_blender_server.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "타이머·10 MiB·10초·예외 처리"
+  },
+  {
+   "title": "addon weak_sandbox.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/weak_sandbox.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "막는 것 목록과 한계 명시"
+  },
+  {
+   "title": "addon cli.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/addon/blender_mcp_addon/cli.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "--command blender_mcp"
+  },
+  {
+   "title": "readme_local_llm.rst",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/readme_local_llm.rst",
+   "source_type": "official doc (미러)",
+   "date": "2026-04",
+   "why_useful": "llama.cpp, HTTP 9191 예시"
+  },
+  {
+   "title": "Makefile (환경변수·테스트 목록)",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/Makefile",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "BLENDER_MCP_HOST/PORT 등"
+  },
+  {
+   "title": "tests/integration/test_blender_mcp_with_llm.py",
+   "url": "https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/tests/integration/test_blender_mcp_with_llm.py",
+   "source_type": "source",
+   "date": "2026-04",
+   "why_useful": "의도된 사용 사례"
+  },
+  {
+   "title": "Releases - blender_mcp (v1.0.2 2026-09-08 'Make sure the system uses the MCP SDK <2', v1.0.3 2026-09-11 'Fix the long standing screenshot capture tool')",
+   "url": "https://projects.blender.org/lab/blender_mcp/releases",
+   "source_type": "official release page (WebSearch 요약만, 원문 차단)",
+   "date": "2026-09",
+   "why_useful": "최신 버전과 SDK 고정 수정"
+  },
+  {
+   "title": "Blender Lab 확장 저장소",
+   "url": "https://lab.blender.org/",
+   "source_type": "official extensions repository URL (README 표기)",
+   "date": "2026",
+   "why_useful": "애드온 설치 원문"
+  },
+  {
+   "title": "PyPI mcp (릴리스 날짜: 2.0.0 = 2026-07-28, 2.2.0·1.30.0 = 2026-09-07)",
+   "url": "https://pypi.org/project/mcp/",
+   "source_type": "package registry (JSON API 직접 조회)",
+   "date": "2026-09-07",
+   "why_useful": "비호환이 시작된 시점"
+  },
+  {
+   "title": "MCP Python SDK v2 migration guide",
+   "url": "https://py.sdk.modelcontextprotocol.io/v2/migration/",
+   "source_type": "official docs (오류 메시지에 인용된 URL)",
+   "date": "2026",
+   "why_useful": "FastMCP→MCPServer 개명"
+  },
+  {
+   "title": "PyPI blender-mcp 2.0.0 (ahujasid 래퍼)",
+   "url": "https://pypi.org/project/blender-mcp/",
+   "source_type": "package registry (JSON API 직접 조회)",
+   "date": "2026-09-16",
+   "why_useful": "이름 충돌"
+  }
+ ],
+ "gaps": [
+  "v1.0.1 의 변경 내용과 v1.0.3 스크린샷 수정의 구체 내용(릴리스 페이지 원문 미열람)",
+  "v1.0.2 이후 HTTP 모드의 CORS·DNS 리바인딩 설정이 바뀌었는지(미러가 v1.0.0 계열)",
+  "Claude Desktop 'Blender' 커넥터(v1.0.1 표기)가 mcp 2.x 문제의 영향을 받았는지, 현재 몇 버전을 배포하는지",
+  "GUI(인터랙티브) 모드의 지연 응답(check_is_finished)·스크린샷·UI 이동 도구 실제 동작(GUI 없는 환경이라 미검증)",
+  "Windows 설치 실패 이슈 https://projects.blender.org/lab/blender_mcp/issues/24 의 원인과 해결 여부"
+ ]
+}

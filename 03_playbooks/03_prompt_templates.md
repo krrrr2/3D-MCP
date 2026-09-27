@@ -70,7 +70,7 @@ ChatGPT·Codex 앱처럼 규칙 파일을 쓰지 않는 환경에서는 템플�
 | 오브젝트 상세 | `get_object_info`(`world_bounding_box` 포함) | `get_object_detail_summary` | — |
 | 스크린샷 | `get_viewport_screenshot`(MCP 툴 기본 `max_size` 1000) | `get_screenshot_of_area_as_image` | `review_views.py` |
 | 코드 실행 | `execute_blender_code` | `execute_blender_code`, `execute_blender_code_for_cli` | `blender -b … --python-exit-code 1 -P` |
-| API 조회 | `bpy_api_lookup`, `describe_node_type` | `get_python_api_docs`(`search_api_docs`·`search_manual_docs`는 이후 버전에 추가된 것으로 추정, 미확인) | fake-bpy-module 스텁 |
+| API 조회 | `bpy_api_lookup`, `describe_node_type` | `get_python_api_docs`, `search_api_docs`·`search_manual_docs`(번들 5.1 문서 AND 검색, 실측) | fake-bpy-module 스텁 |
 
 툴 이름 대응은 cc-blender-skill에 올라온 제3자 PR(병합 안 됨, [PR #1](https://github.com/RobLe3/cc-blender-skill/pull/1))과 공식 서버 미러([bpype/blender_mcp](https://github.com/bpype/blender_mcp))로 확인했습니다. 서버별 설치는 [빠른 시작](01_quickstart_setup.md)을 보세요.
 

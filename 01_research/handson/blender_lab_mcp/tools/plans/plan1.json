@@ -1,0 +1,112 @@
+[
+ [
+  "objs",
+  "get_objects_summary",
+  {}
+ ],
+ [
+  "datablocks",
+  "get_blendfile_summary_datablocks",
+  {}
+ ],
+ [
+  "missing",
+  "get_blendfile_summary_missing_files",
+  {}
+ ],
+ [
+  "libs",
+  "get_blendfile_summary_of_linked_libraries",
+  {}
+ ],
+ [
+  "paths",
+  "get_blendfile_summary_path_info",
+  {}
+ ],
+ [
+  "usage",
+  "get_blendfile_summary_usage_guess",
+  {}
+ ],
+ [
+  "exec_simple",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nresult = {'n': len(bpy.data.objects), 'ver': bpy.app.version_string, 'bg': bpy.app.background}"
+  }
+ ],
+ [
+  "exec_noresult",
+  "execute_blender_code",
+  {
+   "code": "x = 1"
+  }
+ ],
+ [
+  "exec_nondict",
+  "execute_blender_code",
+  {
+   "code": "result = [1,2]"
+  }
+ ],
+ [
+  "exec_raise",
+  "execute_blender_code",
+  {
+   "code": "raise ValueError('boom')"
+  }
+ ],
+ [
+  "exec_print",
+  "execute_blender_code",
+  {
+   "code": "print('hello from blender')\nresult={'ok':1}"
+  }
+ ],
+ [
+  "exec_obj",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nresult={'o': bpy.data.objects[0]}"
+  }
+ ],
+ [
+  "api_docs",
+  "get_python_api_docs",
+  {
+   "identifier": "bpy.types.BevelModifier"
+  }
+ ],
+ [
+  "api_docs_bad",
+  "get_python_api_docs",
+  {
+   "identifier": "bpy.types.NoSuchThing"
+  }
+ ],
+ [
+  "search_api",
+  "search_api_docs",
+  {
+   "query": "bevel modifier segments",
+   "max_results": 3
+  }
+ ],
+ [
+  "search_manual",
+  "search_manual_docs",
+  {
+   "query": "principled bsdf subsurface",
+   "max_results": 3
+  }
+ ],
+ [
+  "search_manual_ko",
+  "search_manual_docs",
+  {
+   "query": "모디파이어",
+   "max_results": 3
+  }
+ ]
+]

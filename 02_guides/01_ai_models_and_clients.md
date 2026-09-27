@@ -374,7 +374,7 @@ Claude 4.7 이후 모델(Sonnet 5, Opus 5.5, Fable 5.1)은 **고해상도 이미
   - [Codex-and-Blender](https://github.com/danielsobrado/Codex-and-Blender) (MIT, Codex 0.153.0+): YAML/JSON 구성 → 결정론적 bpy → Blender CLI 클린 빌드. MCP는 '비정본 점검 레이어'이고, `acceptance.yaml`로 합격 기준을 고정하며, 보호 파일이 바뀌면 롤백합니다.
   - [claude-3d-harness](https://github.com/MAX-786/claude-3d-harness) (MIT): Claude Code 스킬 58개(라이브러리 5개), 프로필 3개(fast/standard/cinematic), 워크플로 6개. 두 번 수정해도 남는 결함은 세 번째로 추측하지 않고 refinement 스킬로 넘깁니다(일부 요약에 나오는 '최대 4회 수정'은 README에 없음).
   - [3DHarnessBench](https://github.com/llada60/3DHarnessBench): 멀티뷰·능동 시점·완전 3D 상호작용 설정용 SKILL.md, MCP 어댑터, 뷰포트 전용 서비스를 그대로 가져다 쓸 수 있습니다.
-- 이 저장소의 테스트 완료 스크립트([scripts/README.md](../03_playbooks/scripts/README.md), Blender 4.2.23 LTS·5.0.1에서 테스트 통과)를 빌드 스크립트에 넣어, 어떤 모델이 만들었든 같은 기준으로 검사하세요.
+- 이 저장소의 테스트 완료 스크립트([scripts/README.md](../03_playbooks/scripts/README.md), Blender 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트 통과)를 빌드 스크립트에 넣어, 어떤 모델이 만들었든 같은 기준으로 검사하세요.
   - `scene_audit.py`: 떠 있음, 관통, 스케일 미적용, 치수 범위 이탈을 JSON으로 보고
   - `placement_utils.py`: 바닥에 붙이기, 표면 위에 올리기, 벽에 붙이기, 간격 검사
   - `review_views.py`: 위·정면·측면·3/4 검토 렌더

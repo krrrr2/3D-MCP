@@ -210,7 +210,7 @@ npx gltfpack@1.3.0 -i SM_Chair.glb -o web/SM_Chair.glb -cc -tc -kn -ke
 |---|---|---|
 | glTF 스펙 | [glTF-Validator](https://github.com/KhronosGroup/glTF-Validator)(Apache-2.0). npm 최신 2.0.0-dev.3.10(2024-10-22)로 릴리스가 느림 | 오류 0. JSON 구조, 참조, 접근자 NaN·min/max, 2의 거듭제곱 경고, KHR/EXT 확장 검사 |
 | 에셋 규칙 | [glTF Asset Auditor](https://github.com/KhronosGroup/glTF-Asset-Auditor)(Apache-2.0, 별 27개) | JSON 프로파일. 기본값: 텍스처 512~2048, 2의 거듭제곱, PBR safe color 30~243, 삼각형 최대 100,000, 파일 최대 5,120KB, UV 0~1·뒤집힘·겹침·거터·텍셀 밀도. 끄려면 -1 또는 false. 고폴리 메시는 1분 넘게 걸릴 수 있고 엔진 고유 규칙(콜리전, 네이밍)은 검사하지 않음 |
-| 씬 감사 | [`scene_audit.py`](../03_playbooks/scripts/README.md)(이 저장소, Blender 4.2.23 LTS·5.0.1 테스트) | 떠 있음·바닥 관통·유닛 간 관통·스케일 미적용·non-manifold·재질/UV 없음·치수 범위 이탈 0 |
+| 씬 감사 | [`scene_audit.py`](../03_playbooks/scripts/README.md)(이 저장소, Blender 4.2.23 LTS·5.0.1·5.2.2 LTS 테스트) | 떠 있음·바닥 관통·유닛 간 관통·스케일 미적용·non-manifold·재질/UV 없음·치수 범위 이탈 0 |
 | 슬롯 확인 | [05 가이드 8.2절 `glb_material_report`](05_texturing_materials.md#82-내보낸-뒤-감사-만든-맵-vs-들어간-슬롯) | 베이크한 맵이 GLB 슬롯에 모두 들어갔는지 |
 | 눈 검사 | [`review_views.py`](../03_playbooks/scripts/README.md) 4방향 렌더 → AI 비평 | 실루엣·비율·재질 |
 | 엔진 | UE/Unity/Godot 임포트 테스트 | 스케일·축·재질 연결 |

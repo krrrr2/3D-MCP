@@ -204,7 +204,7 @@ print("shading=MATERIAL")
 
 | 상황 | 뷰 구성 | 출처 |
 |---|---|---|
-| 단일 오브젝트 기본 | 위(오쏘) / 정면 / 측면 / 3/4 원근. 오브젝트마다 다른 색으로 칠해 겹침과 간격이 잘 보임 | [`review_views.py`](../03_playbooks/scripts/README.md) (Blender 4.2.23 LTS·5.0.1 테스트 통과) |
+| 단일 오브젝트 기본 | 위(오쏘) / 정면 / 측면 / 3/4 원근. 오브젝트마다 다른 색으로 칠해 겹침과 간격이 잘 보임 | [`review_views.py`](../03_playbooks/scripts/README.md) (Blender 4.2.23 LTS·5.0.1·5.2.2 LTS 테스트 통과) |
 | 파라메트릭 디자인 | 방위각/고도 = -45°/55°(레퍼런스), 0°/12°(측면), 225°/35°(앞-왼쪽), 5°/85°(탑다운) | [jithinolickal viewport_helpers.py](https://raw.githubusercontent.com/jithinolickal/blender/main/skills/blender/scripts/viewport_helpers.py) |
 | 출하 전 QA | 3/4 히어로, 오쏘/프로파일, 와이어, 뷰티, 레퍼런스 비교(5개 뷰) | [arjun988 qa-review](https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/qa-review/SKILL.md) |
 | 인테리어·배치 | 탑다운 오쏘 1장 + 눈높이(1.6m) 1장 + 로우앵글(0.6m) 1장 | [arjun988 set-dressing](https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/set-dressing/SKILL.md) |

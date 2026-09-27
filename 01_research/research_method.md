@@ -32,10 +32,13 @@
 | 12 | 에셋·파이프라인·라이선스 | `raw/12_assets-pipeline-licensing.*.json` |
 | 13 | 학술 연구 | `raw/13_research-papers.*.json` |
 | G1~G6 | 보완 조사 | `raw/G*.gap.json`, `raw/G*.verify.json` |
+| G7 | 컴퓨터 유즈 vs MCP vs 스크립트 (메인 에이전트 직접 조사 + 독립 검증) | `raw/G7_computer_use.*.json` |
+| G8 | 공식 Blender Lab MCP: 소스 정독 + **실제 구동 검증**(bpy 5.2.2 LTS에 공식 애드온·서버를 띄워 도구 호출) | `raw/G8_blender_lab_mcp.gap.json`, 응답 원본·재현 도구는 `handson/blender_lab_mcp/` |
 
 - `*.research.json` / `*.gap.json` = 조사 에이전트 원본 출력 (가공하지 않음)
 - `*.verify.json` = 검증 에이전트 원본 출력
 - `sources_catalog.md`, `verification_log.md` = 원자료에서 스크립트로 생성한 정리본
+- `handson/` = 직접 실행해 확인한 기록. 검색·문서 조사가 아니라 실제 실행 결과이므로, 같은 내용이면 검색 요약보다 우선합니다
 
 ## 3. 신뢰도 정책
 

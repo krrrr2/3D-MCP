@@ -38,6 +38,7 @@ TOPIC_TITLES = {
     "G5_aaa_practice": "[보완] AAA 실무·공식 변경사항",
     "G6_benchmarks_models": "[보완] 벤치마크·모델 비교",
     "G7_computer_use": "[보완] 컴퓨터 유즈 vs MCP vs 스크립트",
+    "G8_blender_lab_mcp": "[보완] 공식 Blender Lab MCP 소스 정독·실제 구동",
 }
 
 VERDICT_KO = {"confirmed": "✅ 확인", "partially": "🟡 부분", "refuted": "❌ 반박", "unverifiable": "❔ 미확인"}

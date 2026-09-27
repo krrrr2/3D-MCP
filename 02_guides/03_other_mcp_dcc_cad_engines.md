@@ -724,7 +724,7 @@ Create a cliff heightmap with high detail and disorder
 - [에셋·파이프라인·라이선스](10_assets_pipeline_licensing.md): Hunyuan3D 지역 제외, 에셋 라이선스
 - [학술 연구](11_research_papers.md)
 - [빠른 시작](../03_playbooks/01_quickstart_setup.md) · [AAA 제작 플레이북](../03_playbooks/02_aaa_production_playbook.md) · [프롬프트 템플릿](../03_playbooks/03_prompt_templates.md) · [품질 체크리스트](../03_playbooks/04_quality_checklists.md) · [실측 치수표](../03_playbooks/05_reference_dimensions.md)
-- [보조 스크립트 사용법](../03_playbooks/scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`(Blender 4.2.23 LTS·5.0.1 테스트 통과)
+- [보조 스크립트 사용법](../03_playbooks/scripts/README.md): `scene_audit.py`, `placement_utils.py`, `review_views.py`(Blender 4.2.23 LTS·5.0.1·5.2.2 LTS 테스트 통과)
 - [CLAUDE.md 템플릿](../03_playbooks/templates/CLAUDE.md) · [Blender 스킬 템플릿](../03_playbooks/templates/skills/blender-aaa-scene/SKILL.md)
 - [사례 모음](../04_case_studies/01_case_studies.md) · [한국어 자료](../04_case_studies/02_korean_resources.md)
 

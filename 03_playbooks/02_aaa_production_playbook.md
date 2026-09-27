@@ -98,7 +98,7 @@
 | 엔진 마무리 | UE 5.8 공식 실험적 Unreal MCP(`http://127.0.0.1:8000/mcp`, AllToolsets 필요) + [Epic Claude Code 플러그인](https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin) | — | 4장 참고 |
 | API 문서 조회 | MCP의 `bpy_api_lookup`, `describe_node_type`, [fake-bpy-module](https://github.com/nutti/fake-bpy-module) | Context7, 공식 커넥터의 문서 기능 | 모델 학습 데이터에는 구버전 bpy 코드가 많습니다 |
 
-**Blender 버전:** 안정판은 5.2.2(2026-09-14)이고 4.5 LTS·4.2 LTS가 병행 유지됩니다([태그](https://github.com/blender/blender/tags)). 공식 커넥터 애드온은 5.1.0 이상이 필요하고, 이 저장소 스크립트는 4.2.23 LTS·5.0.1에서 테스트했습니다. PyPI `bpy` 5.1 이상은 Python 3.13 전용(5.0은 3.11)입니다. Blender main 브랜치는 5.3 alpha라서 5.2용 규칙의 근거는 v5.2.2 태그 소스로 확인하세요.
+**Blender 버전:** 안정판은 5.2.2(2026-09-14)이고 4.5 LTS·4.2 LTS가 병행 유지됩니다([태그](https://github.com/blender/blender/tags)). 공식 커넥터 애드온은 5.1.0 이상이 필요하고, 이 저장소 스크립트는 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트했습니다. PyPI `bpy` 5.1 이상은 Python 3.13 전용(5.0은 3.11)입니다. Blender main 브랜치는 5.3 alpha라서 5.2용 규칙의 근거는 v5.2.2 태그 소스로 확인하세요.
 
 설치·연결 절차와 보안 설정은 [빠른 시작](01_quickstart_setup.md), 서버별 차이는 [Blender MCP 가이드](../02_guides/02_blender_mcp.md), 엔진·기타 DCC는 [기타 MCP 가이드](../02_guides/03_other_mcp_dcc_cad_engines.md)를 보세요.
 
@@ -132,7 +132,7 @@ project/
 
 | 자산 | 어느 단계에서 | 쓰는 법 |
 |---|---|---|
-| [`scripts/scene_audit.py`](scripts/README.md) | 1, 5, 6, 9, 11 | 떠 있음·바닥 아래로 박힘·다른 물체 속으로 파고듦(`sunk_into`)·천장 위로 뚫림(`ceiling_z`)·유닛 간 관통·가구–벽/천장 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·치수 범위 이탈(가구 방향 기준 w/d/z)을 JSON으로 보고. `collection=`으로 검사 범위를 좁힘 (Blender 4.2.23 LTS·5.0.1 테스트 통과) |
+| [`scripts/scene_audit.py`](scripts/README.md) | 1, 5, 6, 9, 11 | 떠 있음·바닥 아래로 박힘·다른 물체 속으로 파고듦(`sunk_into`)·천장 위로 뚫림(`ceiling_z`)·유닛 간 관통·가구–벽/천장 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·치수 범위 이탈(가구 방향 기준 w/d/z)을 JSON으로 보고. `collection=`으로 검사 범위를 좁힘 (Blender 4.2.23 LTS·5.0.1·5.2.2 LTS 테스트 통과) |
 | [`scripts/building_audit.py`](scripts/README.md) | 1(실내 구조), 6 | 문·창·방·벽·계단의 건축 상식 검사와 백룸 위험도(`liminal_risk`). 문 막힘, 갈 수 없는 방, 창 없는 거실 등 |
 | [`scripts/placement_utils.py`](scripts/README.md) | 6, 9 | `snap_to_floor`, `drop_to_surface`, `place_next_to`, `place_against_wall`, `face_towards`, `check_clearances` |
 | [`scripts/review_views.py`](scripts/README.md) | 1, 2, 5, 6, 9 | 위 정사영·정면·측면·3/4 원근 4장, 오브젝트별 랜덤 색 |

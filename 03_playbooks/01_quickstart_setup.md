@@ -13,7 +13,7 @@
 - **[한국 사용자] 한국어 UI 주의**: UI를 현지화하면 새로 만든 노드 이름도 번역될 수 있어 `nodes['Principled BSDF']` 같은 코드가 깨집니다. 영어 UI를 쓰거나 New Data 번역을 끄세요. 이 저장소의 스크립트는 노드를 이름이 아니라 type으로 찾기 때문에 영향을 받지 않습니다.
 - **[한국 사용자] Hunyuan3D 로컬 가중치 금지**: Tencent Hunyuan3D 계열 오픈웨이트 라이선스는 적용 지역에서 대한민국을 제외합니다. B 경로에서 Hunyuan3D를 로컬 모드로 붙이지 마세요.
 - **Unreal 5.8**: `ModelContextProtocol`과 `AllToolsets` 플러그인을 켜고, 콘솔에서 `ModelContextProtocol.StartServer 8123`, `ModelContextProtocol.GenerateClientConfig ClaudeCode`를 실행합니다. Epic 공식 Claude Code 플러그인도 있습니다.
-- **연결되면 바로 검증 루프를 붙이세요.** [`03_playbooks/scripts/`](scripts/README.md)의 `scene_audit.py`(숫자 검사)와 `review_views.py`(4방향 검토 렌더)는 Blender 4.2.23 LTS와 5.0.1에서 테스트를 통과했습니다.
+- **연결되면 바로 검증 루프를 붙이세요.** [`03_playbooks/scripts/`](scripts/README.md)의 `scene_audit.py`(숫자 검사)와 `review_views.py`(4방향 검토 렌더)는 Blender 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트를 통과했습니다.
 
 ---
 
@@ -85,19 +85,19 @@ Blender 애드온 (N 패널에서 "서버 시작" → 명령을 메인 스레드
 
 - Claude Desktop(macOS 또는 Windows)과 Claude 계정. 커넥터 추가에 별도 요금은 없다고 조사됐지만, '모든 Claude 플랜에서 쓸 수 있다'는 설명은 발표문에 없어 확인하지 못했습니다(검색 요약 기준). Opus 5.5와 Fable 5.1은 유료 플랜에서만 쓸 수 있습니다.
 - Blender **5.1.0 이상**(권장: 5.2.2). 근거는 GitHub 미러에 있는 공식 애드온 manifest의 `blender_version_min = "5.1.0"`입니다. [커넥터 페이지](https://claude.com/connectors/blender)에는 버전 요구가 적혀 있지 않습니다.
-- 인터넷 연결. 공식 애드온은 Blender의 **Allow Online Access**가 켜져 있어야 시작된다는 보고가 있습니다([scenario-labs 이슈 #3](https://github.com/scenario-labs/blender-plugin/issues/3), 2차 출처).
+- 인터넷 연결과 Blender의 **Allow Online Access**. 꺼져 있으면 공식 애드온이 `Online access must be enabled in the system preferences`라며 서버를 열지 않습니다(2026-09-27 실제 구동으로 확인, [검증 기록](../01_research/handson/blender_lab_mcp/README.md)).
 
 ### 1.2 설치 단계
 
-1. **Blender 쪽 준비**: Blender 5.1 이상을 실행하고 Edit > Preferences에서 Allow Online Access를 켭니다.
-2. **Lab 애드온 설치**: [blender.org/lab/mcp-server](https://www.blender.org/lab/mcp-server/) 페이지의 설치 링크를 Blender 창으로 드래그합니다.
-   - 한국·일본 커뮤니티 후기에 따르면 **두 번** 드래그합니다. 1회차에 Blender Lab 확장 저장소가 추가되고, 2회차에 애드온이 설치됩니다. 공식 페이지는 조사 환경에서 차단돼 원문으로는 확인하지 못했습니다(미확인).
+1. **Blender 쪽 준비**: Blender 5.1 이상을 실행하고 Edit > Preferences > System에서 Allow Online Access를 켭니다.
+2. **Lab 애드온 설치**: 공식 README의 방법은 두 단계입니다. ① Preferences > Get Extensions > Repositories에 Blender Lab 확장 저장소 `https://lab.blender.org/`를 추가하고, ② 목록에서 MCP 애드온을 찾아 설치·활성화합니다([공식 mcp/README.md](https://github.com/bpype/blender_mcp/blob/98b0e49d98321d321c7e631389200f513f765d59/mcp/README.md)).
+   - [blender.org/lab/mcp-server](https://www.blender.org/lab/mcp-server/) 페이지의 설치 링크를 Blender 창에 **두 번** 드래그해도 됩니다(한국·일본 커뮤니티 후기). 1회차 드래그가 ①, 2회차가 ②에 해당합니다.
    - 드래그 설치와 수동 설치를 **둘 다 하지 마세요.** 같은 ID의 애드온이 두 개 생긴다는 경고가 있습니다([stefancrm 설치 키트](https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit)).
-3. **애드온 활성화와 서버 시작**: Edit > Preferences > Add-ons에서 Blender Lab MCP 애드온이 켜져 있는지 확인하고 서버를 시작합니다. 애드온 설정에는 host, port, polling, auto-start 항목이 있습니다([미러 README](https://github.com/bpype/blender_mcp)). 매번 켜기 번거로우면 Auto Start를 켜세요.
+3. **애드온 활성화와 서버 시작**: Edit > Preferences > Add-ons에서 Blender Lab MCP 애드온이 켜져 있는지 확인합니다. Auto Start가 기본으로 켜져 있어 Blender를 시작하면 1초 뒤 `localhost:9876`에서 서버가 열립니다. 애드온 설정에는 host, port, polling, auto-start 항목과 시작·중지 버튼이 있고, 서버가 안 열리면 오류 문구가 거기에 표시됩니다([미러 README](https://github.com/bpype/blender_mcp)).
 4. **ahujasid 애드온 끄기**: 예전에 커뮤니티 애드온(MCP for Blender)이나 Scenario for Blender를 설치했다면 비활성화합니다. 포트 9876을 먼저 잡고 있으면 커넥터가 엉뚱한 서버에 붙습니다.
 5. **Claude Desktop 쪽**: 설정(Customize) → Connectors에서 `blender`를 검색해 Blender 커넥터를 추가하고 활성화합니다. 'Anthropic & Partners' 섹션에 있다는 후기가 있지만 공식 원문은 미확인입니다.
 
-> .mcpb 번들을 지원하는 다른 클라이언트는 공식 릴리스 페이지의 MCPB 파일로 설치할 수 있습니다([projects.blender.org/lab/blender_mcp](https://projects.blender.org/lab/blender_mcp), 원문 미열람).
+> .mcpb 번들을 지원하는 다른 클라이언트는 공식 릴리스 페이지의 MCPB 파일로 설치할 수 있습니다([projects.blender.org/lab/blender_mcp](https://projects.blender.org/lab/blender_mcp), 원문 미열람). **v1.0.2 이상**을 고르세요. v1.0.0·v1.0.1은 2026-07-28 이후 새로 설치하면 MCP SDK 2.x와 맞지 않아 시작하자마자 끊길 수 있습니다([Blender MCP 가이드 4.1절](../02_guides/02_blender_mcp.md)).
 
 ### 1.3 연결 확인
 
@@ -123,22 +123,27 @@ polygon count but smaller size from the camera point of view.
 ```
 
 - 2번은 공식 페이지에 소개된 예시입니다([Blender MCP 가이드 4절](../02_guides/02_blender_mcp.md) 참고).
-- 공식 서버의 대표 도구는 `execute_blender_code`, `get_objects_summary`, `get_object_detail_summary`, `get_blendfile_summary_missing_files`(누락 텍스처), `get_python_api_docs`, 화면 캡처(`get_screenshot_of_area_as_image` 등), `render_viewport_to_path`입니다. `search_api_docs`와 `search_manual_docs`는 2026-05 미러에는 없고 이후 버전에 추가된 것으로 보입니다(미확인).
+- 공식 서버의 도구는 26개입니다(실측). 대표 도구는 `execute_blender_code`, `get_objects_summary`, `get_object_detail_summary`, `get_blendfile_summary_missing_files`(누락 텍스처), `get_python_api_docs`, `search_api_docs`·`search_manual_docs`(번들 문서 검색), 화면 캡처(`get_screenshot_of_area_as_image` 등), `render_viewport_to_path`입니다.
+- 이 서버는 코드 실행 결과를 `result` 변수(dict)로 돌려주고, 실패도 대부분 `status: "error"`가 든 정상 응답으로 돌려줍니다. 렌더 도구는 지정 경로가 아니라 Blender 임시 폴더에 저장합니다(가이드 4.1절).
 - Anthropic 발표문에 따르면 이 커넥터로 Claude가 **새 도구를 Blender 인터페이스에 직접 추가**할 수도 있습니다("add new tools directly to Blender's interface"). 반복 작업을 버튼이나 패널로 만들고 싶을 때 요청해 보세요.
 
 ### 1.5 (선택) 같은 공식 서버를 Claude Code·Codex에 붙이기
 
-공식 서버는 PyPI에 없고 **git 소스에서 실행**합니다. PyPI의 `blender-mcp`는 커뮤니티 서버입니다. 아래 설치 형식은 공식 서버를 git 태그로 고정해 쓰는 [franjorub 플러그인](https://github.com/franjorub/grok-build-blender-plugin)에서 확인했습니다(2차 출처).
+공식 서버는 PyPI에 없고 **git 소스에서 실행**합니다. PyPI의 `blender-mcp`는 커뮤니티 서버입니다. 공식 README의 설치 명령은 `pip install git+https://projects.blender.org/lab/blender_mcp.git#subdirectory=mcp`입니다. 아래 uvx 형식은 공식 서버를 git 태그로 고정해 쓰는 [franjorub 플러그인](https://github.com/franjorub/grok-build-blender-plugin)에서 가져왔습니다(2차 출처).
 
 ```bash
 # 공식 서버 실행 형식 (2차 출처: franjorub/grok-build-blender-plugin)
-uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.0#subdirectory=mcp' blender-mcp
+# v1.0.2 이상 태그를 쓰세요. v1.0.3 태그 이름은 릴리스 페이지 표기 기준(원문 미확인)
+uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.3#subdirectory=mcp' blender-mcp
+
+# v1.0.0·v1.0.1 태그라면 MCP SDK를 1.x로 고정해야 시작됩니다 (미러 소스로 동작 확인)
+uvx --with 'mcp[cli]<2' --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.0#subdirectory=mcp' blender-mcp
 
 # Claude Code에 등록 (조합 예시, 직접 실행 검증은 하지 않음)
-claude mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.0#subdirectory=mcp' blender-mcp
+claude mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.3#subdirectory=mcp' blender-mcp
 
 # Codex CLI에 등록 (조합 예시, 미검증)
-codex mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.0#subdirectory=mcp' blender-mcp
+codex mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.3#subdirectory=mcp' blender-mcp
 ```
 
 또는 저장소를 클론하고 `~/.claude.json`의 `mcpServers`에 넣습니다. `$HOME`은 확장되지 않으니 **절대경로**를 쓰세요([stefancrm 키트](https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit)).
@@ -155,8 +160,9 @@ codex mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/bl
 ```
 
 - **첫 실행은 느립니다.** git 소스를 빌드하고 PyPI 의존성 약 41개를 내려받기 때문에 클라이언트의 서버 시작 타임아웃을 넘을 수 있습니다. Claude Code라면 `MCP_TIMEOUT=120000 claude`처럼 시작 타임아웃(ms)을 늘려 실행하세요.
-- 태그 `v1.0.0`은 GitHub 미러에서 확인한 버전입니다. 검색 요약에는 v1.0.2(2026-09-08)와 v1.0.3(2026-09-11)이 나오지만 확인하지 못했습니다. 설치 전에 공식 저장소에서 최신 태그를 확인하세요.
-- 공식 서버는 stdio 외에 HTTP 모드도 지원합니다: `blender-mcp --transport http --port 9191`([readme_local_llm.rst](https://github.com/bpype/blender_mcp/blob/main/readme_local_llm.rst)). 로컬 LLM(llama.cpp) 연결은 이 문서를 참고하세요.
+- 버전: GitHub 미러는 v1.0.0 계열입니다. 검색 요약에 따르면 [릴리스 페이지](https://projects.blender.org/lab/blender_mcp/releases)의 v1.0.2(2026-09-08)가 "MCP SDK <2" 고정을, v1.0.3(2026-09-11)이 스크린샷 도구 수정을 담았습니다. v1.0.0 계열을 SDK 고정 없이 설치하면 `No module named 'mcp.server.fastmcp'`로 죽는 것을 직접 확인했습니다. 설치 전에 공식 저장소에서 최신 태그를 확인하세요.
+- 공식 서버는 stdio 외에 HTTP 모드도 지원합니다. `blender-mcp --transport http`의 기본값은 `127.0.0.1:8000`, 경로 `/`입니다. `--port 9191`은 [readme_local_llm.rst](https://github.com/bpype/blender_mcp/blob/main/readme_local_llm.rst)의 예시 값입니다. CORS 전체 허용에 인증이 없으니 필요할 때만 켜세요(가이드 4.4절). 로컬 LLM(llama.cpp) 연결은 이 문서를 참고하세요.
+- GUI 없이 쓰려면 `blender --background --online-mode 파일.blend --command blender_mcp`로 애드온 서버를 띄웁니다. 이 모드에서는 스크린샷·UI 이동 도구를 쓸 수 없습니다.
 - 공식 서버용 Claude Code 스킬은 [Blender MCP 가이드](../02_guides/02_blender_mcp.md)의 스킬 절(ra100/blender-claude-plugin)을 보세요.
 
 ### 1.6 권장 보안·저장 설정
@@ -184,7 +190,7 @@ codex mcp add blender-lab -- uvx --from 'git+https://projects.blender.org/lab/bl
 
 ### 2.1 준비물
 
-- Blender 3.0 이상(README 기준). 이 저장소의 보조 스크립트는 4.2.23 LTS와 5.0.1에서 테스트했습니다.
+- Blender 3.0 이상(README 기준). 이 저장소의 보조 스크립트는 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트했습니다.
 - Python 3.10 이상, uv(공식 설치 스크립트로 설치).
 - MCP 클라이언트 하나: Claude Code, Codex CLI/앱, Claude Desktop, Cursor 등.
 - 선택: Sketchfab·Poly Pizza·Hyper3D·Hunyuan3D API 키. **Tripo 생성은 유료 Premium 전용**이라 자기 키로는 쓸 수 없습니다([server.py](https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py)). Premium 가격은 확인하지 못했습니다([Premium 페이지](https://www.mcp-for-blender.com/premium)). Tripo가 필요하면 Tripo 공식 [tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp)(MIT, alpha)가 대안입니다.
