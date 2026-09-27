@@ -26,8 +26,12 @@
 - [[보완] 벤치마크·모델 비교](#g6_benchmarks_models) — 출처 40개
 - [[보완] 컴퓨터 유즈 vs MCP vs 스크립트](#g7_computer_use) — 출처 11개
 - [[보완] 공식 Blender Lab MCP 소스 정독·실제 구동](#g8_blender_lab_mcp) — 출처 23개
+- [[보완] 인체·캐릭터 조형 도구](#g9_human_character) — 출처 47개
+- [[보완] 유기물·자연·조형물 도구](#g10_organic_nature) — 출처 61개
+- [[보완] 건물·건축·평면·도시 배치 도구](#g11_architecture) — 출처 52개
+- [[보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)](#g12_tool_safety) — 출처 43개
 
-항목·사례에 인용된 URL까지 합친 고유 URL 수: **1517개**
+항목·사례에 인용된 URL까지 합친 고유 URL 수: **1955개**
 
 <a id="01_ai-models"></a>
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
@@ -1175,4 +1179,244 @@
 | 21 | PyPI mcp (릴리스 날짜: 2.0.0 = 2026-07-28, 2.2.0·1.30.0 = 2026-09-07) | package registry (JSON API 직접… | 2026-09-07 | 비호환이 시작된 시점 | <https://pypi.org/project/mcp/> |
 | 22 | MCP Python SDK v2 migration guide | official docs (오류 메시지에 인용된 UR… | 2026 | FastMCP→MCPServer 개명 | <https://py.sdk.modelcontextprotocol.io/v2/migration/> |
 | 23 | PyPI blender-mcp 2.0.0 (ahujasid 래퍼) | package registry (JSON API 직접… | 2026-09-16 | 이름 충돌 | <https://pypi.org/project/blender-mcp/> |
+
+<a id="g9_human_character"></a>
+## [보완] 인체·캐릭터 조형 도구
+
+주제 원문: [보완] 인체·캐릭터 조형 도구 (2026-09-27)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | makehumancommunity/mpfb2 (GitHub) | GitHub 저장소(1차) | 2026-09-26 커밋 | 별 수, Blender 4.2+ 요구, 활발한 5.2 대응 커밋 | <https://github.com/makehumancommunity/mpfb2> |
+| 2 | MPFB2 script_samples | 공식 코드 샘플(1차) | 2026 | HumanService, TargetService 등 에이전트용 bpy API 사용법 | <https://github.com/makehumancommunity/mpfb2/tree/master/script_samples> |
+| 3 | MPFB2 LICENSE.md | 라이선스(1차) | - | GPLv3 코드, CC0 에셋, 결과물 권리 불주장 확인 | <https://github.com/makehumancommunity/mpfb2/blob/master/LICENSE.md> |
+| 4 | MPFB 2.0.17 has been released | 공식 뉴스(검색 요약) | 2026-07-22 | 최신 릴리스 날짜와 배치 랜덤화 기능 | <https://static.makehumancommunity.org/news/2026-07-22-mpfb-2-0-17-has-been-released.html> |
+| 5 | naver/anny (GitHub) + CHANGELOG | GitHub 저장소(1차) | 2026-08-06 v0.6 | Apache/CC0 라이선스, SMPL-X 토폴로지 비상업 옵션, 사용 예 | <https://github.com/naver/anny> |
+| 6 | anny (PyPI) | PyPI(1차) | 2026-08-07 | PyPI와 저장소 연결, 관리자 확인 | <https://pypi.org/project/anny/> |
+| 7 | Anny: a free to use 3D human parametric model for all ages | 공식 블로그(검색 요약) | 2025-11 | WHO 보정, 전 연령 커버리지 설명 | <https://europe.naverlabs.com/blog/anny-a-free-to-use-3d-human-parametric-model-for-all-ages/> |
+| 8 | Upliner/CharMorph releases | GitHub 릴리스(1차) | 2025-03-27 | 최신 버전과 Blender 호환 이력 | <https://github.com/Upliner/CharMorph/releases> |
+| 9 | OliverJPost/HumGen3D human.py | 소스 코드(1차) | 2026 | Human Generator의 Python API(from_preset 등) 확인 | <https://github.com/OliverJPost/HumGen3D/blob/main/human/human.py> |
+| 10 | Meshcapade SMPL wiki | 벤더 문서(1차) | - | SMPL 계열 학술/상업 라이선스 구조 | <https://github.com/Meshcapade/wiki/blob/main/wiki/SMPL.md> |
+| 11 | Epic Games Acquires Firm That Makes 3D 'Humans' (MediaPost) | 뉴스(검색 요약) | 2026-02-20 | Epic의 Meshcapade 인수 | <https://www.mediapost.com/publications/article/412940/epic-games-acquires-firm-that-makes-3d-humans.html> |
+| 12 | facebookresearch/MHR + LICENSE | GitHub 저장소(1차) | 2025 | Apache-2.0 상업 가능 바디 모델, FBX 리그 제공 | <https://github.com/facebookresearch/MHR> |
+| 13 | facebookresearch/sam-3d-body + LICENSE | GitHub 저장소(1차) | 2025-11-19 | 사진→MHR 인체, SAM License 상업 허용 | <https://github.com/facebookresearch/sam-3d-body> |
+| 14 | NVlabs/SOMA-X | GitHub 저장소(1차) | 2026-09 | SMPL, MHR, Anny 통합 표현 | <https://github.com/NVlabs/SOMA-X> |
+| 15 | MetaHuman 5.6 is here | 공식 뉴스(검색 요약) | 2025-06 | 타 엔진과 DCC 사용을 허용한 라이선스 변경 | <https://www.metahuman.com/news/metahuman-leaves-early-access-with-a-feature-packed-new-release> |
+| 16 | MetaHuman Creator Web Application is being Discontinued | 공식 포럼(검색 요약) | 2026 | 웹 앱 2026-11-05 종료 | <https://forums.unrealengine.com/t/metahuman-creator-web-application-is-being-discontinued/2695297> |
+| 17 | poly-hammer/character-dna-addon | GitHub 저장소(1차) | 2026-09-22 v0.13.8 | MetaHuman DNA의 Blender 임포트, 번들 바이너리 출처 | <https://github.com/poly-hammer/meta-human-dna-addon> |
+| 18 | soupday/cc_blender_tools | GitHub 저장소(1차) | 2026 | CC5/iClone의 Blender 브리지 | <https://github.com/soupday/cc_blender_tools> |
+| 19 | saturday06/VRM-Addon-for-Blender | GitHub 저장소(1차) | 2026-09 | Blender 2.93~5.2 VRM, Python API | <https://github.com/saturday06/VRM-Addon-for-Blender> |
+| 20 | daz3d/DazToBlender | GitHub 저장소(1차) | - | Daz 브리지 라이선스와 요구 버전 | <https://github.com/daz3d/DazToBlender> |
+| 21 | Hunyuan3D-2.1 LICENSE | 라이선스(1차) | 2025-06-13 | EU, 영국, 한국 제외 조항 원문 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE> |
+| 22 | Hunyuan3D-Omni License.txt | 라이선스(1차) | 2025-09-26 | Omni도 한국 제외 확인, 인체 포즈 컨트롤 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni/blob/main/License.txt> |
+| 23 | Tencent-Hunyuan 3D 저장소 목록 | GitHub 조직(1차) | 2026-08 | Buffalo1.0, WorldClaw, R-DMesh 등 신규 현황 | <https://github.com/orgs/Tencent-Hunyuan/repositories?q=3D> |
+| 24 | microsoft/TRELLIS.2 | GitHub 저장소(1차) | 2026 | MIT 라이선스 대안 이미지→3D | <https://github.com/microsoft/TRELLIS.2> |
+| 25 | aigc3d/LHM | GitHub 저장소(1차) | 2026-03(LHM++) | 애니메이션 가능한 인체 복원, SMPL-X 의존 | <https://github.com/aigc3d/LHM> |
+| 26 | pengHTYX/PSHuman | GitHub 저장소(1차) | 2024-12 | VRAM 요구, SMPL-X OneDrive 배포 레드플래그 | <https://github.com/pengHTYX/PSHuman> |
+| 27 | VAST-AI-Research/UniRig | GitHub 저장소(1차) | 2026-06-04 | 헤드리스 CLI 리깅, 컴파일 의존성 | <https://github.com/VAST-AI-Research/UniRig> |
+| 28 | VAST-AI-Research/SkinTokens | GitHub 저장소(1차) | 2026-05 | 최신 SOTA 리깅, GLB CLI | <https://github.com/VAST-AI-Research/SkinTokens> |
+| 29 | Seed3D/Puppeteer | GitHub 저장소(1차) | 2025-09 | 리깅, 애니메이션, FBX 내보내기 | <https://github.com/Seed3D/Puppeteer> |
+| 30 | c8241998/HumanRig | GitHub 저장소(1차) | 2026-09 | 휴머노이드 특화 리깅 데이터셋 | <https://github.com/c8241998/HumanRig> |
+| 31 | Rigify 소스 (Blender GitHub 미러) | 소스(1차) | - | Rigify가 core 번들 애드온임을 확인 | <https://github.com/blender/blender/tree/main/scripts/addons_core/rigify> |
+| 32 | ksami/QRemeshify commits | GitHub(1차) | 2024-10-08 | 유지보수 정체 확인 | <https://github.com/ksami/QRemeshify/commits/main> |
+| 33 | huxingyi/autoremesher | GitHub 저장소(1차) | - | 헤드리스 리메시 CLI | <https://github.com/huxingyi/autoremesher> |
+| 34 | Buy Quad Remesher - EXOSIDE | 벤더(검색 요약) | 2026 | 가격과 라이선스 구분 | <https://exoside.com/quadremesher/quadremesher-buy/> |
+| 35 | nghorbani/human_body_prior (VPoser) | GitHub 저장소(1차) | - | 포즈 사전분포, 비상업 라이선스 | <https://github.com/nghorbani/human_body_prior> |
+| 36 | ahujasid/blender-mcp | GitHub 저장소(1차) | 2026-09 | 연동 서비스 목록과 안전 모드 | <https://github.com/ahujasid/blender-mcp> |
+| 37 | mcp-for-blender (PyPI) | PyPI(1차) | 2026-09-27 | 패키지명 변경과 최신 버전 | <https://pypi.org/project/mcp-for-blender/> |
+| 38 | Blender Lab blender_mcp | 공식(검색 요약) | 2026-04-28 / v1.0.3… | Blender 재단 공식 MCP | <https://projects.blender.org/lab/blender_mcp> |
+| 39 | meshy-dev/meshy-mcp-server | GitHub 저장소(1차) | 2026 | meshy_rig/meshy_animate 도구 | <https://github.com/meshy-dev/meshy-mcp-server> |
+| 40 | VAST-AI-Research/tripo-mcp | GitHub 저장소(1차) | - | 공식 Tripo MCP, 리깅 미지원 확인 | <https://github.com/VAST-AI-Research/tripo-mcp> |
+| 41 | squall01337/mixamo-llm-mocap + docs/RIG.md | GitHub 저장소(1차) | 2026-09 | 에이전트 운용 QA 게이트와 비례 실측 사례 | <https://github.com/squall01337/mixamo-llm-mocap> |
+| 42 | raydeStar/reference-asset-compiler + DECISIONS.md | GitHub 저장소(1차) | 2026-09-24 | 이미지→리깅 인체 전체 파이프라인의 성공과 실패 기록 | <https://github.com/raydeStar/reference-asset-compiler> |
+| 43 | elithril/blender-kiln references/characters.md | GitHub 문서(1차) | 2026 | Claude Code 캐릭터 리깅 규칙과 안티패턴 | <https://github.com/elithril/blender-kiln/blob/main/references/characters.md> |
+| 44 | hec-ovi/Text-to-3D-Skill | GitHub 저장소(1차) | 2026-07-28 | Claude 스킬 + SkinTokens 휴머노이드 리깅 사례 | <https://github.com/hec-ovi/Text-to-3D-Skill> |
+| 45 | Immunogenic-prismspectroscope589/Blender_mcp ⚠ | GitHub(1차, 악성 의심) | 2026 | README 링크가 모두 zip으로 향하는 악성 배포 패턴 실례 | <https://github.com/Immunogenic-prismspectroscope589/Blender_mcp> |
+| 46 | AI Auto-Rigging Showdown 2026 (StraySpark) | 블로그(검색 요약) | 2026-05 | 사람이 수행한 오토리거 비교 | <https://www.strayspark.studio/blog/ai-auto-rigging-showdown-2026-tripo-meshy-cascadeur-mixamo> |
+| 47 | Rodin Gen 2 (Hyper3D blog) | 벤더 블로그(검색 요약) | 2026 | T/A 포즈 강제 기능 | <https://hyper3d.ai/blog/rodin-gen-2> |
+
+**⚠ 신뢰도 경고가 붙은 출처**
+
+- <https://github.com/Immunogenic-prismspectroscope589/Blender_mcp> — 악성 배포 패턴 의심(README의 모든 링크가 저장소 안 zip 하나로 향함). 경고 사례로만 기록 — 링크를 열거나 파일을 받지 말 것.
+- <https://github.com/HurtzDonutStudios/ai-forge-mcp> — 소스 비공개(Nuitka 컴파일 번들), 커밋 수 대비 별 수 이상치. 주장 근거로 쓰지 말고, 시험은 격리 환경에서만.
+
+<a id="g10_organic_nature"></a>
+## [보완] 유기물·자연·조형물 도구
+
+주제 원문: [보완] 유기물·자연·조형물 도구 (2026-09-27)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Sapling Tree Gen — Blender Extensions | 공식 확장 플랫폼 (검색 요약) | 2026 | 버전, 다운로드 수, 라이선스 | <https://extensions.blender.org/add-ons/sapling-tree-gen/> |
+| 2 | GoodPie/modular_tree | GitHub(1차) | 2026 | 기능, 라이선스, 빌드 구조 | <https://github.com/GoodPie/modular_tree> |
+| 3 | GoodPie/modular_tree releases | GitHub(1차) | 2026 | V5.5.2와 플랫폼 이슈 | <https://github.com/GoodPie/modular_tree/releases> |
+| 4 | The Grove 2.3 | 벤더 (검색 요약) | 2026-02~03 | 2.3 기능과 Blender 5 지원 | <https://www.thegrove3d.com/releases/23/> |
+| 5 | The Grove 2.3 \| DIGITAL PRODUCTION | 업계 뉴스 (검색 요약) | 2026-03-02 | 릴리스 요약 | <https://digitalproduction.com/2026/03/02/the-grove-2-3/> |
+| 6 | varkenvarken/spacetree | GitHub(1차) | 미상 | SCA 나무 생성기 | <https://github.com/varkenvarken/spacetree> |
+| 7 | SpeedTree 라이선스 비교 (Unity Support) | 벤더 지원 문서 (검색 요약) | 2026 | 에디션별 조건 | <https://support.unity.com/hc/en-us/articles/15723241438228-What-s-the-difference-between-SpeedTree-Learning-Edition-Indie-Pro-and-Enterprise> |
+| 8 | SpeedTree Library 구매 안내 (Unity Support) | 벤더 지원 문서 (검색 요약) | 2026-05~ | Library 연 $999 구독 | <https://support.unity.com/hc/en-us/articles/49699142648980-How-do-I-receive-my-SpeedTree-Library-purchase> |
+| 9 | princeton-vl/infinigen | GitHub(1차) | 2026 | 별 수, 라이선스, 문서 구조 | <https://github.com/princeton-vl/infinigen> |
+| 10 | Infinigen Infinigen2.md | GitHub 문서(1차) | 2026 | 2.0에는 자연 에셋이 없다는 명시 | <https://github.com/princeton-vl/infinigen/blob/main/docs/source/Infinigen2.md> |
+| 11 | Infinigen nature-stable pyproject.toml | GitHub(1차) | 미상 | bpy 3.6.0과 Python 3.10 고정 | <https://github.com/princeton-vl/infinigen/blob/nature-stable/pyproject.toml> |
+| 12 | Infinigen list_nature_meshes.txt | GitHub(1차) | 미상 | 자연 팩토리 전체 목록 | <https://github.com/princeton-vl/infinigen/blob/main/tests/infinigen/assets/list_nature_meshes.txt> |
+| 13 | Infinigen GeneratingIndividualAssets.md | GitHub 문서(1차) | 미상 | 개별 에셋 생성과 export 명령 | <https://github.com/princeton-vl/infinigen/blob/main/docs/source/GeneratingIndividualAssets.md> |
+| 14 | Infinigen Installation.md | GitHub 문서(1차) | 미상 | OS 지원표와 네이티브 컴파일 부분 | <https://github.com/princeton-vl/infinigen/blob/main/docs/source/Installation.md> |
+| 15 | princeton-vl/procfunc | GitHub(1차) | 2026 | GN→Python 트랜스파일러, bpy 4.2 | <https://github.com/princeton-vl/procfunc> |
+| 16 | ProcFunc arXiv 2604.26943 | 논문 (검색 요약) | 2026-04-29 | VLM 절차 코드 편집 오류 감소 | <https://arxiv.org/abs/2604.26943> |
+| 17 | 3DCodeBench GitHub | GitHub(1차) | 2026-06 | Blender 5.0 절차적 모델링 벤치 구성 | <https://github.com/gaoypeng/3dcodebench> |
+| 18 | 3DCodeBench arXiv 2606.01057 | 논문 (검색 요약) | 2026-06-01 | 떠 있는 부품이 최대 실패라는 결과 | <https://arxiv.org/abs/2606.01057> |
+| 19 | 3DCodeBench 리더보드 요약 (BenchmarkList) | 집계 사이트 (검색 요약) | 2026 | Elo, 에이전트 하네스 순위, 실행 가능성 향상 수치 | <https://benchmarklist.com/benchmarks/3dcodebench_benchmarking_agentic_procedural_3d_modeling_via_code/> |
+| 20 | 3DHarnessBench GitHub | GitHub(1차) | 2026-09 | MCP 접근 수준별 평가와 평가 모델 목록 | <https://github.com/llada60/3DHarnessBench> |
+| 21 | microsoft/TRELLIS.2 | GitHub(1차) | 2025-12~ | MIT, 하드웨어 요구, CUDA 확장 | <https://github.com/microsoft/TRELLIS.2> |
+| 22 | Tencent-Hunyuan/Hunyuan3D-2.1 | GitHub(1차) | 2025-06-13 | VRAM, 컴파일 모듈, 지역 제외 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1> |
+| 23 | Hunyuan3D-2.1 LICENSE | 라이선스 원문 (검색 요약과 GitHub 교차 확인) | 2025 | EU, UK, 한국 제외 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE> |
+| 24 | PKU-YuanGroup/UltraShape-1.0 | GitHub(1차) | 2025-12 | Hunyuan3D-2.1 의존으로 라이선스가 전이됨 | <https://github.com/PKU-YuanGroup/UltraShape-1.0> |
+| 25 | VAST-AI-Research/TripoSG | GitHub(1차) | 2025-03 | MIT, 8GB | <https://github.com/VAST-AI-Research/TripoSG> |
+| 26 | DreamTechAI/Direct3D-S2 | GitHub(1차) | 2025-05 | MIT, VRAM, torchsparse | <https://github.com/DreamTechAI/Direct3D-S2> |
+| 27 | stepfun-ai/Step1X-3D | GitHub(1차) | 2025-05-13 | Apache-2.0, VRAM | <https://github.com/stepfun-ai/Step1X-3D> |
+| 28 | lizhihao6/Sparc3D | GitHub(1차) | 2025 | 1024³ 희소 표현, 라이선스 불명 | <https://github.com/lizhihao6/Sparc3D> |
+| 29 | Hyper3D Rodin Gen-2.5 (80.lv) | 업계 뉴스 (검색 요약) | 2026-05 | 토폴로지 옵션, 폴리 수, 모드 | <https://80.lv/articles/how-hyper3d-rodin-gen-2-5-is-bringing-production-level-control-to-ai-3d-generation> |
+| 30 | Meshy-6 vs Tripo v3.1 (Z.Tools) | 제3자 비교 (검색 요약) | 2026 | 속도와 품질 비교, 벤더 설문 인용 | <https://z.tools/blog/meshy-6-vs-tripo-v3-1-3d> |
+| 31 | Pixazo 3D 생성 리더보드 | VLM 심사 리더보드 (검색 요약) | 2026 | Hunyuan3D-2.5 1325, TRELLIS 1290, Meshy 5 1280 | <https://www.pixazo.ai/leaderboard/ai-3d-model-generation> |
+| 32 | 3D Arena (HF Space) | 인간 투표 리더보드 (접근 차단, 검색 결과로만 확인) | 상시 | 실시간 순위(이번에 미확인) | <https://huggingface.co/spaces/dylanebert/3d-arena> |
+| 33 | ksami/QRemeshify | GitHub(1차) | 미상 | GPL-3.0, 바이너리, 한계 | <https://github.com/ksami/QRemeshify> |
+| 34 | Quad Remesher 구매 (Exoside) | 벤더 (검색 요약) | 2026 | 가격 | <https://exoside.com/quadremesher/quadremesher-buy/> |
+| 35 | wjakob/instant-meshes | GitHub(1차) | 오래됨 | 바이너리 배포 경로 | <https://github.com/wjakob/instant-meshes> |
+| 36 | GitMay3D/OpenScatter | GitHub(1차) | 2026-08-23 아카이브 | 개발 중단과 버전 이력 | <https://github.com/GitMay3D/OpenScatter> |
+| 37 | Geo-Scatter | 벤더 (검색 요약) | 2026 | Biome-Reader와 Blender 5.2 권장 | <https://www.geoscatter.com/> |
+| 38 | botaniq \| polygoniq | 벤더 (검색 요약) | 2026-08 | 7.3 업데이트 | <https://polygoniq.com/3d/botaniq/> |
+| 39 | Arborea — Sweeper3D | 벤더 (검색 요약) | 2025~2026 | 에셋 수와 GN 도구 | <https://www.sweeper3d.com/arborea-addon> |
+| 40 | Volume Grids in Geometry Nodes (Blender Developers Blog) | 공식 개발 블로그 (검색 요약) | 2025-10 | 5.0 grid 노드 27종 | <https://code.blender.org/2025/10/volume-grids-in-geometry-nodes/> |
+| 41 | Geometry Nodes: SDF Grid filtering nodes (PR #147224) | 공식 개발 PR (검색 결과) | 2025 | SDF 필터 노드 | <https://projects.blender.org/blender/blender/pulls/147224> |
+| 42 | Gaea 3.0 Development Update | 벤더 블로그 (검색 요약) | 2026 | 3.0 일정과 기능 | <https://blog.quadspinner.com/gaea-3-0-development-update/> |
+| 43 | World Creator 2026.4 Community Edition (CG Channel) | 업계 뉴스 (검색 요약) | 2026-04 | 가격 인하와 무료판 | <https://www.cgchannel.com/2026/04/world-creator-2026-4-is-out-with-a-new-free-community-edition/> |
+| 44 | Nature Generator update (DIGITAL PRODUCTION) | 업계 뉴스 (검색 요약) | 2026-04-09 | v1.2 기능 | <https://digitalproduction.com/2026/04/09/nature-generator-update-brings-procedural-nature-to-blender/> |
+| 45 | Megascans 무료 종료 (CG Channel) | 업계 뉴스 (검색 요약) | 2024-10 | 2025년 유료 전환 배경 | <https://www.cgchannel.com/2024/10/epic-games-has-made-megascans-free-to-all-but-only-until-the-end-of-2024/> |
+| 46 | Fab Generative AI 정책 | 공식 지원 문서 (검색 결과) | 미상 | NoAI 태그 | <https://support.fab.com/s/article/Generative-Artificial-Intelligence-AI?language=en_US> |
+| 47 | Poly Haven License | 공식 (검색 요약) | 상시 | CC0 | <https://polyhaven.com/license> |
+| 48 | ahujasid/blender-mcp (mcp-for-blender) | GitHub(1차) | 2026 | 연동 목록, 보안 경고, 텔레메트리 | <https://github.com/ahujasid/blender-mcp> |
+| 49 | Blender Lab blender_mcp | 공식 저장소 (검색 요약) | 2026-04 | 공식 MCP | <https://projects.blender.org/lab/blender_mcp> |
+| 50 | Anthropic becomes Blender Corporate Patron (CG Channel) | 업계 뉴스 (검색 결과) | 2026-04 | 공식 MCP 배경 | <https://www.cgchannel.com/2026/04/ai-developer-anthropic-becomes-blenders-latest-corporate-patron/> |
+| 51 | PatrykIti/blender-ai-mcp | GitHub(1차) | 2026 | 접촉·간격 단언 도구 | <https://github.com/PatrykIti/blender-ai-mcp> |
+| 52 | HoldMyBeer-gg/blend-ai | GitHub(1차) | 2026 | 샌드박스 코드 실행 사례 | <https://github.com/HoldMyBeer-gg/blend-ai> |
+| 53 | arjun988/blender-skills | GitHub(1차) | 2026 | vegetation·creature 스킬 | <https://github.com/arjun988/blender-skills> |
+| 54 | How I Used Claude to Model in Blender and Build a 3D Unity Game | 개인 블로그 (검색 요약) | 2026-09 | 숲 씬 부유 디버깅 사례 | <https://medium.com/@developer.rizasghari/how-i-used-claude-to-model-in-blender-and-build-a-3d-unity-game-25914ffee262> |
+| 55 | Claude + Blender MCP real-world performance (MindStudio) | 블로그 (검색 요약) | 2026 | 유기물과 GN의 한계 | <https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance> |
+| 56 | Autoregressive Generation of Static and Growing Trees | 논문 (검색 요약) | 2025 (SIGGRAPH Asia… | AI 나무 스켈레톤 생성 | <https://arxiv.org/abs/2502.04762> |
+| 57 | Foliager (SIGGRAPH 2025 Posters) | 논문 포스터 (검색 요약) | 2025-08 | LLM에서 절차적 숲으로 가는 설계 | <https://dl.acm.org/doi/10.1145/3721250.3743024> |
+| 58 | openalea/lpy | GitHub(1차) | 미상 | L-system 라이브러리 | <https://github.com/openalea/lpy> |
+| 59 | nerk987/txa_ant | GitHub(1차) | 미상 | ANT 텍스처 포크 | <https://github.com/nerk987/txa_ant> |
+| 60 | Tencent-Hunyuan/Hunyuan3D-WorldClaw | GitHub(1차) | 2026-08-07 | 에이전트형 오픈월드 생성 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw> |
+| 61 | Hunyuan3D 2.1 vs 2.5 vs 3.0 (triposr.org) | 제3자 블로그 (검색 요약) | 2026 | 3.1이 API 전용이라는 주장 | <https://triposr.org/blog/hunyuan3d-versions> |
+
+<a id="g11_architecture"></a>
+## [보완] 건물·건축·평면·도시 배치 도구
+
+주제 원문: [보완] 건물·건축·평면·도시 배치 도구 (2026-09-27)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | ranjian0/building_tools (GitHub) | GitHub 저장소 | 최종 커밋 2025-05-16 | 별 수·MIT·릴리스·이슈 직접 확인 | <https://github.com/ranjian0/building_tools> |
+| 2 | CreativeDesigner3D/home_builder_5 Releases | GitHub 릴리스 | 2026-03~04 | Blender 5/5.1 지원, 계단, 문 스윙, 평면도 기능 확인 | <https://github.com/CreativeDesigner3D/home_builder_5/releases> |
+| 3 | Home Builder 5 — Blender Extensions | 공식 확장 플랫폼(검색 요약) | 2026 | 공식 배포 채널 | <https://extensions.blender.org/add-ons/home-builder-5/> |
+| 4 | Archipack 2.8.5 for Blender 3.+ / 5.x RELEASE (BlenderArtists) | 포럼(검색 요약) | 2025~2026 | Blender 5.x 호환 주장 | <https://blenderartists.org/t/archipack-2-8-5-for-blender-3-5-x-release/1147328/1188> |
+| 5 | Archimesh issue #4 Parameters do not appear in 5.0 | Blender 이슈 트래커(검색 요약) | 2025~2026 | Blender 5 호환 문제 근거 | <https://projects.blender.org/extensions/archimesh/issues/4> |
+| 6 | HiFi Architecture Builder — Blender Extensions | 공식 확장 플랫폼(검색 요약) | 2025-08 공개 | 다운로드 수, 라이선스 표기 | <https://extensions.blender.org/add-ons/hifi-builder/> |
+| 7 | Download free Blender 3D building generator Buildify (CG Channel) | 뉴스(검색 요약) | 2022-07 | Buildify 개요, OSM 연동 | <https://www.cgchannel.com/2022/07/download-free-blender-3d-building-generator-buildify/> |
+| 8 | IfcOpenShell (GitHub) | GitHub 저장소 | 2026-09 | 2.8k★, LGPL/GPL, 하위 프로젝트(ifcmcp 포함) 확인 | <https://github.com/IfcOpenShell/IfcOpenShell> |
+| 9 | IfcOpenShell Releases (bonsai 0.9.0-alpha daily) | GitHub 릴리스 | 2026-09-27 | Bonsai 일일 빌드 활성 확인 | <https://github.com/IfcOpenShell/IfcOpenShell/releases> |
+| 10 | ifcmcp README (IfcOpenShell src/ifcmcp) | GitHub 소스 | 0.8.x | 공식 MCP 서버 도구 목록, pip 패키지명 | <https://github.com/IfcOpenShell/IfcOpenShell/tree/v0.8.0/src/ifcmcp> |
+| 11 | Bonsai Version History — Blender Extensions | 공식 확장 플랫폼(검색 요약) | 2026-04 | 0.8.5-post1, Blender 5.1 호환 | <https://extensions.blender.org/add-ons/bonsai/versions/> |
+| 12 | buildingSMART/validate | GitHub 저장소 | 2026 | 공식 IFC 검증 서비스, MIT, Docker/API | <https://github.com/buildingSMART/validate> |
+| 13 | wassimj/topologicpy | GitHub 저장소 | 2026 | 공간 위상·그래프 검증 라이브러리 | <https://github.com/wassimj/topologicpy> |
+| 14 | PedestrianDynamics/jupedsim | GitHub 저장소 | 2026 | 피난 시뮬레이션, LGPL, PyPI | <https://github.com/PedestrianDynamics/jupedsim> |
+| 15 | ARCHER: Agentic Rule and Compliance Harness for Executable Regulations | 논문(검색 요약) | 2026-07 | TDD 기반 법규 체커 합성, +82% 정확도 | <https://arxiv.org/abs/2607.25566> |
+| 16 | Towards an automated AI-based framework for floor plan compliance checks for residential … | 논문(검색 요약) | 2026 | LLM 규칙 엔진 + 평면 그래프 추출 + 다세대 컴플라이언스(호주 SEPP65 등) | <https://arxiv.org/abs/2607.00015> |
+| 17 | Automatic Building Code Review: A Case Study | 논문(검색 요약) | 2025-10 | COMcheck API + RAG 하이브리드 사례 | <https://arxiv.org/abs/2510.02634> |
+| 18 | Generative Floor Plan Design with LLMs via RLVR | 논문(검색 요약) | 2026-05 / ACL 2026 … | JSON 평면 스키마 + 검증 가능한 보상, 수치 결과 | <https://arxiv.org/abs/2605.14117> |
+| 19 | Unified Vector Floorplan Generation via Markup Representation (CVPR 2026) | 논문(검색 요약) | 2026-04 / CVPR 2026 | 마크업 기반 통합 평면 생성 | <https://arxiv.org/abs/2604.04859> |
+| 20 | HypergraphFormer: Learning Hypergraphs from LLMs for Editable Floor Plan Generation | 논문(검색 요약, 제목만) | 2026-05 | 편집 가능한 평면 생성 신규 연구(세부 미확인) | <https://arxiv.org/pdf/2605.18932> |
+| 21 | SizheHu/GSDiff | GitHub 저장소 | AAAI 2025 | 코드 공개 벡터 평면 생성, GPL, Drive 가중치 | <https://github.com/SizheHu/GSDiff> |
+| 22 | aminshabani/house_diffusion | GitHub 저장소 | CVPR 2023 | 기준선, RPLAN 다운로드 문제 언급 | <https://github.com/aminshabani/house_diffusion> |
+| 23 | LengSicong/Tell2Design | GitHub 저장소 | ACL 2023 | 코드 Apache-2.0 / 데이터 CC BY-NC 4.0 | <https://github.com/LengSicong/Tell2Design> |
+| 24 | m-agour/ResPlan | GitHub 저장소 | 2025-08 | CC BY 4.0 평면 데이터, via_door 그래프 | <https://github.com/m-agour/ResPlan> |
+| 25 | caspervanengelenburg/msd | GitHub 저장소 | ECCV 2024 | 다세대 평면 데이터셋 | <https://github.com/caspervanengelenburg/msd> |
+| 26 | CubiCasa/CubiCasa5k | GitHub 저장소 | 2019~ | 평면 인식 데이터, Zenodo/Drive 배포 | <https://github.com/CubiCasa/CubiCasa5k> |
+| 27 | bertjiazheng/Structured3D | GitHub 저장소 | 2020~ | 이용약관 동의 폼, 3.5K 주택 | <https://github.com/bertjiazheng/Structured3D> |
+| 28 | dcy0577/Text2BIM | GitHub 저장소 | 2025-05 갱신 | 멀티에이전트 + 체커 루프 참조 구현 | <https://github.com/dcy0577/Text2BIM> |
+| 29 | Show2Instruct/ifc-bonsai-mcp (MCP4IFC) | GitHub 저장소 | 2026-07 | Blender+Bonsai 생성형 MCP 50개 이상 도구 | <https://github.com/Show2Instruct/ifc-bonsai-mcp> |
+| 30 | MCP4IFC: IFC-Based Building Design Using LLMs | 논문(검색 요약) | 2025-11 | LLM IFC 생성의 한계 결론 | <https://arxiv.org/abs/2511.05533> |
+| 31 | A Modular Reference Architecture for MCP-Servers Enabling Agentic BIM Interaction | 논문(검색 요약) | 2026-01 | API 비종속 BIM MCP 어댑터 구조(IfcOpenShell 프로토타입) | <https://arxiv.org/abs/2601.00809> |
+| 32 | A Building as a Repository: KIR | 논문(검색 요약) | 2026-09 | 에이전트 BIM 저작용 타입 IR, 7가지 침묵 실패 모드 탐지 | <https://arxiv.org/abs/2609.14578> |
+| 33 | BIM-Edit benchmark | 논문(검색 요약) | 2026-06 | LLM IFC 편집 성능 수치 | <https://arxiv.org/abs/2606.20146> |
+| 34 | JotaDeRodriguez/Bonsai_mcp | GitHub 저장소 | 2026-09-06 | IFC 조회·감사 MCP | <https://github.com/JotaDeRodriguez/Bonsai_mcp> |
+| 35 | smartaec/ifcmcp | GitHub 저장소 | 2025 | 경량 IFC 질의 MCP, Apache-2.0 | <https://github.com/smartaec/ifcmcp> |
+| 36 | Introducing the Revit Public MCP Server (Autodesk AEC blog) | 공식 블로그(검색 요약) | 2026-06-17 | 공식 Revit MCP, 읽기 전용, 배포 방식 | <https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/> |
+| 37 | AnalyzeTool issue #137 (Revit Public MCP 분석) | GitHub 이슈 | 2026 | stdio, 기능 목록, 미확인 사항 정리 | <https://github.com/Nikola1Davydov/AnalyzeTool/issues/137> |
+| 38 | mcp-servers-for-revit/revit-mcp | GitHub 저장소 | 2026-02-25 아카이브 | 커뮤니티 Revit MCP 원조 | <https://github.com/mcp-servers-for-revit/revit-mcp> |
+| 39 | LuDattilo/revit-mcp-server | GitHub 저장소 | 2026 | 사전 빌드 DLL 배포 안전 이슈 근거 | <https://github.com/LuDattilo/revit-mcp-server> |
+| 40 | MCP Support for Archicad (Graphisoft Product Roadmap) | 공식 커뮤니티 로드맵(검색 요약) | 2026-04 | 공식 Archicad MCP 진행 중 | <https://community.graphisoft.com/t5/Product-Roadmap/MCP-Support-for-Archicad/idi-p/682950> |
+| 41 | ENZYME-APD/tapir-archicad-automation | GitHub 저장소 | 2026 | Archicad 25~29 JSON 명령 애드온 | <https://github.com/ENZYME-APD/tapir-archicad-automation> |
+| 42 | mcneel/rhinoai | GitHub 저장소(공식 조직) | 2026 | McNeel 공식 Rhino MCP | <https://github.com/mcneel/rhinoai> |
+| 43 | jingcheng-chen/rhinomcp | GitHub 저장소 | 2026 | 1.1k★ 커뮤니티 Rhino/GH MCP, 실행 표면 경고 | <https://github.com/jingcheng-chen/rhinomcp> |
+| 44 | Trimble SketchUp connector \| Claude | 공식 커넥터 페이지 | 2026 | 원격 MCP URL과 도구 목록(build_model 등) | <https://claude.com/connectors/sketchup> |
+| 45 | SketchUp Connector for Claude (Trimble blog) | 공식 블로그(검색 요약) | 2026-04 | 기능, 무료 30개 모델 | <https://sketchup.trimble.com/en/blog/article/sketchup-claude-connector> |
+| 46 | vvoovv/blosm | GitHub 저장소 | 미확인 | 2.1k★, GPL, Gumroad 배포 구조 | <https://github.com/vvoovv/blosm> |
+| 47 | domlysz/BlenderGIS commits | GitHub 저장소 | 2025-12-20 | 9.4k★, Blender 5 수정 | <https://github.com/domlysz/BlenderGIS> |
+| 48 | ArcGIS CityEngine Pricing (TrustRadius) | 리뷰 사이트(검색 요약) | 2026 | $2,000부터, 무료판 없음 | <https://www.trustradius.com/products/arcgis-cityengine/pricing> |
+| 49 | djFatNerd/CityCraft | GitHub 저장소 | 2024~ | 확산 + LLM + Blender 도시 파이프라인 | <https://github.com/djFatNerd/CityCraft> |
+| 50 | Can Claude Create Floor Plans? We Tested It (RoomSketcher) | 블로그(검색 요약) | 2026 | Claude 평면 생성 실패 양상 | <https://www.roomsketcher.com/blog/can-claude-create-floor-plans/> |
+| 51 | Claude's 3 New Creative App MCP Connectors (MindStudio) | 블로그(검색 요약) | 2026-05 | SketchUp 문 누락 사례 | <https://www.mindstudio.ai/blog/claude-3-creative-app-mcp-connectors-blender-adobe-sketchup> |
+| 52 | How I Built a Walkable 3D House with Claude Code and Blender | 블로그(검색 요약) | 2026 | 평면도 입력 기반 3D화 성공 사례 | <https://designwithai.substack.com/p/how-i-built-a-walkable-3d-house-with-claude-code-and-blender> |
+
+<a id="g12_tool_safety"></a>
+## [보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)
+
+주제 원문: [보완] 3D 도구 보안: 악성 애드온·.blend·MCP·모델 파일 (2026-09-27)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Morphisec Thwarts Russian-Linked StealC V2 Campaign Targeting Blender Users via Malicious… | 보안 벤더 블로그(1차, 검색 요약으로만 확인) | 2025-11 | Blender .blend → StealC 캠페인 1차 보고서 | <https://www.morphisec.com/blog/morphisec-thwarts-russian-linked-stealc-v2-campaign-targeting-blender-users-via-malicious-blend-files/> |
+| 2 | Malicious Blender model files deliver StealC infostealing malware (BleepingComputer) | 보안 언론 | 2025-11 | CGTrader 경로, 공격 흐름, 권고 요약 | <https://www.bleepingcomputer.com/news/security/malicious-blender-model-files-deliver-stealc-infostealing-malware/> |
+| 3 | Hackers Hijack Blender 3D Assets to Deploy StealC V2 (The Hacker News) | 보안 언론 | 2025-11 | Rig_Ui.py, 지속성, Pyramid C2 개요 | <https://thehackernews.com/2025/11/hackers-hijack-blender-3d-assets-to.html> |
+| 4 | A stealer hiding in Blender 3D models (Kaspersky) | 보안 벤더 블로그 | 2025-11 | 사용자·기업 대상 권고(3D 에셋을 실행 파일처럼 취급) | <https://www.kaspersky.com/blog/malicious-blender-model-files/54948/> |
+| 5 | Malware Delivered Through Blender Downloads on Third-Party Sites (Privacy Guides) | 프라이버시 커뮤니티 뉴스 | 2025-11-26 | 원 출처에서 받으라는 권고 | <https://www.privacyguides.org/news/2025/11/26/malware-delivered-through-blender-downloads-on-third-party-sites/> |
+| 6 | Malware Found In Fake Blender Commission Requests (80.lv) | 업계 언론 | 2025(봄, 정확한 날짜 미확인) | 사회공학형 .blend 배포 사례와 경고 신호 | <https://80.lv/articles/blender-creators-watch-out-for-malware-hidden-in-fake-commission-requests> |
+| 7 | Do Not Open This Free Blender File Circulating Online (80.lv) | 업계 언론 | 2025-06 | Rigify 위장 스크립트 사례, 비밀번호 교체 권고 | <https://80.lv/articles/warning-malware-discovered-in-blender-file-circulating-online> |
+| 8 | Blender files as a new malware vector (Tinexta Defence) | 보안 벤더 보고서 | 2025-06 | 초기 기술 분석 보고서 | <https://tinextadefence.it/en/blender-files-as-a-new-malware-vector/> |
+| 9 | Blender commit 7054d325 — UI: Remove auto-run preference from warning prompt, communicate… | Blender 공식 소스(GitHub 미러, 직접 확… | 2026-09(병합일 2026-09… | Auto-Run 경고 UX 강화 1차 근거 | <https://github.com/blender/blender/commit/7054d3254ba0da2df9b240c41dc8d6926c749a01> |
+| 10 | Scripting & Security — Blender Manual | Blender 공식 문서(검색 요약) | 5.2 LTS 매뉴얼 | Auto Run, Trusted Source, Excluded Paths, 비-샌드박스 설명 | <https://docs.blender.org/manual/en/latest/advanced/scripting/security.html> |
+| 11 | Extensions moderation Guidelines — Blender Developer Documentation | Blender 공식 문서(검색 요약) | 상시 갱신 | 확장 플랫폼 검토 기준 | <https://developer.blender.org/docs/features/extensions/moderation/guidelines/> |
+| 12 | Blender 4.2 Core release notes (Allow Online Access) | Blender 공식 문서(검색 요약) | 2024-07 | 온라인 접근 설정과 강제력 한계 | <https://developer.blender.org/docs/release_notes/4.2/core/> |
+| 13 | scenario-labs/blender-plugin issue #16 (manifest permissions not enforced) | GitHub 이슈(직접 확인) | 2026 | 권한 선언은 강제되지 않고 validate도 코드를 검사하지 않는다는 근거 | <https://github.com/scenario-labs/blender-plugin/issues/16> |
+| 14 | ahujasid/mcp-for-blender README | GitHub 저장소(직접 확인) | 2026-09 | Safe Mode, 소켓 무인증 경고, 텔레메트리, Website 링크 | <https://github.com/ahujasid/mcp-for-blender/blob/main/README.md> |
+| 15 | blender-mcp is now mcp-for-blender (issue #366) | GitHub 공지(직접 확인) | 2026-09-16 | 공식 저장소·패키지 이름 확인 | <https://github.com/ahujasid/mcp-for-blender/issues/366> |
+| 16 | GHSA-4h8q-hh2j-755w (CVE-2026-66004) BlenderMCP path traversal | GitHub Advisory(직접 확인) | 2026-07-24 | Blender MCP 경로 조작 취약점 | <https://github.com/advisories/GHSA-4h8q-hh2j-755w> |
+| 17 | GHSA-fx9q-x9g5-jgg6 (CVE-2026-10688) blender-mcp code injection | GitHub Advisory(직접 확인) | 2026-06-03 | execute_blender_code 위험 | <https://github.com/advisories/GHSA-fx9q-x9g5-jgg6> |
+| 18 | postmark-mcp backdoor (Koi Security) | 보안 벤더 블로그(검색 요약) | 2025-09 | 최초 악성 MCP 서버 사례 | <https://www.koi.ai/blog/postmark-mcp-npm-malicious-backdoor-email-theft> |
+| 19 | GitHub Advisory DB — type:malware mcp | GitHub Advisory DB(직접 확인) | 2026-09-27 조회 | MCP 이름 악성 패키지 246건 현황 | <https://github.com/advisories?query=type%3Amalware+mcp> |
+| 20 | GHSA-rh9p-4pg3-8628 Malware in mcp-server-fetch (npm) | GitHub Advisory(직접 확인) | 2026-08-20 | 공식 이름 사칭 악성 패키지, 사후 대응 권고 | <https://github.com/advisories/GHSA-rh9p-4pg3-8628> |
+| 21 | GHSA-vh25-q2fm-2v22 Malicious code in gltf-blender-io-tests (npm) | GitHub Advisory(직접 확인) | 2026-09-13 | Blender 관련 이름의 악성 패키지 | <https://github.com/advisories/GHSA-vh25-q2fm-2v22> |
+| 22 | GHSA-6xpm-ggf7-wc3p mcp-remote OS command injection (CVE-2025-6514) | GitHub Advisory(직접 확인) | 2025-07-09 | 원격 MCP 연결 시 클라이언트 RCE | <https://github.com/advisories/GHSA-6xpm-ggf7-wc3p> |
+| 23 | MCP Security Best Practices (Local MCP Server Compromise) | MCP 공식 문서(GitHub 소스, 직접 확인) | 2025-11-25판 | 로컬 MCP 설치 시 동의·샌드박스 권고 | <https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/2025-11-25/tutorials/security/security_best_practices.mdx> |
+| 24 | MCP Security Notification: Tool Poisoning Attacks (Invariant Labs) | 보안 연구 블로그(검색 요약) | 2025-04 | 도구 설명 오염 개념 | <https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks> |
+| 25 | AgentBaiting: How Fake AI Skills Deliver Malware at Scale (Island) | 보안 벤더 블로그(검색 요약) | 2026-07 | 가짜 MCP·Skill 저장소 대규모 캠페인 | <https://www.island.io/blog/agentbaiting-how-800-fake-ai-skills-and-mcp-servers-delivered-malware> |
+| 26 | SmartLoader Clones Oura Ring MCP (Straiker) | 보안 벤더 블로그(검색 요약) | 2026-02 | 트로이목마화된 MCP 클론 사례 | <https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack> |
+| 27 | Cloned, Loaded, and Stolen: 109 Fake GitHub Repositories (Hexastrike) | 보안 벤더 블로그(검색 요약) | 2026-04 | 복제 저장소 + ZIP 유도 패턴 | <https://hexastrike.com/resources/blog/threat-intelligence/cloned-loaded-and-stolen-how-109-fake-github-repositories-delivered-smartloader-and-stealc/> |
+| 28 | Developers in the Crosshairs: Fake AI Tools Deliver Infostealer (Netskope) | 보안 벤더 블로그(검색 요약) | 2026 | Claude·ComfyUI 사칭 저장소 | <https://www.netskope.com/blog/developers-in-the-crosshairs-fake-ai-tools-deliver-infostealer> |
+| 29 | Fake Claude site installs malware (Malwarebytes) | 보안 벤더 블로그(검색 요약) | 2026-04 | AI 도구 사칭 + DLL 사이드로딩 | <https://www.malwarebytes.com/blog/scams/2026/04/fake-claude-site-installs-malware-that-gives-attackers-access-to-your-computer> |
+| 30 | New Noodlophile Stealer Distributes Via Fake AI Video Generation Platforms (Morphisec) | 보안 벤더 블로그(검색 요약) | 2025-05 | 가짜 AI 생성기 미끼 | <https://www.morphisec.com/blog/new-noodlophile-stealer-fake-ai-video-generation-platforms/> |
+| 31 | Impersonated GenAI Site Lures Victims to Infostealer Download (Check Point Research, Klin… | 보안 벤더 연구(검색 요약) | 2025 | AI 생성 서비스 사칭 | <https://research.checkpoint.com/2025/impersonated-kling-ai-site-installs-malware/> |
+| 32 | StarScout (GitHub) / Six Million (Suspected) Fake Stars on GitHub (ICSE 2026) | 학술 연구 도구(직접 확인) | 2026 | 별 수 조작 규모 | <https://github.com/hehao98/StarScout> |
+| 33 | Stargazers Ghost Network (Check Point Research) | 보안 벤더 연구(검색 요약) | 2024-07 | 유령 계정 기반 GitHub 악성 배포 서비스 | <https://research.checkpoint.com/2024/stargazers-ghost-network/> |
+| 34 | ComfyUI-Manager (security_level) | GitHub 저장소(직접 확인) | 2026 | AI 생성 파이프라인의 위험 기능 등급 제어 | <https://github.com/Comfy-Org/ComfyUI-Manager> |
+| 35 | ComfyUI_LLMVISION keylogger (GIGAZINE) | 언론(검색 요약) | 2024-06-11 | 악성 커스텀 노드 사례 | <https://gigazine.net/gsc_news/en/20240611-comfyui-llmvision-malware/> |
+| 36 | Hugging Face hub-docs: Pickle Scanning / Malware Scanning | Hugging Face 공식 문서(GitHub 소스,… | 상시 | pickle 위험, Hub 스캔 방식, '100% 확실하지 않음' 명시 | <https://github.com/huggingface/hub-docs/blob/main/docs/hub/security-pickle.md> |
+| 37 | Hugging Face and JFrog partner (HF blog source) | Hugging Face 공식 블로그(GitHub 소스… | 2025-03 | JFrog 스캐너 도입 | <https://github.com/huggingface/blog/blob/main/jfrog.md> |
+| 38 | Malware Found in Trending Hugging Face Repository Open-OSS/privacy-filter (HiddenLayer) | 보안 벤더 연구(검색 요약) | 2026-05 | 모델 저장소 코드 파일을 통한 인포스틸러 | <https://www.hiddenlayer.com/research/malware-found-in-trending-hugging-face-repository-open-oss-privacy-filter> |
+| 39 | ReversingLabs nullifAI press release | 보안 벤더(검색 요약) | 2025-02 | Picklescan 우회 | <https://www.reversinglabs.com/press-releases/reversinglabs-identifies-novel-ml-malware-hosted-on-leading-hugging-face-ai-model-platform> |
+| 40 | huggingface/safetensors README | GitHub 저장소(직접 확인) | 상시 | pickle 대비 안전성 설명 | <https://github.com/huggingface/safetensors> |
+| 41 | GitHub Advisory DB — CVE-2025-32434 (torch.load weights_only RCE) | GitHub Advisory DB(직접 확인) | 2025-04-18 | PyTorch 버전 하한 근거 | <https://github.com/advisories?query=CVE-2025-32434> |
+| 42 | Blender Lab MCP Server | Blender 공식(검색 요약) | 2026 | 공식 MCP 서버 배포처 | <https://www.blender.org/lab/mcp-server/> |
+| 43 | Malvertising through search engines (Securelist) | 보안 벤더 연구(검색 요약) | 2023 | Blender 사칭 광고 배경 | <https://securelist.com/malvertising-through-search-engines/108996/> |
 

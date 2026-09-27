@@ -323,7 +323,7 @@ safe mode에서 이 `sys.path` import가 막히면 `scene_audit.py` 파일 내�
 | `BLENDER_MCP_SAFE_MODE` | `1` | MCP로 들어온 코드를 검사해 **직접** 파일 I/O(`open()`, `os`), 외부 프로세스, 네트워크, handlers·timers·drivers, 외부 .blend append/link를 막음. 2026-09-02 커밋으로 추가 | **샌드박스가 아닙니다.** 검사는 MCP 경로에만 걸리고, 애드온 소켓은 로컬의 다른 프로세스가 보낸 코드도 그대로 받습니다. bpy 오퍼레이터를 통한 저장·열기, import/export, 렌더는 허용됩니다 |
 | `DISABLE_TELEMETRY` | `true` | 텔레메트리를 **전부** 끔 | 2026-09-21 커밋 이후 콘텐츠(프롬프트, 코드, 스크린샷, 궤적) 수집은 옵트인이 됐지만, 익명 사용 기록(install ID, 세션 ID, 도구 이름, 성공 여부, 소요 시간, 버전, OS)은 **끄지 않으면 기본 수집**됩니다. README는 수집 데이터가 AI 모델 학습에 쓰일 수 있다고 적고 있습니다 |
 | `BLENDER_HOST` | `localhost` | 애드온 접속 주소 | 외부에 노출하지 마세요. 소켓에는 인증도 암호화도 없습니다. 원격은 SSH 터널로 |
-| 버전 | 최신(2.1.0 이상) | CVE-2026-10661(`input_image_url` 인자 주입, 심각도 Low, 2026-06 패치) 포함 | [GHSA](https://github.com/advisories/GHSA-qqw9-95ww-prfm). 로컬 파일을 읽어 외부 API로 보내는 구체적 시나리오는 [이슈 #202](https://github.com/ahujasid/blender-mcp/issues/202)에 있음(GHSA 본문이 #202와 명시적으로 연결하지는 않음) |
+| 버전 | 최신(2.1.0 이상) | 2026 CVE 4건(10661·10662·10688 Low, 66004 Poly Haven 경로 조작 Moderate, 커밋 30a3308 수정) 반영 버전. 목록은 [Blender MCP 가이드 10.1절](../02_guides/02_blender_mcp.md) | [GHSA](https://github.com/advisories/GHSA-qqw9-95ww-prfm). 로컬 파일을 읽어 외부 API로 보내는 구체적 시나리오는 [이슈 #202](https://github.com/ahujasid/blender-mcp/issues/202)에 있음(GHSA 본문이 #202와 명시적으로 연결하지는 않음) |
 
 - 근거: [README](https://github.com/ahujasid/blender-mcp), [커밋 로그](https://github.com/ahujasid/blender-mcp/commits/main), [텔레메트리 이슈 #232](https://github.com/ahujasid/blender-mcp/issues/232).
 - 더 강한 격리가 필요하면 임의 코드 실행을 막은 [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai)(허용 import 5개, 127.0.0.1 전용, AGPL-3.0-or-later)를 검토하세요.
@@ -642,7 +642,8 @@ Blender를 헤드리스로 써서 작업해. MCP는 쓰지 않는다.
 - [ ] 프로젝트 `.mcp.json`의 서버는 내용을 확인한 뒤 승인합니다. `claude -p`(비대화형) 실행에서는 확인 없이 로드된다는 점을 기억하세요([Claude Code 보안 문서](https://code.claude.com/docs/en/security)).
 - [ ] 출처를 모르는 .blend 파일, 에셋 설명, 웹 페이지를 에이전트에게 그대로 넘기지 않습니다(프롬프트 인젝션).
 - [ ] 유료 생성 API(Hyper3D, Tripo, Meshy 등)는 호출 전에 사용자 확인을 받게 합니다.
-- [ ] 비공식 사이트(blender-mcp.com, blendermcp.org)에서 애드온을 받지 않습니다.
+- [ ] 비공식 사이트(blender-mcp.com, blendermcp.org)와 GitHub 복제 저장소에서 애드온을 받지 않습니다.
+- [ ] Blender의 Auto Run Python Scripts를 끈 채로 둡니다(악성 .blend 사례, [설치 안전 가이드](../02_guides/14_tool_install_safety.md)).
 - [ ] **[한국]** Hunyuan3D 로컬 가중치(ahujasid 로컬 API URL 모드 포함)를 연결하지 않습니다.
 
 ### 6.2 저장 습관

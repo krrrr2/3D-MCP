@@ -21,7 +21,8 @@
 9. **[한국 사용자 필수] Tencent Hunyuan3D 계열 오픈웨이트**(2.0/2.1/Omni/Part, HY-World, HY-Motion)는 라이선스 적용 지역에서 **대한민국을 제외**하고 출력물 사용도 제한합니다. 한국어 UI에서는 노드 이름이 번역돼 코드가 깨질 수 있으니 영어 UI를 쓰거나 노드를 type으로 찾게 하세요. → [라이선스 가이드](02_guides/10_assets_pipeline_licensing.md)
 10. **"컴퓨터 유즈로 직접 모델링하는 게 낫다"는 대체로 오해입니다.** Astra 공식 사례도 bpy 스크립트로 만들고 컴퓨터 유즈는 화면 확인에 썼고, 화면 클릭 CAD 벤치마크 최고 성공률은 17.5%입니다. 만드는 건 스크립트·MCP, 확인과 API 없는 조작은 컴퓨터 유즈로 나누세요. → [컴퓨터 유즈 vs MCP vs 스크립트](02_guides/12_computer_use_and_other_methods.md)
 11. **"사람이 만든 건물 같은가"도 자동 검사합니다.** 문이 벽에 안 뚫림·열면 벽·허공으로 나감·가구가 막음, 창턱 높이 제각각·실내 창, 문 없는 방·창 없는 거실·복도처럼 길쭉한 빈 방의 반복 같은 **백룸식 기묘함**을 [`building_audit.py`](03_playbooks/scripts/README.md)가 잡고 위험도를 매깁니다. **실제 AI가 만든 건물 9개**(GPT-6 Astra 재구성 공간, 같은 아파트를 Fable·GPT-6가 각각 만든 8개)로 검증해 오탐을 고쳤습니다 → [검증 기록](03_playbooks/scripts/validation/README.md)
-12. **보안**: `execute_blender_code`는 임의 Python 실행 권한입니다. 작업 전 저장, `DISABLE_TELEMETRY=true`, 신뢰하는 서버만 쓰세요(safe mode는 샌드박스가 아님). → [빠른 시작](03_playbooks/01_quickstart_setup.md)
+12. **보안**: `execute_blender_code`는 임의 Python 실행 권한입니다. 작업 전 저장, `DISABLE_TELEMETRY=true`, 신뢰하는 서버만 쓰세요(safe mode는 샌드박스가 아님). **`.blend`도 코드를 담을 수 있습니다.** 2025년 무료 모델에 인포스틸러를 숨긴 사례가 있었으니 Auto Run Python Scripts는 꺼 두세요. 유료 애드온 크랙판과 가짜 "Blender MCP" 저장소도 피하세요. → [빠른 시작](03_playbooks/01_quickstart_setup.md), [설치 안전 가이드](02_guides/14_tool_install_safety.md)
+13. **인체·유기물·건물은 전용 생성기를 "호출"하게 하세요.** 인체는 MPFB2·Anny(무료·상업 가능, SMPL-X는 비상업), 나무는 생성기, 유기 조형은 Blender 5.x 내장 SDF 노드, 건물은 평면 JSON 검증 뒤 Bonsai(IFC)·Home Builder 5로 만듭니다. 결과는 숫자로 검사합니다(양팔 폭 ≈ 키, 지면 접촉 레이캐스트, 방 도달 그래프). → [인체·유기물·건물 도구 가이드](02_guides/13_humans_organic_buildings.md)
 
 ---
 
@@ -37,6 +38,8 @@
 | **배치가 자연스럽게** | [배치 가이드](02_guides/08_scene_layout_placement.md) + [placement_utils.py](03_playbooks/scripts/README.md) |
 | **건물·방이 기묘하지 않게(백룸 방지)** | [building_audit.py](03_playbooks/scripts/README.md) (문·창·방·동선·계단 상식 검사) |
 | **컴퓨터 유즈 vs MCP vs 스크립트 비교** | [컴퓨터 유즈와 다른 방법들](02_guides/12_computer_use_and_other_methods.md) |
+| **인체·유기물(나무·조형)·건물 전용 도구, 평가 좋은 최신 것** | [인체·유기물·건물 도구 가이드](02_guides/13_humans_organic_buildings.md) |
+| **애드온·.blend·MCP·모델 설치할 때 악성코드 피하기** | [설치 안전 가이드](02_guides/14_tool_install_safety.md) |
 | **텍스처·재질을 예쁘게** | [텍스처·재질 가이드](02_guides/05_texturing_materials.md) |
 | **조명·렌더·구도** | [라이팅·렌더·아트디렉션](02_guides/06_lighting_rendering_art_direction.md) |
 | **AI로 3D 에셋 생성** | [AI 3D 생성 가이드](02_guides/04_ai_3d_generation.md) |
@@ -56,7 +59,7 @@
   research_method.md     조사 방법·한계·신뢰도 정책
   tools/                 카탈로그 생성·문서 링크 검사 스크립트
   handson/               직접 실행해 확인한 기록 (공식 Blender Lab MCP 구동 검증: 응답 원본·재현 도구)
-02_guides/             주제별 가이드 12편 (분석·정리)
+02_guides/             주제별 가이드 14편 (분석·정리)
 03_playbooks/          실전 적용: 빠른 시작, 제작 플레이북, 프롬프트, 체크리스트, 치수표, 배치·조형 보조 도구 색인
   templates/             에이전트 규칙(CLAUDE.md/AGENTS.md), Claude Code 스킬
   scripts/               Blender 검사·배치 스크립트 4종 + 테스트 (4.2 LTS·5.0·5.2 LTS 통과)

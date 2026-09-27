@@ -24,7 +24,7 @@
 |---|---|---|
 | 조사 (13개 주제) | ✅ 완료 | 주제마다 조사 에이전트 1 + 독립 검증 에이전트 1 |
 | 공백 보완 조사 (8개) | ✅ 완료 | 치수·라이선스는 독립 재검증까지. G7(컴퓨터 유즈)은 메인 에이전트가 직접 조사. G8(공식 Blender Lab MCP)은 소스 정독 + 실제 구동 검증 |
-| 원자료 보존 | ✅ | `01_research/raw/` 38개 JSON (수정 금지) + 실제 구동 응답 원본 `01_research/handson/blender_lab_mcp/raw/` |
+| 원자료 보존 | ✅ | `01_research/raw/` 46개 JSON (수정 금지) + 실제 구동 응답 원본 `01_research/handson/blender_lab_mcp/raw/` |
 | 출처 카탈로그·검증 로그 | ✅ 자동 생성 | 고유 URL 약 1,470개 |
 | 가이드 12편 · 플레이북 5편 · 템플릿 2 · 사례집 2 | ✅ 작성 | 약 13,800줄 |
 | 문서 교차 검토 | ✅ 완료 | 5개 그룹 모두 독립 검토 완료(3~5그룹은 한도 해제 후 재실행). 아래 3절 참고 |
@@ -32,6 +32,7 @@
 | 공식 Blender Lab MCP 실제 구동 검증 | ✅ | bpy 5.2.2 LTS + 공식 서버(미러 98b0e49). 도구 26개 중 24개 호출, 공식 단위 테스트 102개 통과(mcp 1.30). SDK 2.x 비호환·HTTP 모드 CORS 전체 허용·렌더 저장 위치·EEVEE 헤드리스 종료 등 확인 → [검증 기록](../01_research/handson/blender_lab_mcp/README.md) |
 | `building_audit` 실제 AI 건물 검증 | ✅ | 실제 AI 생성 건물 9개 장면(GPT-6 Astra 1, Fable 4, GPT-6 4). 오탐 25종 수정, 백룸 오경보 0 → [검증 기록](../03_playbooks/scripts/validation/README.md) |
 | 배치·조형 보조 도구 색인 | ✅ | `03_playbooks/06_placement_structure_helpers.md`: 이 저장소 스크립트·가이드 코드, 배치 검사가 들어 있는 MCP, MCP 아닌 솔버·스킬·평가를 한 장에 모음(주요 Blender MCP에는 배치 검사 기능이 없음) |
+| 인체·유기물·건물 도구 + 설치 안전 | ✅ | 2026-09-27 추가 조사(G9~G12, 읽기 전용, 핵심 주장 원문 대조). 가이드 `13_humans_organic_buildings.md`, `14_tool_install_safety.md`. 색인 06에 분야별 표 추가 |
 | 문서 링크 자동 검사 | ✅ | 외부 URL 전부 원자료에 존재, 깨진 내부 링크 0 |
 
 ## 3. 교차 검토 현황 (중요)
@@ -65,6 +66,7 @@
 | "컴퓨터 유즈가 직접 모델링하는 게 낫다는데?" | 웹 조사 후 `02_guides/12_computer_use_and_other_methods.md` 작성. 결론: 만드는 건 스크립트·MCP, 컴퓨터 유즈는 확인·API 없는 조작용 |
 | "문은 건물 디자인 생각해서 어느 쪽으로 열려야 합당할지 정하고, 렌더링까지 하면 되지?" | 맞음. `building_audit`가 여닫이문마다 4가지 방향을 실제로 돌려 보고 설계 규칙으로 추천, 모델에 열어 둔 방향은 존중하되 부딪히면 경고. Fable 설계 데이터와 여는 쪽 24/24 일치, Fable 코드의 경첩 반전 버그 발견. 평면도에 궤적을 그려 렌더 |
 | "확인 못 한 것(Astra·Tripo·Rodin·네이버/한국어 원문)은 빼고, 블렌더 공식 MCP를 조사" | 공식 서버 소스(서버·애드온·테스트)를 전부 읽고, bpy 5.2.2 안에서 애드온 서버를 띄워 공식 MCP 서버에 MCP 클라이언트로 붙어 도구를 실제 호출. 가이드 4절 전면 개정(도구 26개, 설치 원문, Online Access 필수, SDK 2.x 문제와 v1.0.2 수정, 타임아웃·크기 제한, 약한 샌드박스, HTTP 모드 위험, 렌더 저장 위치), 빠른 시작·보안 절·흔한 실수 갱신. 제외 항목은 5절 끝으로 이동. 기록: `01_research/handson/blender_lab_mcp/` |
+| "인체조형·유기물·건물 배치 각자 있나? 평가 좋은 거나 최신 조사. 악성코드·DLL 조심" | 하위 조사 4개(인체, 유기물, 건물, 보안)를 **다운로드·설치·실행 금지** 조건으로 돌리고, 핵심 주장을 GitHub·PyPI·LICENSE·로컬 bpy로 대조. 조사 에이전트의 오류 2건 정정: 텔레메트리 '옵트인' → 실제로는 익명 사용 기록 기본 ON, Infinigen `nature-stable`은 브랜치가 아니라 태그. 가이드 13·14 작성, Blender MCP 가이드 보안 절에 CVE 4건 반영 |
 | "네트워크 정책 때문에 안 되는 건 빼고 2번(실제 AI 건물로 검증)만" | `building_audit.py` v2. Realsee×GPT-6 Astra 재구성 공간(v1 오류 18·경고 10 → 오류 0·경고 1), house-3d의 같은 아파트를 Fable·GPT-6가 만든 8개 장면(v1은 방을 하나도 못 알아보고 '오류 0' → 최종 오류 0~1·경고 6~9, 남은 지적은 좌표·렌더·원본 데이터로 확인한 실제 문제). 합친 벽·가져온 GLB 그룹·한중 이름·격자 천장·열린/미닫이 문 처리, `tests/test_building_realworld.py` 추가. 기록: `03_playbooks/scripts/validation/` |
 
 ## 4. 주요 결정과 이유
@@ -101,7 +103,9 @@
 4. ~~`building_audit.py`를 실제 AI 생성 건물로 검증~~ → **완료**(2026-09-27, 9개 장면). ~~문 여는 방향~~ → **설계 규칙으로 추천·검사 완료**(Fable 설계 데이터와 여는 쪽 24/24 일치). 남은 것: 실제 AI가 만든 **다층 건물·경사 지붕·곡선 벽** 장면 확보 후 재검증, 합친 벽의 벽 단위 두께·틈 검사, 이름 없는 유리문의 여닫이/미닫이 구분. 검증 도구는 `03_playbooks/scripts/validation/tools/`.
 5. **가이드 안의 테스트된 코드 블록을 `03_playbooks/scripts/`로 이동 + 테스트 추가**: `check_assembly()`(07 가이드, 부품 연결 맵 검사), `provenance_tools`·`make_ucx`/`make_lods`(10 가이드), 재질 감사·베이크 코드(05 가이드 4.7·7.3절), `review_render()`(06 가이드).
 6. ~~Blender 5.2(Python 3.13 bpy)에서 스크립트 테스트~~ → **완료**(5.2.2 LTS, 테스트 3종 통과).
-7. **정기 갱신**: 모델·MCP 서버·라이선스가 매주 바뀌므로, 월 1회 정도 핵심 사실(각 가이드의 "핵심 요약")을 재확인. 공식 Blender MCP는 새 릴리스가 나오면 `handson/blender_lab_mcp/tools/`로 도구 목록부터 다시 뽑아 비교.
+7. **인체 비례·리그 검사 스크립트(`human_audit.py` 가칭)**: 13 가이드 1.4절의 수치 게이트를 `03_playbooks/scripts/`에 스크립트로 만들고 MPFB2 인체로 테스트. 검사 항목은 양팔 폭 ≈ 키, 영향 본 ≤ 4, 무가중치 0, 버텍스/본 ≥ 5, 자기교차.
+8. **`building_audit`의 IFC 모드**: Bonsai/IfcOpenShell 모델이면 문–벽 개구부 관계와 IfcSpace로 직접 검사하고, TopologicPy식 도달 그래프를 추가(13 가이드 3.3절).
+9. **정기 갱신**: 모델·MCP 서버·라이선스가 매주 바뀌므로, 월 1회 정도 핵심 사실(각 가이드의 "핵심 요약")을 재확인. 공식 Blender MCP는 새 릴리스가 나오면 `handson/blender_lab_mcp/tools/`로 도구 목록부터 다시 뽑아 비교.
 
 ## 7. 작업 이력 (커밋 순)
 
@@ -121,6 +125,7 @@
 | 12 | 공식 Blender Lab MCP 소스 정독·실제 구동 검증(`01_research/handson/blender_lab_mcp/`, 원자료 G8), Blender MCP 가이드 4절·10.5절·빠른 시작 개정, 스크립트 테스트 5.2.2 LTS 통과, 제외 항목 정리 |
 | 13 | 공식 MCP 남은 항목 후속 확인(v1.0.3 도구 수, 커넥터 버전, 공식 커밋 2026-08-06까지 비교, Windows 설치 실패 원인), 원자료 `G8_blender_lab_mcp.verify.json` |
 | 14 | 배치·조형 보조 도구 색인(`03_playbooks/06_placement_structure_helpers.md`), 다음 세션 시작점 정리 |
+| 15 | 인체·유기물·건물 도구와 설치 안전 추가 조사(G9~G12 + 원문 대조), 가이드 13·14, Blender MCP 보안 절 CVE 4건, README·색인·목적 대응표 갱신 |
 
 ## 8. 이어서 작업하는 법
 

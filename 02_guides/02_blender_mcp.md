@@ -9,7 +9,7 @@
 - **공식 서버는 실제로 띄워서 확인했습니다**(4절). 도구는 26개입니다. v1.0.0 계열은 MCP 파이썬 SDK 2.x(2026-07-28~)와 맞지 않아 새로 설치하면 시작하자마자 죽으므로 **v1.0.2 이상**을 쓰거나 `mcp<2`를 고정하세요. 그 밖에 알아 둘 점은 이렇습니다. Allow Online Access가 필수입니다. 오류는 정상 응답 속 `status: "error"`로 옵니다. 렌더 결과는 Blender 임시 폴더에 저장돼 종료하면 사라집니다. GPU 없는 서버에서 EEVEE 렌더를 부르면 Blender가 죽습니다. 코드 실행 보호는 '샌드박스가 아니다'라고 스스로 밝힌 수준이고, HTTP 모드(`:8000`)는 CORS 전체 허용에 인증이 없습니다.
 - **두 서버 모두 기본 포트가 `localhost:9876`이라 동시에 켜면 충돌합니다.** Scenario for Blender의 내장 MCP도 9876을 써서 세 개가 겹칠 수도 있습니다. 이름도 헷갈립니다. `uvx blender-mcp`는 이름과 달리 커뮤니티 서버(호환 래퍼)를 실행합니다.
 - **자주 걸리는 운영 함정이 세 가지 있습니다.** ① ahujasid 소켓 타임아웃은 180초인데 애드온의 `exec()`에는 제한이 없어서, 긴 코드는 Blender를 멈춥니다. ② `get_scene_info`는 오브젝트 10개의 이름·타입·위치만 반환합니다. ③ tool 스키마만 6,928토큰입니다(28 tool 시점 측정값이고, 지금은 36개라 더 큽니다).
-- **보안에 주의하세요.** `execute_blender_code`는 임의 Python을 실행하므로 사실상 OS 권한을 넘기는 것과 같습니다. `BLENDER_MCP_SAFE_MODE=1`은 MCP 경로만 검사하는 제한 장치일 뿐 **샌드박스가 아닙니다**. 익명 사용 텔레메트리가 기본으로 켜져 있으니 `DISABLE_TELEMETRY=true`를 권장합니다. CVE-2026-10661(Low) 이력도 있습니다.
+- **보안에 주의하세요.** `execute_blender_code`는 임의 Python을 실행하므로 사실상 OS 권한을 넘기는 것과 같습니다. `BLENDER_MCP_SAFE_MODE=1`은 MCP 경로만 검사하는 제한 장치일 뿐 **샌드박스가 아닙니다**. 익명 사용 텔레메트리가 기본으로 켜져 있으니 `DISABLE_TELEMETRY=true`를 권장합니다(README의 "opt-in"은 콘텐츠 수집만 해당). 2026년에 CVE 4건이 등재됐습니다(코드 인젝션, SSRF, 인자 주입, Poly Haven 다운로드 경로 조작 CVSS 6.0). 도구 설치 전 점검은 [설치 안전 가이드](14_tool_install_safety.md)를 보세요.
 - **LLM이 자주 틀리는 코드**: Principled BSDF v2 소켓 이름(4.0), `use_auto_smooth` 제거(**4.1**), EEVEE 식별자(4.2~4.x는 `BLENDER_EEVEE_NEXT`, 5.0부터 `BLENDER_EEVEE`), `scene.node_tree`→`compositing_node_group`(5.0), `action.fcurves` 제거(5.0), `use_nodes` 폐기 예고(5.0). 가장 싼 해결책은 코드를 쓰기 전에 `bpy_api_lookup`·`describe_node_type`으로 API를 **조회**하게 하는 것입니다.
 - **[한국 사용자 주의]** Blender를 한국어 UI로 쓰면 새로 만든 노드 이름이 번역될 수 있어서 `nodes['Principled BSDF']` 같은 코드가 깨집니다(일본어 UI에서 확인됐고, 한국어도 같은 원리로 추정). 노드는 `type`으로 찾게 하고, Preferences > Interface > Translation에서 **New Data**를 끄거나 영어 UI를 쓰세요. 로컬 Hunyuan3D 백엔드는 **한국이 라이선스 적용 지역에서 빠져 있습니다.**
 - **대안 서버**: 노드 편집에는 newo-ether 포크, 임의 코드를 막으려면 blend-ai(AGPL), 결정적 배치 검증에는 blender-ai-mcp, 로컬 LLM에는 공식 서버+llama.cpp 또는 blender-open-mcp가 맞습니다. 재현성과 CI가 중요하면 헤드리스 실행(`blender -b ... --python-exit-code 1`)을 쓰세요.
@@ -65,7 +65,8 @@
 | `uvx mcp-for-blender` | ahujasid 커뮤니티 서버(현재 이름) |
 | `uvx blender-mcp` (PyPI [blender-mcp](https://pypi.org/project/blender-mcp/) 2.0.0, 2026-09-16) | ahujasid의 **호환 래퍼**. 설치하면 mcp-for-blender가 깔립니다. **공식 서버가 아닙니다** |
 | 실행 파일 `blender-mcp` (git 소스 `.../lab/blender_mcp.git`의 `mcp` 하위 폴더) | 공식 Blender Lab 서버. ahujasid의 옛 PyPI 이름과 같아서 혼동하기 쉽습니다 |
-| blender-mcp.com, blendermcp.org | **비공식 사이트**. 여기서 받은 애드온 때문에 증상이 꼬인 사례가 있습니다([#339](https://github.com/ahujasid/blender-mcp/issues/339)). 설치 출처로 쓰지 마세요 |
+| blender-mcp.com, blendermcp.org | **비공식 사이트**. 여기서 받은 애드온 때문에 증상이 꼬인 사례가 있습니다([#339](https://github.com/ahujasid/blender-mcp/issues/339)). 설치 출처로 쓰지 마세요. ahujasid README가 링크하는 웹사이트는 mcp-for-blender.com입니다(2026-09 확인) |
+| GitHub의 다른 "Blender MCP" 저장소 | 원 저장소 복제본이 많고, README 링크가 모두 zip 하나로 가는 **악성 배포 패턴**도 확인됐습니다([인체·유기물·건물 가이드 4절](13_humans_organic_buildings.md)). ahujasid/mcp-for-blender와 Blender Lab만 쓰세요 |
 | PyPI `mcp-blender` | 다른 개발자(brnv)의 별개 패키지. RFingAdam/mcp-blender와 무관합니다(5.1절) |
 | 3D-Agent | 상용 제품이고 공식 커넥터와 무관합니다. 자사 마케팅 자료뿐이라 독립 검증이 안 됐습니다 |
 
@@ -543,6 +544,9 @@ Blender의 Save Versions 설정도 켜 두세요. harveyxiacn 서버의 named ch
 |---|---|---|---|
 | 2026-03-10 | [#202](https://github.com/ahujasid/blender-mcp/issues/202) | `generate_hunyuan3d_model`의 `input_image_url`이 http로 시작하지 않으면 `open()`으로 로컬 파일을 읽어 base64로 외부 API에 보냄(임의 파일 유출) | 아래 CVE의 실제 시나리오로 보임(명시적 연결은 없음). 최신 버전 사용 |
 | 2026-06-02/03 | [CVE-2026-10661 / GHSA-qqw9-95ww-prfm](https://github.com/advisories/GHSA-qqw9-95ww-prfm) | CWE-74, CVSS v4 2.1(Low). 영향 범위는 커밋 7636d13까지, 패치 커밋은 5b37be25242e. GHSA 본문이 #202와 명시적으로 연결하지는 않음 | 최신 버전 사용 |
+| 2026-06-02/03 | [CVE-2026-10688 / GHSA-fx9q-x9g5-jgg6](https://github.com/advisories/GHSA-fx9q-x9g5-jgg6) | `execute_blender_code`의 code 인자 주입(CWE-74), CVSS v4 2.0(Low). 롤링 릴리스라 영향·패치 버전 미표기 | 코드 실행 도구는 자동 승인하지 않음 |
+| 2026-06-02/03 | [CVE-2026-10662 / GHSA-5hr7-6m56-f3rg](https://github.com/advisories/GHSA-5hr7-6m56-f3rg) | `zip_file_url` SSRF, CVSS v4 2.1(Low). 패치 커밋 5b37be25 | 최신 버전 사용 |
+| 2026-07-24 | [CVE-2026-66004 / GHSA-4h8q-hh2j-755w](https://github.com/advisories/GHSA-4h8q-hh2j-755w) | `download_polyhaven_asset` 경로 조작(CWE-22), **CVSS 6.0(Moderate)**. 중간자 공격이나 프롬프트 인젝션으로 임의 파일 쓰기 가능. 커밋 30a3308에서 수정 | 30a3308 이후 버전 사용 |
 | — | [#207](https://github.com/ahujasid/blender-mcp/issues/207) | 샌드박스 요청 | 'not planned'로 종료 |
 | 2026-04-20 | [#232](https://github.com/ahujasid/blender-mcp/issues/232) | 텔레메트리 기본 ON(consent default=True, 작성자 주장)과 GDPR 문제 제기 | closed |
 | 2026-09-02 | 커밋 'feat: add safe mode for bounded code execution' | `BLENDER_MCP_SAFE_MODE` 추가(09-21에 보강 fix) | — |
@@ -579,7 +583,7 @@ README에는 수집 데이터가 "to train AI models"에 쓰일 수 있다고 �
 1. **작업 전 저장**하고, 스크립트는 git에 커밋합니다(9.6절).
 2. `DISABLE_TELEMETRY=true`, `BLENDER_MCP_SAFE_MODE=1`을 설정합니다(3.4절 JSON 예시).
 3. 애드온은 **localhost에만** 바인딩합니다. 원격 Blender는 SSH 터널로 연결하고, 공유 머신에서는 쓰지 않습니다. Epic도 Unreal 플러그인에 대해 "Localhost is not a trust boundary"라고 경고합니다([Epic 플러그인](https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin)).
-4. 모르는 .blend, 외부 에셋 설명, 웹 콘텐츠는 **프롬프트 인젝션** 경로가 될 수 있습니다. 다운로드한 .blend의 자동 스크립트 실행(Auto Run Python Scripts)은 꺼 두세요.
+4. 모르는 .blend, 외부 에셋 설명, 웹 콘텐츠는 **프롬프트 인젝션** 경로가 될 수 있습니다. 다운로드한 .blend의 자동 스크립트 실행(Auto Run Python Scripts)은 꺼 두세요. 2025년 CGTrader 무료 모델 등 악성 .blend 사례가 실제로 있었습니다([설치 안전 가이드](14_tool_install_safety.md)).
 5. 설치 출처는 PyPI `mcp-for-blender`, GitHub, projects.blender.org만 씁니다. 비공식 사이트와 `pip install mcp-blender`는 쓰지 않습니다.
 6. `--dangerously-skip-permissions`는 쓰지 말고, 명시적 allow 규칙이나 auto mode를 쓰세요.
 7. 격리가 더 필요하면 blend-ai(허용 import 5개: bpy, bmesh, mathutils, math, json, 셰이더 노드 64종 allowlist, 127.0.0.1 전용), Scenario 내장 MCP(Python 실행 기본 OFF), 헤드리스 QA를 별도 프로세스로 두거나 VM·dev container에서 실행합니다.

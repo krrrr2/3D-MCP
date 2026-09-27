@@ -33,6 +33,8 @@
 | (필요 요소) | 라이선스·상업적 이용 | `02_guides/10_assets_pipeline_licensing.md` |
 | (추가 요청) | 건물·배치가 사람이 만든 것처럼 상식적인지(백룸 방지) | `03_playbooks/scripts/building_audit.py`, 실제 AI 건물 검증 `03_playbooks/scripts/validation/` |
 | (추가 요청) | 컴퓨터 유즈 등 MCP 외 방법 총정리 | `02_guides/12_computer_use_and_other_methods.md` |
+| (추가 요청) | 인체·유기물·건물 배치 전용 도구(평가 좋은 것·최신) | `02_guides/13_humans_organic_buildings.md`, 원자료 G9~G11 |
+| (추가 요청) | 악성코드·DLL 등 설치 안전 | `02_guides/14_tool_install_safety.md`, 원자료 G12 |
 
 ## 4. 목적 달성에 필요한 기본 요소 (사용자가 명시하지 않았지만 필요한 것)
 

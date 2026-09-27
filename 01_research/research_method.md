@@ -34,6 +34,7 @@
 | G1~G6 | 보완 조사 | `raw/G*.gap.json`, `raw/G*.verify.json` |
 | G7 | 컴퓨터 유즈 vs MCP vs 스크립트 (메인 에이전트 직접 조사 + 독립 검증) | `raw/G7_computer_use.*.json` |
 | G8 | 공식 Blender Lab MCP: 소스 정독 + **실제 구동 검증**(bpy 5.2.2 LTS에 공식 애드온·서버를 띄워 도구 호출) | `raw/G8_blender_lab_mcp.gap.json`, 응답 원본·재현 도구는 `handson/blender_lab_mcp/` |
+| G9~G12 | 인체·캐릭터 / 유기물·자연 / 건물·건축·도시 / 3D 도구 보안. 하위 조사 에이전트 4개가 **읽기 전용**(다운로드·설치·실행 금지)으로 조사, 메인 에이전트가 GitHub·PyPI·LICENSE·로컬 bpy로 핵심 주장 대조 | `raw/G9_human_character.*`, `raw/G10_organic_nature.*`, `raw/G11_architecture.*`, `raw/G12_tool_safety.*` |
 
 - `*.research.json` / `*.gap.json` = 조사 에이전트 원본 출력 (가공하지 않음)
 - `*.verify.json` = 검증 에이전트 원본 출력

@@ -25,6 +25,10 @@
 | [보완] 가격·라이선스·법규 | 17 | 10 | 0 | 4 | 0 | 0 | 0 |
 | [보완] 컴퓨터 유즈 vs MCP vs 스크립트 | 17 | 5 | 0 | 3 | 0 | 0 | 0 |
 | [보완] 공식 Blender Lab MCP 소스 정독·실제 구동 | 2 | 4 | 0 | 3 | 0 | 0 | 1 |
+| [보완] 인체·캐릭터 조형 도구 | 6 | 1 | 0 | 1 | 0 | 2 | 0 |
+| [보완] 유기물·자연·조형물 도구 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
+| [보완] 건물·건축·평면·도시 배치 도구 | 5 | 0 | 0 | 1 | 0 | 0 | 0 |
+| [보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일) | 3 | 0 | 1 | 0 | 0 | 0 | 0 |
 
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
 
@@ -816,4 +820,69 @@
 
 - 이 파일은 독립 검증이 아니라 메인 에이전트의 후속 확인이다. 판정은 같은 기준(확인/부분/미확인)을 따랐다.
 - 원문 사이트(projects.blender.org, lab.blender.org)는 이번에도 연결되지 않았다.
+
+## [보완] 인체·캐릭터 조형 도구
+
+### 주장별 판정
+
+| 판정 | 주장 | 정정·메모 | 근거 |
+|---|---|---|---|
+| 🟡 부분 | SAM 3D Body는 SAM License(2025-11-19)로 상업 이용 허용 | LICENSE 파일이 'SAM License, Last Updated: November 19, 2025'임은 확인. 상업 허용·금지 용도 세부는 조사 원문 요약을 따름(전문 대조 안 함). | <https://github.com/facebookresearch/sam-3d-body> |
+| ❔ 미확인 | SMPL-X는 비상업, Epic이 2026-02 Meshcapade 인수 | 라이선스 페이지와 인수 소식은 차단돼 검색 요약만 있음. | <https://github.com/Meshcapade/SMPL_blender_addon> |
+| ✅ 확인 | MPFB2는 GPLv3 코드 + 별도 에셋 라이선스이고 2026-09에도 Blender 5.2 대응 커밋이 있다 | LICENSE.md: 소스 GPLv3, 에셋·출력은 별도 조항. 마지막 커밋 2026-09-26(git 메타데이터). | <https://github.com/makehumancommunity/mpfb2> |
+| ✅ 확인 | Anny(NAVER LABS Europe)는 Apache-2.0이고 PyPI anny 0.6이 2026-08에 나왔다 | LICENSE 첫머리 Apache-2.0(Copyright 2025 NAVER). PyPI anny 0.6.0 업로드 2026-08-07. 마지막 커밋 2026-09-16. | <https://github.com/naver/anny> |
+| ✅ 확인 | Meta MHR은 Apache-2.0 | LICENSE Apache 2.0, 마지막 커밋 2026-09-10. | <https://github.com/facebookresearch/MHR> |
+| ✅ 확인 | SkinTokens·UniRig는 MIT | 두 저장소 LICENSE 모두 MIT(VAST-AI-Research). 마지막 커밋 SkinTokens 2026-05-12, UniRig 2026-06-04. | <https://github.com/VAST-AI-Research/SkinTokens> <https://github.com/VAST-AI-Research/UniRig> |
+| ✅ 확인 | NVIDIA SOMA-X는 Apache-2.0이고 2026-09 갱신 | LICENSE Apache 2.0, 마지막 커밋 2026-09-17. | <https://github.com/NVlabs/SOMA-X> |
+| ✅ 확인 | CharMorph는 사실상 정체 | 마지막 커밋 2024-10-10(git 메타데이터). | <https://github.com/Upliner/CharMorph> |
+
+### 메모
+
+- 메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다.
+
+## [보완] 유기물·자연·조형물 도구
+
+### 주장별 판정
+
+| 판정 | 주장 | 정정·메모 | 근거 |
+|---|---|---|---|
+| 🟡 부분 | Infinigen 자연 에셋은 nature-stable 브랜치(bpy 3.6)에만 있고 main(2.0)에는 없다 | nature-stable은 브랜치가 아니라 git 태그(refs/tags/nature-stable). main README가 자연 장면 설치 안내를 nature-stable 버전으로 연결함. main에 자연 에셋이 없는지는 소스로 확인하지 않음. | <https://github.com/princeton-vl/infinigen> |
+| ❔ 미확인 | OpenScatter는 2026-08-23 보관(archived) | 메인 에이전트가 따로 확인하지 않음(조사 에이전트는 GitHub에서 확인했다고 기록). |  |
+| ✅ 확인 | Blender 5.0/5.1에 SDF·볼륨 그리드 노드(Mesh to SDF Grid, SDF Grid Boolean/Fillet/Offset/Mean/Median, Grid to Mesh 등)가 내장 | 로컬 pip bpy 5.0.1에서 GeometryNodeMeshToSDFGrid, GeometryNodeSDFGridBoolean, GeometryNodeSDFGridFillet, GeometryNodeSDFGridOffset, GeometryNodeGridToMesh 등 30종, 5.2.2 LTS에서 37종 타입 존재 확인. |  |
+
+### 메모
+
+- 메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다.
+
+## [보완] 건물·건축·평면·도시 배치 도구
+
+### 주장별 판정
+
+| 판정 | 주장 | 정정·메모 | 근거 |
+|---|---|---|---|
+| ❔ 미확인 | BIM-Edit 벤치마크 최고 평균 49.48%, Revit 2027 공식 MCP 읽기 전용 | arXiv·Autodesk 차단, 검색 요약만 있음. |  |
+| ✅ 확인 | IfcOpenShell 공식 MCP 서버가 PyPI ifcopenshell-mcp로 배포된다 | PyPI ifcopenshell-mcp 0.8.5(2026-04-01), 요약 'MCP server for querying and editing IFC building models', 홈페이지 ifcopenshell.org. | <https://docs.ifcopenshell.org/ifcmcp.html> |
+| ✅ 확인 | Building Tools 마지막 커밋 2025-05 | 마지막 커밋 2025-05-16. | <https://github.com/ranjian0/building_tools> |
+| ✅ 확인 | Home Builder 5가 2026년에 가장 활발 | 마지막 커밋 2026-09-26. | <https://github.com/CreativeDesigner3D/home_builder_5> |
+| ✅ 확인 | McNeel RhinoAI가 공식 저장소 | mcneel/rhinoai 마지막 커밋 2026-09-26. | <https://github.com/mcneel/rhinoai> |
+| ✅ 확인 | BlenderGIS 2025-12 Blender 5 수정 | 마지막 커밋 2025-12-20. | <https://github.com/domlysz/BlenderGIS> |
+
+### 메모
+
+- 메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다.
+
+## [보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)
+
+### 주장별 판정
+
+| 판정 | 주장 | 정정·메모 | 근거 |
+|---|---|---|---|
+| ❌ 반박 | ahujasid 텔레메트리는 옵트인이다 | README 원문: 'Telemetry is opt-in. Collection of your content is off by default' + 기본으로 '최소 익명 사용 기록'(설치 ID, 세션 ID, 도구 이름, 성공 여부, 소요 시간, 버전, OS, 시각)을 수집하며 DISABLE_TELEMETRY=true로 완전히 끔. 즉 콘텐츠 수집만 옵트인이고 익명 사용 기록은 기본 ON(기존 가이드 서술이 맞음). | <https://github.com/ahujasid/mcp-for-blender/blob/main/README.md> |
+| ✅ 확인 | Blender 커밋 7054d325가 자동 실행 경고창에서 영구 허용 체크박스를 없애고 위험 문구를 넣었다 | 커밋 페이지 직접 확인(Brecht Van Lommel). 탑재 버전은 미확인. | <https://github.com/blender/blender/commit/7054d3254ba0da2df9b240c41dc8d6926c749a01> |
+| ✅ 확인 | ahujasid MCP for Blender에 2026년 CVE 4건 | GHSA로 확인: CVE-2026-10688(execute_blender_code, Low 2.0, 2026-06-03), CVE-2026-10662(zip_file_url SSRF, Low 2.1, 패치 커밋 5b37be25), CVE-2026-66004(download_polyhaven_asset 경로 조작, CVSS 6.0, 2026-07-24, 커밋 30a3308에서 수정). CVE-2026-10661은 기존 기록. 저장소 자체의 Security Advisories 탭에는 게시 건수 0. | <https://github.com/advisories/GHSA-fx9q-x9g5-jgg6> <https://github.com/advisories/GHSA-5hr7-6m56-f3rg> <https://github.com/advisories/GHSA-4h8q-hh2j-755w> |
+| ✅ 확인 | ahujasid README가 mcp-for-blender.com을 Website로 링크 | README에 '[Website](https://mcp-for-blender.com/)'. blender-mcp.com·blendermcp.org는 여전히 README에 없음. | <https://github.com/ahujasid/mcp-for-blender/blob/main/README.md> |
+
+### 메모
+
+- 메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다.
 

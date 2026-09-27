@@ -80,7 +80,18 @@ DCC·엔진 쪽에도 비슷한 검사가 있습니다. 3ds Max 접촉 검사, R
 | 소품 흩뿌리기 | 받침면 위에 띄우고 rigid body 안착 → `scene_audit` |
 | 야외 | 밀도 페인트 + 최소 간격 산포(08 가이드 7절) |
 
+## 5. 분야별 전용 도구 (인체·유기물·건물)
+
+상세 설명, 라이선스, 안전 신호는 [인체·유기물·건물 도구 가이드](../02_guides/13_humans_organic_buildings.md)에 있습니다. 설치 전에는 [설치 안전 가이드](../02_guides/14_tool_install_safety.md)의 점검표를 보세요.
+
+| 분야 | 형태는 이것으로 | 검사는 이것으로 | MCP로 붙는 것 |
+|---|---|---|---|
+| **인체·캐릭터** | MPFB2(무료, bpy 스크립트), Anny·MHR(Apache-2.0). 사진이면 SAM 3D Body. SMPL-X는 비상업 | 양팔 폭 ≈ 키, 리그 규칙(영향 본 ≤ 4, 무가중치 0, 버텍스/본 ≥ 5), 5포즈 변형·자기교차 검사 | Meshy·Tripo 공식 MCP(생성·리깅). MPFB2·Anny 전용 MCP는 아직 없음 → `execute_blender_code`로 호출 |
+| **유기물·자연** | 나무 생성기(Sapling·Modular Tree·The Grove), **Blender 5.x 내장 SDF 노드**, Infinigen 자연 팩토리(별도 환경) | 표면 분포 + 레이캐스트 접촉 검사, 최소 간격 | 전용 MCP 드묾. 접촉 단언 도구(blender-ai-mcp) 조합 |
+| **건물·평면** | 평면 JSON(방 그래프 + 면적) → 검사 → Bonsai(IFC)·Home Builder 5로 3D화, 또는 도면 입력 | `building_audit.py`, IfcOpenShell ifctester(IDS)·ifcclash, TopologicPy 도달 그래프, JuPedSim 피난 | **IfcOpenShell 공식 MCP**(`ifcopenshell-mcp`), MCP4IFC·Bonsai_mcp, RhinoAI(공식), Revit 2027 공식(읽기 전용, 검사용) |
+| **도시·단지** | OSM 윤곽 + DEM 지형(blosm, BlenderGIS) | 윤곽 꼭짓점 아래 지형 레이캐스트 → 기단 높이 | — |
+
 ## 관련 문서
 
-- [08 배치·레이아웃 가이드](../02_guides/08_scene_layout_placement.md) · [07 오브젝트·가구·조형 모델링](../02_guides/07_modeling_objects_furniture_sculpture.md) · [02 Blender MCP](../02_guides/02_blender_mcp.md) · [03 기타 MCP](../02_guides/03_other_mcp_dcc_cad_engines.md)
+- [13 인체·유기물·건물 도구](../02_guides/13_humans_organic_buildings.md) · [14 설치 안전](../02_guides/14_tool_install_safety.md) · [08 배치·레이아웃 가이드](../02_guides/08_scene_layout_placement.md) · [07 오브젝트·가구·조형 모델링](../02_guides/07_modeling_objects_furniture_sculpture.md) · [02 Blender MCP](../02_guides/02_blender_mcp.md) · [03 기타 MCP](../02_guides/03_other_mcp_dcc_cad_engines.md)
 - [보조 스크립트 사용법](scripts/README.md) · [품질 체크리스트](04_quality_checklists.md) · [인수인계](../05_handoff/status_and_next_steps.md)

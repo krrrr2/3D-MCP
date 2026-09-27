@@ -1,0 +1,45 @@
+{
+ "topic": "G12_tool_safety 원문 대조 (2026-09-27)",
+ "verdicts": [
+  {
+   "claim": "Blender 커밋 7054d325가 자동 실행 경고창에서 영구 허용 체크박스를 없애고 위험 문구를 넣었다",
+   "verdict": "confirmed",
+   "note": "커밋 페이지 직접 확인(Brecht Van Lommel). 탑재 버전은 미확인.",
+   "evidence_urls": [
+    "https://github.com/blender/blender/commit/7054d3254ba0da2df9b240c41dc8d6926c749a01"
+   ]
+  },
+  {
+   "claim": "ahujasid MCP for Blender에 2026년 CVE 4건",
+   "verdict": "confirmed",
+   "note": "GHSA로 확인: CVE-2026-10688(execute_blender_code, Low 2.0, 2026-06-03), CVE-2026-10662(zip_file_url SSRF, Low 2.1, 패치 커밋 5b37be25), CVE-2026-66004(download_polyhaven_asset 경로 조작, CVSS 6.0, 2026-07-24, 커밋 30a3308에서 수정). CVE-2026-10661은 기존 기록. 저장소 자체의 Security Advisories 탭에는 게시 건수 0.",
+   "evidence_urls": [
+    "https://github.com/advisories/GHSA-fx9q-x9g5-jgg6",
+    "https://github.com/advisories/GHSA-5hr7-6m56-f3rg",
+    "https://github.com/advisories/GHSA-4h8q-hh2j-755w"
+   ]
+  },
+  {
+   "claim": "ahujasid 텔레메트리는 옵트인이다",
+   "verdict": "refuted",
+   "note": "README 원문: 'Telemetry is opt-in. Collection of your content is off by default' + 기본으로 '최소 익명 사용 기록'(설치 ID, 세션 ID, 도구 이름, 성공 여부, 소요 시간, 버전, OS, 시각)을 수집하며 DISABLE_TELEMETRY=true로 완전히 끔. 즉 콘텐츠 수집만 옵트인이고 익명 사용 기록은 기본 ON(기존 가이드 서술이 맞음).",
+   "evidence_urls": [
+    "https://github.com/ahujasid/mcp-for-blender/blob/main/README.md"
+   ]
+  },
+  {
+   "claim": "ahujasid README가 mcp-for-blender.com을 Website로 링크",
+   "verdict": "confirmed",
+   "note": "README에 '[Website](https://mcp-for-blender.com/)'. blender-mcp.com·blendermcp.org는 여전히 README에 없음.",
+   "evidence_urls": [
+    "https://github.com/ahujasid/mcp-for-blender/blob/main/README.md"
+   ]
+  }
+ ],
+ "item_checks": [],
+ "unreliable_sources": [],
+ "missed_items": [],
+ "notes": [
+  "메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다."
+ ]
+}
