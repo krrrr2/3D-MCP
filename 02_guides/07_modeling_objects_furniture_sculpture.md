@@ -734,6 +734,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 
 ## 관련 문서
 
+- [배치·조형 보조 도구 한눈에 보기](../03_playbooks/06_placement_structure_helpers.md): 이 저장소 스크립트, 배치 검사가 들어 있는 MCP, 솔버·스킬·평가 도구 색인
 - [컴퓨터 유즈 vs MCP vs 스크립트](12_computer_use_and_other_methods.md): 스컬프트·유기체를 컴퓨터 유즈로 할 수 있나
 - [00 목적·범위](../00_purpose/purpose_and_scope.md) · [조사 방법·신뢰도 정책](../01_research/research_method.md) · [출처 카탈로그](../01_research/sources_catalog.md) · [검증 로그](../01_research/verification_log.md)
 - [01 AI 모델·클라이언트](01_ai_models_and_clients.md): 모델별 역할, effort, 비용

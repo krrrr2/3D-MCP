@@ -33,6 +33,7 @@
 | **어떤 AI·MCP를 쓸지 정하기** | [AI 모델](02_guides/01_ai_models_and_clients.md) → [Blender MCP](02_guides/02_blender_mcp.md) → [기타 MCP·엔진](02_guides/03_other_mcp_dcc_cad_engines.md) |
 | **AAA급 장면 하나를 처음부터 끝까지** | [02 제작 플레이북](03_playbooks/02_aaa_production_playbook.md) + [04 품질 체크리스트](03_playbooks/04_quality_checklists.md) |
 | **가구·오브젝트·조형이 제대로 나오게** | [모델링 가이드](02_guides/07_modeling_objects_furniture_sculpture.md) + [실측 치수표](03_playbooks/05_reference_dimensions.md) + [scene_audit.py](03_playbooks/scripts/README.md) |
+| **배치·조형을 문제없이 하게 돕는 도구가 뭐가 있나(MCP 포함 여부)** | [배치·조형 보조 도구 한눈에 보기](03_playbooks/06_placement_structure_helpers.md) |
 | **배치가 자연스럽게** | [배치 가이드](02_guides/08_scene_layout_placement.md) + [placement_utils.py](03_playbooks/scripts/README.md) |
 | **건물·방이 기묘하지 않게(백룸 방지)** | [building_audit.py](03_playbooks/scripts/README.md) (문·창·방·동선·계단 상식 검사) |
 | **컴퓨터 유즈 vs MCP vs 스크립트 비교** | [컴퓨터 유즈와 다른 방법들](02_guides/12_computer_use_and_other_methods.md) |
@@ -56,7 +57,7 @@
   tools/                 카탈로그 생성·문서 링크 검사 스크립트
   handson/               직접 실행해 확인한 기록 (공식 Blender Lab MCP 구동 검증: 응답 원본·재현 도구)
 02_guides/             주제별 가이드 12편 (분석·정리)
-03_playbooks/          실전 적용: 빠른 시작, 제작 플레이북, 프롬프트, 체크리스트, 치수표
+03_playbooks/          실전 적용: 빠른 시작, 제작 플레이북, 프롬프트, 체크리스트, 치수표, 배치·조형 보조 도구 색인
   templates/             에이전트 규칙(CLAUDE.md/AGENTS.md), Claude Code 스킬
   scripts/               Blender 검사·배치 스크립트 4종 + 테스트 (4.2 LTS·5.0·5.2 LTS 통과)
 04_case_studies/       사례 모음, 한국어 자료

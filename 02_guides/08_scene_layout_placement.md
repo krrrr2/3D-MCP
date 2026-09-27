@@ -811,6 +811,7 @@ def add_scatter(ground, collection, dist_min=4.0, density_max=0.08, seed=0,
 
 ## 관련 문서
 
+- [배치·조형 보조 도구 한눈에 보기](../03_playbooks/06_placement_structure_helpers.md): 이 저장소 스크립트, 배치 검사가 들어 있는 MCP, 솔버·스킬·평가 도구 색인
 - [건축 상식 검사 `building_audit.py`](../03_playbooks/scripts/README.md): 문·창·방 연결·동선·계단의 비상식(백룸식 기묘함) 자동 검출
 - [오브젝트·가구·조형물 모델링](07_modeling_objects_furniture_sculpture.md): 에셋 정면·원점·스케일 정규화, 부품 분해
 - [에이전트 워크플로·프롬프팅](09_agent_workflow_prompting.md): 시각 피드백 루프, 스킬·CLAUDE.md, 토큰 비용

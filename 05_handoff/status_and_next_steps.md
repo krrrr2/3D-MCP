@@ -2,6 +2,16 @@
 
 > 최종 갱신: 2026-09-27 · 브랜치 `claude/aaa-graphics-ai-modeling-u9zdts` · PR: https://github.com/krrrr2/3D-MCP/pull/1
 > 이 문서만 읽으면 다른 사람이나 AI가 이어서 작업할 수 있도록 썼습니다.
+>
+> **다음 세션 시작점 (2026-09-27 세션 종료 시점)**: 사용자가 "그만하고 정리"를 요청해 이 세션의 작업은 여기서 끝났습니다. 미완료 작업은 없고, 남은 일은 6절의 선택 과제뿐입니다.
+> 먼저 읽을 것:
+> 1. [README](../README.md)
+> 2. 이 문서 2·5·6절
+> 3. 필요한 주제의 가이드
+>
+> 자주 묻는 것:
+> - "배치·조형 보조 도구가 뭐가 있나" → [배치·조형 보조 도구 한눈에 보기](../03_playbooks/06_placement_structure_helpers.md)
+> - "공식 Blender MCP는 어떤가" → [Blender MCP 가이드 4절](../02_guides/02_blender_mcp.md)과 [구동 검증 기록](../01_research/handson/blender_lab_mcp/README.md)
 
 ## 1. 현재 목표
 
@@ -21,6 +31,7 @@
 | 보조 스크립트 4종 + 테스트 | ✅ | `scene_audit`·`placement_utils`·`review_views`·`building_audit`, 테스트 3종 Blender 4.2.23 LTS·5.0.1·5.2.2 LTS 통과 |
 | 공식 Blender Lab MCP 실제 구동 검증 | ✅ | bpy 5.2.2 LTS + 공식 서버(미러 98b0e49). 도구 26개 중 24개 호출, 공식 단위 테스트 102개 통과(mcp 1.30). SDK 2.x 비호환·HTTP 모드 CORS 전체 허용·렌더 저장 위치·EEVEE 헤드리스 종료 등 확인 → [검증 기록](../01_research/handson/blender_lab_mcp/README.md) |
 | `building_audit` 실제 AI 건물 검증 | ✅ | 실제 AI 생성 건물 9개 장면(GPT-6 Astra 1, Fable 4, GPT-6 4). 오탐 25종 수정, 백룸 오경보 0 → [검증 기록](../03_playbooks/scripts/validation/README.md) |
+| 배치·조형 보조 도구 색인 | ✅ | `03_playbooks/06_placement_structure_helpers.md`: 이 저장소 스크립트·가이드 코드, 배치 검사가 들어 있는 MCP, MCP 아닌 솔버·스킬·평가를 한 장에 모음(주요 Blender MCP에는 배치 검사 기능이 없음) |
 | 문서 링크 자동 검사 | ✅ | 외부 URL 전부 원자료에 존재, 깨진 내부 링크 0 |
 
 ## 3. 교차 검토 현황 (중요)
@@ -109,6 +120,7 @@
 | 11 | 문 여는 방향: 설계 규칙으로 추천(방 안쪽·모서리 경첩·좁은 욕실 바깥·문끼리 충돌 회피·현관 지역 관례), 궤적 검사, `open_door()`·`add_swing_symbols()`, 평면도 렌더(`render_plan.py --swings`) |
 | 12 | 공식 Blender Lab MCP 소스 정독·실제 구동 검증(`01_research/handson/blender_lab_mcp/`, 원자료 G8), Blender MCP 가이드 4절·10.5절·빠른 시작 개정, 스크립트 테스트 5.2.2 LTS 통과, 제외 항목 정리 |
 | 13 | 공식 MCP 남은 항목 후속 확인(v1.0.3 도구 수, 커넥터 버전, 공식 커밋 2026-08-06까지 비교, Windows 설치 실패 원인), 원자료 `G8_blender_lab_mcp.verify.json` |
+| 14 | 배치·조형 보조 도구 색인(`03_playbooks/06_placement_structure_helpers.md`), 다음 세션 시작점 정리 |
 
 ## 8. 이어서 작업하는 법
 
