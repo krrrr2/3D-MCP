@@ -110,7 +110,7 @@ def build_sources():
         body.append("")
         for it in r.get("items", []):
             all_urls.update(x.strip() for x in it.get("urls", []))
-        for c in r.get("case_studies", []):
+        for c in r.get("case_studies", []) + r.get("measurements", []):
             all_urls.update(x.strip() for x in c.get("urls", []))
     out += ["## 목차", ""] + toc + ["", f"항목·사례에 인용된 URL까지 합친 고유 URL 수: **{len(all_urls)}개**", ""] + body
     return "\n".join(out) + "\n"

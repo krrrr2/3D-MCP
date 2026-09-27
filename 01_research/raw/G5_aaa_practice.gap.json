@@ -1,0 +1,1252 @@
+{
+  "topic": "AAA 아트 디렉션·라이팅·렌더링 실무 가이드 + Blender 5.x / Unreal Engine 5.7–5.8 공식 변경점 (2026-09 기준)",
+  "summary_ko": [
+    "2026-09-27 기준 Blender 최신 안정판은 5.2 LTS입니다(2026년 7월 출시, 2028년 7월까지 지원). 5.3은 개발 문서(릴리스 노트 페이지)만 확인됐고 출시일은 확인하지 못했습니다. Python은 5.1부터 3.13(VFX Platform 2026)이며, 5.0은 3.11로 추정하지만 검증하지 못했습니다.",
+    "Blender 5.0(2025-11)의 주요 변경: ACEScg와 Rec.2020 작업 색공간, ACES 2.0 및 AgX HDR 뷰, Vulkan 기반 HDR 디스플레이 지원이 들어왔습니다. Cycles에는 thin-film 무지개빛, 다중 산란 Random Walk SSS, 새 볼륨 알고리즘이 추가됐고 Adaptive Subdivision이 정식 기능이 됐습니다. Python API에서는 EEVEE 식별자가 BLENDER_EEVEE로 바뀌었고, File Output 노드 API가 변경됐으며, 레거시 Action API와 일부 컴포지터 노드가 제거됐습니다. MCP로 bpy 스크립트를 실행한다면 이 부분의 호환성을 반드시 확인해야 합니다.",
+    "Blender 5.1(2026-03): GPU 렌더가 최대 10%, Windows CPU 렌더가 최대 20% 빨라졌고, AMD에서는 HIP RT가 기본으로 켜집니다. Cycles가 per-corner normal을 쓰도록 바뀌었고 Raycast 셰이더 노드, Bone Info 노드, 볼륨 그리드 dilate/erode/clip 노드가 추가됐습니다. 5.2 LTS에서는 Cycles 텍스처 캐시, Principled BSDF Thin Wall 모드, EEVEE 인스턴싱 최대 2배 가속, 원격 온라인 에셋 라이브러리, XPBD 기반 Geometry Nodes 헤어·천 물리(실험 기능)가 들어왔습니다.",
+    "UE 5.7(2025-11)에서 Substrate 머티리얼과 PCG가 Production-Ready가 됐고, MegaLights는 Beta(디렉셔널 라이트, 파티클 라이트, 반투명 지원)로, Nanite Foliage는 Experimental로 들어왔습니다. UE 5.8(2026-06-17, Unreal Fest Chicago)은 UE6 이전 마지막 메이저 버전입니다. MegaLights가 Production-Ready가 됐고, Lumen보다 2배 빠른 Lumen Lite(Irradiance Field 방식)와 공식 실험용 MCP 플러그인(에디터 내장 서버, 127.0.0.1:8000/mcp, 인증 없음)이 추가됐습니다.",
+    "물리 기반 라이팅 수치 기준: 직사광은 약 100,000–120,000 lux(EV100 약 15), 흐린 날은 약 10,000–20,000 lux(EV100 12–13), 거실 일반 조명은 150–200 lx, 주방은 200–300 lx(조리대 300–500), 사무 책상은 300–500 lx(EV100 약 6–7), 달빛은 약 0.1 lux입니다. 조도 lux를 EV100으로 바꾸는 식은 EV100 = log2(lux/2.5)입니다. 색온도는 거실 2700–3000K, 주방 3000–4000K, 사무 공간 4000–6500K가 권장값이며, Kruithof 곡선에 따르면 조도가 낮을수록 따뜻한 색이 자연스럽게 보입니다.",
+    "실무 포토리얼 원칙(Andrew Price/Blender Guru 등): 가짜처럼 보이는 가장 큰 원인은 다이내믹 레인지와 노출 처리입니다. 노출 기준점을 미들 그레이로 두고 조명을 속이지 말아야 합니다. 모든 모서리에 베벨을 넣고, 스크래치·먼지·지문·엣지 마모 같은 불완전함을 더해야 합니다. 인테리어는 24–35mm 렌즈, 수평을 맞춘 카메라와 lens shift로 2점 투시를 유지하고, 창에는 라이트 포털을 두며, 창이 하얗게 날아가지 않도록 관리해야 합니다.",
+    "AAA 환경 아트 구조(80.lv 브레이크다운): 블록아웃 → 모듈러 키트 → 트림 시트 → 버텍스 페인트와 RGBA 마스크 변주 → 데칼 → 스토리텔링 소품 배치 → 라이팅과 포스트 순서로 진행합니다. 반복을 깨는 핵심 수단은 히어로 소품, 비대칭, 데칼, 머티리얼 변주입니다. 텍셀 밀도는 보통 배경 512 px/m, 게임플레이 표면 1024 px/m(10.24 px/cm), 히어로 소품과 1인칭 아이템 2048 px/m를 씁니다.",
+    "AI로 생성한 3D가 가짜처럼 보이는 주요 원인은 색 텍스처에 그림자와 하이라이트가 구워진 것(baked lighting), PBR 맵(roughness, metallic, normal, AO)이 없는 것, 불균일한 삼각형 토폴로지, 잘못된 UV입니다. 해결책은 de-lighting, 제대로 된 PBR 맵 생성, 리토폴로지, UV 재작업, 그리고 입력 사진을 균일한 조명으로 찍는 것입니다.",
+    "한계: blender.org, Epic 문서, 80.lv, Blender Guru 원문은 직접 읽지 못했고, 모든 내용은 검색 결과 요약을 교차 확인한 것입니다. Gleb Alexandrov/Creative Shrimp, CG Cookie, Kaizen의 구체적 수치(HDRI 강도, 라이트 크기)와 UE 포스트 프로세스 기본값은 검색에서 확인하지 못해 낮은 신뢰도로 표시했습니다."
+  ],
+  "items": [
+    {
+      "name": "Blender 5.0",
+      "category": "DCC 공식 릴리스(렌더링/색관리/Python API)",
+      "what_it_is": "2025년 11월 출시된 Blender 5 시리즈 첫 버전. Cycles: thin-film iridescence, 다중 산란 Random Walk SSS, 아티팩트가 적은 새 볼륨 알고리즘, 'Experimental' 토글 제거(Adaptive Subdivision 정식화). 색관리: 작업 색공간 Linear Rec.709(기본)/Linear Rec.2020/ACEScg, ACES 1.3/2.0 뷰, AgX HDR·Rec.2100-PQ/HLG 디스플레이, Vulkan 기반 HDR·광색역 표시(Windows, Linux Wayland), 컴포지터 Convert Colorspace 노드. Python API 파괴적 변경: EEVEE 엔진 ID가 BLENDER_EEVEE_NEXT에서 BLENDER_EEVEE로 변경, File Output 노드 file_slots[0].path가 file_output_items[0].name으로 변경, SpaceNodeEditor.geometry_nodes_type/geometry_nodes_tool_tree가 node_tree_sub_type/selected_node_group으로 변경, CompositorNodeGamma 등 다수 컴포지터 노드가 Shader Node 대응물로 대체, 레거시 Action API 제거.",
+      "how_to_use": "MCP(blender-mcp 등)로 bpy 코드를 생성할 때 bpy.app.version >= (5,0,0)이면 scene.render.engine='BLENDER_EEVEE'를 쓰고, 애니메이션은 slotted action/channelbag API를 쓰며, 컴포지터 노드는 새 이름을 쓰도록 프롬프트나 시스템 지침에 명시한다. 광색역 룩뎁이 필요하면 Color Management > Working Space를 ACEScg로 설정한다.",
+      "language": "Python(bpy), GUI",
+      "license_or_price": "GPL, 무료",
+      "status_date": "2025-11 출시(2025-10-17 베타)",
+      "strengths": "ACES/HDR 파이프라인 정식 지원, SSS·볼륨 품질 향상, Adaptive Subdivision 정식화",
+      "weaknesses": "4.x 대상으로 학습된 LLM 코드가 5.0 API 변경 때문에 깨지기 쉬움(엔진 ID, Action API, 컴포지터 노드)",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.0/",
+        "https://developer.blender.org/docs/release_notes/5.0/python_api/",
+        "https://developer.blender.org/docs/release_notes/5.0/eevee/",
+        "https://developer.blender.org/docs/release_notes/5.0/color_management/",
+        "https://www.blender.org/download/releases/5-0/",
+        "https://www.cgchannel.com/2025/11/blender-5-0-is-out-check-out-its-5-key-features/",
+        "https://digitalproduction.com/2025/10/17/blender-5-0-beta/",
+        "https://www.redsharknews.com/blender-5-0-release-hdr-aces-nanovdb-update",
+        "https://itsfoss.com/news/blender-5-0-release/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender 5.1",
+      "category": "DCC 공식 릴리스",
+      "what_it_is": "2026년 3월 출시. 라이브러리를 VFX Reference Platform 2026에 맞춰 올림: Python 3.13, OpenColorIO 2.5, OpenEXR 3.4, OpenVDB 13.0. Cycles GPU 최대 10%, Windows CPU 최대 20% 가속, AMD GPU에서 HIP RT 하드웨어 레이트레이싱 기본 활성화. Cycles가 지오메트리를 분할하지 않고 per-corner normal을 사용해 sharp edge 셰이딩 문제 해결. Raycast 셰이더 노드(NPR에 유용), Bone Info 노드(GN에서 아마추어 본 트랜스폼 읽기), 볼륨 그리드 dilate/erode/clip 노드, String to Curves 개선.",
+      "how_to_use": "애드온/MCP 서버가 C 확장이나 휠을 쓰면 Python 3.13 ABI로 다시 빌드해야 한다. 하드 서피스 모델에서 sharp edge 셰이딩을 검증할 때 5.1 이상을 기준으로 삼는다.",
+      "language": "Python 3.13",
+      "license_or_price": "GPL, 무료",
+      "status_date": "2026-03(digitalproduction 2026-03-19 보도)",
+      "strengths": "렌더 성능 향상, 셰이딩 일관성, NPR용 Raycast 노드",
+      "weaknesses": "Python 버전 변경으로 서드파티 애드온 재빌드 필요",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.1/",
+        "https://www.blender.org/download/releases/5-1/",
+        "https://www.blender.org/press/blender-5-1-release/",
+        "https://www.cgchannel.com/2026/03/discover-5-key-features-in-blender-5-1/",
+        "https://digitalproduction.com/2026/03/19/blender-5-1-is-here/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender 5.2 LTS (2026-09 기준 현재 안정판)",
+      "category": "DCC 공식 릴리스(LTS)",
+      "what_it_is": "2026년 7월 출시, 2028년 7월까지 유지보수되는 LTS. 렌더링: Cycles 텍스처 캐시, Principled BSDF Thin Wall 모드(얇은 판·잎·커튼 등), EEVEE 인스턴싱 최적화로 인스턴스가 많은 CPU 병목 씬이 최대 2배 가속, EEVEE 사용성 이슈 다수 해결. Geometry Nodes: 새 XPBD 솔버 기반 헤어·천 물리(실험 기능), Sample Sound Frequencies 노드와 Sound 소켓. 에셋: 원격 호스팅 온라인 에셋 라이브러리를 등록·브라우징·다운로드. 스컬프트: Scene Project 브러시, Add Primitive 오퍼레이터, 복셀 리메셔가 버텍스 컬러 등 속성 보존. 공식 매뉴얼 'latest'가 5.2 LTS를 가리킴.",
+      "how_to_use": "AI+MCP 파이프라인의 기준 버전으로 5.2 LTS를 고정한다(2년 API 안정성). 대형 가구·소품 배치 씬은 인스턴스(컬렉션 인스턴스/GN instance)로 구성해 EEVEE 가속을 활용한다. 커튼·잎·종이에는 Thin Wall을 쓴다. 텍스처가 많은 archviz 씬은 Cycles 텍스처 캐시로 메모리를 줄인다.",
+      "language": "Python 3.13",
+      "license_or_price": "GPL, 무료",
+      "status_date": "2026-07 출시, 2028-07까지 LTS",
+      "strengths": "장기 지원, 대규모 인스턴싱 성능, 온라인 에셋 라이브러리",
+      "weaknesses": "XPBD 물리는 실험 단계, 세부 API 변경 목록은 원문 미확인",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.2/",
+        "https://www.blender.org/download/releases/5-2/",
+        "https://www.blender.org/press/blender-5-2-lts-release/",
+        "https://www.cgchannel.com/2026/07/blender-5-2-lts-is-here-discover-its-5-key-features/",
+        "https://www.phoronix.com/news/Blender-5.2-Released",
+        "https://80.lv/articles/blender-5-2-lts-has-been-released",
+        "https://docs.blender.org/manual/en/latest/render/lights/light_object.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender 5.3 (개발 중)",
+      "category": "DCC 개발 버전",
+      "what_it_is": "개발자 문서에 5.3 릴리스 노트 페이지가 존재하는 다음 버전. 기존 출시 주기(5.0 2025-11, 5.1 2026-03, 5.2 2026-07)로 보면 2026년 11월 전후 출시가 예상되지만 공식 날짜는 확인하지 못했다.",
+      "how_to_use": "프로덕션에는 5.2 LTS를 쓰고, 5.3 알파/베타에서는 MCP 스크립트 호환성만 미리 점검한다.",
+      "language": "Python",
+      "license_or_price": "GPL, 무료",
+      "status_date": "2026-09 개발 중(추정)",
+      "strengths": "최신 기능",
+      "weaknesses": "불안정, 출시일 미확인",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.3/",
+        "https://www.cgchannel.com/2026/02/see-the-2026-blender-development-roadmap/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Unreal Engine 5.7",
+      "category": "게임엔진 공식 릴리스",
+      "what_it_is": "2025년 11월 출시. Substrate 머티리얼 시스템(고정 셰이딩 모델을 모듈형 다층 머티리얼로 대체)과 PCG 프레임워크(전용 PCG Editor 모드)가 Production-Ready가 됐다. MegaLights가 Experimental에서 Beta로 올라가며 디렉셔널 라이트, Niagara 파티클 라이트, 반투명 라이팅을 지원한다. Nanite Foliage(애니메이션되는 밀집 식생을 Nanite로 처리)는 Experimental이다. 에디터 내 AI 어시스턴트도 도입됐다.",
+      "how_to_use": "금속 위 도장, 코팅, 먼지층 같은 다층 표면은 Substrate로 구성한다. 식생과 소품 산포는 PCG로 규칙 기반 배치한다(밀도, 경사, 간격 규칙).",
+      "language": "C++/Blueprint/Python",
+      "license_or_price": "Epic EULA(매출 기준 로열티)",
+      "status_date": "2025-11(2025-11-12 보도)",
+      "strengths": "Substrate·PCG 정식화",
+      "weaknesses": "Nanite Foliage는 실험 단계",
+      "urls": [
+        "https://www.unrealengine.com/news/unreal-engine-5-7-is-now-available",
+        "https://digitalproduction.com/2025/11/12/unreal-engine-5-7-foliage-pcg-and-in-editor-ai/",
+        "https://gamefromscratch.com/unreal-engine-5-7-released/",
+        "https://wccftech.com/unreal-engine-5-7-out-now-with-nanite-foliage-and-megalights-powered-stunning-dynamic-shadow-casting-lights/",
+        "https://gaming.news/news/2025-11-14/epic-releases-unreal-engine-5-7-moves-megalights-feature-from-experimental-to-beta/",
+        "https://vagon.io/blog/what-s-new-in-unreal-engine-5-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Unreal Engine 5.8",
+      "category": "게임엔진 공식 릴리스",
+      "what_it_is": "2026-06-17 Unreal Fest Chicago에서 출시된 UE5의 마지막 메이저 업데이트(이후 UE6로 전환). MegaLights Production-Ready: 그림자를 드리우는 동적 area light를 대량 배치할 수 있고 노이즈가 크게 줄었으며, 현세대 콘솔 60fps를 목표로 한다. 디버그·최적화 도구도 추가됐다. Lumen Lite: Probe Occlusion이 있는 Irradiance Field 기반의 중간 품질 GI로, Lumen High Quality보다 약 2배 빠르며 Switch 2에서 60fps가 가능하다. 공식 MCP 플러그인(실험 기능)도 포함됐다.",
+      "how_to_use": "수십~수백 개의 실용 조명(천장 다운라이트, 스트링 라이트, 네온)이 있는 인테리어나 야간 거리 씬은 MegaLights를 켜고 모든 라이트를 그림자 있는 area light로 둔다. 저사양 타깃에는 Lumen Lite를 쓴다.",
+      "language": "C++/Blueprint/Python",
+      "license_or_price": "Epic EULA",
+      "status_date": "2026-06-17",
+      "strengths": "MegaLights 정식화, 스케일러블 GI(Lumen Lite), MCP 공식 지원",
+      "weaknesses": "세부 콘솔 변수와 기본값은 원문 미확인",
+      "urls": [
+        "https://dev.epicgames.com/documentation/unreal-engine/unreal-engine-5-8-release-notes",
+        "https://www.unrealengine.com/news/unreal-engine-5-8-is-now-available",
+        "https://tomlooman.com/unreal-engine-5-8-performance-highlights/",
+        "https://www.guru3d.com/story/unreal-engine-58-debuts-lumen-lite-and-productionready-megalights/",
+        "https://overclock3d.net/news/software/unreal-engine-5-8-delivers-megalights-and-lumen-lite-with-60-fps-performance-targets/",
+        "https://www.biunivoca.com/en/blog/unreal-engine-5-8-all-the-main-news-and-in-depth-information-has-been-released",
+        "https://en.wikipedia.org/wiki/Unreal_Engine_5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Unreal Engine 5.8 공식 MCP 플러그인(Experimental)",
+      "category": "MCP 서버(엔진 내장)",
+      "what_it_is": "Epic이 엔진에 무료로 포함한 1st-party MCP 서버. 에디터 프로세스 안에서 http://127.0.0.1:8000/mcp 로 동작하며, Claude Code, Cursor, MCP Inspector, Gemini, VS Code, Codex 연결 설정이 문서화돼 있다. 블루프린트 탐색, 에셋 조작, 레벨 빌드, 머티리얼 조정, 메시 작업이 가능하다. Experimental 표시가 붙어 있어 기능과 데이터 포맷이 바뀔 수 있고, 기본 로컬 서버에는 인증 계층이 없다. Epic은 MCP를 UE6까지 가져갈 핵심 인프라로 규정했다.",
+      "how_to_use": "플러그인을 활성화하고 MCP 클라이언트에 로컬 HTTP 엔드포인트를 등록한다. 인증이 없으므로 포트를 외부에 노출하지 않는다. 작업 전에 소스 컨트롤로 스냅샷을 만들고, 배치·라이팅 변경은 작은 단위로 검증한다.",
+      "language": "HTTP MCP",
+      "license_or_price": "엔진 포함 무료",
+      "status_date": "2026-06(UE 5.8)",
+      "strengths": "공식 지원, 에디터 전체 API 접근",
+      "weaknesses": "실험 기능이고 인증이 없음. 서드파티 서버가 특정 워크플로에서는 더 강하다는 평가가 있음. 플러그인 정식 명칭과 툴 목록은 원문 미확인",
+      "urls": [
+        "https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup",
+        "https://www.strayspark.studio/blog/epic-official-mcp-plugin-ue5-8-vs-third-party",
+        "https://cryptobriefing.com/unreal-engine-5-8-mcp-server-support/",
+        "https://www.pixelsdesign.it/blog/unreal-engine-mcp-claude-code-explained.html",
+        "https://gamineai.com/blog/unreal-engine-5-8-mcp-claude-code-first-safe-editor-session-2026",
+        "https://www.seeles.ai/resources/blogs/unreal-engine-mcp-ai-assistant-workflow-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "UE Physical Lighting Units(물리 조명 단위) 문서",
+      "category": "공식 문서(라이팅)",
+      "what_it_is": "UE 라이트를 측정 가능한 물리 단위로 설정하는 방법을 다루는 문서. Directional Light는 lux(= lm/m², Direct Normal Illuminance), Auto Exposure는 EV100(ISO 100 기준 노출값)을 쓴다. 직사광 약 100,000–120,000 lux이면 EV100 약 15, 설원처럼 반사가 강하면 약 18이다. 달빛은 약 0.1 lux, 별빛은 약 0.001 lux다. 라이트를 놓았는데 화면이 하얗게 되면 Auto Exposure Max EV100과 Histogram Max EV100을 올리라고 안내한다.",
+      "how_to_use": "실측값으로 설정한다: 태양 약 100k lux, 포인트/스폿 라이트는 lumen/candela, 스카이는 SkyAtmosphere와 SkyLight. 노출은 Manual 모드에서 EV100을 고정(주광 14–15, 실내 5–7)하고 룩뎁을 진행한다.",
+      "language": "-",
+      "license_or_price": "무료 문서",
+      "status_date": "5.8 문서 존재(2026)",
+      "strengths": "사진 노출값과 1:1로 대응하는 공식 기준",
+      "weaknesses": "원문 직접 열람 불가, 표의 세부 수치는 요약으로만 확인",
+      "urls": [
+        "https://dev.epicgames.com/documentation/unreal-engine/using-physical-lighting-units-in-unreal-engine?lang=en-US",
+        "https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits",
+        "https://www.magnopus.com/blog/lighting-in-unreal-with-photography-principles",
+        "https://forums.unrealengine.com/t/lighting-exposure-and-intensity-units-confusion/211375"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Lumen 성능·품질 가이드(UE 5.8 문서 + 실무 가이드)",
+      "category": "공식 문서/실무 가이드(GI)",
+      "what_it_is": "Lumen GI와 반사의 설정 가이드. Post Process Volume의 Final Gather Quality는 게임에서 1.0–1.5, 시네마틱에서 2.0–4.0(노이즈와 깜빡임 감소, GPU 비용 증가)으로 쓴다. Lumen Scene Detail은 1–2다. Lumen Scene Lighting Update Speed와 Final Gather Lighting Update Speed로 조명 전파 지연을 줄일 수 있다. 하드웨어 레이트레이싱을 쓸 때는 겹치는 메시를 줄여야 한다. Final Gather, Screen Probe Gather, Surface Cache 해상도가 성능의 세 가지 핵심 레버다.",
+      "how_to_use": "룩뎁은 Final Gather Quality 2–4로 기준 이미지를 만들고, 게임 빌드는 1–1.5로 내린 뒤 차이를 비교한다. 인테리어는 벽을 두껍게, 메시를 닫힌 형태로 모델링해 빛 새는 현상을 줄인다.",
+      "language": "-",
+      "license_or_price": "무료 문서",
+      "status_date": "UE 5.8 문서",
+      "strengths": "성능·품질 트레이드오프 기준을 제공",
+      "weaknesses": "실무 블로그 수치(HWRT 10–14ms 등)는 단일 출처",
+      "urls": [
+        "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-performance-guide-for-unreal-engine",
+        "https://dev.epicgames.com/documentation/unreal-engine/lumen-technical-details-in-unreal-engine?lang=en-US",
+        "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-global-illumination-and-reflections-in-unreal-engine",
+        "https://polycount.com/discussion/239120/unreal-engine-5-lumen-light-optimization-guide",
+        "https://bitsoulhosting.com/marketplace/blog/ue5-lumen-gi-settings-asset-prep-performance-2026",
+        "https://altheragames.com/en/blog/ue5-lumen-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Blender 라이트 단위와 물리 밝기(매뉴얼, Blendergrid)",
+      "category": "공식 매뉴얼/실무 가이드(라이팅)",
+      "what_it_is": "Blender Sun 라이트 강도는 W/m²(방사 조도) 단위이고, 포인트·스폿·에어리어 라이트는 W(방사속) 단위다. 전구에 적힌 전기 W나 LED의 '등가 W'는 Blender W와 다르며, lumen 표기는 사람 눈 감도로 가중된 값이다. 렌더러는 눈처럼 순응하지 않으므로 Render > Film > Exposure로 보정하는데, 노출 1스톱당 라이트 강도는 2^exposure배와 같다. 야외 직사광은 약 32,000–100,000 lux이며, 물리적으로 정확한 태양값(약 1000 W/m²)은 지형이나 룩뎁에 비해 지나치게 밝다는 커뮤니티 보고가 많다.",
+      "how_to_use": "물리 스케일(태양 약 1000 W/m², Nishita 스카이, 노출을 크게 낮춤)과 아티스틱 스케일(노출 0, 태양 약 3–10) 중 하나만 골라 씬 전체에 일관되게 쓴다. 두 스케일을 섞지 않는다.",
+      "language": "-",
+      "license_or_price": "무료",
+      "status_date": "매뉴얼 5.2 LTS",
+      "strengths": "단위 정의를 명확히 알 수 있음",
+      "weaknesses": "HDRI 강도와 아티스틱 태양 강도의 표준값은 공식적으로 없음(실무 관례)",
+      "urls": [
+        "https://docs.blender.org/manual/en/latest/render/lights/light_object.html",
+        "https://blendergrid.com/articles/cycles-physically-correct-brightness",
+        "https://blenderartists.org/t/physically-realistic-sun-light-in-blender-is-too-bright-for-terrain-modeling/1473840",
+        "https://blenderartists.org/t/nishita-sky-power/1311680",
+        "https://blenderartists.org/t/correct-sun-strength-value/1255199",
+        "https://devtalk.blender.org/t/default-light-intensity-and-exposure/13056",
+        "https://www.blendernation.com/2019/08/31/daily-blender-tip-364-lumens-values-in-lights/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Blender Guru(Andrew Price) - 포토리얼리즘 원칙",
+      "category": "실무자 교육 자료",
+      "what_it_is": "Andrew Price(Poliigon 창업자)의 포토리얼 강연과 튜토리얼. 모델과 재질이 좋아도 렌더가 가짜처럼 보이는 핵심 원인으로 다이내믹 레인지를 지목한다. 사진가처럼 한 지점을 노출 기준점으로 정해 미들 그레이에 맞추고, 보조광을 추가하거나 스카이를 키워 방을 억지로 밝히는 '치팅'을 피하라고 한다. 또한 스크래치, 지문, 먼지, 얼룩, 찌그러짐, 부식, 엣지 마모 같은 불완전함과 베벨된 모서리가 사실감의 핵심이라고 강조한다.",
+      "how_to_use": "AI 에이전트의 렌더 검수 체크리스트에 넣는다: (1) 노출 기준점이 미들 그레이인지, (2) 모든 하드 엣지에 베벨이 있는지, (3) roughness 변주와 먼지·엣지 마모 레이어가 있는지.",
+      "language": "영어(영상/웹)",
+      "license_or_price": "무료 영상 + 유료 강좌",
+      "status_date": "상시",
+      "strengths": "가짜처럼 보이는 원인을 체계적으로 설명",
+      "weaknesses": "구체적인 HDRI/태양 강도 수치는 검색에서 확인하지 못함",
+      "urls": [
+        "https://andrew-price-a9bl.squarespace.com/tutorials/secret-ingredient-photorealism",
+        "https://dev.to/sedaily/graphical-photorealism-with-andrew-price-the-blender-guru",
+        "https://community.gamedev.tv/t/photorealism-by-blender-guru-andrew-price-at-the-blender-conference/213763",
+        "https://www.youtube.com/watch?v=Z8AAX-ENWvQ"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Creative Shrimp(Gleb Alexandrov) 라이팅 강좌",
+      "category": "실무자 교육 자료",
+      "what_it_is": "'Realistic Lighting in Blender: 11 Hacks', 6시간 이상의 'Cinematic Lighting in Blender' 강좌와 HDR IBL 튜토리얼. 씬의 의도에 맞는 라이팅 방식을 고르고, 대비가 좋은 HDRI로 직사광을 시뮬레이션하는 법 등을 다룬다.",
+      "how_to_use": "시네마틱 무드(야간, 역광, 볼류메트릭) 레퍼런스로 활용한다. 구체적 수치는 강좌 원문에서 확인해야 한다.",
+      "language": "영어",
+      "license_or_price": "유료 강좌(일부 무료 영상)",
+      "status_date": "상시",
+      "strengths": "아티스틱 라이팅 사고방식",
+      "weaknesses": "라이트 크기, Kelvin, 대비 비율 등 수치는 검색 요약에 없음",
+      "urls": [
+        "https://www.creativeshrimp.com/cinematic-lighting-in-blender",
+        "https://www.creativeshrimp.com/lighting-tutorials-my-way-to-write-a-book.html",
+        "https://cgtricks.com/hdr-image-based-lighting-in-blender-creative-shrimp-gleb-alexandrov/",
+        "https://gleb_alexandrov.artstation.com/projects/the-artworks-i-created-for-the-realistic-lighting-in-blender-video-course"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Archviz 인테리어 렌더링 체크리스트(실무 가이드 모음)",
+      "category": "실무 가이드(archviz)",
+      "what_it_is": "인테리어 포토리얼 렌더링 관행. 렌즈는 방 전체 24–35mm, 디테일 50–85mm를 쓴다. 카메라를 수평으로 두고 lens shift/film offset으로 프레이밍해 2점 투시(수직선 평행)를 유지한다. 창 하나로 빛이 드는 인테리어는 Cycles 약 250 샘플, 바운스 증가, indirect clamp를 낮춰 파이어플라이를 억제하고, 창마다 area light 포털을 둔다. 가장 흔한 가짜 티는 창이 하얗게 날아가는 것이므로 실내와 창 노출 차이를 관리해야 한다.",
+      "how_to_use": "MCP로 카메라를 만들 때 lens=24–35, rotation_x=90°(수평), shift_y로 상하 프레이밍을 기본 템플릿으로 삼는다. 창 크기에 맞는 portal area light를 자동 생성하는 규칙을 둔다.",
+      "language": "-",
+      "license_or_price": "-",
+      "status_date": "2026 가이드 포함",
+      "strengths": "즉시 적용 가능한 수치",
+      "weaknesses": "일부는 SEO성 출처. pixel filter 수치 등은 교차 확인 부족",
+      "urls": [
+        "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026",
+        "https://imeshh.com/blog/make-an-interior-in-blender-like-a-pro-archvis-tutorial-2-im",
+        "https://renderinfinity.com/blog/rendering-for-interior-design-focal-length/",
+        "https://hdrmaps.com/blog/realistic-hdri-lighting-for-exterior-archviz-in-blender/",
+        "https://www.maxon.net/en/article/architectural-rendering-techniques",
+        "https://www.d5render.com/posts/interior-vs-exterior-architecture-key-rendering-techniques"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "80.lv 모듈러 환경 브레이크다운(트림 시트/데칼/버텍스 페인트)",
+      "category": "AAA 환경 아트 실무 사례",
+      "what_it_is": "80.lv의 환경 제작 해설 모음. Detroit: Become Human에서 영감을 받은 모듈러 씬(CGMA, Clinton Crumpler 강좌), SanXia Street 1940, 사막 씬 모듈러 키트와 트림 시트, 고딕 모듈러 환경(프로시저럴 시스템과 커스텀 셰이더), 스타일라이즈드 중세 시장. 공통 워크플로는 블록아웃, 모듈러 피스, 트림 시트(텍스처 용량과 제작 시간 절감), 그다음 마감 패스로 RGBA 마스크 변주, 버텍스 페인팅, 데칼, 오브젝트 배치를 적용해 균일함과 반복을 깨는 것이다.",
+      "how_to_use": "AI 에이전트의 씬 생성 파이프라인을 이 단계 순서로 구성한다. 모듈러 피스는 그리드 스냅(예: 1m/2m/4m 배수)으로 만들고, 반복을 깨는 데칼과 버텍스 페인트 패스를 별도 단계로 강제한다.",
+      "language": "영어",
+      "license_or_price": "무료 기사",
+      "status_date": "상시(연도 다양)",
+      "strengths": "실제 AAA 지향 아티스트의 단계별 구조",
+      "weaknesses": "원문 직접 열람 불가(요약 기반)",
+      "urls": [
+        "https://80.lv/articles/001agt-004adk-005cg-modular-scene-in-ue4-blockout-vertex-paint-decals",
+        "https://www.artstation.com/artwork/aRXRe9",
+        "https://polycount.com/discussion/213637/80-lv-publication-modular-scene-in-ue4-blockout-vertex-paint-decals",
+        "https://80.lv/articles/005cg-001agt-sanxia-street-1940-modular-approach-trim-sheets-decals",
+        "https://80.lv/articles/building-a-desert-scene-with-modular-kit-trim-sheets",
+        "https://80.lv/articles/making-of-a-modular-gothic-environment-with-procedural-systems-trim-sheets-custom-shaders",
+        "https://80.lv/articles/medieval-market-a-detailed-guide-on-stylized-environment-art-in-unreal-engine"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "환경 구도·스토리텔링 가이드(80.lv, Level Design Book, RMCAD)",
+      "category": "아트 디렉션 가이드",
+      "what_it_is": "환경 아트의 첫인상은 구도, 색, 명확한 초점이 결정하고, 그다음에 텍스처, 마모, 스토리텔링 레이어가 탐색을 유도한다. 문, 아치, 절벽, 그림자를 프레임 안의 프레임으로 써서 깊이와 초점을 만든다. 쓰러진 의자, 부러진 칼, 오래된 사진처럼 과거 사건을 암시하는 소품을 배치해 사람이 살았던 느낌을 준다. 히어로 소품, 독특한 실루엣, 통제된 비대칭으로 패턴을 깬다. 블록아웃 단계부터 라이팅으로 명도와 초점을 확인하고, 중간 패스에서 다듬고, 최종 패스에서 무드와 포스트를 확정한다.",
+      "how_to_use": "LLM 배치 프롬프트에 '초점 1개, 프레이밍 요소, 스토리 소품 3–5개, 비대칭 규칙'을 명시하고, 블록아웃 단계에서 그레이스케일 명도 렌더로 가독성을 검증한다.",
+      "language": "영어",
+      "license_or_price": "무료",
+      "status_date": "상시",
+      "strengths": "배치의 '그럴듯함'을 규칙으로 바꿀 수 있음",
+      "weaknesses": "수치 기준이 거의 없음",
+      "urls": [
+        "https://80.lv/articles/get-away-lighting-composition-in-environment-art",
+        "https://book.leveldesignbook.com/process/env-art",
+        "https://www.rmcad.edu/blog/environment-artist-playbook-from-blockout-to-final-pass/",
+        "https://www.artstation.com/blogs/dominiquebuttiens/0gyA/storytelling-in-environment-art-level-design",
+        "https://gamedesignskills.com/game-design/environmental-storytelling/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "텍셀 밀도 표준 가이드",
+      "category": "텍스처링 실무 기준",
+      "what_it_is": "1×1m 면에 1024 텍스처를 쓰면 1024 px/m = 10.24 px/cm다. 관행적으로 배경 512 px/m, 게임플레이 공간 표면 1024 px/m(FPS 기준 10.24 px/cm), 히어로 소품과 1인칭 아이템 2048 px/m를 쓴다. 건축과 환경은 타일 텍스처로 256–512 px/m를 쓴다. 밀도는 오브젝트 크기가 아니라 카메라가 가장 가까이 접근하는 거리로 정한다.",
+      "how_to_use": "AI가 생성한 에셋을 씬에 넣을 때 UV 스케일을 목표 텍셀 밀도에 맞춰 정규화한다(Blender의 Texel Density Checker류 애드온 또는 스크립트 사용). 인접한 오브젝트끼리 밀도가 크게 다르면 가짜 티가 난다.",
+      "language": "-",
+      "license_or_price": "-",
+      "status_date": "상시",
+      "strengths": "일관성 검증이 쉬운 수치 기준",
+      "weaknesses": "스튜디오마다 다름",
+      "urls": [
+        "https://polycount.com/discussion/234887/texel-density-standards-for-aaa-first-person-shooter-games",
+        "https://forums.unrealengine.com/t/texel-density-standards-for-aaa-first-person-shooter-games/1646118",
+        "https://www.beyondextent.com/deep-dives/deepdive-texeldensity",
+        "https://rebusfarm.net/blog/texel-density-basics-every-artist-should-know",
+        "https://bitsoulhosting.com/marketplace/blog/texel-density-game-assets-texture-resolution-guide",
+        "https://www.strayspark.studio/blog/texture-resolution-guide-games-512-1k-2k-4k"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "'AI 3D가 가짜처럼 보이는 이유' 분석(Tripo 블로그 등)",
+      "category": "AI 3D 품질 문제 분석",
+      "what_it_is": "AI 생성 3D의 전형적 결함: (1) 3D 공간 이해가 부족해 색 텍스처에 그림자와 하이라이트를 그려 넣은 baked lighting, (2) roughness/metallic/normal/AO가 없는 단일 색 텍스처라 플라스틱·밀랍·페인트처럼 보임, (3) 조밀하고 불균일한 삼각형 토폴로지, (4) 잘못된 UV로 인한 이음새, 늘어짐, 흐림. 대응책은 자동 리토폴로지(예: 200만 삼각형을 약 5만 쿼드로), 진짜 PBR 맵 생성, 여러 각도의 균일한 조명 사진 입력(강한 그림자 금지)이다.",
+      "how_to_use": "AI 에셋 수입 게이트를 만든다: 조명을 바꿔도 음영이 따라 움직이는지(baked lighting 검출), PBR 채널이 모두 있는지, 폴리곤 예산, UV 늘어짐을 검사한다. 통과하지 못하면 de-light, 리토폴로지, 재텍스처링을 거친다.",
+      "language": "영어",
+      "license_or_price": "무료 기사(벤더 블로그)",
+      "status_date": "2025–2026",
+      "strengths": "구체적인 결함 분류",
+      "weaknesses": "Tripo 자사 홍보 성격",
+      "urls": [
+        "https://www.tripo3d.ai/blog/why-ai-3d-models-look-bad",
+        "https://www.tripo3d.ai/blog/explore/ai-3d-model-generator-and-the-uncanny-geometry-problem",
+        "https://www.tripo3d.ai/blog/explore/how-to-generate-realistic-pbr-ready-models-with-ai",
+        "https://www.tripo3d.ai/blog/improve-redo-textures",
+        "https://medium.com/illumination/meshy-ai-3d-generator-review-2026-full-production-pipeline-tested-298b006b4a42",
+        "https://arxiv.org/pdf/2402.13251"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "실내 조도·색온도 레퍼런스(Kruithof 곡선 포함)",
+      "category": "물리 레퍼런스 데이터",
+      "what_it_is": "조명 설계 기준: 거실 일반 150–200 lx(독서 300–500), 주방 일반 200–300 lx(조리대 300–500), 홈오피스 책상 300–500 lx. 색온도는 거실·휴식 공간 2700–3000K, 주방 3000–4000K, 사무 공간 4000–6500K. Kruithof 곡선에 따르면 약 400 lx에서는 3000–6000K, 약 75 lx에서는 2400–2700K가 쾌적하게 느껴진다.",
+      "how_to_use": "UE에서는 lux와 lumen을 직접 입력하고 Temperature를 켠다. Blender에서는 Blackbody 노드나 5.x의 라이트 온도 설정으로 Kelvin을 지정하고, 밝기는 목표 조도와 노출에 맞춘다.",
+      "language": "-",
+      "license_or_price": "-",
+      "status_date": "상시",
+      "strengths": "씬 유형별 목표값",
+      "weaknesses": "조명 업체 블로그 출처가 섞여 있음",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Kruithof_curve",
+        "https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/",
+        "https://www.ledrise.eu/blog/home-lighting-guide-lr/",
+        "https://www.prolighting.com/blog/2020/06/16/choosing-the-right-color-temperature-for-your-home/",
+        "https://the-edit.lumens.com/the-guides/understanding-kelvin-color-temperature/",
+        "https://en.wikipedia.org/wiki/Illuminance"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "라이팅 스케일은 물리 스케일과 아티스틱 스케일 중 하나만 골라 씬 전체에 일관되게 쓴다.",
+      "why": "물리값(태양 약 100k lux, 약 1000 W/m²)과 임의값(태양 3–10)이 섞이면 노출, 블룸, 자동노출이 예측 불가능해지고, AI 에이전트가 조명을 추가할 때마다 밸런스가 깨진다.",
+      "example": "UE: Directional Light 100,000–120,000 lux, Manual 노출 EV100 약 14–15. 실내는 EV100 약 5–7로 조정. Blender: 물리 스케일이면 태양 약 1000 W/m²와 Film Exposure 대폭 하향(2^exposure 규칙), 아티스틱 스케일이면 Exposure 0에 태양 약 3–10으로 고정.",
+      "urls": [
+        "https://dev.epicgames.com/documentation/unreal-engine/using-physical-lighting-units-in-unreal-engine?lang=en-US",
+        "https://docs.blender.org/manual/en/latest/render/lights/light_object.html",
+        "https://blendergrid.com/articles/cycles-physically-correct-brightness"
+      ]
+    },
+    {
+      "tip": "조도 lux를 EV100으로 바꿔 노출을 계산한다: EV100 = log2(lux / 2.5), 휘도 기준이면 EV100 = log2(L[cd/m²] × 8).",
+      "why": "사진 측광 공식(입사광 C=250, 반사광 K=12.5)으로 목표 조도에서 필요한 노출을 역산하면 자동노출에 의존하지 않고 일관된 밝기를 얻는다.",
+      "example": "100,000 lux → EV100 약 15.3(Sunny 16 규칙과 일치). 10,000 lux(흐림) → 약 12. 300 lux(사무실) → 약 6.9. 150 lux(거실) → 약 5.9. 0.1 lux(달빛) → 약 -4.6.",
+      "urls": [
+        "https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits",
+        "https://en.wikipedia.org/wiki/Illuminance"
+      ]
+    },
+    {
+      "tip": "룩뎁과 배치 검수 중에는 자동노출을 끄고(Min EV100 = Max EV100 또는 Manual) 노출을 고정한다. 화면이 하얗게 되면 Max EV100과 Histogram Max를 올린다.",
+      "why": "자동노출이 켜져 있으면 조명과 머티리얼 변경의 효과가 상쇄돼 AI가 결과를 잘못 판단한다(스크린샷 비교가 무의미해짐).",
+      "example": "UE Post Process Volume: Metering Mode = Manual, Exposure Compensation으로 EV100 고정. 인테리어 6–7, 야외 주광 14–15.",
+      "urls": [
+        "https://dev.epicgames.com/documentation/unreal-engine/using-physical-lighting-units-in-unreal-engine?lang=en-US",
+        "https://forums.unrealengine.com/t/lighting-exposure-and-intensity-units-confusion/211375"
+      ]
+    },
+    {
+      "tip": "노출 기준점을 미들 그레이에 맞추고, 보조 라이트를 추가하거나 스카이를 키워 억지로 밝히는 치팅을 하지 않는다. 다이내믹 레인지는 톤매퍼(AgX, ACES)와 창 노출 관리로 해결한다.",
+      "why": "Andrew Price는 모델과 재질이 좋아도 가짜처럼 보이는 핵심 원인으로 다이내믹 레인지를 꼽는다. 실제 사진은 한 지점에 노출을 맞추기 때문에 밝은 곳과 어두운 곳이 동시에 완벽하게 나올 수 없다.",
+      "example": "인테리어: 실내 벽 중간톤을 미들 그레이로 둔다. 창밖은 1–2스톱 밝게 두되 완전히 날아가지 않게 AgX/Filmic 하이라이트 롤오프를 쓴다. Blender는 AgX(4.0+ 기본)나 ACES 2.0(5.0+)을 사용한다.",
+      "urls": [
+        "https://andrew-price-a9bl.squarespace.com/tutorials/secret-ingredient-photorealism",
+        "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026",
+        "https://developer.blender.org/docs/release_notes/5.0/color_management/"
+      ]
+    },
+    {
+      "tip": "모든 하드 엣지에 베벨을 넣고, 표면에는 roughness 변주와 먼지, 지문, 스크래치, 엣지 마모 레이어를 반드시 추가한다.",
+      "why": "실제 물체는 모서리가 둥글어 하이라이트를 받고 표면이 불완전하다. 완벽하게 깨끗한 CG 표면은 무의식적으로 가짜로 인식된다.",
+      "example": "가구 모서리 베벨 2–5mm(Bevel 모디파이어 segments 2–3, 또는 Cycles Bevel 셰이더 노드 반경 약 0.002–0.005m). Roughness 맵에 그런지 텍스처를 약 5–15% 섞는다(관례적 값).",
+      "urls": [
+        "https://andrew-price-a9bl.squarespace.com/tutorials/secret-ingredient-photorealism",
+        "https://medium.com/@johnsonm/6-tips-for-more-realistic-renderings-4e7ecc41d873",
+        "https://yelzkizi.org/blender-photorealism-make-renders-real/"
+      ]
+    },
+    {
+      "tip": "실내 조도와 색온도는 실제 공간 기준값을 쓰고, 조도가 낮을수록 따뜻하게 설정한다(Kruithof).",
+      "why": "낮은 조도에 차가운 색온도를 쓰면 부자연스럽고 음산해 보인다. 실제 조명 설계 기준을 따르면 공간의 용도가 바로 읽힌다.",
+      "example": "거실 150–200 lx/2700–3000K, 주방 200–300 lx(조리대 300–500)/3000–4000K, 사무실 300–500 lx/4000–6500K. 저녁 무드 조명은 약 75 lx/2400–2700K.",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Kruithof_curve",
+        "https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/",
+        "https://www.prolighting.com/blog/2020/06/16/choosing-the-right-color-temperature-for-your-home/"
+      ]
+    },
+    {
+      "tip": "archviz 카메라 템플릿: 24–35mm, 카메라 수평 유지, 상하 프레이밍은 lens shift로 처리해 2점 투시를 지킨다. 디테일 컷은 50–85mm를 쓴다.",
+      "why": "카메라를 기울이면 수직선이 수렴해 건축 사진 문법에 어긋나고 아마추어처럼 보인다. 광각 과장(18mm 이하)은 공간을 왜곡한다.",
+      "example": "Blender: camera.data.lens=28, rotation_euler.x=radians(90), camera.data.shift_y=0.1–0.2, 카메라 높이 약 1.2–1.6m(관례값).",
+      "urls": [
+        "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026",
+        "https://renderinfinity.com/blog/rendering-for-interior-design-focal-length/"
+      ]
+    },
+    {
+      "tip": "Cycles 인테리어 기본 세팅: 창마다 area light 포털을 두고, 바운스를 늘리고, indirect clamp로 파이어플라이를 줄이고, 적당한 샘플과 디노이저를 쓴다.",
+      "why": "창 하나로 빛이 드는 실내는 빛 경로를 찾기 어려워 노이즈가 폭증한다. 포털은 샘플링을 창 쪽으로 집중시킨다.",
+      "example": "샘플 약 250 + 디노이즈, 라이트 바운스를 기본보다 상향, indirect clamp 약 10(관례), 픽셀 필터 폭을 기본 1.5에서 약 1.15로 줄이면 더 샤프해짐(단일 출처).",
+      "urls": [
+        "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026",
+        "https://imeshh.com/blog/make-an-interior-in-blender-like-a-pro-archvis-tutorial-2-im"
+      ]
+    },
+    {
+      "tip": "Lumen 품질 레버는 Final Gather Quality, Lumen Scene Detail, 업데이트 속도 세 가지다. 룩뎁은 높게, 게임은 낮게 두고 두 결과를 비교한다.",
+      "why": "Final Gather Quality를 올리면 GI 노이즈와 깜빡임이 줄지만 GPU 비용이 크게 늘어난다. 하드웨어 RT는 겹치는 메시가 많으면 급격히 느려진다.",
+      "example": "게임: Final Gather Quality 1.0–1.5, Lumen Scene Detail 1.0. 시네마틱: Final Gather Quality 2.0–4.0, Scene Detail 2.0. 조명 전파가 느리면 Lumen Scene Lighting Update Speed와 Final Gather Lighting Update Speed를 올린다.",
+      "urls": [
+        "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-performance-guide-for-unreal-engine",
+        "https://bitsoulhosting.com/marketplace/blog/ue5-lumen-gi-settings-asset-prep-performance-2026",
+        "https://polycount.com/discussion/239120/unreal-engine-5-lumen-light-optimization-guide"
+      ]
+    },
+    {
+      "tip": "UE 5.8에서는 실용 조명이 많은 씬에 MegaLights(Production-Ready)를 쓰고, 저사양이나 60fps 타깃에는 Lumen Lite를 검토한다.",
+      "why": "MegaLights는 그림자가 있는 area light를 대량으로 두어도 노이즈와 비용이 낮아, 가짜 필 라이트 대신 실제 광원 배치로 사실감을 낼 수 있다. Lumen Lite는 Lumen HQ 대비 약 2배 빠르다.",
+      "example": "상점가 야경: 간판과 가로등 수백 개를 모두 shadowed area light로 두고 MegaLights를 켠다. Switch 2나 저사양 PC 빌드에서는 Lumen Lite로 전환한다.",
+      "urls": [
+        "https://www.unrealengine.com/news/unreal-engine-5-8-is-now-available",
+        "https://tomlooman.com/unreal-engine-5-8-performance-highlights/",
+        "https://www.guru3d.com/story/unreal-engine-58-debuts-lumen-lite-and-productionready-megalights/"
+      ]
+    },
+    {
+      "tip": "AAA 환경은 블록아웃 → 모듈러 키트 → 트림 시트 → 버텍스 페인트와 RGBA 마스크 변주 → 데칼 → 스토리 소품 → 라이팅과 포스트 순서로 쌓는다. AI 파이프라인도 이 단계를 분리해 실행한다.",
+      "why": "한 번에 완성본을 생성하면 반복과 균일함이 남아 가짜처럼 보인다. 마감 패스(데칼, 버텍스 페인트)가 모듈러 반복을 깨는 핵심이다.",
+      "example": "벽 모듈 2m×3m(그리드 스냅) + 트림 시트 1장(몰딩, 걸레받이, 문틀 공용) + 누수 얼룩과 균열 데칼 + 벽 하단 20–40cm 구간에 버텍스 페인트로 먼지와 습기 표현.",
+      "urls": [
+        "https://80.lv/articles/001agt-004adk-005cg-modular-scene-in-ue4-blockout-vertex-paint-decals",
+        "https://80.lv/articles/005cg-001agt-sanxia-street-1940-modular-approach-trim-sheets-decals",
+        "https://80.lv/articles/building-a-desert-scene-with-modular-kit-trim-sheets"
+      ]
+    },
+    {
+      "tip": "텍셀 밀도를 씬 전체에서 통일하고, 기준은 카메라가 가장 가까이 오는 거리로 정한다.",
+      "why": "인접 오브젝트 간 텍스처 선명도가 다르면 합성한 티가 난다. AI 생성 에셋은 UV 스케일이 제각각이라 특히 위험하다.",
+      "example": "배경 512 px/m, 플레이 공간 표면 1024 px/m(10.24 px/cm), 히어로와 1인칭 소품 2048 px/m, 건축 타일 256–512 px/m.",
+      "urls": [
+        "https://polycount.com/discussion/234887/texel-density-standards-for-aaa-first-person-shooter-games",
+        "https://www.beyondextent.com/deep-dives/deepdive-texeldensity",
+        "https://bitsoulhosting.com/marketplace/blog/texel-density-game-assets-texture-resolution-guide"
+      ]
+    },
+    {
+      "tip": "배치의 그럴듯함은 초점 1개, 프레임 안의 프레임, 스토리 소품, 통제된 비대칭으로 만든다. 블록아웃 단계에서 그레이스케일로 명도를 먼저 검증한다.",
+      "why": "첫인상은 구도, 색, 초점이 결정한다. 균일한 격자 배치나 완벽한 대칭은 절차적으로 생성된 느낌을 준다.",
+      "example": "거실: 초점은 창가 안락의자(키 라이트가 닿는 곳), 문틀로 프레이밍, 스토리 소품 3–5개(펼쳐진 책, 식은 머그잔, 반쯤 접힌 담요), 의자는 테이블과 평행하지 않게 5–15° 틀어 배치(관례).",
+      "urls": [
+        "https://80.lv/articles/get-away-lighting-composition-in-environment-art",
+        "https://book.leveldesignbook.com/process/env-art",
+        "https://www.rmcad.edu/blog/environment-artist-playbook-from-blockout-to-final-pass/"
+      ]
+    },
+    {
+      "tip": "AI 생성 에셋 수입 게이트: 조명을 돌려서 음영이 따라오지 않으면 baked lighting이므로 de-light하거나 재텍스처링한다. PBR 채널, 폴리곤 예산, UV 늘어짐도 검사한다.",
+      "why": "색 텍스처에 구워진 그림자는 씬 조명과 충돌해 즉시 가짜로 보인다. PBR 채널이 없으면 플라스틱이나 밀랍처럼 보인다.",
+      "example": "검사 렌더는 HDRI를 0°/90°/180° 회전해 비교한다. 리토폴로지 예: 200만 삼각형을 약 5만 쿼드로. 생성 입력은 균일한 조명의 다각도 사진(정면, 측면, 후면, 상단, 디테일).",
+      "urls": [
+        "https://www.tripo3d.ai/blog/why-ai-3d-models-look-bad",
+        "https://www.tripo3d.ai/blog/explore/ai-3d-model-generator-and-baked-lighting-preview-scenes",
+        "https://www.tripo3d.ai/blog/explore/how-to-generate-realistic-pbr-ready-models-with-ai"
+      ]
+    },
+    {
+      "tip": "PBR 알베도는 물리적 범위 안에 둔다. 비금속은 sRGB 약 30–50 이상, 240 이하로 하고, 순수한 흑백(0 또는 255)은 쓰지 않는다. 명암과 조명은 알베도가 아니라 라이트로 만든다.",
+      "why": "알베도가 너무 어둡거나 밝으면 GI 바운스가 비현실적으로 되고, AI 텍스처는 흔히 대비가 과장돼 있다(일반 PBR 가이드 관례이며 이번 검색에서 확인하지 못함).",
+      "example": "숯 약 50 sRGB, 새 눈 약 240 sRGB, 일반 콘크리트 약 110–130 sRGB(관례값).",
+      "urls": []
+    },
+    {
+      "tip": "Blender 5.x용 bpy 코드 생성 시 버전 분기와 5.0 파괴적 변경을 시스템 프롬프트에 명시한다.",
+      "why": "LLM 학습 데이터 대부분이 4.x 이하 API라서 엔진 ID, Action API, 컴포지터 노드, File Output 노드 코드가 깨진다.",
+      "example": "if bpy.app.version >= (5,0,0): engine='BLENDER_EEVEE'(이전 BLENDER_EEVEE_NEXT). File Output 노드는 file_output_items[i].name. 레거시 Action fcurves API 대신 slotted action/channelbag 사용. Gamma 등 컴포지터 노드는 Shader Node 대응물 사용. 5.1 이상은 Python 3.13.",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.0/python_api/",
+        "https://developer.blender.org/docs/release_notes/5.1/"
+      ]
+    },
+    {
+      "tip": "UE 5.8 공식 MCP 서버(127.0.0.1:8000/mcp)는 인증이 없으므로 로컬 전용으로 두고, 작업 단위마다 소스 컨트롤 체크포인트를 만든다.",
+      "why": "실험 기능이라 포맷이 바뀔 수 있고, 인증 없는 HTTP 엔드포인트를 노출하면 에디터 전체를 원격 조작당할 위험이 있다.",
+      "example": "방화벽으로 8000 포트 외부 차단. 레벨 배치, 라이팅, 머티리얼 변경은 각각 별도 커밋으로 남기고, 매 단계 뷰포트 스크린샷을 비교한다.",
+      "urls": [
+        "https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup",
+        "https://gamineai.com/blog/unreal-engine-5-8-mcp-claude-code-first-safe-editor-session-2026",
+        "https://www.strayspark.studio/blog/epic-official-mcp-plugin-ue5-8-vs-third-party"
+      ]
+    },
+    {
+      "tip": "광색역 작업이 필요하면 Blender 5.0+에서 작업 색공간을 ACEScg로 두고, 뷰는 AgX 또는 ACES 2.0을 쓴다. 컬러 그레이딩은 알베도가 아니라 컴포지터와 뷰 변환 단계에서 한다.",
+      "why": "알베도를 직접 바꿔 무드를 내면 PBR 일관성이 깨진다. 그레이딩을 분리하면 에셋을 재사용할 수 있다.",
+      "example": "Color Management: Working Space=ACEScg, View=AgX(SDR) 또는 AgX HDR/Rec.2100-PQ(HDR 모니터). 컴포지터의 Convert Colorspace 노드로 색공간 변환.",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.0/color_management/",
+        "https://docs.blender.org/manual/en/latest/render/color_management/color_spaces.html",
+        "https://famousandfaded.com/deep-cuts/blender-5-aces-2-ocio-hdr-support/"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Detroit: Become Human 영감 모듈러 씬(UE4) - 블록아웃, 버텍스 페인트, 데칼",
+      "who": "Jason Cheung(Yi Kai), CGMA UE4 Modular Environment 강좌(강사 Clinton Crumpler)",
+      "date": "2019년경",
+      "what_was_made": "미래 도시 실내·외 모듈러 환경",
+      "process": "블록아웃 후 모듈러 피스와 트림 시트를 제작하고(텍스처 용량과 제작 시간 절감), 마감 패스로 RGBA 마스크 변주, 버텍스 페인팅, 데칼, 오브젝트 배치를 적용해 균일함을 깨고 환경 스토리텔링을 더했다.",
+      "tools": "Unreal Engine 4, 트림 시트, 데칼, 버텍스 페인트",
+      "ai_model": "없음(인간 아티스트 사례, AI 파이프라인 단계 설계 레퍼런스)",
+      "outcome": "80.lv 게재, Polycount와 ArtStation에 공유. 데칼과 버텍스 페인트가 모듈러 반복을 깨는 핵심으로 제시됨",
+      "urls": [
+        "https://80.lv/articles/001agt-004adk-005cg-modular-scene-in-ue4-blockout-vertex-paint-decals",
+        "https://www.artstation.com/artwork/aRXRe9",
+        "https://polycount.com/discussion/213637/80-lv-publication-modular-scene-in-ue4-blockout-vertex-paint-decals"
+      ]
+    },
+    {
+      "title": "SanXia Street 1940 - 모듈러 접근, 트림 시트, 데칼",
+      "who": "80.lv 기고 아티스트",
+      "date": "미확인",
+      "what_was_made": "1940년대 대만 산샤 거리 환경",
+      "process": "모듈러 건물 키트, 공용 트림 시트, 데칼 레이어로 시대감과 노후화를 표현했다.",
+      "tools": "모듈러 키트, 트림 시트, 데칼",
+      "ai_model": "없음",
+      "outcome": "역사적 거리 재현 브레이크다운 공개",
+      "urls": [
+        "https://80.lv/articles/005cg-001agt-sanxia-street-1940-modular-approach-trim-sheets-decals"
+      ]
+    },
+    {
+      "title": "모듈러 고딕 환경 - 프로시저럴 시스템, 트림 시트, 커스텀 셰이더",
+      "who": "80.lv 기고 아티스트",
+      "date": "미확인",
+      "what_was_made": "고딕 건축 모듈러 환경",
+      "process": "트림 시트 기반 모듈러 키트에 프로시저럴 시스템과 커스텀 셰이더를 결합해 변주를 자동화했다.",
+      "tools": "모듈러 키트, 트림 시트, 커스텀 셰이더, 프로시저럴 도구",
+      "ai_model": "없음",
+      "outcome": "규칙 기반 변주는 AI/PCG 배치 자동화의 참고 모델이 된다",
+      "urls": [
+        "https://80.lv/articles/making-of-a-modular-gothic-environment-with-procedural-systems-trim-sheets-custom-shaders"
+      ]
+    },
+    {
+      "title": "모듈러 키트와 트림 시트로 만든 사막 씬",
+      "who": "80.lv 기고 아티스트",
+      "date": "미확인",
+      "what_was_made": "사막 환경 씬",
+      "process": "소수의 모듈러 피스와 트림 시트로 넓은 사막 건축을 구성했다.",
+      "tools": "모듈러 키트, 트림 시트",
+      "ai_model": "없음",
+      "outcome": "적은 텍스처로 넓은 환경을 구성하는 사례",
+      "urls": [
+        "https://80.lv/articles/building-a-desert-scene-with-modular-kit-trim-sheets"
+      ]
+    },
+    {
+      "title": "Get Away - 환경 아트의 라이팅과 구도",
+      "who": "80.lv 기고 아티스트",
+      "date": "미확인",
+      "what_was_made": "라이팅과 구도 중심 환경 작품",
+      "process": "초점, 프레이밍, 라이팅으로 시선을 유도하는 구도 설계를 해설했다.",
+      "tools": "실시간 엔진 라이팅",
+      "ai_model": "없음",
+      "outcome": "구도와 라이팅 원칙 레퍼런스",
+      "urls": [
+        "https://80.lv/articles/get-away-lighting-composition-in-environment-art"
+      ]
+    },
+    {
+      "title": "Andrew Price - 'The Secret Ingredient to Photorealism' / Blender Conference 포토리얼리즘 강연",
+      "who": "Andrew Price(Blender Guru, Poliigon)",
+      "date": "미확인(강연·튜토리얼)",
+      "what_was_made": "포토리얼리즘 원칙 강의",
+      "process": "다이내믹 레인지와 노출 기준점(미들 그레이)을 설명하고, 보조광 치팅을 지양하며, 불완전함과 베벨을 강조했다.",
+      "tools": "Blender Cycles",
+      "ai_model": "없음",
+      "outcome": "CG가 가짜처럼 보이는 원인을 진단하는 표준 레퍼런스",
+      "urls": [
+        "https://andrew-price-a9bl.squarespace.com/tutorials/secret-ingredient-photorealism",
+        "https://dev.to/sedaily/graphical-photorealism-with-andrew-price-the-blender-guru",
+        "https://community.gamedev.tv/t/photorealism-by-blender-guru-andrew-price-at-the-blender-conference/213763"
+      ]
+    },
+    {
+      "title": "UE 5.8 공식 MCP로 Claude Code 첫 에디터 세션 구성",
+      "who": "GamineAI 블로그, Ludus AI 블로그 등",
+      "date": "2026",
+      "what_was_made": "UE 5.8 에디터와 Claude Code를 MCP로 연결하는 셋업 가이드",
+      "process": "실험용 MCP 플러그인을 활성화하고, 로컬 HTTP 엔드포인트(127.0.0.1:8000/mcp)를 등록한 뒤, 안전 수칙(로컬 전용, 소스 컨트롤)을 따라 에셋, 레벨, 머티리얼을 조작했다.",
+      "tools": "Unreal Engine 5.8 MCP 플러그인, Claude Code",
+      "ai_model": "Claude(Claude Code)",
+      "outcome": "공식 경로로 동작 확인. 인증 없음과 실험 단계라는 한계를 명시",
+      "urls": [
+        "https://gamineai.com/blog/unreal-engine-5-8-mcp-claude-code-first-safe-editor-session-2026",
+        "https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup",
+        "https://www.pixelsdesign.it/blog/unreal-engine-mcp-claude-code-explained.html"
+      ]
+    }
+  ],
+  "measurements": [
+    {
+      "item": "직사광 조도",
+      "dimension": "조도",
+      "typical_value": "100000",
+      "range": "32000–120000",
+      "unit": "lux",
+      "region": "야외 주간",
+      "note": "UE 문서와 커뮤니티에서 120,000 lux를 직사광 값으로 인용. EV100 약 15",
+      "urls": [
+        "https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits",
+        "https://blendergrid.com/articles/cycles-physically-correct-brightness",
+        "https://polycount.com/discussion/226090/sun-intensity-in-u4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "밝은 햇빛의 노출",
+      "dimension": "EV100",
+      "typical_value": "15",
+      "range": "15–18(설원 등 강한 반사)",
+      "unit": "EV100",
+      "region": "야외",
+      "note": "Sunny 16 규칙과 일치",
+      "urls": [
+        "https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits",
+        "https://www.magnopus.com/blog/lighting-in-unreal-with-photography-principles"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "달빛·별빛 조도",
+      "dimension": "조도",
+      "typical_value": "0.1(달빛)",
+      "range": "0.001(별빛)–0.1",
+      "unit": "lux",
+      "region": "야간",
+      "note": "야간 씬 노출 설정 기준",
+      "urls": [
+        "https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits",
+        "https://en.wikipedia.org/wiki/Illuminance"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "lux에서 EV100으로 변환",
+      "dimension": "공식",
+      "typical_value": "EV100 = log2(lux/2.5)",
+      "range": "휘도 기준: log2(cd/m² × 8)",
+      "unit": "EV100",
+      "region": "-",
+      "note": "측광 상수 C=250, K=12.5에서 유도. 300 lux는 약 EV 6.9",
+      "urls": [
+        "https://en.wikipedia.org/wiki/Illuminance"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "거실 일반 조도",
+      "dimension": "조도",
+      "typical_value": "150–200",
+      "range": "독서 300–500",
+      "unit": "lux",
+      "region": "주거 실내",
+      "note": "EV100 약 5.9–6.3",
+      "urls": [
+        "https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/",
+        "https://www.ledrise.eu/blog/home-lighting-guide-lr/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "주방 조도",
+      "dimension": "조도",
+      "typical_value": "200–300",
+      "range": "조리대 300–500",
+      "unit": "lux",
+      "region": "주거 실내",
+      "note": "",
+      "urls": [
+        "https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/",
+        "https://www.wosenled.com/standard-lux-level-chart/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "홈오피스·사무 책상 조도",
+      "dimension": "조도",
+      "typical_value": "500",
+      "range": "300–500",
+      "unit": "lux",
+      "region": "사무 실내",
+      "note": "",
+      "urls": [
+        "https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/",
+        "https://en.wikipedia.org/wiki/Kruithof_curve"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "공간별 권장 색온도",
+      "dimension": "색온도",
+      "typical_value": "거실 2700–3000",
+      "range": "주방 3000–4000, 사무실 4000–6500",
+      "unit": "K",
+      "region": "실내",
+      "note": "Kruithof 곡선: 약 75 lx에서는 2400–2700K, 약 400 lx에서는 3000–6000K가 쾌적",
+      "urls": [
+        "https://www.prolighting.com/blog/2020/06/16/choosing-the-right-color-temperature-for-your-home/",
+        "https://www.ledlightexpert.com/how-to-choose-the-right-color-temperature-for-different-spaces",
+        "https://en.wikipedia.org/wiki/Kruithof_curve"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "인테리어 카메라 초점거리",
+      "dimension": "렌즈",
+      "typical_value": "24–35",
+      "range": "디테일 50–85",
+      "unit": "mm",
+      "region": "archviz",
+      "note": "수평 카메라와 lens shift로 2점 투시 유지",
+      "urls": [
+        "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026",
+        "https://renderinfinity.com/blog/rendering-for-interior-design-focal-length/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Cycles 인테리어 샘플 기준",
+      "dimension": "샘플 수",
+      "typical_value": "250",
+      "range": "-",
+      "unit": "samples(+디노이즈)",
+      "region": "Blender Cycles",
+      "note": "창 하나로 빛이 드는 인테리어 기준. 바운스 상향, indirect clamp 하향 병행",
+      "urls": [
+        "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "Lumen Final Gather Quality",
+      "dimension": "품질 계수",
+      "typical_value": "1.0(게임)",
+      "range": "1.0–1.5 게임, 2.0–4.0 시네마틱",
+      "unit": "배수",
+      "region": "UE5 Post Process",
+      "note": "높일수록 노이즈와 깜빡임이 줄고 GPU 비용이 늘어남",
+      "urls": [
+        "https://bitsoulhosting.com/marketplace/blog/ue5-lumen-gi-settings-asset-prep-performance-2026",
+        "https://forums.unrealengine.com/t/lumen-gi-final-gather-quality-settings/231815",
+        "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-performance-guide-for-unreal-engine"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Lumen Scene Detail",
+      "dimension": "품질 계수",
+      "typical_value": "1.0",
+      "range": "1.0–2.0",
+      "unit": "배수",
+      "region": "UE5 Post Process",
+      "note": "",
+      "urls": [
+        "https://bitsoulhosting.com/marketplace/blog/lumen-global-illumination-ue5-setup-asset-prep-performance"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "Lumen HWRT 비용(quality 2)",
+      "dimension": "GPU 시간",
+      "typical_value": "10–14",
+      "range": "-",
+      "unit": "ms(중급 GPU)",
+      "region": "UE5",
+      "note": "단일 실무 블로그 수치",
+      "urls": [
+        "https://bitsoulhosting.com/marketplace/blog/ue5-lumen-gi-settings-asset-prep-performance-2026"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "Lumen Lite 속도",
+      "dimension": "성능",
+      "typical_value": "약 2배",
+      "range": "-",
+      "unit": "Lumen HQ 대비",
+      "region": "UE 5.8",
+      "note": "Switch 2에서 60fps GI 가능",
+      "urls": [
+        "https://www.guru3d.com/story/unreal-engine-58-debuts-lumen-lite-and-productionready-megalights/",
+        "https://overclock3d.net/news/software/unreal-engine-5-8-delivers-megalights-and-lumen-lite-with-60-fps-performance-targets/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "MegaLights 성능 목표",
+      "dimension": "프레임레이트",
+      "typical_value": "60",
+      "range": "-",
+      "unit": "fps(현세대 콘솔)",
+      "region": "UE 5.8",
+      "note": "Production-Ready",
+      "urls": [
+        "https://www.unrealengine.com/news/unreal-engine-5-8-is-now-available",
+        "https://overclock3d.net/news/software/unreal-engine-5-8-delivers-megalights-and-lumen-lite-with-60-fps-performance-targets/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "UE 5.8 출시일",
+      "dimension": "날짜",
+      "typical_value": "2026-06-17",
+      "range": "-",
+      "unit": "date",
+      "region": "Unreal Fest Chicago",
+      "note": "UE6 이전 마지막 메이저",
+      "urls": [
+        "https://www.unrealengine.com/news/unreal-engine-5-8-is-now-available",
+        "https://windowsforum.com/windows-news.4/unreal-engine-5-8-megalights-lumen-lite-and-the-road-to-ue6.427978/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "UE 5.8 공식 MCP 엔드포인트",
+      "dimension": "네트워크",
+      "typical_value": "http://127.0.0.1:8000/mcp",
+      "range": "-",
+      "unit": "URL",
+      "region": "UE 5.8 에디터",
+      "note": "인증 없음, Experimental",
+      "urls": [
+        "https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup",
+        "https://www.strayspark.studio/blog/epic-official-mcp-plugin-ue5-8-vs-third-party"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "텍셀 밀도(게임플레이 표면·FPS)",
+      "dimension": "텍셀 밀도",
+      "typical_value": "1024(=10.24 px/cm)",
+      "range": "배경 512, 히어로·1인칭 2048, 건축 타일 256–512",
+      "unit": "px/m",
+      "region": "AAA 게임",
+      "note": "카메라 최근접 거리 기준",
+      "urls": [
+        "https://polycount.com/discussion/234887/texel-density-standards-for-aaa-first-person-shooter-games",
+        "https://bitsoulhosting.com/marketplace/blog/texel-density-game-assets-texture-resolution-guide",
+        "https://www.beyondextent.com/deep-dives/deepdive-texeldensity"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Blender Python 버전",
+      "dimension": "소프트웨어 버전",
+      "typical_value": "3.13",
+      "range": "5.1–5.2(5.0은 3.11로 추정, 미확인)",
+      "unit": "Python",
+      "region": "Blender 5.x",
+      "note": "VFX Reference Platform 2026 정렬",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.1/",
+        "https://www.cgchannel.com/2026/03/discover-5-key-features-in-blender-5-1/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Blender 5.2 LTS 지원 기간",
+      "dimension": "날짜",
+      "typical_value": "2028-07까지",
+      "range": "출시 2026-07",
+      "unit": "date",
+      "region": "-",
+      "note": "2026-09 기준 최신 안정판",
+      "urls": [
+        "https://www.cgchannel.com/2026/07/blender-5-2-lts-is-here-discover-its-5-key-features/",
+        "https://www.blender.org/press/blender-5-2-lts-release/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Blender 5.1 렌더 가속",
+      "dimension": "성능",
+      "typical_value": "GPU 최대 10%",
+      "range": "Windows CPU 최대 20%",
+      "unit": "%",
+      "region": "Cycles",
+      "note": "AMD HIP RT 기본 활성화",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.1/",
+        "https://digitalproduction.com/2026/03/19/blender-5-1-is-here/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Blender 5.2 EEVEE 인스턴싱 가속",
+      "dimension": "성능",
+      "typical_value": "최대 2배",
+      "range": "-",
+      "unit": "배",
+      "region": "EEVEE, 인스턴스가 많은 CPU 병목 씬",
+      "note": "",
+      "urls": [
+        "https://www.cgchannel.com/2026/07/blender-5-2-lts-is-here-discover-its-5-key-features/",
+        "https://www.phoronix.com/news/Blender-5.2-Released"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Blender Sun 라이트 물리값",
+      "dimension": "방사 조도",
+      "typical_value": "약 1000",
+      "range": "아티스틱 관례 3–10(노출 0)",
+      "unit": "W/m²",
+      "region": "Blender Cycles/EEVEE",
+      "note": "물리값을 쓰면 Film Exposure를 크게 낮춰야 함(2^exposure 규칙). 아티스틱 범위는 커뮤니티 관례",
+      "urls": [
+        "https://docs.blender.org/manual/en/latest/render/lights/light_object.html",
+        "https://blenderartists.org/t/physically-realistic-sun-light-in-blender-is-too-bright-for-terrain-modeling/1473840",
+        "https://blenderartists.org/t/correct-sun-strength-value/1255199"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "AI 메시 리토폴로지 예시",
+      "dimension": "폴리곤 수",
+      "typical_value": "200만 삼각형에서 약 5만 쿼드",
+      "range": "-",
+      "unit": "polys",
+      "region": "AI 3D 후처리",
+      "note": "벤더 블로그 예시",
+      "urls": [
+        "https://www.tripo3d.ai/blog/why-ai-3d-models-look-bad"
+      ],
+      "confidence": "low"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Blender 5.0 Release Notes",
+      "url": "https://developer.blender.org/docs/release_notes/5.0/",
+      "source_type": "공식 릴리스 노트",
+      "date": "2025-11",
+      "why_useful": "5.0 Cycles, EEVEE, API 변경의 1차 출처"
+    },
+    {
+      "title": "Blender 5.0: Python API",
+      "url": "https://developer.blender.org/docs/release_notes/5.0/python_api/",
+      "source_type": "공식 릴리스 노트",
+      "date": "2025-11",
+      "why_useful": "MCP 스크립트 호환성에 영향을 주는 파괴적 변경"
+    },
+    {
+      "title": "Blender 5.0: Color Management",
+      "url": "https://developer.blender.org/docs/release_notes/5.0/color_management/",
+      "source_type": "공식 릴리스 노트",
+      "date": "2025-11",
+      "why_useful": "ACEScg, ACES 2.0, AgX HDR"
+    },
+    {
+      "title": "EEVEE & Viewport - Blender 5.0",
+      "url": "https://developer.blender.org/docs/release_notes/5.0/eevee/",
+      "source_type": "공식 릴리스 노트",
+      "date": "2025-11",
+      "why_useful": "EEVEE 식별자 변경"
+    },
+    {
+      "title": "Blender 5.1 Release Notes",
+      "url": "https://developer.blender.org/docs/release_notes/5.1/",
+      "source_type": "공식 릴리스 노트",
+      "date": "2026-03",
+      "why_useful": "Python 3.13, 성능, 신규 노드"
+    },
+    {
+      "title": "Blender 5.2 LTS Release Notes",
+      "url": "https://developer.blender.org/docs/release_notes/5.2/",
+      "source_type": "공식 릴리스 노트",
+      "date": "2026-07",
+      "why_useful": "현재 안정판 기능"
+    },
+    {
+      "title": "Blender 5.3 Release Notes (dev)",
+      "url": "https://developer.blender.org/docs/release_notes/5.3/",
+      "source_type": "공식 개발 문서",
+      "date": "2026",
+      "why_useful": "다음 버전이 개발 중임을 확인"
+    },
+    {
+      "title": "Blender 5.2 LTS is here: discover its 5 key features | CG Channel",
+      "url": "https://www.cgchannel.com/2026/07/blender-5-2-lts-is-here-discover-its-5-key-features/",
+      "source_type": "업계 뉴스",
+      "date": "2026-07",
+      "why_useful": "5.2 요약과 LTS 기간 교차 확인"
+    },
+    {
+      "title": "Blender 5.1 is here: discover its 5 key features | CG Channel",
+      "url": "https://www.cgchannel.com/2026/03/discover-5-key-features-in-blender-5-1/",
+      "source_type": "업계 뉴스",
+      "date": "2026-03",
+      "why_useful": "5.1 요약 교차 확인"
+    },
+    {
+      "title": "Blender 5.1 is here | DIGITAL PRODUCTION",
+      "url": "https://digitalproduction.com/2026/03/19/blender-5-1-is-here/",
+      "source_type": "업계 뉴스",
+      "date": "2026-03-19",
+      "why_useful": "5.1 출시 시점"
+    },
+    {
+      "title": "Blender 5.2 LTS Released - Phoronix",
+      "url": "https://www.phoronix.com/news/Blender-5.2-Released",
+      "source_type": "업계 뉴스",
+      "date": "2026-07",
+      "why_useful": "5.2 교차 확인"
+    },
+    {
+      "title": "Light Objects - Blender 5.2 LTS Manual",
+      "url": "https://docs.blender.org/manual/en/latest/render/lights/light_object.html",
+      "source_type": "공식 매뉴얼",
+      "date": "2026",
+      "why_useful": "라이트 단위(W, W/m²)와 노출 보정"
+    },
+    {
+      "title": "Using Physically Correct Brightness in Cycles - Blendergrid",
+      "url": "https://blendergrid.com/articles/cycles-physically-correct-brightness",
+      "source_type": "실무 가이드",
+      "why_useful": "Cycles 물리 밝기와 lux 범위"
+    },
+    {
+      "title": "Unreal Engine 5.8 is now available",
+      "url": "https://www.unrealengine.com/news/unreal-engine-5-8-is-now-available",
+      "source_type": "공식 발표",
+      "date": "2026-06-17",
+      "why_useful": "5.8 기능 1차 출처"
+    },
+    {
+      "title": "Unreal Engine 5.8 Release Notes",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/unreal-engine-5-8-release-notes",
+      "source_type": "공식 릴리스 노트",
+      "date": "2026-06",
+      "why_useful": "5.8 상세"
+    },
+    {
+      "title": "Unreal Engine 5.8 Performance Highlights - Tom Looman",
+      "url": "https://tomlooman.com/unreal-engine-5-8-performance-highlights/",
+      "source_type": "전문가 블로그",
+      "date": "2026",
+      "why_useful": "5.8 성능 기능 해설"
+    },
+    {
+      "title": "Unreal Engine 5.8 Debuts Lumen Lite and Production-Ready MegaLights (Guru3D)",
+      "url": "https://www.guru3d.com/story/unreal-engine-58-debuts-lumen-lite-and-productionready-megalights/",
+      "source_type": "업계 뉴스",
+      "date": "2026-06",
+      "why_useful": "Lumen Lite 2배, Switch 2 60fps"
+    },
+    {
+      "title": "Unreal Engine 5.7 is now available",
+      "url": "https://www.unrealengine.com/news/unreal-engine-5-7-is-now-available",
+      "source_type": "공식 발표",
+      "date": "2025-11",
+      "why_useful": "Substrate, PCG 정식화, MegaLights Beta"
+    },
+    {
+      "title": "Unreal Engine 5.7: foliage, PCG and in-Editor AI | DIGITAL PRODUCTION",
+      "url": "https://digitalproduction.com/2025/11/12/unreal-engine-5-7-foliage-pcg-and-in-editor-ai/",
+      "source_type": "업계 뉴스",
+      "date": "2025-11-12",
+      "why_useful": "5.7 교차 확인"
+    },
+    {
+      "title": "Using Physical Lighting Units in Unreal Engine (5.8 docs)",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/using-physical-lighting-units-in-unreal-engine?lang=en-US",
+      "source_type": "공식 문서",
+      "date": "2026",
+      "why_useful": "lux, EV100 기준"
+    },
+    {
+      "title": "Physical Lighting Units (UE 4.27 docs)",
+      "url": "https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits",
+      "source_type": "공식 문서",
+      "why_useful": "태양, 달, 별 조도와 EV100 수치"
+    },
+    {
+      "title": "Lighting in Unreal with photography principles using PBL — Magnopus",
+      "url": "https://www.magnopus.com/blog/lighting-in-unreal-with-photography-principles",
+      "source_type": "스튜디오 블로그",
+      "why_useful": "사진 원리 기반 물리 라이팅 실무"
+    },
+    {
+      "title": "Lumen Performance Guide (UE 5.8 docs)",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-performance-guide-for-unreal-engine",
+      "source_type": "공식 문서",
+      "date": "2026",
+      "why_useful": "Lumen 품질과 성능 레버"
+    },
+    {
+      "title": "Lumen GI in UE5: Settings, Asset Prep, and Performance Tuning (2026)",
+      "url": "https://bitsoulhosting.com/marketplace/blog/ue5-lumen-gi-settings-asset-prep-performance-2026",
+      "source_type": "실무 블로그",
+      "date": "2026",
+      "why_useful": "Final Gather Quality 수치"
+    },
+    {
+      "title": "Unreal MCP Plugin (UE 5.8): Setup, Limits, Alternatives | Ludus AI",
+      "url": "https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup",
+      "source_type": "실무 블로그",
+      "date": "2026",
+      "why_useful": "공식 MCP 플러그인 셋업과 한계"
+    },
+    {
+      "title": "Epic's Official MCP Plugin Is Here (UE 5.8) | StraySpark",
+      "url": "https://www.strayspark.studio/blog/epic-official-mcp-plugin-ue5-8-vs-third-party",
+      "source_type": "실무 블로그",
+      "date": "2026",
+      "why_useful": "공식 MCP와 서드파티 비교"
+    },
+    {
+      "title": "The Secret Ingredient to Photorealism — Blender Guru",
+      "url": "https://andrew-price-a9bl.squarespace.com/tutorials/secret-ingredient-photorealism",
+      "source_type": "실무자 튜토리얼",
+      "why_useful": "다이내믹 레인지와 노출 원칙"
+    },
+    {
+      "title": "Cinematic Lighting in Blender • Creative Shrimp",
+      "url": "https://www.creativeshrimp.com/cinematic-lighting-in-blender",
+      "source_type": "실무자 강좌",
+      "why_useful": "Gleb Alexandrov 라이팅 강좌"
+    },
+    {
+      "title": "Interior Rendering: The Complete Guide [2026] - ArchRender",
+      "url": "https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026",
+      "source_type": "실무 가이드",
+      "date": "2026",
+      "why_useful": "archviz 카메라, 샘플, 포털, 창 노출"
+    },
+    {
+      "title": "Modular Scene in UE4: Blockout, Vertex Paint, Decals (80.lv)",
+      "url": "https://80.lv/articles/001agt-004adk-005cg-modular-scene-in-ue4-blockout-vertex-paint-decals",
+      "source_type": "80.lv 브레이크다운",
+      "why_useful": "AAA식 모듈러 환경 워크플로"
+    },
+    {
+      "title": "SanXia Street 1940: Modular Approach, Trim Sheets, Decals (80.lv)",
+      "url": "https://80.lv/articles/005cg-001agt-sanxia-street-1940-modular-approach-trim-sheets-decals",
+      "source_type": "80.lv 브레이크다운",
+      "why_useful": "트림 시트와 데칼 사례"
+    },
+    {
+      "title": "Get Away: Lighting & Composition in Environment Art (80.lv)",
+      "url": "https://80.lv/articles/get-away-lighting-composition-in-environment-art",
+      "source_type": "80.lv 브레이크다운",
+      "why_useful": "구도와 라이팅"
+    },
+    {
+      "title": "Environment Art | The Level Design Book",
+      "url": "https://book.leveldesignbook.com/process/env-art",
+      "source_type": "실무 서적(웹)",
+      "why_useful": "환경 아트 프로세스와 스토리텔링"
+    },
+    {
+      "title": "Environment Artist Playbook: From Blockout to Final Pass | RMCAD",
+      "url": "https://www.rmcad.edu/blog/environment-artist-playbook-from-blockout-to-final-pass/",
+      "source_type": "교육 기관 블로그",
+      "why_useful": "블록아웃부터 최종 패스까지의 라이팅 단계"
+    },
+    {
+      "title": "Why AI 3D Models Look Bad — and How to Fix It (Tripo)",
+      "url": "https://www.tripo3d.ai/blog/why-ai-3d-models-look-bad",
+      "source_type": "벤더 블로그",
+      "date": "2025–2026",
+      "why_useful": "AI 3D 결함 분류와 해결"
+    },
+    {
+      "title": "Texel Density Standards for AAA First-Person Shooter Games? — polycount",
+      "url": "https://polycount.com/discussion/234887/texel-density-standards-for-aaa-first-person-shooter-games",
+      "source_type": "실무자 포럼",
+      "why_useful": "텍셀 밀도 관행"
+    },
+    {
+      "title": "Beyond Extent │ Texel Density",
+      "url": "https://www.beyondextent.com/deep-dives/deepdive-texeldensity",
+      "source_type": "실무 해설",
+      "why_useful": "텍셀 밀도 원리"
+    },
+    {
+      "title": "Kruithof curve (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Kruithof_curve",
+      "source_type": "백과사전",
+      "why_useful": "조도와 색온도의 쾌적성 관계"
+    },
+    {
+      "title": "Illuminance Levels Indoors: Standard Lux Level Chart (Prana Air)",
+      "url": "https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/",
+      "source_type": "업체 블로그",
+      "why_useful": "실내 공간별 lux"
+    }
+  ],
+  "gaps": [
+    "blender.org, developer.blender.org, dev.epicgames.com, 80.lv, Blender Guru 원문은 프록시 차단으로 직접 읽지 못했습니다. 모든 내용은 검색 결과 요약을 교차 확인한 것이므로, 파괴적 API 변경의 전체 목록(특히 5.1과 5.2의 Python API 변경)은 원문으로 확인해야 합니다.",
+    "Blender 5.0의 Python 버전(3.11 추정)과 Blender 5.3 출시 예정일은 검증하지 못했습니다.",
+    "Blender Guru와 Gleb Alexandrov의 HDRI 강도, 아티스틱 태양 강도, 라이트 크기, Kelvin 대비 비율 같은 구체 수치는 검색 요약에서 찾지 못했습니다. CG Cookie와 Kaizen은 검색 예산 한도로 조사하지 못했습니다.",
+    "UE 5.7/5.8 Post Process 기본값(블룸 강도, 비네트, 자동노출 기본 범위, 'Extend default luminance range' 설정)과 SkyLight/SkyAtmosphere 권장값은 확인하지 못했습니다. Lumen 인테리어 가이드 중 '200cm' 같은 의심스러운 수치는 제외했습니다.",
+    "UE 5.8 공식 MCP 플러그인의 정식 명칭, 제공 툴 목록, 설정 파일 형식은 서드파티 블로그로만 확인했습니다(신뢰도 medium).",
+    "PBR 알베도 범위, 베벨 크기, 카메라 높이, 의자 회전각 등 일부 know_how 예시는 업계 관례를 기반으로 했으며, 이번 검색으로는 출처를 확인하지 못했습니다.",
+    "ArtStation과 80.lv AAA 스튜디오(예: Naughty Dog, Guerrilla) 아티스트의 트림 시트 해상도, 데칼 밀도, 모듈러 그리드 단위 같은 정량 브레이크다운은 확보하지 못했습니다.",
+    "UE와 Blender의 컬러 그레이딩 구체 규칙(LUT, 채도와 대비 수치)과 구도 규칙(삼분할, 리딩 라인)의 수치화된 실무 자료는 부족합니다."
+  ]
+}

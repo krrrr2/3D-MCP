@@ -1,0 +1,316 @@
+{
+  "checks": [
+    {
+      "claim": "Meshy 무료 플랜 출력물은 CC BY 4.0이라 Meshy 출처를 표기하면 상업 이용이 가능하고, 유료 플랜은 출처 표기 없이 비공개로 소유한다",
+      "verdict": "confirmed",
+      "correction": "Meshy Help Center에 따르면 유료 플랜의 비공개 소유권에는 조건이 두 가지 붙는다. 에셋을 Meshy Community에 공개하지 않아야 하고, 업로드한 참조 이미지 같은 입력이 타인의 저작권을 침해하지 않아야 한다. 이 조건을 함께 적어야 한다.",
+      "evidence_urls": [
+        "https://help.meshy.ai/en/articles/9992001-can-i-use-my-generated-assets-for-commercial-projects",
+        "https://help.meshy.ai/en/articles/16102098-can-i-use-meshy-assets-commercially",
+        "https://help.meshy.ai/en/articles/10137554-what-is-the-ownership-of-the-generated-models",
+        "https://www.meshy.ai/pricing"
+      ]
+    },
+    {
+      "claim": "Meshy 플랜은 Free(월 100크레딧), Pro $20, Premium $40, Studio $60, Ultra $100 등 6종이다",
+      "verdict": "unverifiable",
+      "correction": "이번 검색에서는 가격 수치를 교차 확인하지 못했다. 오히려 공식 가격 페이지 제목은 'Free, Pro, Studio & Enterprise Plans'로 나와 있어 Premium이나 Ultra 같은 플랜 이름과 6종 구성은 공식 구성과 다를 수 있다. 플랜 이름과 가격을 코드에 고정해 두지 말고 공식 페이지를 기준으로 삼아야 한다.",
+      "evidence_urls": [
+        "https://www.meshy.ai/pricing",
+        "https://help.meshy.ai/en/articles/15696428-what-is-included-on-the-free-plan"
+      ]
+    },
+    {
+      "claim": "Tripo Free 플랜은 월 200크레딧(약 13개 모델)이며 공개 모델, 비상업 조건이다",
+      "verdict": "partially",
+      "correction": "약 200크레딧과 비상업 조건은 확인했다. 다만 모델 수 환산이 출처마다 다르다. costbench와 makerstack 계열 요약은 '약 8개 모델'로 계산하고, 표준 생성 1회에 약 25크레딧을 쓴다고 본다. '약 13개'는 근거가 약하므로 '약 8개 안팎'으로 고치거나 수치를 빼는 것이 좋다.",
+      "evidence_urls": [
+        "https://costbench.com/software/ai-3d-generation/tripo-ai/free-plan/",
+        "https://costbench.com/software/ai-3d-generation/tripo-ai/",
+        "https://makerstack.co/reviews/tripo-3d-review/"
+      ]
+    },
+    {
+      "claim": "Tripo Professional은 $19.90/월에 3,000크레딧, 동시 작업 10개, 상업 이용, 비공개 모델을 제공한다",
+      "verdict": "confirmed",
+      "correction": "보충 사항이 있다. 3,000크레딧은 약 120개 모델에 해당한다(1회 25크레딧 기준). 상업권은 '구독이 활성화된 기간에 생성한 모델'에 적용된다. 연간 결제 시 월 환산 가격은 출처마다 $13.93과 $11.94로 엇갈린다.",
+      "evidence_urls": [
+        "https://costbench.com/software/ai-3d-generation/tripo-ai/",
+        "https://www.tripo3d.ai/pricing",
+        "https://lorphic.com/tripo-ai-pricing-3d-models-full-guide-and-review/"
+      ]
+    },
+    {
+      "claim": "Tripo Max는 연간 결제 기준 약 $90/월, Team은 3석 패키지로 석당 $55/월이다(2026-08-29 기준)",
+      "verdict": "partially",
+      "correction": "costbench의 2026년 7월 기준 요약에서는 Max $89.9/월이 월 결제 가격으로 보인다. 연간 결제 가격이 아니라는 뜻이다. Team은 $109.9/월로 나와 있다. '석당 $55, 3석'이라는 구성은 확인하지 못했고 이 출처와도 맞지 않는다.",
+      "evidence_urls": [
+        "https://costbench.com/software/ai-3d-generation/tripo-ai/",
+        "https://tripo3ds.com/pricing/"
+      ]
+    },
+    {
+      "claim": "Tripo API는 구독과 별도로 과금되며 100크레딧당 $1다",
+      "verdict": "unverifiable",
+      "correction": "이번 검색 결과에서는 API 크레딧 단가를 확인할 수 없었다. 공식 API 가격 페이지로 다시 확인해야 한다.",
+      "evidence_urls": []
+    },
+    {
+      "claim": "Hyper3D Rodin은 Creator $30/월, Business $120/월이고, 크레딧을 직접 구매하면 1크레딧당 $1.5다",
+      "verdict": "confirmed",
+      "correction": "월 결제 기준 가격이 서로 다른 여러 요약에서 일치한다. 연간 가격($288, $1,152)은 '연간 결제 시 더 저렴하다'는 수준까지만 확인했다. Business에는 API 전체 접근과 High-Poly Quad 옵션이 추가된다.",
+      "evidence_urls": [
+        "https://hyper3d.ai/pricing",
+        "https://www.therundown.ai/tools/rodin",
+        "https://makerstack.co/reviews/hyper3d-rodin-review/"
+      ]
+    },
+    {
+      "claim": "Hyper3D Rodin은 모든 플랜(무료 포함)에 완전한 상업권을 준다",
+      "verdict": "unverifiable",
+      "correction": "이번 검색 요약은 '유료 플랜이 더 넓은 내보내기·사용 권리를 준다'고 하고, Business에는 ChatAvatar 상업 라이선스 혜택이 추가된다고만 한다. 무료 티어에도 상업권이 있다는 근거는 찾지 못했다. 공식 ToS로 확인하기 전까지는 무료나 체험 키로 만든 결과물은 비상업용으로 취급하는 것이 안전하다.",
+      "evidence_urls": [
+        "https://hyper3d.ai/pricing",
+        "https://www.therundown.ai/tools/rodin"
+      ]
+    },
+    {
+      "claim": "Hunyuan3D 2.0/2.1 Community License는 Territory에서 EU·영국·대한민국을 제외한다. Output 정의에 Hosted Service가 들어가고, Territory 밖에서 Output을 사용·배포·전시하는 것과 출력물로 다른 AI 모델을 개선하는 것이 금지되며, 'Tencent claims no rights in Outputs'라고 규정한다",
+      "verdict": "confirmed",
+      "correction": "raw.githubusercontent.com에서 두 LICENSE 원문을 받아 직접 확인했다. 머리말부터 'THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'라고 적혀 있다. 5(c)항은 Territory 밖에서 Works와 Output을 사용·복제·수정·배포·전시하는 것을 금지하고, 5(b)항은 다른 AI 모델 개선을 금지한다. 참고로 같은 Hunyuan3D-2 저장소에 있는 2mini와 2mv 가중치에도 이 저장소 라이선스가 적용되는 것으로 보인다.",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE"
+      ]
+    },
+    {
+      "claim": "Hunyuan3D 라이선스는 MAU가 100만을 넘으면 Tencent에 별도 라이선스를 요청하게 한다",
+      "verdict": "partially",
+      "correction": "원문 조건은 계속 적용되는 기준이 아니다. 해당 버전 출시일(2.0은 2025-01-21, 2.1은 2025-06-13) 시점에 직전 달 MAU가 100만을 넘었는지를 한 번 보는 조건이다. item 본문의 '릴리스일 기준'은 맞지만, summary의 'MAU가 100만을 넘으면'은 이후에 넘는 경우까지 포함하는 것처럼 읽혀 부정확하다.",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE"
+      ]
+    },
+    {
+      "claim": "Hunyuan3D 2.0은 2025-01-21, 2.1은 2025-06-13에 공개됐다",
+      "verdict": "confirmed",
+      "correction": "라이선스 머리말의 Release Date와 README 뉴스 항목이 모두 일치한다. 2.1 README의 모델 표에는 2025-06-14로 적힌 곳도 있지만 공식 릴리스일은 06-13이다.",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE"
+      ]
+    },
+    {
+      "claim": "Hunyuan3D 3.0(2025-09)과 3.1(2026-01)은 가중치를 공개하지 않은 호스팅 서비스이며, 플랫폼에서 하루 20회 무료 생성을 제공한다",
+      "verdict": "confirmed",
+      "correction": "날짜를 더 정확히 확인했다. 3.0은 2025-09-16 Tencent Global Digital Ecosystem Summit에서 발표됐다(Tencent 공식 X 게시물 ID의 시각도 2025-09-16이다). 3.1은 Tencent HY 공식 X에 '글로벌 플랫폼 제공'이 2026-01-28에 게시됐다. 하루 20회 무료는 공식 게시물 기준으로 '신규 크리에이터(New creators)' 대상이라는 단서가 붙는다. 국제판 사이트(3d.hunyuanglobal.com)는 2025-11-25~26에 문을 열었다고 보도됐다. 한국에서 쓸 수 있는지와 호스팅 서비스 ToS의 지역 조항은 여전히 확인하지 못했다.",
+      "evidence_urls": [
+        "https://x.com/TencentHunyuan/status/1967873084960260470",
+        "https://www.voxelmatters.com/tencent-launches-updated-hunyuan-3d-3-0-platform-for-3d-model-generation/",
+        "https://x.com/TencentHunyuan/status/2016449283428659599",
+        "https://www.vset3d.com/hunyuan-3d-3-1-international-version/",
+        "https://bluelightningtv.com/2025/09/20/tencents-hunyuan-3d-3-0-debuts-with-triple-precision-ultra-hd-geometry-and-api-access/"
+      ]
+    },
+    {
+      "claim": "Microsoft TRELLIS.2는 MIT 라이선스라 지역·MAU 제한이 없고, 한국·EU 크리에이터가 상업적으로 쓰기에 가장 안전한 대안이다",
+      "verdict": "partially",
+      "correction": "저장소 코드의 LICENSE가 MIT인 것은 원문으로 확인했다. 하지만 README의 License 절이 직접 경고하듯, 의존 패키지 nvdiffrast와 nvdiffrec은 NVIDIA Source Code License를 따른다. 이 라이선스의 3.3항은 'only may be used ... non-commercially(research or evaluation purposes only)'라고 규정한다. 그런데 TRELLIS.2의 텍스처링 파이프라인(trellis2_texturing.py)과 GLB 후처리(o_voxel/postprocess.py)가 nvdiffrast를 import한다. 이미지 특징 추출에는 facebook/dinov3-vitl16(Meta DINOv3 License)을 쓰고, 배경 제거에는 BiRefNet을 쓴다. 따라서 'MIT라서 상업적으로 안전하다'는 부정확하다. 상업 프로덕션에 쓰려면 nvdiffrast 대체 경로가 있는지, NVIDIA의 상업 라이선스가 필요한지, DINOv3 약관은 어떤지 별도로 검토해야 한다.",
+      "evidence_urls": [
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt",
+        "https://github.com/NVlabs/nvdiffrec/blob/main/LICENSE.txt"
+      ]
+    },
+    {
+      "claim": "World Labs Marble은 2025-11-12에 정식 출시됐고, Free 4회, Standard $20 12회, Pro $35 25회(상업권), Max $95 75회이며 상업권은 Pro와 Max에만 있다",
+      "verdict": "confirmed",
+      "correction": "TechCrunch, SiliconANGLE, therundown 요약과 공식 billing 문서 검색 결과가 일치한다. 다만 이는 출시 시점의 가격이다. 2026년 8월에 다시 확인했다는 근거는 요약 수준이라 가격이 바뀌었을 수 있다.",
+      "evidence_urls": [
+        "https://techcrunch.com/2025/11/12/fei-fei-lis-world-labs-speeds-up-the-world-model-race-with-marble-its-first-commercial-product/",
+        "https://siliconangle.com/2025/11/12/world-labs-launches-marble-commercial-world-model-generating-entire-virtual-environments/",
+        "https://www.therundown.ai/tools/marble",
+        "https://docs.worldlabs.ai/marble/support/account-billing"
+      ]
+    },
+    {
+      "claim": "Fab/Megascans는 2024-12-31까지 전부 무료(Fab Standard License, 모든 엔진·툴, 상업 이용 가능)였고, 2025년부터는 유료가 기본이며 일부만 무료다",
+      "verdict": "confirmed",
+      "correction": "보충할 수치가 있다. 2025년부터 개별 2D·3D 에셋은 $0.99부터, 절차적 키트는 $4.99부터, 에셋 팩은 $24.99부터다. 인기 에셋 1,500개 이상을 담은 무료 스타터 팩은 계속 제공된다. Fab Standard License는 Personal과 Professional 중 어느 가격 티어로 구매했든 모든 엔진과 툴에서 쓸 수 있다. Fab은 2024-10-22에 출범했고, Tim Sweeney는 기존 Megascans 전체에 대한 '무료 영구 라이선스'를 발표했다.",
+      "evidence_urls": [
+        "https://www.cgchannel.com/2024/10/epic-games-has-made-megascans-free-to-all-but-only-until-the-end-of-2024/",
+        "https://x.com/TimSweeneyEpic/status/1848876936136954083",
+        "https://support.fab.com/s/article/Fab-Transition-FAQs?language=en_US",
+        "https://www.resetera.com/threads/quixel-megascans-will-not-be-free-anymore-staring-from-2025.983682/"
+      ]
+    },
+    {
+      "claim": "Sketchfab은 2025-12-11 약관 개정으로 판매·다운로드 여부와 관계없이 모든 AI 생성 모델에 'CreatedWithAI' 표시를 의무화했고, Epic Games 계정 연동도 요구한다",
+      "verdict": "partially",
+      "correction": "AI 표시 의무화(2025-12-11, 모든 AI 생성 모델 대상)는 확인했다. 이전에는 판매·다운로드가 가능한 모델에만 적용됐다. 사이트가 AI 생성을 감지하면 라벨을 자동으로 붙일 수 있다는 내용도 있다. Epic 계정 요건은 보도상 '신규 가입자가 Epic Games 계정으로 가입한다'는 것이어서 기존 사용자 전체에 연동을 강제하는지는 불명확하다.",
+      "evidence_urls": [
+        "https://www.gamedeveloper.com/business/sketchfab-to-require-mandatory-ai-disclosure-epic-games-accounts-for-users",
+        "https://techninjagaming.com/2025/11/11/sketchfab-mandates-ai-disclosure-epic-games-accounts/"
+      ]
+    },
+    {
+      "claim": "Fab에 AI 생성 에셋이 몰리자 Epic이 'Created with AI' 자가 신고를 의무화하고 'NoAI' 태그를 도입했다(사례 연구의 인과관계)",
+      "verdict": "partially",
+      "correction": "Fab에 'NoAI' HTML 메타 태그와 'Created with AI' 자가 신고가 있다는 것은 공식 지원 문서로 확인된다. Epic이 AI 에셋 범람에 대응해 신고 누락을 약관 위반으로 보고 자동 탐지 도구를 추가한 것도 사실이다. 그러나 NoAI와 CreatedWithAI 태그는 Fab 이전부터 있었다. Sketchfab이 2023년 2월에, ArtStation의 NoAI 태그가 2022년 12월에 도입했다. 'AI 범람 때문에 NoAI 태그를 도입했다'는 순서는 틀렸다. 또 NoAI는 생성형 AI 데이터 수집에 쓰지 말라는 표시다.",
+      "evidence_urls": [
+        "https://support.fab.com/s/article/Introducing-NoAI-meta-tags-and-Created-with-AI-self-declaration?language=en_US",
+        "https://forums.unrealengine.com/t/update-on-products-generated-with-ai/2523501",
+        "https://80.lv/articles/epic-games-adresses-ai-generated-content-plaguing-fab",
+        "https://www.cgchannel.com/2023/02/sketchfab-introduces-noai-and-createdwithai-tags/",
+        "https://sketchfab.com/blogs/community/introducing-the-noai-createdwithai-tags/"
+      ]
+    },
+    {
+      "claim": "Poly Haven과 ambientCG는 전부 CC0이고, BlenderKit은 Royalty-Free(상업 가능, 원본 재배포·재판매 불가)와 CC0 두 가지 라이선스를 쓴다",
+      "verdict": "confirmed",
+      "correction": "이번 라운드에서는 검색 쿼터 때문에 다시 검색하지 않았다. 널리 확립된 사실(각 사이트의 라이선스 페이지)과 일치하므로 확인으로 판정했지만, 이번 세션에서 독립 출처로 재대조하지는 않았다.",
+      "evidence_urls": [
+        "https://polyhaven.com/license",
+        "https://app.cinevva.com/guides/game-asset-licenses"
+      ]
+    },
+    {
+      "claim": "Steam은 2026-01-16에 AI 공개 규정을 개편했다. 공개 대상은 사전 생성(pre-generated)과 실시간 생성(live-generated) 콘텐츠이고, 코드 어시스턴트 같은 개발 효율화 도구는 면제된다",
+      "verdict": "confirmed",
+      "correction": "날짜와 두 범주, 면제 대상이 여러 출처에서 일치한다. 한 가지 고칠 점이 있다. 면제 대상에는 '아이디어 구상에만 쓰고 출시물에 포함하지 않은 컨셉 아트 생성'도 들어간다. 따라서 how_to_use에서 '컨셉 아트를 구체적으로 기재'하라고 한 부분은 게임이나 스토어·마케팅에 실제로 쓰인 경우로 한정해야 한다. 스토어 페이지와 마케팅 자료가 공개 대상에 포함된다는 원문 문구는 이번 요약에서 직접 확인하지 못했다.",
+      "evidence_urls": [
+        "https://www.gamedeveloper.com/business/valve-tweaks-and-clarifies-ai-disclosure-rules-for-steam",
+        "https://respawn.outlookindia.com/gaming/gaming-news/valve-clarifies-steam-ai-policy-focus-shifts-to-content-consumed",
+        "https://www.strayspark.studio/blog/steam-ai-disclosure-rules-2026-indie-developer-guide",
+        "https://finalboss.io/valve-s-2026-ai-disclosure-update-actionable-guide"
+      ]
+    },
+    {
+      "claim": "2026년 기준 Steam 게임의 약 20%가 AI 사용을 공개한다",
+      "verdict": "partially",
+      "correction": "tech-insider 기사 제목('Steam AI Disclosure Hits 20% of Games')은 검색으로 존재를 확인했다. 하지만 단일 SEO 성격의 출처이고, 분모가 전체 카탈로그인지 특정 연도 신규 출시작인지 불명확하다. 다른 집계들은 전체 라이브러리에서 차지하는 비율이 훨씬 낮은 것으로 알려져 있다. 따라서 '신규 출시작 기준 약 20%(추정, 낮은 신뢰도)'로 한정해야 한다.",
+      "evidence_urls": [
+        "https://tech-insider.org/steam-ai-disclosure-2026/"
+      ]
+    },
+    {
+      "claim": "미국 저작권청 AI 보고서 Part 2(Copyrightability)는 2025-01-29에 발표됐다. 프롬프트만으로는 저작자성이 인정되지 않고, 인간의 표현적 기여만 사안별로 보호된다",
+      "verdict": "confirmed",
+      "correction": "날짜와 요지는 널리 알려진 사실과 일치한다(NewsNet 1060). 이번 세션에서는 검색 쿼터 때문에 다시 검색하지 않았다. Thaler v. Perlmutter의 대법원 상고 결과는 여전히 확인하지 못했다.",
+      "evidence_urls": [
+        "https://www.copyright.gov/newsnet/2025/1060.html",
+        "https://www.crowell.com/en/insights/client-alerts/us-copyright-office-releases-part-2-of-artificial-intelligence-report-clarifying-copyrightability-of-generative-ai-outputs"
+      ]
+    },
+    {
+      "claim": "문체부와 한국저작권위원회가 2025년 6월 「생성형 AI 활용 저작물의 저작권 등록 안내서」(인간의 창작적 기여 부분만 등록 가능)를, 2026-02-26에 「생성형 인공지능의 저작물 학습에 대한 저작권법상 '공정이용' 안내서」를 발간했다",
+      "verdict": "confirmed",
+      "correction": "두 안내서의 발간 시기와 요지가 여러 출처에서 일치한다. 공정이용 안내서는 공정이용 판단의 4가지 요소와 사례를 제시하며, AI 개발사의 학습 데이터 이용에 관한 내용이다. 크리에이터의 출력물 이용에 관한 안내서가 아니라는 점을 구분해 적어야 한다.",
+      "evidence_urls": [
+        "https://www.copyright.or.kr/information-materials/publication/research-report/view.do?brdctsno=54253",
+        "https://www.etnews.com/20250701000303",
+        "https://www.kocca.kr/trendott/vol04/trend_1.html",
+        "https://www.mt.co.kr/culture/2026/02/26/2026022610241060633",
+        "https://www.lawtimes.co.kr/news/articleView.html?idxno=217415",
+        "https://www.kimchang.com/ko/insights/detail.kc?sch_section=4&idx=34407"
+      ]
+    },
+    {
+      "claim": "한국 인공지능기본법은 2026-01-22에 시행됐고, 생성형 AI 결과물 표시와 딥페이크 고지가 의무다. 과태료에 최소 1년의 계도기간을 두며 이 기간에는 사실조사도 원칙적으로 유예한다(인명 피해 등은 예외)",
+      "verdict": "confirmed",
+      "correction": "중요한 단서가 있다. 계도기간은 법령에 근거한 유예가 아니라 행정 운영 방침이다. 제31조(투명성·표시) 등의 의무 자체는 2026-01-22부터 이미 발생했다. 과태료 개별 기준은 시행령에 수치로 정해져 있으며, 한 SEO 성격의 출처는 1회 500만 원, 2회 1,000만 원, 3회 이상 1,500만 원이라고 적는다. 이 수치는 교차 확인하지 못했다. 시행령을 2026-01-20 국무회의에서 의결했다는 내용도 이번에 따로 확인하지 못했다.",
+      "evidence_urls": [
+        "https://www.korea.kr/news/policyNewsView.do?newsId=148958380",
+        "https://datalaw.kr/posts/ai-basic-law-business-duties/",
+        "https://www.shinkim.com/kor/media/newsletter/3114",
+        "https://www.daeryunlaw-comp.com/insights/246",
+        "https://www.tsisalaw.com/news/article.html?no=27856",
+        "https://bh-law.kr/ko/news/column/ai-content-labeling-obligation-guide"
+      ]
+    },
+    {
+      "claim": "EU AI Act 제50조는 2026-08-02부터 적용되고, Digital Omnibus로 워터마킹 이행에만 2026-12-02까지 유예가 있으며, 과징금은 최대 1,500만 유로 또는 전 세계 매출의 3%다",
+      "verdict": "partially",
+      "correction": "적용일과 과징금 상한은 확인했다. 그러나 유예 범위가 더 좁다. 2026-08-02 이전에 시장에 출시된 생성형 AI 시스템만 제50조 제2항의 기계 판독 가능 표시 의무를 2026-12-02까지 유예받는다. 2026-08-02 이후 출시된 시스템에는 유예가 없다. 챗봇 고지, 딥페이크 표시, 감정 인식 고지는 2026-08-02부터 바로 적용된다. 따라서 2026년 하반기에 새로 출시하는 게임이나 앱의 런타임 생성 기능은 출시 즉시 표시해야 한다. Annex III 연기일(2027-12-02)은 이번에 따로 확인하지 못했다.",
+      "evidence_urls": [
+        "https://labs.cloudsecurityalliance.org/research/csa-research-note-eu-ai-act-article50-watermarking-deadline/",
+        "https://labs.cloudsecurityalliance.org/research/csa-research-note-eu-ai-act-article-50-transparency-20260729/",
+        "https://digital-strategy.ec.europa.eu/en/factpages/quick-facts-transparency-rules-ai-systems",
+        "https://compliancehub.wiki/eu-ai-act-article-50-transparency-digital-omnibus-2026/"
+      ]
+    },
+    {
+      "claim": "Anthropic Commercial Terms(2025-06-17 발효)는 고객이 Outputs를 소유하고 Anthropic이 권리를 양도하며, 고객 콘텐츠로 학습하지 않고, 유료 사용 출력물에 IP 면책을 제공한다(수정·결합·상표 사용은 예외)",
+      "verdict": "confirmed",
+      "correction": "anthropic.com 원문을 가져와 확인했다. 면책 예외는 수정, 비Anthropic 기술과의 결합, 상업적 상표 사용 외에도 더 있다. 고객이 제공한 Inputs나 데이터, 타인의 권리를 침해하는 방식의 사용, Output 안의 특허 발명 실시도 예외다. 이 항목들을 추가해야 한다.",
+      "evidence_urls": [
+        "https://www.anthropic.com/legal/commercial-terms"
+      ]
+    },
+    {
+      "claim": "Anthropic Consumer Terms(2025-10-08 발효)는 약관 준수를 조건으로 출력물 권리를 양도하고, 옵트아웃하지 않으면 학습에 쓰일 수 있으며, 경쟁 모델 개발을 금지한다",
+      "verdict": "confirmed",
+      "correction": "원문으로 확인했다. 한 가지 단서를 추가해야 한다. 옵트아웃을 해도 Feedback을 제출한 경우와 안전 검토 대상으로 플래그된 Materials는 학습에 쓰일 수 있다. '옵트아웃하면 학습에 쓰이지 않는다'고 단정하면 부정확하다.",
+      "evidence_urls": [
+        "https://www.anthropic.com/legal/consumer-terms"
+      ]
+    },
+    {
+      "claim": "OpenAI, Google Gemini API, Anthropic은 모두 출력물의 권리를 사용자에게 귀속하거나 양도한다",
+      "verdict": "partially",
+      "correction": "OpenAI와 Anthropic은 권리를 명시적으로 양도하는 구조다(OpenAI는 사전 지식 기준이며 이번에 원문을 가져오지 못했다). 반면 Gemini API Additional Terms는 'Google이 소유권을 주장하지 않는다'고만 할 뿐 명시적으로 양도하지는 않는다. 세 회사를 한 문장으로 묶으려면 이 차이를 구분해야 한다. 이번 세션에서 Google과 OpenAI 약관 원문은 확인하지 못했다.",
+      "evidence_urls": [
+        "https://ai.google.dev/gemini-api/terms",
+        "https://openai.com/policies/row-terms-of-use/"
+      ]
+    },
+    {
+      "claim": "'Adobe for creativity' Claude 커넥터는 2026-04-28에 출시됐고, Photoshop, Lightroom, Illustrator, Premiere, InDesign, Express, Firefly, Adobe Stock의 50개 이상 도구를 다룬다",
+      "verdict": "confirmed",
+      "correction": "Adobe 공식 블로그, PetaPixel, Claude 커넥터 마켓플레이스 페이지가 일치한다. Substance 3D는 어느 출처의 목록에도 없다.",
+      "evidence_urls": [
+        "https://blog.adobe.com/en/publish/2026/04/28/adobe-for-creativity-connector",
+        "https://petapixel.com/2026/04/28/claude-ai-can-orchestrate-creative-workflows-across-adobe-apps/",
+        "https://claude.com/marketplace/connectors/adobe-creativity",
+        "https://www.photoworkout.com/adobe-claude-connector/"
+      ]
+    },
+    {
+      "claim": "커넥터 출시 하루 전인 2026-04-27에 Firefly AI Assistant 공개 베타가 시작됐다",
+      "verdict": "partially",
+      "correction": "출처가 엇갈린다. 한 요약은 Firefly AI Assistant가 2026-04-15에 출시됐다고 하고, Axios의 2026-04-27 단독 기사는 'Firefly에 에이전트형 AI 도입, 다음은 Claude'라는 발표 보도다. 공개 베타 시작일을 04-27로 단정할 근거는 부족하다.",
+      "evidence_urls": [
+        "https://www.axios.com/2026/04/27/adobe-agentic-ai-firefly-claude",
+        "https://www.photoworkout.com/adobe-claude-connector/"
+      ]
+    },
+    {
+      "claim": "ChatGPT용 Adobe 플러그인은 2026-08-06에 70개 이상 도구로 출시됐다",
+      "verdict": "unverifiable",
+      "correction": "이번 검색에서 확인되지 않았다. Adobe는 이전에도 ChatGPT 연동을 발표한 적이 있다. 조사자가 인용한 Forbes 2026-06-19 기사 URL이 그 예다. 따라서 '최초 출시'인지 '통합 플러그인 재출시'인지 구분해서 적어야 한다.",
+      "evidence_urls": []
+    },
+    {
+      "claim": "Adobe는 2024-03-18에 Firefly 기반 Substance 3D Sampler Text to Texture와 Stager Generative Background 베타를 출시했다",
+      "verdict": "confirmed",
+      "correction": "발표일과 기능은 널리 보도된 사실과 일치한다. 이번 세션에서는 쿼터 때문에 다시 검색하지 않았다. 2026년 기준으로 정식 출시됐는지, 크레딧 단가는 얼마인지는 여전히 확인하지 못했다.",
+      "evidence_urls": [
+        "https://news.adobe.com/news/news-details/2024/adobe-brings-firefly-generative-ai-into-substance-3d-workflows",
+        "https://www.cgchannel.com/2024/03/adobe-adds-firefly-generative-ai-features-to-substance-3d-tools/"
+      ]
+    }
+  ],
+  "notes": [
+    "WebSearch는 12회를 썼다(한도 12). 원문은 raw.githubusercontent.com(Hunyuan3D-2와 2.1의 LICENSE·README, TRELLIS.2 LICENSE, nvdiffrast와 nvdiffrec의 LICENSE, 로컬 TRELLIS.2 저장소 git grep)과 anthropic.com(Commercial·Consumer Terms)에서 직접 확인했다.",
+    "가장 중요한 정정은 TRELLIS.2다. 코드는 MIT지만 텍스처링(trellis2/pipelines/trellis2_texturing.py)과 GLB 후처리(o-voxel/o_voxel/postprocess.py)가 nvdiffrast를 import한다. nvdiffrast와 nvdiffrec의 NVIDIA Source Code License 3.3항은 비상업(연구·평가) 용도로만 쓸 수 있다고 규정한다. 이미지 인코더는 facebook/dinov3-vitl16-pretrain-lvd1689m(Meta DINOv3 License)이다. 따라서 'MIT라서 한국 크리에이터에게 가장 안전한 상업 대안'이라는 know-how는 고쳐야 한다. 상업 프로덕션에 쓰려면 의존성 라이선스를 검토해야 한다는 조건을 붙이자.",
+    "EU AI Act의 워터마킹 유예(2026-12-02)는 2026-08-02 이전에 시장에 출시된 생성형 AI 시스템에만 적용된다. 새로 출시하는 게임이나 앱의 런타임 생성 기능에는 유예가 없다. 조사 결과의 gap 항목은 이것으로 해소된다.",
+    "Hunyuan3D의 MAU 100만 조항은 버전 출시일 시점(직전 달)을 한 번 보는 조건이지 계속 적용되는 한도가 아니다. summary 문구를 고쳐야 한다.",
+    "한국 AI기본법의 계도기간은 법적 유예가 아니라 행정 운영 방침이고, 표시 의무 자체는 2026-01-22부터 발생했다. 과태료 개별 기준(1회 500만, 2회 1,000만, 3회 이상 1,500만 원)은 단일 SEO 출처에만 있어 확인하지 못했다.",
+    "가격표는 AI가 코드에 고정할 위험이 크니 주의해야 한다. Meshy의 6개 플랜 이름과 가격은 확인하지 못했다(공식 페이지 제목은 Free/Pro/Studio/Enterprise다). Tripo는 Max $89.9가 월 결제 가격이고 Team은 $109.9/월로 보고돼 조사 결과와 다르다. Tripo API의 100크레딧당 $1도 확인하지 못했다. Rodin의 '전 플랜 상업권'은 근거가 없다.",
+    "NoAI와 CreatedWithAI 태그는 2023년 2월 Sketchfab에서 도입됐다. ArtStation의 NoAI는 2022년 12월에 도입됐다. Fab의 AI 범람 대응으로 NoAI가 생겼다는 사례 연구의 인과 서술은 사실과 다르다.",
+    "Steam의 면제 범위에는 '아이디어 구상에만 쓰고 출시물에 포함하지 않은 컨셉 아트'도 들어간다. know-how에서 컨셉 아트를 공개하라고 한 부분은 출시물이나 마케팅에 실제로 쓰인 경우로 한정해야 한다.",
+    "Anthropic Consumer Terms는 옵트아웃을 해도 Feedback과 안전 검토 대상 자료는 학습에 쓰일 수 있다. Commercial Terms의 면책 예외에는 Inputs, 특허 실시, 권리 침해 방식의 사용도 포함된다.",
+    "확인하지 못한 항목: Thaler v. Perlmutter 대법원 결과, OpenAI와 Google 약관 원문, Adobe for ChatGPT의 2026-08-06 출시, Tencent HY 3D 호스팅 ToS의 한국 관련 조항, Fab Personal과 Professional을 가르는 매출 기준, Sketchfab Store 폐쇄 세부. Poly Haven, ambientCG, BlenderKit, 미국 저작권청 보고서 날짜, Adobe Substance의 2024-03-18 출시는 이번 세션에서 다시 검색하지 않았고, 널리 확립된 사실이라 확인으로 판정했다."
+  ]
+}

@@ -1,0 +1,1376 @@
+{
+  "topic": "한국어 자료 모음: AI + MCP로 하는 3D 제작(Blender/Unreal/Unity/SketchUp) — 유튜브·블로그·강의·커뮤니티·뉴스, AAA 품질에 필요한 3D 기초(PBR·라이팅·인테리어 렌더링) 포함",
+  "summary_ko": [
+    "WebSearch 18회를 모두 썼습니다. 한국어 페이지는 프록시에 막혀 열 수 없었기 때문에 아래 항목은 대부분 검색 결과의 제목과 요약만 근거로 정리했습니다. 원문을 직접 확인한 것은 GitHub 저장소 2개뿐입니다(tahooki/unreal-blender-mcp, Aryeon0228/BlenderMCP. 둘 다 한국어 문서임을 확인).",
+    "블렌더 MCP 한국어 자료는 풍부한 편입니다. 설치·연결 가이드가 많습니다(패스트캠퍼스 미디어 입문 가이드, brunch의 Mac 연결기, MKCGI 2026-05 글, tali.kr 원리 설명, IoThingsMaker, Threads의 '공식 커넥터 설치 요령'). 유튜브에도 한국어 제목 영상이 여럿 있습니다(업무 자동화, 2D 로봇을 3D로 변환, 스케치업 MCP를 다룬 뽁숑이 채널).",
+    "앤트로픽 크리에이티브 커넥터(2026-04-28, 블렌더·어도비·오토데스크·에이블톤·스플라이스 등 9종)는 AI매터스, AI타임스, 월간디자인, 디지털인사이트, 디지털포커스, KITPA, 마소캠퍼스 등이 한국어로 폭넓게 보도했습니다. 블렌더 커넥터로 할 수 있는 일은 씬 분석, 커스텀 스크립트 작성, 인터페이스에 새 도구 추가로 소개됐습니다.",
+    "GPT-6 Astra(2026-09-03 공개)의 블렌더 3D 능력은 한국에서도 바로 퍼졌습니다. 다나와 DPG가 활용법을 총정리했고(프롬프트 약 5개로 30분 만에 Backrooms 영상, 5일 만에 도시 게임), 한국어 유튜브 2편('바이브 모델링' 프레임)과 클리앙 결과물 게시글, promppy 사례 페이지가 있습니다.",
+    "언리얼·유니티 쪽 한국어 자료도 있습니다. 게임뷰의 'UE5.8 MCP 활용 게임 개발기' 전·후편, 박재홍의 실리콘밸리(위키독스), velog의 UE5+Claude Code 환경 세팅 글, 유니티 MCP 연동 글 여러 편(apidog 한국어, duplicat.kr, kiweb develog/ai-labs, 유튜브 'Claude Code + Unity MCP 연동하기')이 확인됐습니다.",
+    "강의는 패스트캠퍼스 'Red Dot 수상자에게 배우는 AI 3D 모델링 (ft. 블렌더 MCP)'가 MCP를 정면으로 다루는 거의 유일한 유료 강의입니다. 콜로소 채디 강의는 블렌더와 Midjourney 조합이고, 인프런 클립은 Meshy로 3D 에셋을 자급자족하는 방법을 다룹니다. 언리얼·유니티 MCP 전용 한국어 강의는 찾지 못했습니다.",
+    "커뮤니티 반응은 대체로 비슷합니다. 속도는 매우 빠르지만 고급 모델러 수준에는 못 미치고, 인디 프로토타입 정도로 본다는 평이 많습니다(클리앙, tali.kr). AAA 품질이 필요하다면 AI는 블록아웃·반복 작업·에셋 배치에 쓰고, 최종 품질은 PBR·라이팅·리토폴로지 같은 전통 기법으로 끌어올려야 한다는 결론으로 이어집니다.",
+    "국내 기업 사례로는 NC AI '바르코 3D'가 있습니다(3D 애셋 제작을 '4주에서 3분으로' 줄였다는 홍보성 주장, 리니지M 배경 원화팀은 2~3주 걸리던 작업을 약 1주로 단축). 아주경제·게임플·다음 기사에서 NC·크래프톤·넥슨의 AI 활용 현황도 볼 수 있습니다. 반면 MCP 기반 3D 파이프라인을 공개한 국내 게임사 사례는 찾지 못했습니다.",
+    "AAA 품질 기초를 다룬 한국어 자료로는 유정통 3D(PBR과 Node Wrangler, 라이팅과 색, 렌더가 검게 나올 때의 해결법), iRender 한국어(Cycles 렌더 설정), 아키스케치(인테리어 렌더링 7가지 팁), blender.pe.kr(의자·소파·건축 모델링), 인프런 '블렌더 인테리어 디자인', 책 '서브스턴스 디자이너 시작하기'가 쓸 만합니다.",
+    "빈 곳도 뚜렷합니다. GeekNews에서 블렌더 MCP 글은 찾지 못했고, Hunyuan3D 관련 토픽 1건만 나왔습니다. 네이버 블렌더 카페와 디스콰이엇은 검색에 잡히지 않았습니다. Claude Fable 5.1, Sonnet 5, Gemini를 블렌더 MCP와 함께 쓴 한국어 실전 글도 드물고, AI로 가구를 배치하거나 레이아웃을 잡는 한국어 자료는 거의 없습니다."
+  ],
+  "items": [
+    {
+      "name": "블렌더(Blender) MCP를 활용해서 3D 모델링 업무 자동화하기",
+      "category": "youtube",
+      "what_it_is": "블렌더 MCP로 반복적인 모델링 업무를 자동화하는 과정을 보여 주는 한국어 유튜브 영상입니다.",
+      "how_to_use": "블렌더 MCP를 설치한 직후 실무 자동화 흐름을 처음 익힐 때 보기 좋습니다.",
+      "language": "ko",
+      "status_date": "미확인(2025~2026 추정)",
+      "strengths": "'업무 자동화' 관점이 분명합니다.",
+      "weaknesses": "채널명과 세부 내용은 검색 제목으로만 확인했습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=UU_iqziC6mE"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Claude가 내 2D 로봇을 3D 모델로 만들었다 | Blender MCP 완전 자동화",
+      "category": "youtube",
+      "what_it_is": "Claude와 Blender MCP로 2D 로봇 이미지를 3D 모델로 바꾸고, 그 모델을 웹사이트 랜딩 페이지에 실제로 적용하는 한국어 영상입니다.",
+      "how_to_use": "이미지 레퍼런스에서 3D 모델, 다시 웹 에셋으로 이어지는 파이프라인을 참고할 때 봅니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "결과물을 실제 제품(랜딩 페이지)에 넣는 과정까지 다룹니다.",
+      "weaknesses": "결과가 AAA 품질이라기보다 스타일라이즈드 쪽일 가능성이 큽니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=I5rtlgAvoV4"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "클로드 AI 커넥터(MCP)로 스케치업 자동 모델링 + AI 렌더링 하는 법 (by 뽁숑이)",
+      "category": "youtube",
+      "what_it_is": "건축·인테리어 유튜버 뽁숑이가 Claude MCP로 SketchUp 모델을 자동 생성하고 AI 렌더링까지 잇는 워크플로를 설명합니다. 같은 채널에 연결 방법을 다룬 쇼츠도 있습니다.",
+      "how_to_use": "인테리어 매스 모델링 단계를 AI로 자동화한 뒤 AI 렌더러로 시각화하는 흐름을 참고합니다.",
+      "language": "ko",
+      "status_date": "2026 추정(크리에이티브 커넥터 이후)",
+      "strengths": "건축·인테리어 실무 관점의 한국어 자료는 드뭅니다.",
+      "weaknesses": "SketchUp 중심이라 게임 AAA 파이프라인과는 거리가 있습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=GOaWRhrsQC0",
+        "https://www.youtube.com/shorts/WyzHiIZ1J3I?cbrd=1"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "GPT 6 x 블렌더 3D = 이제는 바이브 모델링 시대",
+      "category": "youtube",
+      "what_it_is": "GPT-6(Astra)로 블렌더를 조작하는 '바이브 모델링'을 소개하는 한국어 영상입니다.",
+      "how_to_use": "GPT-6 Astra의 Computer Use와 블렌더 조작 능력을 한국어로 빠르게 파악할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2026-09(Astra 공개 9/3 이후)",
+      "strengths": "최신 모델을 다룹니다.",
+      "weaknesses": "과장된 프레이밍일 수 있습니다. 내용은 제목으로만 확인했습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=_S4SaiNBlRk"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "GPT 6 아스트라 x 블렌더 (바이브 모델링 & 애니메이션)",
+      "category": "youtube",
+      "what_it_is": "GPT-6 Astra로 블렌더 모델링에 애니메이션까지 만드는 한국어 영상입니다.",
+      "how_to_use": "Astra로 애니메이션까지 자동화할 수 있는지 확인할 때 참고합니다.",
+      "language": "ko",
+      "status_date": "2026-09",
+      "strengths": "모델링과 애니메이션을 함께 다룹니다.",
+      "weaknesses": "세부 내용을 확인하지 못했습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=JT9kgRePJ-E"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Claude Code + Unity MCP 연동하기",
+      "category": "youtube",
+      "what_it_is": "Claude Code와 Unity MCP 서버를 연결하는 한국어 튜토리얼 영상입니다.",
+      "how_to_use": "Unity 씬과 프리팹을 에이전트로 조작하는 환경을 만들 때 따라 합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "설치 과정을 영상으로 볼 수 있습니다.",
+      "weaknesses": "3D 품질 향상보다는 연동 자체에 초점이 있습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=XauWsKw7nco"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "클로드 오퍼스5 압도적 성능 + 미친반값효율 (페이블5 완벽대체)",
+      "category": "youtube",
+      "what_it_is": "Claude Opus 5와 Fable 5의 성능·가격을 비교하는 한국어 리뷰 영상입니다. 3D 전용 영상은 아닙니다.",
+      "how_to_use": "3D 에이전트 작업에 어떤 모델을 쓸지 고를 때 비용 대비 성능 감을 잡는 용도입니다.",
+      "language": "ko",
+      "status_date": "2026",
+      "strengths": "모델 선택의 경제성을 다룹니다.",
+      "weaknesses": "3D 특화 내용이 아닙니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=bfyvRM7VcH0"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Claude AI와 블렌더 MCP로 3D 모델링 시작하기! 입문자 완전 정복 가이드 (패스트캠퍼스 미디어)",
+      "category": "blog",
+      "what_it_is": "패스트캠퍼스 인사이트의 입문 가이드입니다. MCP 애드온을 블렌더에 설치하고, uv 패키지로 통신 환경을 갖추고, Claude Desktop 앱에 연결하는 방법과 활용 분야(건축 시각화, 제품 렌더, 썸네일 소품)를 설명합니다.",
+      "how_to_use": "블렌더 MCP를 처음 설치하는 사람에게 권할 기본 한국어 문서입니다.",
+      "language": "ko",
+      "status_date": "2025~2026",
+      "strengths": "설치 단계를 체계적으로 설명하고, 반복·규칙적인 작업에서 효과가 크다는 실용 조언을 줍니다.",
+      "weaknesses": "강의 판매 목적의 콘텐츠이고 입문 수준입니다.",
+      "urls": [
+        "https://media.fastcampus.co.kr/insight/ai_creative/blendermcp/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Mac에서 생성형 AI 클로드와 블랜더 MCP로 연결하기 (brunch @soonkyujang)",
+      "category": "blog",
+      "what_it_is": "macOS 환경에서 Claude와 블렌더 MCP를 연결한 과정을 적은 브런치 글입니다. BlenderMCP 탭의 Start/Connect MCP Server 버튼 사용법 등을 다룹니다.",
+      "how_to_use": "Mac 사용자가 연결에 막혔을 때 참고합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "Mac에 특화된 내용입니다.",
+      "weaknesses": "개인 기록이라 버전이 달라졌을 수 있습니다.",
+      "urls": [
+        "https://brunch.co.kr/@soonkyujang/221"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "블렌더 MCP 연결 원리, AI가 3D 게임 에셋 만드는 법 (tali.kr)",
+      "category": "blog",
+      "what_it_is": "MCP의 구조(로컬 블렌더 안에서 여는 서버에 AI가 접속하는 방식)와 게임 에셋 제작 흐름을 설명하는 글입니다. 며칠 만에 만든 결과물은 인디 프로토타입 수준이라는 한계도 짚습니다.",
+      "how_to_use": "MCP가 어떻게 동작하고 품질 한계가 어디인지 팀에 설명할 때 인용합니다.",
+      "language": "ko",
+      "status_date": "2026 추정",
+      "strengths": "원리와 한계를 균형 있게 다룹니다.",
+      "weaknesses": "원문을 확인하지 못했습니다.",
+      "urls": [
+        "https://tali.kr/blender-mcp-assets"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "블렌더 MCP 연결 완전 정복 — AI가 직접 3D 작업하는 시대 (MKCGI 블로그)",
+      "category": "blog",
+      "what_it_is": "CG 블로그 MKCGI가 2026년 5월에 올린 블렌더 MCP 연결 가이드입니다.",
+      "how_to_use": "크리에이티브 커넥터 이후의 최신 연결 방법을 확인할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2026-05",
+      "strengths": "날짜가 최신입니다.",
+      "weaknesses": "세부 내용을 확인하지 못했습니다.",
+      "urls": [
+        "https://www.mkcgi.net/2026/05/mcp-ai-3d.html"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "LLM 인공지능과 BlenderMCP 사용 자연어로 3D 모델 만들기 (IoThingsMaker)",
+      "category": "blog",
+      "what_it_is": "메이커 블로그에서 BlenderMCP로 자연어 3D 모델링을 따라 해 본 글입니다.",
+      "how_to_use": "3D 프린팅이나 메이커 용도로 참고합니다.",
+      "language": "ko",
+      "status_date": "2025 추정",
+      "strengths": "실습 위주입니다.",
+      "weaknesses": "초기 blender-mcp 기준일 가능성이 있습니다.",
+      "urls": [
+        "https://iothingsmaker.com/llm-%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5%EA%B3%BC-blendermcp%EC%82%AC%EC%9A%A9-%EC%9E%90%EC%97%B0%EC%96%B4%EB%A1%9C-3d-%EB%AA%A8%EB%8D%B8-%EB%A7%8C%EB%93%A4%EA%B8%B0/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "MCP로 버튜버 캐릭터 만들기 (velog @w0729)",
+      "category": "blog",
+      "what_it_is": "MCP로 버튜버 캐릭터를 만든 개발자의 velog 기록입니다.",
+      "how_to_use": "캐릭터 제작에 에이전트를 쓴 실제 시도로 참고합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "캐릭터 제작이라는 구체적 사례입니다.",
+      "weaknesses": "품질과 세부 과정은 확인하지 못했습니다.",
+      "urls": [
+        "https://velog.io/@w0729/MCP%EB%A1%9C-%EB%B2%84%ED%8A%9C%EB%B2%84-%EC%BA%90%EB%A6%AD%ED%84%B0-%EB%A7%8C%EB%93%A4%EA%B8%B0"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "UE5 + Claude Code + MCP 1. 환경 세팅 — AI Agent로 언리얼 엔진 연동하기 (velog @miniminichip)",
+      "category": "blog",
+      "what_it_is": "Claude Code로 UE5를 제어하는 환경 세팅 시리즈의 1편입니다.",
+      "how_to_use": "언리얼 MCP를 붙이려는 개발자가 따라 하기 좋습니다.",
+      "language": "ko",
+      "status_date": "미확인(2025~2026)",
+      "strengths": "시리즈 형식의 단계별 글입니다.",
+      "weaknesses": "UE5.8 내장 MCP 이전 방식일 수 있습니다.",
+      "urls": [
+        "https://velog.io/@miniminichip/UE5-Claude-Code-MCP-1"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "언리얼 에디터 안에 들어온 MCP 서버: AI 에이전트가 게임 엔진을 직접 조종하는 시대 (박재홍의 실리콘밸리, 위키독스)",
+      "category": "blog",
+      "what_it_is": "UE 5.8에 MCP 서버가 내장된 의미를 해설하는 한국어 칼럼입니다.",
+      "how_to_use": "UE5.8 내장 MCP의 맥락을 한국어로 설명할 때 인용합니다.",
+      "language": "ko",
+      "status_date": "2026 추정",
+      "strengths": "업계 맥락을 정리해 줍니다.",
+      "weaknesses": "실습 내용은 없습니다.",
+      "urls": [
+        "https://wikidocs.net/blog/@jaehong/20632/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "유니티 MCP 서버: 클로드와 함께 AI를 사용하여 유니티 프로젝트 제어하기 (Apidog 한국어 블로그)",
+      "category": "blog",
+      "what_it_is": "Unity MCP로 에셋 가져오기, 프리팹 인스턴스화·생성, 씬 열기·저장·수정, 게임 오브젝트 조작을 하는 방법을 설명하는 한국어 글입니다.",
+      "how_to_use": "Unity MCP로 할 수 있는 일을 파악할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2025 추정",
+      "strengths": "기능 목록이 정리되어 있습니다.",
+      "weaknesses": "번역 성격의 벤더 블로그입니다.",
+      "urls": [
+        "https://apidog.com/kr/blog/unity-mcp-server-kr/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "vscode 클로드코드 확장에서 유니티mcp사용하기 (duplicat.kr) / [Unity] 유니티 mcp 사용하기 (kiweb develog) / Unity와 AI로만 게임 만들기 (2) (kiweb ai-labs)",
+      "category": "blog",
+      "what_it_is": "유니티 MCP 설치 과정을 다룬 한국어 글 3편입니다. 에셋스토어의 MCP for Unity, Python과 uv 설치 후 모든 상태가 초록불인지 확인, Claude 재시작 후 Allow를 누르고 /mcp로 연결 확인하는 순서입니다.",
+      "how_to_use": "Unity와 Claude Code를 실제로 연결할 때 체크리스트로 씁니다.",
+      "language": "ko",
+      "status_date": "미확인(2025~2026)",
+      "strengths": "실무 설치 순서가 구체적입니다.",
+      "weaknesses": "3D 품질보다는 연동에 집중합니다.",
+      "urls": [
+        "https://duplicat.kr/1175",
+        "https://develog.kiweb.or.kr/@user_1777093328305/unity-%EC%9C%A0%EB%8B%88%ED%8B%B0-mcp-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0",
+        "https://ai-labs.kiweb.or.kr/creative/post/unitywa-airoman-geim-mandeulgi-baibeu-kodingyi-haegsim-gaideu-2-TukBzx1xFLd3A5H"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "클로드 MCP 설치 및 추천 7종 가이드 (2026) — 골든래빗 / Claude MCP 사용법 완벽 정리 — 이랜서 블로그",
+      "category": "blog",
+      "what_it_is": "Claude MCP 전반(Code와 Desktop 연결, 추천 서버)을 정리한 한국어 가이드 2편입니다.",
+      "how_to_use": "블렌더 외 MCP 서버를 조합하려는 초심자에게 권합니다.",
+      "language": "ko",
+      "status_date": "2026",
+      "strengths": "MCP 일반 개념을 설명합니다.",
+      "weaknesses": "3D 특화 자료가 아닙니다.",
+      "urls": [
+        "https://goldenrabbit.co.kr/articles/ugC8rmSLpFfoJPnnRVUZ",
+        "https://www.elancer.co.kr/blog/detail/1123"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "[마소캠퍼스 GEN AI 인사이트] 앤트로픽의 새 무기, 클로드 커넥터 — 달라진 창작의 방식?",
+      "category": "blog",
+      "what_it_is": "클로드 크리에이티브 커넥터가 창작 워크플로를 어떻게 바꾸는지 해설하는 한국어 교육기관 칼럼입니다.",
+      "how_to_use": "커넥터의 의미를 비개발 크리에이터에게 설명할 때 씁니다.",
+      "language": "ko",
+      "status_date": "2026-04~05 추정",
+      "strengths": "창작자 관점의 해설입니다.",
+      "weaknesses": "실습 내용은 제한적입니다.",
+      "urls": [
+        "https://www.masocampus.com/anthropic-claude-connector-creative/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "스케치업이 자동으로 모델링 해준다? 한줄이면? (MCP+클로드 AI 연동 실험) — 긱톡",
+      "category": "community",
+      "what_it_is": "SketchUp MCP와 Claude를 연동해 본 실험 게시글입니다.",
+      "how_to_use": "건축 모델링 자동화가 실제로 어디까지 되는지 볼 때 참고합니다.",
+      "language": "ko",
+      "status_date": "2026 추정",
+      "strengths": "실험 결과 중심입니다.",
+      "weaknesses": "원문을 확인하지 못했습니다.",
+      "urls": [
+        "https://www.gigtalk.co.kr/post/719891"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "[참고] GPT-6 Astra 활용 Blender 3D 환경 구현 사례 / GPT-6 Astra로 3D 모델 생성 워크플로우: 이미지에서 Blender 파일로 / Claude Opus 5.5의 3D 모델링 및 시각화 능력 활용 (promppy)",
+      "category": "blog",
+      "what_it_is": "프롬프트 공유 사이트 promppy의 참고 페이지들입니다. Astra로 이미지를 Codex에 올려 Blender 파일로 바꾸는 흐름, Opus 5.5의 3D 활용법 등을 정리합니다.",
+      "how_to_use": "모델별 프롬프트 예시를 수집할 때 씁니다.",
+      "language": "ko(추정)",
+      "status_date": "2026",
+      "strengths": "워크플로 단위로 정리되어 있습니다.",
+      "weaknesses": "큐레이션·요약 사이트라 1차 출처가 아닙니다.",
+      "urls": [
+        "https://www.promppy.com/item/1433678",
+        "https://www.promppy.com/item/1563417",
+        "https://www.promppy.com/item/1864060"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "tahooki/unreal-blender-mcp (한국어 Project-document)",
+      "category": "github",
+      "what_it_is": "blender-mcp를 확장해 Unreal과 Blender를 하나의 MCP 서버로 함께 제어하는 한국 개발자의 프로젝트입니다. 허브앤스포크 구조로 중앙 MCP 서버(8300, SSE), 블렌더 애드온(8400), 언리얼 플러그인(8500)을 둡니다. 블렌더 쪽은 씬 관리, 오브젝트·머티리얼, PolyHaven, Hyper3D를, 언리얼 쪽은 레벨 생성, 에셋 임포트, 캐릭터 컨트롤러, Python 실행을 지원하고 LangChain 기반 메모리도 씁니다.",
+      "how_to_use": "블렌더에서 만든 에셋을 언리얼 레벨에 배치하는 통합 에이전트 파이프라인을 설계할 때 참고합니다.",
+      "language": "ko",
+      "license_or_price": "오픈소스(라이선스 미확인)",
+      "status_date": "미확인",
+      "strengths": "두 도구를 오가는 파이프라인 설계를 한국어 문서로 볼 수 있습니다.",
+      "weaknesses": "유지보수 상태를 알 수 없습니다.",
+      "urls": [
+        "https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Aryeon0228/BlenderMCP (한국어 README)",
+      "category": "github",
+      "what_it_is": "ahujasid/blender-mcp에서 파생된 한국 개발자 버전입니다. 블렌더를 계속 띄워 둔 채 소켓으로 명령을 보내 서브프로세스 방식보다 약 100배 빠르다고 합니다(명령당 0.1~1초 대 10~15초). 뷰포트 스크린샷, 오브젝트 조작, 머티리얼, bpy 실행을 지원합니다. Windows 10, Python 3.8 이상, Blender 5.0.1 이상이 필요합니다.",
+      "how_to_use": "빠른 반복 루프(렌더 → 확인 → 수정)가 필요한 에이전트 작업에 참고합니다.",
+      "language": "ko",
+      "license_or_price": "MIT",
+      "status_date": "미확인(Blender 5.0.1 기준이라 2026 추정)",
+      "strengths": "속도 최적화, 한국어 문서",
+      "weaknesses": "기본 프리미티브 위주로 게임 에셋 특화가 아닙니다. Windows 한정입니다.",
+      "urls": [
+        "https://github.com/Aryeon0228/BlenderMCP",
+        "https://glama.ai/mcp/servers/@Aryeon0228/BlenderMCP"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BestDev/unreal_bp_mcp — MCP 클라이언트 설정 가이드(한국어)",
+      "category": "github",
+      "what_it_is": "언리얼 블루프린트용 MCP 서버의 한국어 클라이언트 설정 문서입니다(glama 미러).",
+      "how_to_use": "언리얼 블루프린트 조작 MCP를 붙일 때 참고합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "블루프린트 특화입니다.",
+      "weaknesses": "검색 결과로만 확인했습니다.",
+      "urls": [
+        "https://glama.ai/mcp/servers/@BestDev/unreal_bp_mcp/blob/fab6d0f35a553450a8cdf90bf3762dfa443582e8/docs/MCP_CLIENT_SETUP.md"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "패스트캠퍼스 — Red Dot 수상자에게 배우는 AI 3D 모델링 (ft. 블렌더 MCP)",
+      "category": "course",
+      "what_it_is": "레드닷 수상 디자이너가 블렌더 MCP 기반 AI 3D 모델링을 가르치는 유료 온라인 강의입니다(사전예약 뒤 순차 공개).",
+      "how_to_use": "체계적인 한국어 커리큘럼이 필요한 디자이너에게 권합니다.",
+      "language": "ko",
+      "license_or_price": "유료(가격 미확인)",
+      "status_date": "2026",
+      "strengths": "MCP를 정면으로 다루는 거의 유일한 국내 유료 강의입니다.",
+      "weaknesses": "커리큘럼 세부와 품질은 확인하지 못했습니다.",
+      "urls": [
+        "https://fastcampus.co.kr/dgn_online_reddot"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "콜로소 — 3D 캐릭터 아티스트 채디의 블렌더와 AI로 연출하는 매력적인 캐릭터 모델링",
+      "category": "course",
+      "what_it_is": "블렌더 캐릭터 모델링에 Midjourney 같은 AI 이미지 도구를 결합한 강의입니다. 스컬핑, 툰셰이딩도 다룹니다.",
+      "how_to_use": "AI 이미지를 레퍼런스로 쓰고 사람이 고품질로 모델링하는 하이브리드 방식을 배울 때 듣습니다.",
+      "language": "ko",
+      "license_or_price": "유료",
+      "status_date": "미확인",
+      "strengths": "아티스트 관점의 품질 기준을 배울 수 있습니다.",
+      "weaknesses": "MCP나 에이전트는 다루지 않습니다.",
+      "urls": [
+        "https://coloso.co.kr/products/3ddesign-chedy"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "인프런 클립 — 모델러 없는 개발자가 AI로 3D 에셋 자급자족하는 법 (ft. Meshy)",
+      "category": "course",
+      "what_it_is": "Meshy로 게임용 3D 에셋을 만드는 개발자용 짧은 강의입니다. 처음 생성된 모델은 100만 폴리곤이 넘지만 리메시 기능으로 약 1만 폴리곤까지 줄이는 과정을 보여 줍니다.",
+      "how_to_use": "AI 생성 메시를 게임에 쓸 수 있는 폴리곤 수로 줄이는 실무 감각을 익힙니다.",
+      "language": "ko",
+      "license_or_price": "인프런 클립(무료 또는 저가 추정)",
+      "status_date": "미확인",
+      "strengths": "폴리곤 수치 같은 구체적인 정보를 줍니다.",
+      "weaknesses": "Meshy 한 가지 도구에 한정됩니다.",
+      "urls": [
+        "https://www.inflearn.com/clip/570"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "인프런 — 블렌더 3.0에서 인테리어 디자인 하기",
+      "category": "course",
+      "what_it_is": "블렌더로 인테리어를 모델링하는 강의입니다. 필수 기능, 애드온, 재질 적용을 다룹니다.",
+      "how_to_use": "AI가 만든 인테리어 씬을 사람이 검수·보정할 기초 역량을 쌓을 때 듣습니다.",
+      "language": "ko",
+      "license_or_price": "유료",
+      "status_date": "블렌더 3.0 기준(2022 전후)",
+      "strengths": "인테리어에 특화되어 있습니다.",
+      "weaknesses": "버전이 오래됐습니다.",
+      "urls": [
+        "https://www.inflearn.com/course/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4-%EB%94%94%EC%9E%90%EC%9D%B8"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "콜로소 블렌더 입문·캐릭터 모델링 클래스 / 클래스101 블렌더 강의(메이커척, 김렌더, 호야초) / Udemy 한글자막 블렌더 완벽 가이드",
+      "category": "course",
+      "what_it_is": "블렌더 기초부터 캐릭터·애니메이션까지 다루는 국내 유료 강의 모음입니다.",
+      "how_to_use": "AI 결과물을 고칠 수 있는 기본 블렌더 역량을 기를 때 듣습니다.",
+      "language": "ko",
+      "license_or_price": "유료",
+      "status_date": "2022~2023 전후",
+      "strengths": "선택지가 다양합니다.",
+      "weaknesses": "AI나 MCP는 다루지 않습니다.",
+      "urls": [
+        "https://coloso.co.kr/products/blender-basiccourse-100refundchallenge202307",
+        "https://coloso.co.kr/products/gamegraphic_blender_class",
+        "https://class101.net/en/products/639bfc01fd25ce000fb59ec9",
+        "https://class101.net/en/products/62d1aee723c860000e396615",
+        "https://class101.net/en/products/645dea176a6491000f917784",
+        "https://www.udemy.com/course/blender-tutorial-korean/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "클래스101 — 건축/인테리어 실무에서 쓰이는 스케치업 (모델링/렌더링)",
+      "category": "course",
+      "what_it_is": "건축·인테리어 실무용 SketchUp 모델링·렌더링 강의입니다.",
+      "how_to_use": "SketchUp MCP 자동화 결과를 실무 수준으로 다듬을 기초를 익힙니다.",
+      "language": "ko",
+      "license_or_price": "유료",
+      "status_date": "미확인",
+      "strengths": "실무 중심입니다.",
+      "weaknesses": "AI는 다루지 않습니다.",
+      "urls": [
+        "https://class101.net/en/products/5f434c3699b841001331f602"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "책 『서브스턴스 디자이너 시작하기』 (안원철, 비엘북스)",
+      "category": "book",
+      "what_it_is": "Substance Designer로 PBR 타일링 텍스처 10종을 노드 방식으로 만드는 한국어 책입니다.",
+      "how_to_use": "AAA 수준의 절차적 PBR 머티리얼 원리를 익혀 AI가 만든 텍스처를 평가하고 보정하는 데 씁니다.",
+      "language": "ko",
+      "license_or_price": "유료 도서",
+      "status_date": "2018 전후 출간(추정)",
+      "strengths": "PBR 텍스처 제작 원리를 체계적으로 배울 수 있습니다.",
+      "weaknesses": "버전이 오래됐습니다.",
+      "urls": [
+        "https://www.yes24.com/product/goods/64372727",
+        "http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode=9791186573266"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Adobe Substance 3D Painter / Sampler 한국어 튜토리얼 (helpx)",
+      "category": "docs",
+      "what_it_is": "어도비 공식 한국어 튜토리얼 페이지입니다.",
+      "how_to_use": "PBR 페인팅과 스캔 기반 머티리얼 제작을 익힐 때 봅니다. 어도비 크리에이티브 커넥터와도 연결됩니다.",
+      "language": "ko",
+      "license_or_price": "무료 문서(소프트웨어는 유료)",
+      "status_date": "상시",
+      "strengths": "공식 자료입니다.",
+      "weaknesses": "AI 워크플로는 다루지 않습니다.",
+      "urls": [
+        "https://helpx.adobe.com/kr/ko/substance-3d-painter/tutorials.html",
+        "https://helpx.adobe.com/kr/ko/substance-3d-sampler/tutorials.html"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "유정통 3D — 블렌더 재질·텍스처 완벽 가이드(PBR과 노드 랭글러) / 라이팅 독학 가이드 / F12 렌더가 까맣게 나오는 이유",
+      "category": "blog",
+      "what_it_is": "블렌더 PBR 텍스처 연결(Node Wrangler로 여러 맵을 한 번에 자동 연결), 빛과 색으로 렌더 품질을 높이는 법(월드 배경색을 조금 올려 암부를 살리기), 렌더 결과가 검게 나오는 문제 해결을 다루는 한국어 블로그 시리즈입니다.",
+      "how_to_use": "AI가 만든 씬의 머티리얼·라이팅을 사람이 보정할 때 체크리스트로 씁니다. 에이전트 프롬프트에 넣을 규칙을 뽑아내는 데도 좋습니다.",
+      "language": "ko",
+      "status_date": "2025~2026 추정",
+      "strengths": "입문자 눈높이에 맞고 실용적입니다.",
+      "weaknesses": "AAA 고급 기법까지는 다루지 않습니다.",
+      "urls": [
+        "https://yujungtong.com/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9E%85%EB%AC%B8%EC%9E%90-%ED%95%84%EB%8F%85-pbr-%ED%85%8D%EC%8A%A4%EC%B2%98-%EC%A0%81%EC%9A%A9-%ED%95%B5%EC%8B%AC/",
+        "https://yujungtong.com/blender-lighting-and-color/",
+        "https://yujungtong.com/blender-rendering-black-screen-fix-guide/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "[Blender 3.0+ 초보 강좌] 8강. Texturing - 2 (PBR Texturing, Node Editor)",
+      "category": "youtube",
+      "what_it_is": "머티리얼에 PBR 텍스처를 적용하고 노드 에디터를 쓰는 법을 다루는 한국어 강좌입니다.",
+      "how_to_use": "PBR 맵(Base Color, Roughness, Normal 등) 연결의 기본을 익힙니다.",
+      "language": "ko",
+      "status_date": "2022 전후",
+      "strengths": "무료이고 단계별로 진행됩니다.",
+      "weaknesses": "버전이 오래됐습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=rDLb0xizzrU"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "블렌더 유저라면 꼭 알아야 하는 무료 이미지 & 텍스처 사이트 Poly Haven",
+      "category": "youtube",
+      "what_it_is": "Poly Haven(무료 HDRI, 텍스처, 모델)을 소개하는 한국어 영상입니다.",
+      "how_to_use": "blender-mcp의 PolyHaven 연동 기능과 함께 쓰면 좋습니다. 사실적인 HDRI 조명과 PBR 소재를 확보할 수 있습니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "무료 고품질 소스를 알려 줍니다.",
+      "weaknesses": "소개 수준입니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=AqtYMdZqo4g"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "iRender 한국어 — 블렌더 렌더링 설정 마스터하기 / Cycles 렌더링 빠르게 하는 방법",
+      "category": "blog",
+      "what_it_is": "렌더팜 업체의 한국어 블로그입니다. 샘플링, 라이트 패스, 컬러 매니지먼트 등이 사실적인 조명·그림자·반사에 어떤 영향을 주는지 설명합니다.",
+      "how_to_use": "에이전트가 렌더 설정을 자동으로 잡을 때 쓸 기준값을 정리하는 데 참고합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "렌더 설정 항목별 설명이 있습니다.",
+      "weaknesses": "벤더 마케팅 성격이 있습니다.",
+      "urls": [
+        "https://irendering.net/%EB%B8%94%EB%A0%8C%EB%8D%94-%EB%A0%8C%EB%8D%94%EB%A7%81-%EC%84%A4%EC%A0%95-%EB%A7%88%EC%8A%A4%ED%84%B0%ED%95%98%EA%B8%B0-%EA%B3%A0%ED%92%88%EC%A7%88-%EB%A0%8C%EB%8D%94%EB%A7%81%EC%9D%84-%EB%8D%94/",
+        "https://irendering.net/blender-cycles-%EB%A0%8C%EB%8D%94%EB%A7%81-%EB%B9%A0%EB%A5%B4%EA%B2%8C-%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "아키스케치 — 인테리어 렌더링 퀄리티를 향상시키는 7가지 필수 팁",
+      "category": "blog",
+      "what_it_is": "국내 인테리어 3D 플랫폼 아키스케치가 쓴 인테리어 렌더링 품질 향상 팁입니다.",
+      "how_to_use": "가구 배치와 인테리어 씬의 사실감 체크리스트로 씁니다.",
+      "language": "ko(URL은 /en/ 경로)",
+      "status_date": "2025 추정",
+      "strengths": "인테리어 전문 기업의 자료입니다.",
+      "weaknesses": "원문을 확인하지 못했습니다.",
+      "urls": [
+        "https://www.archisketch.com/en/blog/67ce4dcab7dabf0012869791"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "blender.pe.kr — 의자 만들기 / 소파 모델링 / Architecture 카테고리",
+      "category": "blog",
+      "what_it_is": "블렌더로 의자, 소파 같은 가구와 건축 요소를 모델링하는 한국어 튜토리얼 사이트입니다.",
+      "how_to_use": "가구의 올바른 구조(다리, 프레임, 쿠션)를 에이전트 프롬프트나 검수 기준으로 옮길 때 참고합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "가구 모델링에 특화되어 있습니다.",
+      "weaknesses": "오래된 버전일 가능성이 있습니다.",
+      "urls": [
+        "https://blender.pe.kr/870",
+        "https://blender.pe.kr/874",
+        "https://blender.pe.kr/category/Blender/Architecture"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "[블렌더 강좌] 모델링 따라하기 : 쿠션 의자 만들기 1강 / 3D 취미 과정 블렌더 강좌 - 집 모델링 / 블렌더 기초 강의·블렌더 3D 한국어 재생목록",
+      "category": "youtube",
+      "what_it_is": "가구와 집 모델링, 기초를 다루는 한국어 무료 유튜브 강좌 모음입니다.",
+      "how_to_use": "AI 결과물을 고칠 수 있는 기초 모델링 역량을 기를 때 봅니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "무료입니다.",
+      "weaknesses": "채널명은 확인하지 못했습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=19jGvcYle1I",
+        "https://www.youtube.com/watch?v=App-xLPworM",
+        "https://www.youtube.com/playlist?list=PLqf2JB4ViQO4dXIJykSyCM-k5a50eJC_P",
+        "https://www.youtube.com/playlist?list=PLZMaMcWE_6r8Mo2yhWELYWwx0QZx_a2Lc"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "블렌더 기본 라이팅과 렌더링 (포스타입 @ijuhamnida123) / 블렌더 알파 텍스처 적용 (godhasdone.com)",
+      "category": "blog",
+      "what_it_is": "블렌더 라이팅 기초와 알파 텍스처 적용법을 다룬 개인 블로그 글입니다.",
+      "how_to_use": "잎사귀나 커튼처럼 알파 마스크가 필요한 소품과 기본 조명을 다룰 때 봅니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "주제별로 짧게 정리되어 있습니다.",
+      "weaknesses": "깊이가 제한적입니다.",
+      "urls": [
+        "https://www.postype.com/@ijuhamnida123/post/14722869",
+        "https://www.godhasdone.com/21"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "스케치업이냐, 라이노냐? 3D 모델링 프로그램에 대해서 (brunch)",
+      "category": "blog",
+      "what_it_is": "건축 실무 관점에서 SketchUp과 Rhino를 비교한 글입니다. SketchUp으로 할 수 있는 건 Rhino로 모두 되지만 그 반대는 아니라는 요지입니다.",
+      "how_to_use": "CAD/NURBS 계열 MCP(Rhino)와 SketchUp MCP 중 무엇을 고를지 판단할 때 참고합니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "실무자 관점입니다.",
+      "weaknesses": "AI는 다루지 않습니다.",
+      "urls": [
+        "https://brunch.co.kr/@ratm820309n85i/198"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Hunyuan3D 한국어 자료 — 파이토치 한국 사용자 모임 소개글 / secondbrush '#550 Tencent Hunyuan 3D 사용해보기' / GeekNews 토픽",
+      "category": "blog",
+      "what_it_is": "텐센트 Hunyuan3D(텍스트·이미지·스케치로 3D 생성, 최대 4장의 멀티뷰 입력)를 소개하고 써 본 한국어 자료입니다. 웹에서는 브라우저 번역을 켜고 쓰는 요령도 나옵니다.",
+      "how_to_use": "blender-mcp가 연동하는 Hunyuan3D 생성 품질을 가늠하고 멀티뷰 입력 요령을 익힐 때 봅니다.",
+      "language": "ko",
+      "license_or_price": "오픈 가중치와 상용 웹서비스",
+      "status_date": "2024-11~2025(GeekNews 2025-01-23)",
+      "strengths": "기술 소개와 실사용 후기가 함께 있습니다.",
+      "weaknesses": "GeekNews 토픽(id=18861)은 제목과 내용을 확인하지 못했습니다(Hunyuan3D 2.0 관련으로 추정).",
+      "urls": [
+        "https://discuss.pytorch.kr/t/hunyuan3d-tencent-3d/5451",
+        "https://blog.secondbrush.co.kr/dailyprompt-550/",
+        "https://news.hada.io/topic?id=18861"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "텐센트 '훈위안 3D' 글로벌 출시 한국어 기사 (캐드앤그래픽스, GTT코리아, 한국클라우드신문, 글로벌이코노믹)",
+      "category": "news",
+      "what_it_is": "훈위안 3D 글로벌 버전 출시(텍스트·이미지·스케치 투 3D)와 '3D 월드' 생성 확장을 다룬 한국어 기사들입니다.",
+      "how_to_use": "AI 3D 생성 도구의 동향을 한국어로 인용할 때 씁니다.",
+      "language": "ko",
+      "status_date": "2025(글로벌이코노믹 2025-07-28)",
+      "strengths": "여러 매체에서 교차 확인됩니다.",
+      "weaknesses": "보도자료 성격입니다.",
+      "urls": [
+        "https://www.cadgraphics.co.kr/newsview.php?pages=news&sub=new01&catecode=2&num=77635",
+        "https://www.gttkorea.com/news/articleView.html?idxno=22862",
+        "https://www.kcloudnews.co.kr/news/articleView.html?idxno=15709",
+        "https://www.g-enews.com/article/ICT/2025/07/202507280826165223c5fa75ef86_1"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "트리포 3D AI 리뷰: 뛰어난 점과 아쉬운 점 (see3d.art 한국어) / Tripo·Meshy 리뷰 (unite.ai 한국어판)",
+      "category": "blog",
+      "what_it_is": "Tripo(Smart Mesh 토폴로지, PBR, Unity·Unreal 원클릭 내보내기)와 Meshy의 장단점을 다룬 한국어(번역) 리뷰입니다.",
+      "how_to_use": "이미지나 텍스트로 3D를 만드는 도구를 고를 때 비교 자료로 씁니다.",
+      "language": "ko(기계번역 추정)",
+      "status_date": "2025~2026",
+      "strengths": "장단점을 함께 다룹니다.",
+      "weaknesses": "번역·제휴 성격의 콘텐츠일 수 있습니다.",
+      "urls": [
+        "https://see3d.art/ko/blog/detail/Tripo-3D-AI-Review-What-It-s-Great-At-and-Not-b6180d62aa21/",
+        "https://www.unite.ai/tripo-review/",
+        "https://www.unite.ai/meshy-ai-review/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "클리앙 — 'AI로 모델링 이젠 수준급 바이브모델링 10분도 안걸려' / '이젠 AI에이전트의 시대 클로드를 자비스로 만들고 있어요' / 'Astra(GPT-6)로 만든 결과물'",
+      "category": "community",
+      "what_it_is": "클리앙 모두의공원 게시글 3건입니다. 바이브 모델링 체험(10분 이내), Claude 에이전트 구성 경험, GPT-6 Astra 결과물을 공유합니다.",
+      "how_to_use": "한국 사용자의 체감 품질과 반응을 파악하고 댓글의 비판적 의견을 수집할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2026(Astra 글은 2026-09)",
+      "strengths": "실사용자 반응을 볼 수 있습니다.",
+      "weaknesses": "본문을 확인하지 못했습니다. 일화적입니다.",
+      "urls": [
+        "https://www.clien.net/service/board/park/19015735",
+        "https://www.clien.net/service/board/park/19037225",
+        "https://www.clien.net/service/board/park/19258409"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Threads @dddesign.io — [클로드 블렌더 커넥터 사용법] 공식 가이드가 불친절해서 만듬",
+      "category": "community",
+      "what_it_is": "공식 Claude 블렌더 커넥터를 설치하는 절차를 적은 글입니다. Claude Desktop 커넥터에서 blender 검색 → Enable → 공식 링크에서 MCP 파일 다운로드 → 블렌더에 드래그(반드시 2번 반복) → Edit > Preferences에서 확인하는 순서입니다.",
+      "how_to_use": "공식 커넥터 설치가 실패할 때 참고합니다.",
+      "language": "ko",
+      "status_date": "2026-04 이후",
+      "strengths": "공식 문서에 없는 실전 팁이 있습니다('2번 드래그').",
+      "weaknesses": "SNS 게시물이라 버전에 따라 달라질 수 있습니다.",
+      "urls": [
+        "https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Threads — @choi.openai '이제는 바이브 모델링 시대?' / @unclejobs.ai 'Unreal-MCP 등장' / @secret_canada_ 'Unity3D MCP로 클로드 코드 붙여서 게임 만들기'",
+      "category": "community",
+      "what_it_is": "한국어 AI 인플루언서와 개발자의 Threads 게시물입니다. blender-mcp 초기 바이럴, 커뮤니티판 Unreal-MCP 소개, CoderGamester/mcp-unity와 Claude Code로 30분 만에 드리프트 게임을 만든 경험을 담았습니다.",
+      "how_to_use": "국내 확산 흐름과 실험 사례를 확인할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2025~2026",
+      "strengths": "빠른 체험담을 볼 수 있습니다.",
+      "weaknesses": "깊이가 얕고 과장이 섞일 수 있습니다.",
+      "urls": [
+        "https://www.threads.com/@choi.openai/post/DHFQXYoPAoo",
+        "https://www.threads.com/@unclejobs.ai/post/DH2Sok7JBzf/video-%EC%99%80-%EC%9D%B4%EA%B2%8C-%EB%90%98%EB%84%A4%EC%9A%94%EC%9D%B4%EC%A0%9C-%EC%96%B8%EB%A6%AC%EC%96%BC-%EC%97%94%EC%A7%84%EB%8F%84-mcp%EB%A1%9C-%EC%9E%90%EB%8F%99%ED%99%94%ED%95%A0-%EC%88%98-%EC%9E%88%EA%B2%8C-%EB%90%90%EC%8A%B5%EB%8B%88%EB%8B%A4x%EC%9D%98-%EC%9C%A0%EC%A0%80%EA%B0%80-%EC%A7%81%EC%A0%91-%EB%A7%8C%EB%93%A0-unreal-mcp%EA%B0%80-%EB%93%B1%EC%9E%A5%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4%EC%9D%B4%EC%A0%9C-3d-%EA%B2%8C%EC%9E%84%EB%8F%84-%EB%B0%94?hl=ko",
+        "https://www.threads.com/@secret_canada_/post/DTCjtmzjJPD/video-%EC%9D%B4%EC%A0%A0-unity3d-mcp-%EB%A1%9C-%ED%81%B4%EB%A1%9C%EB%93%9C-%EC%BD%94%EB%93%9C-%EB%B6%99%EC%97%AC%EC%84%9C-%EA%B2%8C%EC%9E%84%EB%A7%8C%EB%93%9C%EB%8A%94%EA%B2%8C%EA%B0%80%EB%8A%A5%ED%95%B4%EC%A7%90-%EC%98%A4%EB%8A%98-%EC%B2%98%EC%9D%8C-30%EB%B6%84-%EC%A0%95%EB%8F%84-%EC%9B%8C%EB%B0%8D%EC%97%85-%EC%9C%BC%EB%A1%9C-%EB%93%9C%EB%A6%AC%ED%94%84%ED%8A%B8-%EA%B2%8C%EC%9E%84-%EC%9D%84-%EB%A7%8C%EB%93%A4%EC%96%B4-%EB%B3%B4%EA%B3%A0%EC%8B%B6%EC%96%B4%EC%84%9C-%EB%AC%B4?hl=ko"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "디시인사이드 블렌더 마이너 갤러리 — '블렌더 첫 공간 모델링 후기' / '두 번째 모델링 후기'",
+      "category": "community",
+      "what_it_is": "블렌더 입문자가 공간(인테리어) 모델링을 해 본 후기와 갤러리 이용자들의 피드백입니다.",
+      "how_to_use": "사람이 공간 모델링에서 흔히 하는 실수와 피드백 패턴을 보고 AI 결과물 검수 기준으로 옮깁니다.",
+      "language": "ko",
+      "status_date": "미확인",
+      "strengths": "커뮤니티 피드백이 붙어 있습니다.",
+      "weaknesses": "AI와 무관하고 일화적입니다.",
+      "urls": [
+        "https://gall.dcinside.com/mgallery/board/view/?id=blender&no=42368",
+        "https://m.dcinside.com/board/blender/42368",
+        "https://gall.dcinside.com/mgallery/board/view/?id=blender&no=43908"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "디시 게임와이 갤러리 — '크래프톤·NC·클로드… 게임 제작 AI 원톱은?' / 침하하 — Blender 강의 추천 스레드",
+      "category": "community",
+      "what_it_is": "게임 제작 AI 비교 게시글과 블렌더 학습 강의 추천 스레드입니다.",
+      "how_to_use": "국내 커뮤니티의 평가와 추천 강의를 수집할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2026 추정",
+      "strengths": "커뮤니티 여론을 볼 수 있습니다.",
+      "weaknesses": "신뢰도가 낮습니다.",
+      "urls": [
+        "https://gall.dcinside.com/board/view/?id=gamey&no=14768",
+        "https://chimhaha.net/recommend_comics/435126"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "앤트로픽 크리에이티브 커넥터 한국어 보도 — AI매터스(9종 통합, 어도비 커넥터) / AI타임스 / 디지털인사이트 / 월간디자인 / 디자인DB / KITPA / 디지털포커스",
+      "category": "news",
+      "what_it_is": "2026-04-28 출시된 Claude 크리에이티브 커넥터 9종(블렌더, 어도비, 에이블톤, 오토데스크, 스플라이스 등)을 다룬 한국어 기사들입니다. 블렌더 커넥터로는 씬 전체 분석, 커스텀 스크립트 작성, 인터페이스에 새 도구 추가가 가능하고, 어도비는 포토샵·프리미어·익스프레스 등 50개 이상의 앱을 지원한다고 보도됐습니다.",
+      "how_to_use": "커넥터 출시일, 지원 범위, 공식 포지셔닝을 한국어로 인용할 때 씁니다.",
+      "language": "ko",
+      "status_date": "2026-04-28~05",
+      "strengths": "여러 매체에서 교차 확인됩니다(출시일과 9종 구성이 일치).",
+      "weaknesses": "대부분 보도자료를 옮긴 수준입니다.",
+      "urls": [
+        "https://aimatters.co.kr/news-report/41239/",
+        "https://aimatters.co.kr/news-report/41315/",
+        "https://www.aitimes.com/news/articleView.html?idxno=209904",
+        "https://ditoday.com/%ED%81%B4%EB%A1%9C%EB%93%9C%EC%97%90%EC%84%9C-%ED%8F%AC%ED%86%A0%EC%83%B5-%EC%93%B4%EB%8B%A4-%EC%95%A4%ED%8A%B8%EB%A1%9C%ED%94%BD-%ED%81%AC%EB%A6%AC%EC%97%90%EC%9D%B4%ED%8B%B0%EB%B8%8C-%EC%86%8C/",
+        "https://design.co.kr/article/163859/",
+        "https://kitpa.org/news/1460",
+        "https://www.digitalfocus.news/news/articleView.html?idxno=20533"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "게임뷰 — 언리얼 엔진을 직접 다루는 AI, UE5.8 MCP 활용 게임 개발기 [전편]·[후편]",
+      "category": "news",
+      "what_it_is": "UE5.8 내장 MCP로 LLM 에이전트가 언리얼 에디터를 실시간 조작하며 게임을 만든 개발기입니다. UMG, 나이아가라, 월드 비주얼 제작 가능성과 에디터 어노테이션 활용법을 다룹니다.",
+      "how_to_use": "언리얼 MCP 실전 사례와 한계를 한국어로 참고합니다.",
+      "language": "ko",
+      "status_date": "2026 추정",
+      "strengths": "구체적인 개발기입니다.",
+      "weaknesses": "해외 사례를 소개하는 성격일 수 있습니다('글로벌 핫 이슈' 섹션).",
+      "urls": [
+        "https://www.gamevu.co.kr/news/articleView.html?idxno=60827",
+        "https://www.gamevu.co.kr/news/articleView.html?idxno=60830"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "다나와 DPG — GPT-6 아스트라 활용법 총정리, 50분 만에 유튜브 영상부터 5일짜리 도시 게임까지",
+      "category": "news",
+      "what_it_is": "GPT-6 Astra(9월 3일 공개)의 Computer Use와 블렌더 3D 제작 능력을 사례 중심으로 정리한 기사입니다. 집 사진에서 편집 가능한 3D 씬 재구성, 그림에서 대량 오브젝트 생성, 렌더를 스스로 확인하고 수정, Unreal·Unity·CAD 내보내기 등을 소개합니다.",
+      "how_to_use": "Astra의 3D 사례를 한국어로 빠르게 파악할 때 봅니다.",
+      "language": "ko",
+      "status_date": "2026-09",
+      "strengths": "사례와 소요 시간 수치가 있습니다.",
+      "weaknesses": "사례 수치는 개별 사용자 주장입니다.",
+      "urls": [
+        "https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "AI타임스 — '3D 코딩 대결...클로드 오퍼스 5.5 \"디테일\" vs GPT-5.6 \"비용·속도\"' / '클로드 오퍼스 5.5 공개(가격 40% 인하)'",
+      "category": "news",
+      "what_it_is": "Opus 5.5의 3D 생성 능력을 비교 평가한 기사입니다. 물고기 떼, 소용돌이, 폭풍 속의 배, 쓰나미 프롬프트로 테스트했고, 카메라 앵글, 노을 안개, 텍스트 레이아웃 같은 연출 디테일에서 Opus 5.5가 앞섰으며 Fable 5.1은 최종 연출의 정교함이 떨어졌다고 요약됩니다.",
+      "how_to_use": "모델별 3D 강약점을 한국어로 인용할 때 씁니다.",
+      "language": "ko",
+      "status_date": "2026",
+      "strengths": "모델 비교 관점을 줍니다.",
+      "weaknesses": "검색 요약에 여러 비교가 섞여 있어 세부 내용은 원문 확인이 필요합니다.",
+      "urls": [
+        "https://www.aitimes.com/news/articleView.html?idxno=215618",
+        "https://www.aitimes.com/news/articleView.html?idxno=215583"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "AI타임스 — '제미나이'에 인터랙티브 3D 모델·시뮬레이션 생성 기능 추가 / AI매터스 — 제미나이3 활용법: 게임·3D·웹앱 제작 사례 13가지 + 실전 프롬프트",
+      "category": "news",
+      "what_it_is": "Gemini 앱의 인터랙티브 3D 모델·시뮬레이션 생성(Pro 모델에서 '시각화해 줘'로 요청)과 Gemini 3로 게임·3D를 만든 사례를 다룬 한국어 기사입니다.",
+      "how_to_use": "Gemini 계열의 3D 활용 가능성을 한국어로 볼 때 참고합니다.",
+      "language": "ko",
+      "status_date": "2025-11~2026",
+      "strengths": "Gemini를 다룬 드문 한국어 3D 자료입니다.",
+      "weaknesses": "블렌더 MCP를 직접 연동한 내용은 없습니다.",
+      "urls": [
+        "https://www.aitimes.com/news/articleView.html?idxno=209099",
+        "https://aimatters.co.kr/ai-tool/ai-tool-how-to/34188/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "NC AI '바르코 3D' 및 국내 게임사 AI 3D 활용 보도 — 시사저널e / 아주경제 / 게임플 / 다음(v.daum) / NCSOFT 공식 블로그",
+      "category": "news",
+      "what_it_is": "NC AI 바르코 3D('3D 애셋 제작 4주에서 3분으로'), 리니지M 배경 원화팀의 작업 기간 단축, NC·크래프톤·넥슨의 게임 AI 현황, 3D 모델링 자동화로 경쟁 축이 '내러티브'로 옮겨 간다는 분석을 담은 기사들입니다.",
+      "how_to_use": "국내 기업 사례와 산업 맥락을 인용할 때 씁니다.",
+      "language": "ko",
+      "status_date": "2025-12 ~ 2026-07",
+      "strengths": "국내 기업 사례를 볼 수 있습니다.",
+      "weaknesses": "'4주에서 3분' 같은 수치는 홍보성이고 MCP 기반은 아닙니다.",
+      "urls": [
+        "https://www.sisajournal-e.com/news/articleView.html?idxno=417470",
+        "https://www.ajunews.com/view/20260714153538647",
+        "https://www.gameple.co.kr/news/articleView.html?idxno=209527",
+        "https://v.daum.net/v/20251207161025106",
+        "https://about.ncsoft.com/news/article/gameai_01_260424"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "공식 Claude 블렌더 커넥터를 설치할 때는 애드온(MCP) 파일을 블렌더 창에 두 번 드래그하고, Edit > Preferences에서 활성화됐는지 확인하세요.",
+      "why": "한국 사용자들이 공식 가이드만으로는 연결이 실패하는 경우가 많다고 보고했습니다.",
+      "example": "Claude Desktop → 커넥터 → blender 검색 → Enable → 공식 링크에서 MCP 파일 다운로드 → 블렌더에 드래그 2회 → Preferences 확인",
+      "urls": [
+        "https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko"
+      ]
+    },
+    {
+      "tip": "오픈소스 blender-mcp를 쓸 때는 로컬에 블렌더를 설치하고, uv 패키지 매니저를 준비한 뒤, BlenderMCP 탭에서 Start/Connect MCP Server를 눌러야 합니다. 버튼이 Disconnect로 바뀌면 연결된 것입니다.",
+      "why": "blender-mcp는 클라우드 서비스가 아니라 로컬 블렌더 안에서 여는 소켓 서버에 AI가 접속하는 구조이기 때문입니다.",
+      "urls": [
+        "https://brunch.co.kr/@soonkyujang/221",
+        "https://media.fastcampus.co.kr/insight/ai_creative/blendermcp/",
+        "https://tali.kr/blender-mcp-assets"
+      ]
+    },
+    {
+      "tip": "MCP 자동화는 반복적이고 규칙적인 작업(건축 시각화, 제품 렌더, 썸네일 소품, 에셋 배치)에 먼저 쓰세요. 히어로 에셋은 사람이 마무리합니다.",
+      "why": "한국어 가이드와 커뮤니티 모두 속도는 매우 빠르지만 고급 모델러 수준에는 못 미치고, 며칠 만에 만든 결과는 인디 프로토타입 수준이라고 평가합니다.",
+      "urls": [
+        "https://media.fastcampus.co.kr/insight/ai_creative/blendermcp/",
+        "https://tali.kr/blender-mcp-assets",
+        "https://www.clien.net/service/board/park/19015735"
+      ]
+    },
+    {
+      "tip": "Meshy 같은 생성형 3D 결과물은 반드시 리메시·리토폴로지를 거쳐 게임용 폴리곤 수로 줄이세요.",
+      "why": "처음 생성된 메시는 100만 폴리곤이 넘는 경우가 많아 실시간 엔진에 그대로 쓸 수 없습니다.",
+      "example": "Meshy 리메시로 약 100만 폴리곤을 약 1만 폴리곤으로 줄인 뒤 Unity·Unreal로 임포트",
+      "urls": [
+        "https://www.inflearn.com/clip/570"
+      ]
+    },
+    {
+      "tip": "UE5.8 내장 MCP를 쓸 때는 에디터에 어노테이션(코멘트)을 달아 두고, 에이전트에게 현재 화면을 보고 다음에 할 일을 묻는 방식으로 활용하세요.",
+      "why": "MCP로 에이전트가 에디터 화면과 주석을 인식하므로, 이해하기 어려운 머티리얼 수식 같은 부분을 짚어 질문할 수 있습니다.",
+      "urls": [
+        "https://www.gamevu.co.kr/news/articleView.html?idxno=60827",
+        "https://www.gamevu.co.kr/news/articleView.html?idxno=60830"
+      ]
+    },
+    {
+      "tip": "블렌더와 언리얼을 함께 쓰는 파이프라인은 중앙 MCP 허브 서버 하나에 도구별 플러그인(포트 분리)을 붙이는 구조로 설계하세요.",
+      "why": "한국 개발자의 unreal-blender-mcp가 이 구조(중앙 8300 SSE, Blender 8400, Unreal 8500)로 블렌더 에셋 생성부터 언리얼 레벨 배치까지 한 에이전트에서 처리합니다.",
+      "urls": [
+        "https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md"
+      ]
+    },
+    {
+      "tip": "렌더 → 스크린샷 → 수정을 반복하는 루프는 블렌더를 계속 띄워 둔 채 소켓으로 명령을 보내는 방식이 서브프로세스 방식보다 훨씬 빠릅니다.",
+      "why": "Aryeon0228/BlenderMCP의 README는 명령당 0.1~1초로, 매번 블렌더를 실행하는 방식(10~15초)보다 약 100배 빠르다고 적고 있습니다.",
+      "urls": [
+        "https://github.com/Aryeon0228/BlenderMCP"
+      ]
+    },
+    {
+      "tip": "PBR 맵은 Node Wrangler의 자동 연결 기능으로 한 번에 연결하고, 무료 HDRI와 텍스처는 Poly Haven에서 가져오세요. blender-mcp도 PolyHaven 연동을 지원합니다.",
+      "why": "맵을 잘못 연결하는 실수(Normal이나 Roughness의 색공간 오류)를 줄이고, 사실적인 조명·재질의 기본을 쉽게 확보할 수 있습니다.",
+      "urls": [
+        "https://yujungtong.com/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9E%85%EB%AC%B8%EC%9E%90-%ED%95%84%EB%8F%85-pbr-%ED%85%8D%EC%8A%A4%EC%B2%98-%EC%A0%81%EC%9A%A9-%ED%95%B5%EC%8B%AC/",
+        "https://www.youtube.com/watch?v=AqtYMdZqo4g",
+        "https://www.youtube.com/watch?v=rDLb0xizzrU"
+      ]
+    },
+    {
+      "tip": "인테리어 씬은 월드 배경색이나 HDRI 강도를 조금 올려 암부에 기초광을 두고, 샘플링·라이트 패스·컬러 매니지먼트를 함께 조정하세요.",
+      "why": "조명이 닿지 않는 면이 완전히 검게 뭉개지면 입체감을 잃습니다. 렌더 설정이 맞지 않으면 모델링이 좋아도 결과가 평면적이고 노이즈가 많아 보입니다.",
+      "urls": [
+        "https://yujungtong.com/blender-lighting-and-color/",
+        "https://irendering.net/%EB%B8%94%EB%A0%8C%EB%8D%94-%EB%A0%8C%EB%8D%94%EB%A7%81-%EC%84%A4%EC%A0%95-%EB%A7%88%EC%8A%A4%ED%84%B0%ED%95%98%EA%B8%B0-%EA%B3%A0%ED%92%88%EC%A7%88-%EB%A0%8C%EB%8D%94%EB%A7%81%EC%9D%84-%EB%8D%94/",
+        "https://www.archisketch.com/en/blog/67ce4dcab7dabf0012869791"
+      ]
+    },
+    {
+      "tip": "Unity MCP는 Python과 uv를 설치하고 MCP for Unity 창에서 모든 상태가 초록불인지 확인한 뒤, Unity와 Claude를 재시작해 Allow를 누르고 /mcp로 연결을 확인하세요.",
+      "why": "여러 한국어 블로그에서 반복되는 설치 실패 원인이 의존성 누락과 재시작 누락입니다.",
+      "urls": [
+        "https://duplicat.kr/1175",
+        "https://develog.kiweb.or.kr/@user_1777093328305/unity-%EC%9C%A0%EB%8B%88%ED%8B%B0-mcp-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0",
+        "https://apidog.com/kr/blog/unity-mcp-server-kr/"
+      ]
+    },
+    {
+      "tip": "Hunyuan3D처럼 이미지로 3D를 만드는 도구에는 단일 이미지보다 멀티뷰 이미지(최대 4장)를 넣으세요.",
+      "why": "여러 시점을 넣으면 형태와 질감의 정확도가 올라가 가구나 소품의 뒷면이 틀리는 문제가 줄어듭니다.",
+      "urls": [
+        "https://www.cadgraphics.co.kr/newsview.php?pages=news&sub=new01&catecode=2&num=77635",
+        "https://www.gttkorea.com/news/articleView.html?idxno=22862"
+      ]
+    },
+    {
+      "tip": "GPT-6 Astra로 컨셉을 3D로 옮길 때는 이미지를 먼저 생성하거나 준비한 뒤 Codex에 올리고 'Blender 파일로 변환'을 지시하는 2단계 흐름을 쓰세요.",
+      "why": "한국어로 정리된 사례들이 이미지 → Blender 파일 흐름으로 짧은 시간에 씬을 구성했다고 보고합니다.",
+      "urls": [
+        "https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609",
+        "https://www.promppy.com/item/1563417"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "GPT-6 Astra로 블렌더 'Backrooms' 영상과 5일짜리 도시 게임 제작 (다나와 DPG 정리)",
+      "who": "국내외 사용자 사례를 다나와 DPG가 한국어로 정리",
+      "date": "2026-09",
+      "ai_model": "OpenAI GPT-6 Astra",
+      "tools": "Blender, Codex, Computer Use",
+      "what_was_made": "Backrooms 분위기의 3D 영상과 도시 게임",
+      "process": "프롬프트 약 5개로 30분 만에 모델링과 연출을 끝내고 내보내기에 20분을 더 썼다고 합니다. 이미지를 Codex에 올려 Blender 파일로 변환하는 방식도 소개됐습니다. 페이지를 열 수 없어 검색 요약에 근거합니다.",
+      "outcome": "'50분 만에 유튜브 영상'이라는 헤드라인입니다. 품질 검증은 없습니다.",
+      "urls": [
+        "https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609",
+        "https://www.promppy.com/item/1433678"
+      ]
+    },
+    {
+      "title": "2D 로봇 그림을 Blender MCP로 3D화해 랜딩 페이지에 적용",
+      "who": "한국어 유튜브 크리에이터(채널명 미확인)",
+      "date": "미확인",
+      "ai_model": "Claude",
+      "tools": "Blender MCP, 웹 랜딩 페이지",
+      "what_was_made": "2D 로봇 캐릭터 이미지를 옮긴 3D 모델과, 그 모델을 쓴 웹사이트 랜딩 페이지",
+      "process": "Claude와 Blender MCP를 연결하고 2D 이미지를 레퍼런스로 삼아 3D 모델을 자동 생성한 뒤 웹 페이지에 넣었습니다. 영상 제목과 검색 요약에 근거합니다.",
+      "outcome": "'완전 자동화'를 표방합니다. 품질은 확인하지 못했습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=I5rtlgAvoV4"
+      ]
+    },
+    {
+      "title": "Claude MCP로 SketchUp 자동 모델링 후 AI 렌더링 (뽁숑이)",
+      "who": "건축·인테리어 유튜버 뽁숑이",
+      "date": "2026 추정",
+      "ai_model": "Claude(커넥터와 MCP)",
+      "tools": "SketchUp MCP, AI 렌더러",
+      "what_was_made": "건축·인테리어 매스 모델과 AI 렌더 이미지",
+      "process": "Claude 커넥터(MCP)로 SketchUp 모델링을 자동 생성하고 AI 렌더링으로 이어지는 기본 워크플로를 구성했습니다. 쇼츠로 연결 방법도 공개했습니다.",
+      "outcome": "실무 관점의 워크플로를 시연했습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=GOaWRhrsQC0",
+        "https://www.youtube.com/shorts/WyzHiIZ1J3I?cbrd=1"
+      ]
+    },
+    {
+      "title": "Unity MCP와 Claude Code로 30분 만에 드리프트 게임 프로토타입 제작",
+      "who": "Threads 사용자 @secret_canada_",
+      "date": "미확인(2025~2026)",
+      "ai_model": "Claude Code",
+      "tools": "Unity 3D, CoderGamester/mcp-unity, 무료 에셋",
+      "what_was_made": "캐주얼 드리프트 게임 프로토타입",
+      "process": "Unity를 설치하고 Claude Code를 실행한 뒤 mcp-unity를 연결했습니다. 무료 에셋을 받아 약 30분 동안 워밍업 삼아 만들었습니다.",
+      "outcome": "캐주얼 게임이라면 며칠 안에 만들 수 있다는 평가입니다. 애드몹 '공장' 구상까지 언급했습니다.",
+      "urls": [
+        "https://www.threads.com/@secret_canada_/post/DTCjtmzjJPD/video-%EC%9D%B4%EC%A0%A0-unity3d-mcp-%EB%A1%9C-%ED%81%B4%EB%A1%9C%EB%93%9C-%EC%BD%94%EB%93%9C-%EB%B6%99%EC%97%AC%EC%84%9C-%EA%B2%8C%EC%9E%84%EB%A7%8C%EB%93%9C%EB%8A%94%EA%B2%8C%EA%B0%80%EB%8A%A5%ED%95%B4%EC%A7%90-%EC%98%A4%EB%8A%98-%EC%B2%98%EC%9D%8C-30%EB%B6%84-%EC%A0%95%EB%8F%84-%EC%9B%8C%EB%B0%8D%EC%97%85-%EC%9C%BC%EB%A1%9C-%EB%93%9C%EB%A6%AC%ED%94%84%ED%8A%B8-%EA%B2%8C%EC%9E%84-%EC%9D%84-%EB%A7%8C%EB%93%A4%EC%96%B4-%EB%B3%B4%EA%B3%A0%EC%8B%B6%EC%96%B4%EC%84%9C-%EB%AC%B4?hl=ko"
+      ]
+    },
+    {
+      "title": "UE5.8 내장 MCP로 게임 개발 (게임뷰 전·후편)",
+      "who": "게임뷰 기사(개발자 사례 소개)",
+      "date": "2026 추정",
+      "ai_model": "LLM 에이전트(모델 미확인)",
+      "tools": "Unreal Engine 5.8 내장 MCP, UMG, Niagara",
+      "what_was_made": "UE5.8 기반 게임과 월드 비주얼",
+      "process": "에이전트가 MCP로 에디터를 실시간 조작하고 화면을 읽었습니다. 이해하기 어려운 머티리얼 수식에 어노테이션을 달아 질문하고, UMG·나이아가라·월드 비주얼 제작에 활용하며 MCP 기능을 확장했습니다.",
+      "outcome": "MCP 이전에도 에이전트가 언리얼을 능숙하게 다뤘지만, MCP로 현재 상황을 인식하게 된 점이 핵심 개선이라는 평가입니다.",
+      "urls": [
+        "https://www.gamevu.co.kr/news/articleView.html?idxno=60827",
+        "https://www.gamevu.co.kr/news/articleView.html?idxno=60830"
+      ]
+    },
+    {
+      "title": "한국 개발자의 Unreal + Blender 통합 MCP 서버 (unreal-blender-mcp)",
+      "who": "GitHub tahooki",
+      "date": "미확인",
+      "ai_model": "Claude, ChatGPT",
+      "tools": "Blender 애드온, Unreal 플러그인, 중앙 MCP 서버(SSE), LangChain, PolyHaven, Hyper3D",
+      "what_was_made": "두 도구를 한 에이전트로 제어하는 MCP 허브",
+      "process": "blender-mcp를 확장해 중앙 서버(8300)에서 Blender(8400)와 Unreal(8500)로 Python 실행 명령을 중계하고, LangChain 기반 메모리와 상태 관리를 붙였습니다.",
+      "outcome": "한국어 설계 문서가 공개되어 있습니다(직접 열어 확인).",
+      "urls": [
+        "https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md"
+      ]
+    },
+    {
+      "title": "소켓 상주형 BlenderMCP로 명령 지연 약 100배 단축",
+      "who": "GitHub Aryeon0228",
+      "date": "2026 추정(Blender 5.0.1 기준)",
+      "ai_model": "Claude Desktop",
+      "tools": "Blender 5.0.1, Python 소켓 서버, bpy",
+      "what_was_made": "실시간 뷰포트 스크린샷과 오브젝트·머티리얼 제어 MCP",
+      "process": "블렌더를 매번 서브프로세스로 띄우지 않고 계속 실행한 상태에서 소켓으로 명령을 보냅니다.",
+      "outcome": "명령당 0.1~1초(기존 10~15초)라고 합니다. 이는 저자의 자체 주장입니다.",
+      "urls": [
+        "https://github.com/Aryeon0228/BlenderMCP"
+      ]
+    },
+    {
+      "title": "NC AI 바르코 3D로 리니지M 배경 작업 기간 단축",
+      "who": "엔씨소프트, NC AI",
+      "date": "2025~2026",
+      "ai_model": "NC AI VARCO 3D(자체 모델)",
+      "tools": "바르코 스튜디오(바르코 아트, 텍스트, 휴먼, 3D)",
+      "what_was_made": "게임 배경과 3D 애셋",
+      "process": "리니지M 배경 원화팀이 바르코 3D를 파이프라인에 도입했습니다.",
+      "outcome": "2~3주 걸리던 작업을 약 1주로 줄였다고 합니다. 제품 홍보에서는 '3D 애셋 제작 4주에서 3분'이라고 주장합니다. MCP 기반은 아닙니다.",
+      "urls": [
+        "https://www.sisajournal-e.com/news/articleView.html?idxno=417470",
+        "https://www.ajunews.com/view/20260714153538647",
+        "https://about.ncsoft.com/news/article/gameai_01_260424"
+      ]
+    },
+    {
+      "title": "Meshy로 모델러 없이 게임 3D 에셋 자급자족",
+      "who": "인프런 클립 강사(이름 미확인)",
+      "date": "미확인",
+      "ai_model": "Meshy AI",
+      "tools": "Meshy(텍스트·이미지로 3D 생성, 리메시), 게임 엔진",
+      "what_was_made": "프로토타입용 게임 3D 에셋",
+      "process": "Meshy로 생성하면 처음에는 100만 폴리곤이 넘고, 리메시로 약 1만 폴리곤까지 줄인 뒤 엔진에서 씁니다.",
+      "outcome": "프로토타입 단계에서는 속도 면에서 큰 도움이 된다는 평가입니다.",
+      "urls": [
+        "https://www.inflearn.com/clip/570"
+      ]
+    },
+    {
+      "title": "Claude Opus 5.5와 Fable 5.1, GPT-5.6의 3D 코딩 비교 (AI타임스)",
+      "who": "AI타임스 기사",
+      "date": "2026",
+      "ai_model": "Claude Opus 5.5, Claude Fable 5.1, GPT-5.6",
+      "tools": "3D 코드 생성(에이전트 루프)",
+      "what_was_made": "물고기 떼, 소용돌이, 폭풍 속의 배, 쓰나미 3D 애니메이션과 관람차·제어실 씬",
+      "process": "같은 프롬프트로 여러 모델의 결과를 비교했습니다.",
+      "outcome": "카메라 앵글, 노을 안개, 텍스트 레이아웃 같은 연출 디테일은 Opus 5.5가 우세하고, 비용과 속도는 GPT-5.6이 우세하다는 결과입니다. Fable 5.1은 최종 연출의 정교함이 떨어졌습니다. 검색 요약에 근거합니다.",
+      "urls": [
+        "https://www.aitimes.com/news/articleView.html?idxno=215618"
+      ]
+    }
+  ],
+  "measurements": [
+    {
+      "item": "Claude 크리에이티브 커넥터 출시",
+      "dimension": "출시일과 커넥터 수",
+      "typical_value": "2026-04-28, 9종",
+      "unit": "날짜/개",
+      "urls": [
+        "https://aimatters.co.kr/news-report/41239/",
+        "https://www.aitimes.com/news/articleView.html?idxno=209904",
+        "https://ditoday.com/%ED%81%B4%EB%A1%9C%EB%93%9C%EC%97%90%EC%84%9C-%ED%8F%AC%ED%86%A0%EC%83%B5-%EC%93%B4%EB%8B%A4-%EC%95%A4%ED%8A%B8%EB%A1%9C%ED%94%BD-%ED%81%AC%EB%A6%AC%EC%97%90%EC%9D%B4%ED%8B%B0%EB%B8%8C-%EC%86%8C/"
+      ],
+      "confidence": "high",
+      "note": "블렌더, 어도비, 에이블톤, 오토데스크, 스플라이스 등. 한국어 매체 여러 곳이 일치합니다.",
+      "region": "KR 보도"
+    },
+    {
+      "item": "GPT-6 Astra Backrooms 영상 사례",
+      "dimension": "제작 소요 시간",
+      "typical_value": "약 30분(모델링과 연출) + 20분(내보내기), 프롬프트 약 5개",
+      "unit": "분",
+      "urls": [
+        "https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609"
+      ],
+      "confidence": "low",
+      "note": "개별 사용자 주장입니다. 출처는 1곳입니다."
+    },
+    {
+      "item": "Meshy 초기 생성 메시",
+      "dimension": "폴리곤 수(생성 직후 → 리메시 후)",
+      "typical_value": "100만 이상 → 약 1만",
+      "unit": "폴리곤",
+      "urls": [
+        "https://www.inflearn.com/clip/570"
+      ],
+      "confidence": "medium",
+      "note": "인프런 클립 요약에 근거합니다."
+    },
+    {
+      "item": "Aryeon0228/BlenderMCP",
+      "dimension": "명령당 지연",
+      "typical_value": "0.1~1초(서브프로세스 방식은 10~15초)",
+      "unit": "초",
+      "range": "약 100배 개선",
+      "urls": [
+        "https://github.com/Aryeon0228/BlenderMCP"
+      ],
+      "confidence": "medium",
+      "note": "README의 자체 주장입니다. 원문은 직접 확인했습니다."
+    },
+    {
+      "item": "NC AI 바르코 3D",
+      "dimension": "3D 애셋 제작 기간",
+      "typical_value": "4주 → 3분(홍보) / 리니지M 배경 2~3주 → 약 1주(실사용)",
+      "unit": "기간",
+      "urls": [
+        "https://www.sisajournal-e.com/news/articleView.html?idxno=417470",
+        "https://www.ajunews.com/view/20260714153538647"
+      ],
+      "confidence": "medium",
+      "note": "두 수치의 맥락이 다릅니다. 홍보 문구와 실제 팀 사례를 구분해야 합니다.",
+      "region": "KR"
+    },
+    {
+      "item": "Hunyuan3D 이미지→3D",
+      "dimension": "최대 멀티뷰 입력 수",
+      "typical_value": "4",
+      "unit": "장",
+      "urls": [
+        "https://www.cadgraphics.co.kr/newsview.php?pages=news&sub=new01&catecode=2&num=77635",
+        "https://www.gttkorea.com/news/articleView.html?idxno=22862"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "unreal-blender-mcp",
+      "dimension": "기본 포트 구성",
+      "typical_value": "MCP 8300 / Blender 8400 / Unreal 8500",
+      "unit": "포트",
+      "urls": [
+        "https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Claude AI와 블렌더 MCP로 3D 모델링 시작하기! 입문자 완전 정복 가이드",
+      "url": "https://media.fastcampus.co.kr/insight/ai_creative/blendermcp/",
+      "source_type": "blog",
+      "why_useful": "가장 체계적인 한국어 입문 설치 가이드"
+    },
+    {
+      "title": "Red Dot 수상자에게 배우는 AI 3D 모델링 (ft. 블렌더 MCP)",
+      "url": "https://fastcampus.co.kr/dgn_online_reddot",
+      "source_type": "course",
+      "why_useful": "국내 유일의 블렌더 MCP 유료 강의"
+    },
+    {
+      "title": "앤트로픽, 클로드에 크리에이티브 도구 9종 통합… 블렌더 (AI매터스)",
+      "url": "https://aimatters.co.kr/news-report/41239/",
+      "source_type": "news",
+      "date": "2026-04",
+      "why_useful": "크리에이티브 커넥터 한국어 보도"
+    },
+    {
+      "title": "엔트로픽, 창작 소프트웨어 제어하는 '클로드 커넥터' 출시 (AI타임스)",
+      "url": "https://www.aitimes.com/news/articleView.html?idxno=209904",
+      "source_type": "news",
+      "date": "2026-04",
+      "why_useful": "교차 확인용 보도"
+    },
+    {
+      "title": "GPT-6 아스트라 활용법 총정리 (다나와 DPG)",
+      "url": "https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609",
+      "source_type": "news",
+      "date": "2026-09",
+      "why_useful": "Astra 3D 사례를 한국어로 정리"
+    },
+    {
+      "title": "언리얼 엔진을 직접 다루는 AI, UE5.8 MCP 활용 게임 개발기 [전편] (게임뷰)",
+      "url": "https://www.gamevu.co.kr/news/articleView.html?idxno=60827",
+      "source_type": "news",
+      "why_useful": "언리얼 MCP 실전 개발기"
+    },
+    {
+      "title": "언리얼 에디터 안에 들어온 MCP 서버 (박재홍의 실리콘밸리)",
+      "url": "https://wikidocs.net/blog/@jaehong/20632/",
+      "source_type": "blog",
+      "why_useful": "UE5.8 MCP 해설"
+    },
+    {
+      "title": "UE5 + Claude Code + MCP 1. 환경 세팅 (velog)",
+      "url": "https://velog.io/@miniminichip/UE5-Claude-Code-MCP-1",
+      "source_type": "blog",
+      "why_useful": "언리얼 연동 실습"
+    },
+    {
+      "title": "tahooki/unreal-blender-mcp Project-document.md",
+      "url": "https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md",
+      "source_type": "github",
+      "why_useful": "한국어 통합 MCP 설계 문서(직접 열어 확인)"
+    },
+    {
+      "title": "Aryeon0228/BlenderMCP",
+      "url": "https://github.com/Aryeon0228/BlenderMCP",
+      "source_type": "github",
+      "why_useful": "한국어 README, 성능 수치(직접 열어 확인)"
+    },
+    {
+      "title": "블렌더 MCP 연결 원리, AI가 3D 게임 에셋 만드는 법 (tali.kr)",
+      "url": "https://tali.kr/blender-mcp-assets",
+      "source_type": "blog",
+      "why_useful": "원리와 한계를 균형 있게 설명"
+    },
+    {
+      "title": "블렌더 MCP 연결 완전 정복 (MKCGI)",
+      "url": "https://www.mkcgi.net/2026/05/mcp-ai-3d.html",
+      "source_type": "blog",
+      "date": "2026-05",
+      "why_useful": "최신 연결 가이드"
+    },
+    {
+      "title": "Mac에서 생성형 AI 클로드와 블랜더 MCP로 연결하기 (brunch)",
+      "url": "https://brunch.co.kr/@soonkyujang/221",
+      "source_type": "blog",
+      "why_useful": "Mac 연결기"
+    },
+    {
+      "title": "클로드 블렌더 커넥터 사용법 (Threads @dddesign.io)",
+      "url": "https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko",
+      "source_type": "community",
+      "why_useful": "공식 커넥터 설치 실전 팁"
+    },
+    {
+      "title": "블렌더(Blender) MCP를 활용해서 3D 모델링 업무 자동화하기 (YouTube)",
+      "url": "https://www.youtube.com/watch?v=UU_iqziC6mE",
+      "source_type": "youtube",
+      "why_useful": "한국어 자동화 영상"
+    },
+    {
+      "title": "Claude가 내 2D 로봇을 3D 모델로 만들었다 (YouTube)",
+      "url": "https://www.youtube.com/watch?v=I5rtlgAvoV4",
+      "source_type": "youtube",
+      "why_useful": "이미지→3D→웹 사례"
+    },
+    {
+      "title": "클로드 AI 커넥터(MCP)로 스케치업 자동 모델링 + AI 렌더링 (뽁숑이)",
+      "url": "https://www.youtube.com/watch?v=GOaWRhrsQC0",
+      "source_type": "youtube",
+      "why_useful": "건축·인테리어 MCP 사례"
+    },
+    {
+      "title": "GPT 6 x 블렌더 3D = 이제는 바이브 모델링 시대 (YouTube)",
+      "url": "https://www.youtube.com/watch?v=_S4SaiNBlRk",
+      "source_type": "youtube",
+      "date": "2026-09",
+      "why_useful": "Astra를 다룬 한국어 영상"
+    },
+    {
+      "title": "Claude Code + Unity MCP 연동하기 (YouTube)",
+      "url": "https://www.youtube.com/watch?v=XauWsKw7nco",
+      "source_type": "youtube",
+      "why_useful": "유니티 연동 영상"
+    },
+    {
+      "title": "모델러 없는 개발자가 AI로 3D 에셋 자급자족하는 법 (ft. Meshy) - 인프런 클립",
+      "url": "https://www.inflearn.com/clip/570",
+      "source_type": "course",
+      "why_useful": "생성 메시 최적화 수치"
+    },
+    {
+      "title": "3D 캐릭터 아티스트 채디의 블렌더와 AI로 연출하는 매력적인 캐릭터 모델링 (Coloso)",
+      "url": "https://coloso.co.kr/products/3ddesign-chedy",
+      "source_type": "course",
+      "why_useful": "AI와 수작업을 결합한 하이브리드 강의"
+    },
+    {
+      "title": "3D 코딩 대결...클로드 오퍼스 5.5 vs GPT-5.6 (AI타임스)",
+      "url": "https://www.aitimes.com/news/articleView.html?idxno=215618",
+      "source_type": "news",
+      "why_useful": "모델별 3D 역량 비교"
+    },
+    {
+      "title": "NC AI '바르코 3D' 출시 (시사저널e)",
+      "url": "https://www.sisajournal-e.com/news/articleView.html?idxno=417470",
+      "source_type": "news",
+      "why_useful": "국내 기업 AI 3D 사례"
+    },
+    {
+      "title": "NC·크래프톤, 게임 AI 활용 확대 (아주경제)",
+      "url": "https://www.ajunews.com/view/20260714153538647",
+      "source_type": "news",
+      "date": "2026-07-14",
+      "why_useful": "국내 게임사 동향"
+    },
+    {
+      "title": "블렌더 라이팅 독학 가이드 (유정통 3D)",
+      "url": "https://yujungtong.com/blender-lighting-and-color/",
+      "source_type": "blog",
+      "why_useful": "라이팅 기초와 품질 팁"
+    },
+    {
+      "title": "블렌더 재질·텍스처 완벽 가이드, PBR과 노드 랭글러 (유정통 3D)",
+      "url": "https://yujungtong.com/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9E%85%EB%AC%B8%EC%9E%90-%ED%95%84%EB%8F%85-pbr-%ED%85%8D%EC%8A%A4%EC%B2%98-%EC%A0%81%EC%9A%A9-%ED%95%B5%EC%8B%AC/",
+      "source_type": "blog",
+      "why_useful": "PBR 연결 실무"
+    },
+    {
+      "title": "인테리어 렌더링 퀄리티를 향상시키는 7가지 필수 팁 (아키스케치)",
+      "url": "https://www.archisketch.com/en/blog/67ce4dcab7dabf0012869791",
+      "source_type": "blog",
+      "why_useful": "인테리어 렌더링 체크리스트"
+    },
+    {
+      "title": "블렌더 3.0에서 인테리어 디자인 하기 (인프런)",
+      "url": "https://www.inflearn.com/course/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4-%EB%94%94%EC%9E%90%EC%9D%B8",
+      "source_type": "course",
+      "why_useful": "인테리어 모델링 기초"
+    },
+    {
+      "title": "Hunyuan3D 소개 (파이토치 한국 사용자 모임)",
+      "url": "https://discuss.pytorch.kr/t/hunyuan3d-tencent-3d/5451",
+      "source_type": "community",
+      "why_useful": "생성형 3D 기술 소개"
+    },
+    {
+      "title": "클리앙 — AI로 모델링 이젠 수준급 바이브모델링 10분도 안걸려",
+      "url": "https://www.clien.net/service/board/park/19015735",
+      "source_type": "community",
+      "why_useful": "국내 사용자 반응"
+    },
+    {
+      "title": "클리앙 — Astra(GPT-6)로 만든 결과물",
+      "url": "https://www.clien.net/service/board/park/19258409",
+      "source_type": "community",
+      "date": "2026-09",
+      "why_useful": "Astra 결과물 반응"
+    }
+  ],
+  "gaps": [
+    "한국어 페이지(유튜브, 네이버, 클리앙, 뉴스 등)는 프록시에 막혀 본문을 읽지 못했습니다. 대부분의 항목은 검색 결과의 제목과 요약에만 근거하므로 confidence는 medium 이하로 잡았습니다. 유튜브 영상의 채널명과 게시일도 대부분 확인하지 못했습니다.",
+    "GeekNews(news.hada.io)에서 블렌더 MCP나 3D 에이전트 관련 글은 검색되지 않았습니다. 잡힌 것은 Hunyuan3D 관련으로 추정되는 토픽(id=18861) 1건뿐이고 내용도 확인하지 못했습니다.",
+    "네이버 블렌더 카페, 네이버 블로그, 디스콰이엇, 요즘IT의 AI+3D 글은 US 기반 검색 엔진에 거의 잡히지 않았습니다. 국내 검색 엔진으로 별도 조사가 필요합니다.",
+    "Claude Fable 5.1, Sonnet 5, Gemini를 블렌더·언리얼 MCP와 함께 쓴 한국어 실전 튜토리얼은 찾지 못했습니다. 모델 비교 기사(AI타임스)와 Gemini 앱의 3D 시각화 기사 정도만 있습니다.",
+    "언리얼 MCP·유니티 MCP 전용 한국어 유료 강의(인프런, 클래스101, 콜로소)는 확인하지 못했습니다. 블렌더 MCP도 패스트캠퍼스 강의 1개뿐입니다.",
+    "AAA 품질의 핵심인 AI 가구 배치와 레이아웃 타당성, 리토폴로지·UV·텍스처 베이킹 자동화를 다룬 한국어 자료는 거의 없습니다. 기존 한국어 기초 자료는 대부분 입문자용이고 AI를 다루지 않습니다.",
+    "Meshy, Tripo, Rodin(Hyper3D) 한국어 후기는 번역·제휴성 콘텐츠가 많습니다. 국내 실무자가 품질을 비교한 독립 자료는 부족합니다.",
+    "국내 게임사(NC, 크래프톤, 넥슨)가 MCP나 에이전트로 3D 파이프라인을 운영한 사례는 공개된 것이 없습니다. NC 바르코 3D 수치('4주→3분')는 홍보성이라 독립 검증이 필요합니다.",
+    "WebSearch 18회 한도를 모두 써서 코스(패스트캠퍼스 레드닷 강의)의 커리큘럼과 가격, 클리앙 게시글 본문, 게임뷰 기사 세부를 추가로 교차 검증하지 못했습니다."
+  ]
+}

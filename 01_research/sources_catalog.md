@@ -18,8 +18,14 @@
 - [사례 연구](#11_case-studies) — 출처 34개
 - [에셋·파이프라인·라이선스](#12_assets-pipeline-licensing) — 출처 37개
 - [학술 연구](#13_research-papers) — 출처 18개
+- [[보완] 실측 치수 표준](#g1_dimensions) — 출처 57개
+- [[보완] 한국어 자료](#g2_korean_resources) — 출처 31개
+- [[보완] 영상·소셜 사례](#g3_videos_cases) — 출처 78개
+- [[보완] 가격·라이선스·법규](#g4_licensing_pricing) — 출처 34개
+- [[보완] AAA 실무·공식 변경사항](#g5_aaa_practice) — 출처 39개
+- [[보완] 벤치마크·모델 비교](#g6_benchmarks_models) — 출처 40개
 
-항목·사례에 인용된 URL까지 합친 고유 URL 수: **885개**
+항목·사례에 인용된 URL까지 합친 고유 URL 수: **1469개**
 
 <a id="01_ai-models"></a>
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
@@ -790,4 +796,331 @@
 - <https://github.com/drakkB/scoreia-forge-results> — README가 스스로 밝히는 한계가 있습니다. 모델 신원은 자기 신고라 검증되지 않고 카드에 서명도 없습니다. 심판과 캠페인을 Claude Opus로 작성해 편향 가능성이 있습니다. 모델마다 하네스가 다릅니다(Claude Code, Codex CLI, Grok CLI). 도구가 Forge 전용 MCP의 부품 조립이라 Blender 모델링·텍스처 품질을 대표하지 못합니다. 동료심사를 거치지 않은 단일 업체 자료입니다.
 - <https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics> — SEO 스팸은 아니고 출처 링크와 미디어 아카이브가 있는 큐레이션입니다. 다만 X/LinkedIn/YouTube 사례를 모은 2차 집계이고, 스스로 'Most cases use GPT-6 Astra'라고 밝힐 만큼 선택 편향이 있습니다. 모델 신원도 작성자 주장에 기대는 경우가 많습니다. 수치는 반드시 1차 출처(각 벤치마크 페이지나 논문)로 재확인해야 합니다. 한편 이 목록에 La Forge 외 최신 모델 3D/CAD 벤치마크가 여러 개 있으므로, 보고서의 '유일한 근거는 La Forge와 사례 모음'이라는 주장은 틀렸습니다.
 - <https://github.com/gaoypeng/3dcodebench> — 신뢰할 만한 1차 출처이지만 라이선스 표기가 내부에서 모순됩니다(README는 MIT, LICENSE 파일은 Apache 2.0, factory는 BSD-3). 라이선스를 인용할 때는 LICENSE 파일을 기준으로 삼고 불일치를 명시해야 합니다.
+
+<a id="g1_dimensions"></a>
+## [보완] 실측 치수 표준
+
+주제 원문: 실세계 가구·인테리어·인체 스케일 치수 표준 (AI 3D 모델링/배치용 레퍼런스, 출처 포함)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Standard Dining Chair Dimensions and How to Choose the Right One (Pop Maison) | 가구 브랜드 가이드 |  | 좌판 높이 17–19 in와 상판-좌판 10–12 in 관계를 제시한다. | <https://www.popmaison.com/blogs/guide/dining-chair-dimensions> |
+| 2 | What Are the Typical Dimensions of a Standard Dining Chair? (Picket & Rail) | 가구 브랜드 가이드 |  | 좌판 깊이 16–18 in, 등받이 12–20 in. | <https://picketandrail.com/blogs/dining-blog/what-are-the-typical-dimensions-of-a-standard-dining-chair> |
+| 3 | Standard Dining Chair Dimensions (2026) - Sizemarker | 치수 레퍼런스 |  | 의자 전체 높이 32–38 in. | <https://www.sizemarker.com/dimensions/standard-dining-chair-dimensions> |
+| 4 | Standard Sofa Size Guide (Povison) | 가구 브랜드 가이드 |  | 3인 소파 183–244 cm, 가장 흔한 폭 213 cm. | <https://www.povison.com/blog/buying-guide/standard-sofa-size-guide.html> |
+| 5 | Standard Sofa and Loveseat Sizes (RoomSketch3D) | 치수 레퍼런스 |  | 러브시트 132–183 cm 폭, 76–102 cm 깊이. | <https://roomsketch3d.com/help/dimensions/sofa-and-loveseat-dimensions> |
+| 6 | Standard Sofa Dimensions (OMHU) | 가구 브랜드 가이드 |  | cm와 inch를 함께 제시하는 소파 치수. | <https://omhucph.com/blogs/inspiration/standard-sofa-dimensions> |
+| 7 | 이스턴킹? 라지킹? 캘리포니아킹? 침대 크기의 모든 것 (브런치) | 한국 블로그 |  | 한국 S/SS/Q/K/LK 규격과 미국 킹 계열 비교. | <https://brunch.co.kr/@phapark/59> |
+| 8 | 침대 사이즈 완벽 가이드 (슬립퍼) | 한국 매거진 |  | 한국 매트리스 규격과 2100 길이 옵션. | <https://sleeper.co.kr/magazine/01-bed-size-guide/bed-size-guide.html> |
+| 9 | Mattress size guide 2026 (T3) | 리뷰 매체 |  | US/UK/EU 매트리스 규격 비교. | <https://www.t3.com/features/mattress-size-guide> |
+| 10 | UK vs US mattress sizes (TechRadar) | 리뷰 매체 |  | UK King이 US Queen에 가깝다는 비교, EU가 UK보다 10 cm 길다는 점. | <https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu> |
+| 11 | 주방 싱크대 높이와 동선 설계 (치호건축사사무소) | 한국 건축사무소 블로그 |  | 한국 싱크대 850 mm가 키 160~165 cm 여성 기준 산업 표준이라는 설명. | <https://chiho.co.kr/blogroom/%EC%A3%BC%EB%B0%A9-%EC%8B%B1%ED%81%AC%EB%8C%80-%EB%86%92%EC%9D%B4%EC%99%80-%EB%8F%99%EC%84%A0-%EC%84%A4%EA%B3%84-%ED%82%A4%EB%B3%84-%EC%B5%9C%EC%A0%81-%EC%B9%98%EC%88%98-%EA%B3%B5%EA%B0%9C-%EC%A3%BC%EB%B0%A9%EC%84%A4%EA%B3%84> |
+| 12 | 주방을 설계한다면 꼭 알아야 할 치수들 (ideabuild, Threads) | 한국 인테리어 실무 SNS |  | 아일랜드 700, 동선 900, 싱크대 900 권장, 미드웨이 650~750, 식탁 750, 의자 450, 상부장 깊이 350, 싱크대 깊이 650 이상. | <https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7> |
+| 13 | [중급] 주방 상부장 스타일 알아보기 (LX Z:IN) | 한국 제조사 가이드 |  | 하부장 850, 미드웨이 700, 상부장 750, 합계 약 2300의 모듈. | <https://www.lxzin.com/styling/style-guide/detail/5596> |
+| 14 | [고급] 싱크대 설치 준비하기 (LX Z:IN) | 한국 제조사 가이드 |  | 싱크대 설치 치수. | <https://www.lxzin.com/styling/style-guide/detail/647> |
+| 15 | NKBA Kitchen Planning Guidelines with Access Standards (PDF) | 업계 표준 가이드라인 |  | 미국 주방 통로, 트라이앵글, 식탁 여유 공간의 원문(이번에는 egress 차단으로 직접 열람하지 못함). | <https://media.nkba.org/uploads/2022/05/Kitchen-Planning-Guidelines.pdf> |
+| 16 | Kitchen Dimensions: Code Requirements & NKBA Guidelines (CRD Design Build) | 시공사 블로그(NKBA 요약) |  | 통로 42/48 in, 트라이앵글 26 ft와 각 변 4–9 ft, 조리대 36 in. | <https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/> |
+| 17 | Kitchen Design Guidelines & Clearances (Wholesale Cabinet Supply) | 캐비닛 업체 가이드 |  | 상부장 하단 54 in, 조리대 위 18 in. | <https://www.thewcsupply.com/pages/kitchen-design-guidelines-standard-clearances> |
+| 18 | Kitchen work triangle (Wikipedia) | 백과사전 |  | 워크 트라이앵글 개념과 수치. | <https://en.wikipedia.org/wiki/Kitchen_work_triangle> |
+| 19 | 7 Base Cabinet Sizes (Allure) | 캐비닛 업체 가이드 |  | 하부장 34.5 in 높이, 24 in 깊이. | <https://www.allurekitchencabinet.com/blog/7-base-cabinet-sizes-standard-height-depth-width> |
+| 20 | Wall Cabinet Sizes & Heights Chart (TC Wholesale Cabinetry) | 캐비닛 업체 가이드 |  | 미국 상부장 높이와 깊이. | <https://tcwholesalecabinetry.com/blog/wall-cabinet-sizes-types> |
+| 21 | 일반적인 아파트 층고와 천장고 기준 (한국PM) | 한국 업계 블로그 |  | 층고 2.8~2.85 m, 천장고 2.3 m 기준. | <https://hkpm.co.kr/%EC%9D%BC%EB%B0%98%EC%A0%81%EC%9D%B8-%EC%95%84%ED%8C%8C%ED%8A%B8-%EC%B8%B5%EA%B3%A0%EC%99%80-%EC%B2%9C%EC%9E%A5%EA%B3%A0-%EA%B8%B0%EC%A4%80%EA%B3%BC-%EC%9D%98%EB%AF%B8-%EA%B4%80%EA%B3%84/> |
+| 22 | [김수암 칼럼] 층고와 천장고가 높은 것도 경쟁력이다 (아파트관리신문) | 한국 언론 칼럼 |  | 천장고 2300 대부분, 일부 2350~2400. | <http://www.aptn.co.kr/news/articleView.html?idxno=49567> |
+| 23 | 방문 사이즈 - 건재정보 (다음카페) | 한국 커뮤니티 |  | 욕실문 700×2000/800×2100, 방문 900 또는 1000×2100. | <https://m.cafe.daum.net/retirecountry/GbzJ/5?q=D_KkJLW6NS9QQ0> |
+| 24 | 현관문 크기: 알아야 할 표준 치수 (APRO) | 도어 제조사 가이드 |  | 아파트 현관문 900/1000/1100×2100. | <https://aprodoor.com/front-door-sizes/> |
+| 25 | 계단의 설치기준 (마이다스캐드) | 한국 법규 해설 |  | 단높이, 단너비, 손잡이, 대체 경사로 기준 해설. | <https://www.midascad.com/cad_archive/buildingact-4> |
+| 26 | 건축물의 피난ㆍ방화구조 등의 기준에 관한 규칙 (국가법령정보센터) | 법령 원문 |  | 제15조 계단 기준(계단참, 난간, 유효높이 등). | <https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lspttninfSeq=124056&chrClsCd=010202> |
+| 27 | 법제처 민원인 해석 - 돌음계단 단너비 측정 (CaseNote) | 법령해석 |  | 주택건설기준 등에 관한 규정 제16조 관련 해석. | <https://casenote.kr/%EB%B2%95%EC%A0%9C%EC%B2%98/18-0465-d5162f> |
+| 28 | 2015 IRC Residential Stairways and Ramps handout (Essex, CT) | 지자체 코드 요약 |  | IRC 단높이 7¾, 디딤판 10, 머리 여유 6'8". | <https://www.essexct.gov/DocumentCenter/View/449/Residential-Stairways-and-Ramps-2015-Irc-Handout-PDF> |
+| 29 | Maximum and Minimum Handrail Heights (Viewrail) | 제조사 코드 해설 |  | IRC 손잡이 34–38 in. | <https://resources.viewrail.com/code-compliance/railing-code/maximum-and-minimum-handrail-heights> |
+| 30 | IRC Stair Code Requirements (TradeMaster Calc) | 코드 레퍼런스 |  | IRC 계단 수치 요약. | <https://trademastercalc.com/reference/irc-stair-code> |
+| 31 | 콘센트·스위치 위치 설계 가이드 (sunnysunnyday) | 한국 시공 실무 블로그 |  | 협탁용 콘센트 60~70 cm, 책상용 80~90 cm. | <https://sunnysunnyday.com/entry/%EC%8B%B1%ED%81%AC%EB%8C%80-%EC%95%9E%EC%97%90-%EC%BD%98%EC%84%BC%ED%8A%B8%EA%B0%80-%EC%9E%88%EB%8D%98-%ED%98%84%EC%9E%A5%EC%9D%84-%EC%9D%B4%EC%96%B4%EB%B0%9B%EA%B3%A0-%EB%82%98%EC%84%9C-%EC%A0%95%EB%A6%AC%ED%95%9C-%EC%BD%98%EC%84%BC%ED%8A%B8%C2%B7%EC%8A%A4%EC%9C%84%EC%B9%98-%EC%9C%84%EC%B9%98-%EC%84%A4%EA%B3%84-%EA%B0%80%EC%9D%B4%EB%93%9C-%EA%B3%B5%EA%B0%84%EB%B3%84-%EC%BD%98%EC%84%BC%ED%8A%B8-%EB%86%92%EC%9D%B4-%EC%8A%A4%EC%9C%84%EC%B9%98-%EB%B0%B0%EC%B9%98-%ED%9A%8C%EB%A1%9C-%EB%B6%84%EB%A6%AC-%EA%B8%B0%EC%A4%80> |
+| 32 | 내력벽 비내력벽 구분 방법과 차이 (AJD) | 한국 인테리어 가이드 |  | 180 mm 이상이면 내력벽, 100 mm 내외면 비내력벽, 습식 벽 150 mm. | <https://www.ajd.co.kr/contents/basic-tip/detail/%EB%82%B4%EB%A0%A5%EB%B2%BD_%EB%B9%84%EB%82%B4%EB%A0%A5%EB%B2%BD_%EA%B5%AC%EB%B6%84_%EB%B0%A9%EB%B2%95%EA%B3%BC_%EC%B0%A8%EC%9D%B4%EF%BD%9C%EB%8F%84%EB%A9%B4%C2%B7%EB%91%90%EA%BB%98%EB%A1%9C_%EC%B2%A0%EA%B1%B0_%EA%B0%80%EB%8A%A5_%EC%97%AC%EB%B6%80_%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0-72255> |
+| 33 | 아파트 벽체두께는 얼마정도인가요? (클리앙) | 한국 커뮤니티 |  | 외벽 200, 내벽 150~200(가끔 100). | <https://www.clien.net/service/board/kin/12725939> |
+| 34 | The ultimate guide to living room clearances (Homes & Gardens) | 인테리어 매체 |  | 소파-커피테이블 14–18 in, 통로 30–36 in, 러그 규칙. | <https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing> |
+| 35 | Ideal Living Room Layout Measurements (Apartment Therapy) | 인테리어 매체 |  | 거실 배치 치수 종합. | <https://www.apartmenttherapy.com/living-room-layouts-the-ideal-measurements-for-everything-in-the-room-206734> |
+| 36 | Living Room Layout Rules: Traffic Flow, Conversation Zones, and TV Placement (Keck Furnit… | 가구점 가이드 |  | TV 거리 1.5–2.5배, 55인치 7–9 ft, 65인치 8–10 ft. | <https://keckfurniture.com/blog/living-room-layout-rules-traffic-flow-conversation-zones-and-tv-placement/> |
+| 37 | Dining Table Space Guide (Eureka Ergonomic) | 가구 브랜드 가이드 |  | 식탁 주변 36 in 여유. | <https://eurekaergonomic.com/blogs/eureka-ergonomic-blog/dining-table-space-clearance-guide> |
+| 38 | Table Size & Space Guidelines (Lamon Luther) | 가구 브랜드 가이드 |  | NKBA 인용 36/44 in 식탁 여유. | <https://www.lamonluther.com/resources/table-size-space-guidelines/> |
+| 39 | Dining Table Size Guide Based on Number of People (NEPA Furniture) | 가구점 가이드 |  | 1인당 24 in(61 cm), 격식 있는 식사 28–30 in. | <https://www.nepafurniture.com/blog/home-furniture-32/dining-table-size-guide-based-on-number-of-people-414> |
+| 40 | Pendant Lights Over Dining Table Height 2026 Guide (Fenchel Shades) | 조명 업체 가이드 |  | 식탁 위 30–34 in. | <https://www.fenchelshades.com/blog/post/pendant-lights-over-dining-table-height-standard-measurements-and-placement-guide-2026-usa> |
+| 41 | Complete Pendant Light Height & Spacing Guide (Artika) | 조명 제조사 가이드 |  | 펜던트 높이와 간격. | <https://artika.com/blogs/inspiration/complete-pendant-height-spacing-guide> |
+| 42 | How Far Apart Should Pendant Lights Be? (2Modern) | 조명 판매사 가이드 |  | 펜던트 간격 24–36 in. | <https://www.2modern.com/blogs/modern-how-to/how-far-apart-should-pendant-lights-be> |
+| 43 | What Is the Rule of 57 for Hanging Art? (AS Hanging) | 액자 걸이 제조사 가이드 |  | 그림 중심 57 in(145 cm)=평균 눈높이. | <https://www.ashanging.com/en_us/help/what-is-the-rule-of-57> |
+| 44 | Three Simple Rules To Follow When Hanging Art (Park West Gallery) | 갤러리 |  | 갤러리 관행 확인. | <https://www.parkwestgallery.com/blog/3-simple-rules-for-hanging-art/> |
+| 45 | 사이즈코리아 제8차 한국인 인체치수 조사 결과 | 정부 공식 데이터 |  | 한국인 평균 키 남 172.5, 여 159.6 cm. | <https://sizekorea2022.kr/8th_results/> |
+| 46 | 한국인 평균 키와 다리길이, 비만도 공개 (산업통상부 보도) | 정부 보도자료 |  | 제8차 조사 개요(6,839명, 430항목). | <https://www.motir.go.kr/kor/article/ATCL8764a1224/155118041/view> |
+| 47 | Bar-Height vs. Counter-Height Furniture (POLYWOOD) | 가구 브랜드 가이드 |  | 카운터 스툴 24–26 in, 바 스툴 28–30 in, 커피테이블 16–18 in. | <https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference> |
+| 48 | Nightstands & Bedside Tables Dimensions (Dimensions.com) | 치수 레퍼런스 |  | 협탁 24–28 in, 침대 높이 약 25 in. | <https://www.dimensions.com/collection/bedside-tables-nightstands> |
+| 49 | How Tall Should a Nightstand Be? (Froy) | 가구 판매사 가이드 |  | 매트리스 상단 ±2 in 규칙. | <https://froy.com/blogs/tips/how-tall-should-a-nightstand-be-the-nightstand-height-guide> |
+| 50 | KS G 4203 사무용 책상 및 테이블 (KSSN) | 한국산업표준 목록 |  | 사무용 책상 KS 규격 존재 확인. | <https://www.kssn.net/search/stddetail.do?itemNo=K001010111402> |
+| 51 | KS 가구 규격의 치수 개정을 위한 사전 조사 연구 (대한인간공학회 2009) | 학술 발표 |  | KS G 4101(의자), KS G 4102(책상) 치수 항목 검토. | <https://www.esk.or.kr/conference/2009_fall/pdf/14_5.pdf> |
+| 52 | 표준 사무용 의자 치수 (2026): BIFMA 범위 (Sizemarker) | 치수 레퍼런스 |  | BIFMA 좌판·등받이·팔걸이 범위. | <https://www.sizemarker.com/ko/dimensions/standard-office-chair-dimensions> |
+| 53 | 사무용 책상의 기본 높이가 720mm 인가 봐요 (Todaysppc) | 한국 커뮤니티 |  | 한국 사무용 책상 720 mm 관행. | <http://m.todaysppc.com/renewal/view.php?id=free&page=11&page_num=15&category=&sn=off&ss=on&sc=on&keyword=&prev_no=&select_arrange=headnum&desc=asc&no=479576> |
+| 54 | BILLY bookcase (IKEA US) | 제조사 제품 페이지 |  | BILLY 40×28×202 cm. | <https://www.ikea.com/us/en/p/billy-bookcase-white-50522040/> |
+| 55 | IKEA PAX Dimensions (itemfits) | 치수 레퍼런스 |  | PAX 깊이 58 cm, 폭 50/75/100, 높이 201/236. | <https://itemfits.com/dimensions/ikea/ikea-pax> |
+| 56 | IKEA Billy Bookcases Dimensions (Dimensions.com) | 치수 레퍼런스 |  | BILLY 도면 치수. | <https://www.dimensions.com/element/ikea-billy-bookcases> |
+| 57 | LH주택평면계획기준 연구 (CODIL) | 공공 연구보고서(미열람) |  | 한국 공공주택 평면 기준(주방·실 치수) 추가 조사 후보. 이번에는 열람하지 못했다. | <https://www.codil.or.kr/filebank/original/RK/OTKCRK150014/OTKCRK150014.pdf> |
+
+<a id="g2_korean_resources"></a>
+## [보완] 한국어 자료
+
+주제 원문: 한국어 자료 모음: AI + MCP로 하는 3D 제작(Blender/Unreal/Unity/SketchUp) — 유튜브·블로그·강의·커뮤니티·뉴스, AAA 품질에 필요한 3D 기초(PBR·라이팅·인테리어 렌더링) 포함
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Claude AI와 블렌더 MCP로 3D 모델링 시작하기! 입문자 완전 정복 가이드 | blog |  | 가장 체계적인 한국어 입문 설치 가이드 | <https://media.fastcampus.co.kr/insight/ai_creative/blendermcp/> |
+| 2 | Red Dot 수상자에게 배우는 AI 3D 모델링 (ft. 블렌더 MCP) | course |  | 국내 유일의 블렌더 MCP 유료 강의 | <https://fastcampus.co.kr/dgn_online_reddot> |
+| 3 | 앤트로픽, 클로드에 크리에이티브 도구 9종 통합… 블렌더 (AI매터스) | news | 2026-04 | 크리에이티브 커넥터 한국어 보도 | <https://aimatters.co.kr/news-report/41239/> |
+| 4 | 엔트로픽, 창작 소프트웨어 제어하는 '클로드 커넥터' 출시 (AI타임스) | news | 2026-04 | 교차 확인용 보도 | <https://www.aitimes.com/news/articleView.html?idxno=209904> |
+| 5 | GPT-6 아스트라 활용법 총정리 (다나와 DPG) | news | 2026-09 | Astra 3D 사례를 한국어로 정리 | <https://dpg.danawa.com/news/view?boardSeq=60&listSeq=6058609> |
+| 6 | 언리얼 엔진을 직접 다루는 AI, UE5.8 MCP 활용 게임 개발기 [전편] (게임뷰) | news |  | 언리얼 MCP 실전 개발기 | <https://www.gamevu.co.kr/news/articleView.html?idxno=60827> |
+| 7 | 언리얼 에디터 안에 들어온 MCP 서버 (박재홍의 실리콘밸리) | blog |  | UE5.8 MCP 해설 | <https://wikidocs.net/blog/@jaehong/20632/> |
+| 8 | UE5 + Claude Code + MCP 1. 환경 세팅 (velog) | blog |  | 언리얼 연동 실습 | <https://velog.io/@miniminichip/UE5-Claude-Code-MCP-1> |
+| 9 | tahooki/unreal-blender-mcp Project-document.md | github |  | 한국어 통합 MCP 설계 문서(직접 열어 확인) | <https://github.com/tahooki/unreal-blender-mcp/blob/main/Project-document.md> |
+| 10 | Aryeon0228/BlenderMCP | github |  | 한국어 README, 성능 수치(직접 열어 확인) | <https://github.com/Aryeon0228/BlenderMCP> |
+| 11 | 블렌더 MCP 연결 원리, AI가 3D 게임 에셋 만드는 법 (tali.kr) | blog |  | 원리와 한계를 균형 있게 설명 | <https://tali.kr/blender-mcp-assets> |
+| 12 | 블렌더 MCP 연결 완전 정복 (MKCGI) | blog | 2026-05 | 최신 연결 가이드 | <https://www.mkcgi.net/2026/05/mcp-ai-3d.html> |
+| 13 | Mac에서 생성형 AI 클로드와 블랜더 MCP로 연결하기 (brunch) | blog |  | Mac 연결기 | <https://brunch.co.kr/@soonkyujang/221> |
+| 14 | 클로드 블렌더 커넥터 사용법 (Threads @dddesign.io) | community |  | 공식 커넥터 설치 실전 팁 | <https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko> |
+| 15 | 블렌더(Blender) MCP를 활용해서 3D 모델링 업무 자동화하기 (YouTube) | youtube |  | 한국어 자동화 영상 | <https://www.youtube.com/watch?v=UU_iqziC6mE> |
+| 16 | Claude가 내 2D 로봇을 3D 모델로 만들었다 (YouTube) | youtube |  | 이미지→3D→웹 사례 | <https://www.youtube.com/watch?v=I5rtlgAvoV4> |
+| 17 | 클로드 AI 커넥터(MCP)로 스케치업 자동 모델링 + AI 렌더링 (뽁숑이) | youtube |  | 건축·인테리어 MCP 사례 | <https://www.youtube.com/watch?v=GOaWRhrsQC0> |
+| 18 | GPT 6 x 블렌더 3D = 이제는 바이브 모델링 시대 (YouTube) | youtube | 2026-09 | Astra를 다룬 한국어 영상 | <https://www.youtube.com/watch?v=_S4SaiNBlRk> |
+| 19 | Claude Code + Unity MCP 연동하기 (YouTube) | youtube |  | 유니티 연동 영상 | <https://www.youtube.com/watch?v=XauWsKw7nco> |
+| 20 | 모델러 없는 개발자가 AI로 3D 에셋 자급자족하는 법 (ft. Meshy) - 인프런 클립 | course |  | 생성 메시 최적화 수치 | <https://www.inflearn.com/clip/570> |
+| 21 | 3D 캐릭터 아티스트 채디의 블렌더와 AI로 연출하는 매력적인 캐릭터 모델링 (Coloso) | course |  | AI와 수작업을 결합한 하이브리드 강의 | <https://coloso.co.kr/products/3ddesign-chedy> |
+| 22 | 3D 코딩 대결...클로드 오퍼스 5.5 vs GPT-5.6 (AI타임스) | news |  | 모델별 3D 역량 비교 | <https://www.aitimes.com/news/articleView.html?idxno=215618> |
+| 23 | NC AI '바르코 3D' 출시 (시사저널e) | news |  | 국내 기업 AI 3D 사례 | <https://www.sisajournal-e.com/news/articleView.html?idxno=417470> |
+| 24 | NC·크래프톤, 게임 AI 활용 확대 (아주경제) | news | 2026-07-14 | 국내 게임사 동향 | <https://www.ajunews.com/view/20260714153538647> |
+| 25 | 블렌더 라이팅 독학 가이드 (유정통 3D) | blog |  | 라이팅 기초와 품질 팁 | <https://yujungtong.com/blender-lighting-and-color/> |
+| 26 | 블렌더 재질·텍스처 완벽 가이드, PBR과 노드 랭글러 (유정통 3D) | blog |  | PBR 연결 실무 | <https://yujungtong.com/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9E%85%EB%AC%B8%EC%9E%90-%ED%95%84%EB%8F%85-pbr-%ED%85%8D%EC%8A%A4%EC%B2%98-%EC%A0%81%EC%9A%A9-%ED%95%B5%EC%8B%AC/> |
+| 27 | 인테리어 렌더링 퀄리티를 향상시키는 7가지 필수 팁 (아키스케치) | blog |  | 인테리어 렌더링 체크리스트 | <https://www.archisketch.com/en/blog/67ce4dcab7dabf0012869791> |
+| 28 | 블렌더 3.0에서 인테리어 디자인 하기 (인프런) | course |  | 인테리어 모델링 기초 | <https://www.inflearn.com/course/%EB%B8%94%EB%A0%8C%EB%8D%94-%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4-%EB%94%94%EC%9E%90%EC%9D%B8> |
+| 29 | Hunyuan3D 소개 (파이토치 한국 사용자 모임) | community |  | 생성형 3D 기술 소개 | <https://discuss.pytorch.kr/t/hunyuan3d-tencent-3d/5451> |
+| 30 | 클리앙 — AI로 모델링 이젠 수준급 바이브모델링 10분도 안걸려 | community |  | 국내 사용자 반응 | <https://www.clien.net/service/board/park/19015735> |
+| 31 | 클리앙 — Astra(GPT-6)로 만든 결과물 | community | 2026-09 | Astra 결과물 반응 | <https://www.clien.net/service/board/park/19258409> |
+
+<a id="g3_videos_cases"></a>
+## [보완] 영상·소셜 사례
+
+주제 원문: 영상 튜토리얼·소셜 사례·공식 벤더 워크스루 (영어/일본어/중국어): GPT-6 Astra, Claude Opus 5.5 / Fable 5.1, Gemini × Blender·Unreal·Unity·Roblox·SketchUp MCP
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Claude for Creative Work (Anthropic) | official_announcement | 2026-04-28 (2026-05… | 공식 커넥터 9종, Blender 커넥터 기능, 기부 방식 정정을 본문으로 확인 | <https://www.anthropic.com/news/claude-for-creative-work> |
+| 2 | Using the Blender Connector in Claude · Claude Academy | official_tutorial | 2026 | 공식 설정 절차와 Desktop 전용 제약 | <https://academy.claude.com/tutorials/using-the-blender-connector-in-claude> |
+| 3 | Blender connector (claude.com) | official_directory | 2026-04 추가 / v1.0.1 | 제작자 Blender Lab, 버전, 검증 상태 | <https://claude.com/connectors/blender> |
+| 4 | SketchUp connector (claude.com) | official_directory | 2026-04 | build_model/get_docs/save_model 도구 목록 | <https://claude.com/connectors/sketchup> |
+| 5 | Unity plugin (claude.com) | official_directory | 2026-09 | Unity 공식 Claude Code 플러그인 존재 확인 | <https://claude.com/plugins/unity> |
+| 6 | Unity-Technologies/unity-agent-plugin | github_official | v0.1.6-beta | 설치 명령, 스킬 목록, 요구 사양 | <https://github.com/Unity-Technologies/unity-agent-plugin> |
+| 7 | lab/blender_mcp (Blender Projects) | official_repo | 2026 | 공식 Blender Lab MCP 저장소 | <https://projects.blender.org/lab/blender_mcp> |
+| 8 | Blender Lab | official_site | 2026 | Blender Lab 프로그램 소개 | <https://www.blender.org/lab/> |
+| 9 | Support the official Blender Lab MCP server as a provider · Issue #7 · claude-3d-harness | github_issue | 2026-09-20 | 공식 MCP의 최소 도구 세트와 하네스 통합 요건 | <https://github.com/MAX-786/claude-3d-harness/issues/7> |
+| 10 | Architectural visualization with Astra \| OpenAI Developers | official_blog | 2026-09 | Astra 아크비즈 공식 워크플로(검색 요약) | <https://developers.openai.com/blog/architectural-visualization-with-astra> |
+| 11 | Building games with Astra \| OpenAI Developers | official_blog | 2026-09 | Astra 게임 제작 공식 워크플로(검색 요약) | <https://developers.openai.com/blog/how-to-build-games-with-astra> |
+| 12 | GPT-6 Astra: A new generation of intelligence \| OpenAI | official_announcement | 2026-09-03 | Astra 출시 1차 출처 | <https://openai.com/index/gpt-6-astra/> |
+| 13 | Build a Playable Unreal Engine 5 Level with AI (MCP + Claude Code) \| Epic Community tuto… | community_tutorial_vendor_pla… | 2026 | Fab 팩 + AI 배치 워크플로 | <https://dev.epicgames.com/community/learning/tutorials/bnJ0/build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code> |
+| 14 | Unreal Engine 5.8 + Claude (MCP): crear sin límites \| Epic Community tutorial | community_tutorial_vendor_pla… | 2026 | 스페인어 입문 | <https://dev.epicgames.com/community/learning/tutorials/39oR/unreal-engine-5-8-claude-mcp-crear-sin-limites> |
+| 15 | Community Tutorial: UE 5.8 + Claude Code con MCP desde CERO (Epic Forums) | forum | 2026 | 스페인어 완전 튜토리얼 | <https://forums.unrealengine.com/t/community-tutorial-unreal-engine-5-8-claude-code-con-mcp-desde-cero-tutorial-completo/2729874> |
+| 16 | Unreal Engine 5.8 Preview: MCP Configuration and Testing with Claude and Kilo (YouTube) | video | 2026-05-14 | Preview 시기 MCP 구성 | <https://www.youtube.com/watch?v=dKzyTiitRIA> |
+| 17 | Easy MCP Server Setup For Unreal Engine 5.8 And Claude AI (YouTube) | video | 2026-05-28 | VS Code 기반 초보자 셋업 | <https://www.youtube.com/watch?v=z-nMc1BYW4Q> |
+| 18 | UE5.8 MCP Server Setup & Test — Official MCP with Claude Code (YouTube) | video | 2026-06-18 | 정식 공식 MCP 셋업 | <https://www.youtube.com/watch?v=Ko3dy_G75-s> |
+| 19 | How to Connect Claude Code to Unreal Engine 5.8 with MCP (YouTube) | video | 2026-07-01 | 셋업 튜토리얼 | <https://www.youtube.com/watch?v=kP9d-Bv32SU> |
+| 20 | Claude Code + Unreal Engine 5.8: Complete MCP Setup & Tutorial (YouTube) | video | 2026-08-18 | 가장 최근 완전 튜토리얼 | <https://www.youtube.com/watch?v=hUNTOltVTpQ> |
+| 21 | I Connected Fable 5.1 To The Official Unreal Engine 5.8 MCP (YouTube) | video | 2026 | Fable 5.1 × UE 공식 MCP 실험 | <https://www.youtube.com/watch?v=94QPi_bM0IE> |
+| 22 | Unity MCP Server: Connect Claude Code, Cursor, and other AI Agents \| Unity Blog | official_blog | 2026-05 | Unity 공식 MCP 소개 | <https://unity.com/blog/unity-ai-mcp-how-to-get-started> |
+| 23 | Unity MCP \| Assistant 2.0.0-pre.1 (Unity Docs) | official_docs | 2026 | relay/IPC/승인 정책 | <https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.0/manual/unity-mcp-overview.html> |
+| 24 | Claude AI + MCP in Unity: The Complete Setup & Workflow (2026) (YouTube) | video | 2026-07 | Unity 셋업 영상 | <https://www.youtube.com/watch?v=UZCekUCWgGc> |
+| 25 | How to Set Up Claude with Unity MCP in 3 Minutes (YouTube) | video | 2026 | 빠른 셋업 | <https://www.youtube.com/watch?v=oCqyOvcWf5M> |
+| 26 | Unity MCP Complete Guide (gamedevllm) | blog | 2026 | `unity mcp configure claude-code`, 공식 플러그인 배포일(9/10) 언급 | <https://gamedevllm.com/en/unity-mcp-claude-codex-gemini-cursorcomplete-guide-en/> |
+| 27 | Roblox/studio-rust-mcp-server | github_official | 2026-04-03 deprecat… | 구 서버 도구 목록과 지원 종료 확인 | <https://github.com/Roblox/studio-rust-mcp-server> |
+| 28 | Roblox Studio MCP server: build games with Claude (2026) — Loadout | blog | 2026 | 내장 MCP 활성화 경로와 포트 | <https://useloadout.com/blog/roblox-mcp-server-setup/> |
+| 29 | How to Connect Claude to Roblox Studio (August 2026 MCP Guide) | blog | 2026-08 | 최신 Roblox 가이드 | <https://backyarddrunkard.com/game-guides/connect-claude-to-roblox-studio-mcp-guide/> |
+| 30 | I Built a Roblox Game Using Only AI Agents (Medium, Andy.G) | blog_experience | 2026 | Roblox 실사용 체험 | <https://medium.com/@andy.a.g/i-built-a-roblox-game-using-only-ai-agents-heres-what-happened-ed57b553facc> |
+| 31 | Vibe Check: Opus 5.5 Is Pulling Our Codex Converts Back to Claude (Every) | review | 2026-09 | Opus 5.5 실사용 평가 | <https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude> |
+| 32 | Vaibhav Sisinty on X: Opus 5.5 wildest demos thread | social | 2026-09-23 | 출시 직후 데모 큐레이션 | <https://x.com/VaibhavSisinty/status/2102667276252282952> |
+| 33 | Claude OPUS 5.5 beats GPT 6 Astra in blender ? (YouTube) | video | ~2026-09-23 | 모델 비교 | <https://www.youtube.com/watch?v=Zgs9H8_RF3w> |
+| 34 | Claude Opus 5.5 Is the New KING of 3D Design & Blender (YouTube) | video | 2026-09 | Opus 5.5 Blender 리뷰 | <https://www.youtube.com/watch?v=2M1TEH6JPKc> |
+| 35 | I Tested Claude Fable 5 in Blender (5x Faster Than Opus 4.8) (YouTube) | video | 2026 | 속도 비교 주장 | <https://www.youtube.com/watch?v=hgl2zHnWwMg> |
+| 36 | Claude Opus 5 + Blender MCP = Professional 3D Scenes (YouTube) | video | 2026 | Opus 5 씬 시연 | <https://www.youtube.com/watch?v=Ci9Xc-VPc04> |
+| 37 | Astra + Blender MCP is kinda OP (YouTube Shorts) | video | 2026-09 | Astra MCP 데모 | <https://www.youtube.com/shorts/8fChl1944vg> |
+| 38 | How To Connect Claude To Blender - Tutorial (YouTube) | video | 2026 | 셋업 영상 | <https://www.youtube.com/watch?v=Zo4JBa2r2WI> |
+| 39 | I Tested Gemini 3.8 Flash With Antigravity — Coding, Blender & More (YouTube) | video | ~2026-09 | Gemini Blender 테스트 | <https://www.youtube.com/watch?v=BAoecDDSB7Q> |
+| 40 | Reference Image to 3D Scene With GPT-6 Astra & Blender (Vagon) | blog_tutorial | 2026-09 | 레퍼런스 → 씬 튜토리얼 | <https://vagon.io/blog/reference-image-to-3d-scene-with-gpt-6-astra-blender> |
+| 41 | GPT-6 Astra: from brief to editable scene (Fraktal Journal) | blog_case | 2026-09 | 스튜디오 관점 건축 워크플로 | <https://fraktal.design/blog/gpt-6-astra-from-model-to-architecture-workflow/> |
+| 42 | OpenAI's GPT-6 Astra Shows Unprecedented Blender 3D Animation Skills (Stork.AI) | blog | 2026-09 | Astra 애니메이션 평가 | <https://www.stork.ai/blog/astras-blender-skills-are-unreal> |
+| 43 | Blender with OpenAI Astra: Complete Guide + Starter Files (Kingy AI) | blog_tutorial | 2026-09 | 스타터 파일 | <https://kingy.ai/blog/blender-openai-astra-complete-guide/> |
+| 44 | How To Connect Blender To Astra, Gemini CLI & Claude (AceCloud) | blog_tutorial | 2026-09 | 세 경로 비교 | <https://acecloud.ai/blog/connect-blender-astra-gemini-claude/> |
+| 45 | GPT-6 Astra Review - How I AI (ChatPRD) | review | 2026-09 | 실사용 리뷰 | <https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding> |
+| 46 | GPT-6 Astra 3D Generation: Incredible Examples So Far (Aituts) | blog_roundup | 2026-09 | 게임 데모 모음 | <https://aituts.com/gpt6-astra-game-demos/> |
+| 47 | GPT-6 Astra Early Access: The First Real-World Builds (atoms.dev) | blog_roundup | 2026-09 | 얼리 액세스 사례 | <https://atoms.dev/blog/gpt-6-astra-early-access-examples> |
+| 48 | Built with Astra (eChai) | showcase | 2026-09 | Astra 제작물 쇼케이스 | <https://echai.ventures/astra> |
+| 49 | Claude Opus 5.5 + Blender MCP: Setup & What Changed (blendermcp.org) | blog_tutorial | 2026-09 | Opus 5.5 출시일·비용 문구 | <https://blendermcp.org/guides/claude-opus-5-5-blender> |
+| 50 | Gemini for Blender: Setup, Feedback Loops & Limits (blenderai.org) | blog_tutorial | 2026 | Gemini 시각 피드백 루프, httpUrl | <https://blenderai.org/models/gemini> |
+| 51 | Blender MCP Setup for Codex, Claude Code, Cursor, VS Code, Gemini CLI (StraySpark) | blog_tutorial | 2026 | 클라이언트별 설정 | <https://www.strayspark.studio/blog/blender-mcp-setup-codex-cursor-gemini-vscode-2026> |
+| 52 | [Project Showcase] Control Blender 3D using Gemini/LLMs via MCP (Google AI Developers For… | forum | 2026 | Gemini 커뮤니티 사례 | <https://discuss.ai.google.dev/t/project-showcase-control-blender-3d-using-gemini-llms-via-model-context-protocol-mcp/110424> |
+| 53 | Astra時代のコードファースト3Dモデリング (zenn) | blog_ja | 2026-09 | 일본어 코드 퍼스트 논고 | <https://zenn.dev/koher/articles/code-first-3d-modeling> |
+| 54 | GPT-6 AstraでBlenderを操作して桃をつくってみた (note) | blog_ja | 2026-09 | 일본어 체험기 | <https://note.com/ekazu_10/n/n31ffbf2e0646> |
+| 55 | Dramatically Improved Blender Production Capabilities with GPT-6 Astra (npaka, note) | blog_ja | 2026-09 | 일본어 평가 | <https://note.com/npaka/n/n9635d06c377f?hl=en> |
+| 56 | GPT-6 Astra + Codex + Blender MCP (Criet, note) | blog_ja | 2026-09 | 일본어 체험기 | <https://note.com/snapreplica/n/n77a3c9fae946?hl=en> |
+| 57 | GPT-6 AstraでBlenderの3D制作はどこまでできる？ (chatgpt-consulting.jp) | blog_ja | 2026-09 | 일본어 가이드 | <https://chatgpt-consulting.jp/how-much-can-you-do-with-blender-3d-creation-using-gpt-6-astra/> |
+| 58 | Cline + Blender MCP 3D model (AWS builders.flash) | vendor_blog_ja | 2025-06 | 일본어 초기 사례 | <https://aws.amazon.com/jp/builders-flash/202506/cline-blender-mcp-3d-model> |
+| 59 | 使用 Blender MCP 使用 Claude AI 创建 3D - 完整 26 分钟教程 (bilibili) | video_zh | 2025~2026 | 중국어 완전 튜토리얼 | <https://www.bilibili.com/video/BV1SrXrY6E8D/> |
+| 60 | Claude + Blender 联动教程 - 利用 MCP 实现 AI 自动化 3D 工作流 (bilibili) | video_zh | 2026 | 공식 MCP 자동화 활용 | <https://www.bilibili.com/video/BV1PBLS6sEEA/> |
+| 61 | 中文配音-Claude Code + Blender MCP：零基础一键生成 3D 环境 (bilibili) | video_zh | 2026 | Claude Code 환경 생성 | <https://www.bilibili.com/video/BV1RKXNBMEDX/> |
+| 62 | AI操控电脑自主构建3D场景！BlenderMCP (bilibili) | video_zh | 2025 | BlenderMCP 소개 | <https://www.bilibili.com/video/BV1BVQBYuEPg/> |
+| 63 | Blender将永远改变：Claude AI的到来 (bilibili) | video_zh | 2026 | 중국어권 반응 | <https://www.bilibili.com/video/BV1JZVu6aEXh/> |
+| 64 | 3D建模终结者？Blender + MCP打造极致3D建模场景 (bilibili) | video_zh | 2025 | 효과 평가 영상 | <https://www.bilibili.com/video/BV1JTQ4YyE2N/> |
+| 65 | 过了把3D建模的瘾！MCP让Cursor控制Blender (知乎) | blog_zh | 2025 | three.js 재구성 아이디어 | <https://zhuanlan.zhihu.com/p/29863179256?utm_psn=1883459135720380238> |
+| 66 | Show HN: MCP server for Blender that builds 3D scenes via natural language | forum | 2025-07-20 | HN 토론 | <https://news.ycombinator.com/item?id=44622374> |
+| 67 | Anthropic Joins the Blender Development Fund as Corporate Patron (HN) | forum | 2026-04 | 후원 관련 토론(이후 일회성 기부로 정정) | <https://news.ycombinator.com/item?id=47936370> |
+| 68 | Fable 5.1 World Modeling (HN) | forum | 2026 | Fable 5.1 월드 모델링 토론 | <https://news.ycombinator.com/item?id=49541458> |
+| 69 | From Blender MCP to 3D-Agent... Anthropic partners with Blender (Blender Artists) | forum | 2026-04~ | 아티스트 커뮤니티 반응 | <https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106> |
+| 70 | Blender MCP Server after Claude: MCP security for Blender scripting (Blender DevTalk) | forum | 2026 | 보안 논의 | <https://devtalk.blender.org/t/blender-mcp-server-after-claude-mcp-security-for-blender-scripting-3d-agent-notes/45131> |
+| 71 | How to Use Blender MCP with Meshy MCP & Claude (2026 Guide) | vendor_tutorial | 2026 | 생성 MCP + Blender MCP 구성 | <https://www.meshy.ai/tutorials/blender-mcp-guide> |
+| 72 | Generative 3D Tools Compared: Meshy, Rodin, Tripo, and CSM in April 2026 (StraySpark) | review | 2026-04 | 생성기 비교 | <https://www.strayspark.studio/blog/generative-3d-tools-comparison-meshy-rodin-tripo-csm-2026> |
+| 73 | Best AI 3D Model Generator in 2026: I Tested 9 (Indie Hackers) | review | 2026 | 9종 실사용 비교 | <https://www.indiehackers.com/post/best-ai-3d-model-generator-in-2026-i-tested-9-of-the-best-and-here-is-what-i-found-70ecab1a0a> |
+| 74 | Meshy vs Tripo vs Rodin vs Trellis: Best for Archviz (Visiomake) | review | 2026 | 아크비즈 관점 비교 | <https://visiomake.com/en/blog/best-ai-image-to-3d-tools-2026-comparison-archviz> |
+| 75 | Unreal Engine AI: Claude and Gemini via MCP (Creative AI News) | blog | 2026 | UE 클라이언트 설정 자동 생성 | <https://www.creativeainews.com/articles/unreal-engine-ai-claude-gemini-mcp-2026/> |
+| 76 | Blender MCP vs Unity MCP vs Unreal MCP (Mint) | blog | 2026 | 엔진별 MCP 비교 | <https://mint.gg/blog/3d-mcp-guide> |
+| 77 | Claude Opus 5.5: 10 Amazing Things People Created (FavTutor) | blog_roundup | 2026-09 | Opus 5.5 사례 모음 | <https://favtutor.com/claude-opus-5-5-real-examples/> |
+| 78 | Hyper3D: Claude Opus 5.5 3D Prompts & Examples | vendor_gallery | 2026-09 | 프롬프트 예시 | <https://hyper3d.ai/3d-prompts/models/claude-opus-5.5> |
+
+<a id="g4_licensing_pricing"></a>
+## [보완] 가격·라이선스·법규
+
+주제 원문: 상용 약관·가격·라이선스·법규 (2026): AI 3D 생성 도구, 에셋 라이브러리, 스토어 AI 공개 규정, 저작권 및 AI 표시 의무
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Tencent Hunyuan3D-2.1 LICENSE (GitHub 원문) | license text | 2025-06-13 | Territory(EU·UK·KR 제외), Output, MAU, 타 모델 개선 금지 조항 원문 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE> |
+| 2 | Tencent Hunyuan3D-2 LICENSE (GitHub 원문) | license text | 2025-01-21 | 2.0 버전의 동일한 지역 제한 확인 | <https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE> |
+| 3 | microsoft/TRELLIS.2 (MIT) | license text | 2026-09 확인 | 지역 제한 없는 대안 모델의 라이선스 | <https://github.com/microsoft/TRELLIS.2> |
+| 4 | Anthropic Commercial Terms of Service | official terms | 2025-06-17 | 출력물 소유, 양도, 면책, 학습 금지 원문 | <https://www.anthropic.com/legal/commercial-terms> |
+| 5 | Anthropic Consumer Terms of Service | official terms | 2025-10-08 | 소비자 요금제 출력물 양도와 학습 옵트아웃 | <https://www.anthropic.com/legal/consumer-terms> |
+| 6 | Gemini API Additional Terms of Service | official terms | 2026 | Google의 생성 콘텐츠 소유권 비주장 | <https://ai.google.dev/gemini-api/terms> |
+| 7 | OpenAI Terms of Use | official terms | 2026 | 출력물 소유권 양도 조항 | <https://openai.com/policies/row-terms-of-use/> |
+| 8 | Meshy Pricing | vendor pricing | 2026 | 플랜과 라이선스(공식) | <https://www.meshy.ai/pricing> |
+| 9 | Meshy Pricing 2026 (costbench) | aggregator | 2026-08 | 플랜별 가격과 무료 플랜 CC BY 4.0 요약 | <https://costbench.com/software/ai-3d-generation/meshy/> |
+| 10 | Tripo Pricing | vendor pricing | 2026 | 플랜별 상업권 | <https://www.tripo3d.ai/pricing> |
+| 11 | Tripo AI Pricing 2026 (costbench) | aggregator | 2026-08-29 | 가격과 API 단가 요약 | <https://costbench.com/software/ai-3d-generation/tripo-ai/> |
+| 12 | Hyper3D Pricing | vendor pricing | 2026 | Rodin 구독 플랜 | <https://hyper3d.ai/pricing> |
+| 13 | Rodin Gen 2 blog | vendor blog | 2025-10 | Gen-2 기능 | <https://hyper3d.ai/blog/rodin-gen-2> |
+| 14 | Marble pricing / billing docs | vendor docs | 2026 | 플랜별 상업권 | <https://docs.worldlabs.ai/marble/support/account-billing> |
+| 15 | TechCrunch: World Labs launches Marble | news | 2025-11-12 | Marble 출시와 가격 | <https://techcrunch.com/2025/11/12/fei-fei-lis-world-labs-speeds-up-the-world-model-race-with-marble-its-first-commercial-product/> |
+| 16 | Tencent Hunyuan Global: 3D Generation API | vendor page | 2026 | HY 3D 글로벌 API 제공 | <https://www.tencentcloud.com/techpedia/148311?lang=en> |
+| 17 | Adobe: Firefly into Substance 3D workflows | vendor press | 2024-03-18 | Text to Texture, Generative Background 출시 | <https://news.adobe.com/news/news-details/2024/adobe-brings-firefly-generative-ai-into-substance-3d-workflows> |
+| 18 | Adobe for creativity connector in Claude | vendor blog | 2026-04-28 | 커넥터 범위(50개 이상 도구) | <https://blog.adobe.com/en/publish/2026/04/28/adobe-for-creativity-connector> |
+| 19 | Introducing Adobe for ChatGPT | vendor blog | 2026-08-06 | ChatGPT 플러그인 범위 | <https://blog.adobe.com/en/publish/2026/08/06/introducing-adobe-chatgpt-create-edit-get-work-done-all-in-chatgpt> |
+| 20 | Fab Transition FAQs | vendor FAQ | 2024-2025 | Megascans의 Fab 전환 | <https://support.fab.com/s/article/Fab-Transition-FAQs?language=en_US> |
+| 21 | CG Channel: Megascans free until end of 2024 | news | 2024-10 | Standard License의 엔진 무관 조건과 무료 종료 | <https://www.cgchannel.com/2024/10/epic-games-has-made-megascans-free-to-all-but-only-until-the-end-of-2024/> |
+| 22 | Game Developer: Sketchfab mandates AI disclosure | news | 2025-11 | CreatedWithAI 의무화(2025-12-11), Fab AI 정책 | <https://www.gamedeveloper.com/business/sketchfab-to-require-mandatory-ai-disclosure-epic-games-accounts-for-users> |
+| 23 | Poly Haven License | license page | 2026 | CC0 | <https://polyhaven.com/license> |
+| 24 | Game Asset Licenses Explained (Cinevva) | guide | 2026 | ambientCG CC0, BlenderKit RF·CC0 설명 | <https://app.cinevva.com/guides/game-asset-licenses> |
+| 25 | Game Developer: Valve tweaks and clarifies AI disclosure rules | news | 2026-01 | Steam 2026 개정 내용 | <https://www.gamedeveloper.com/business/valve-tweaks-and-clarifies-ai-disclosure-rules-for-steam> |
+| 26 | U.S. Copyright Office NewsNet 1060 | government | 2025-01-29 | Part 2 보고서 발표 | <https://www.copyright.gov/newsnet/2025/1060.html> |
+| 27 | Crowell: Part 2 of AI Report | law firm analysis | 2025-02 | 프롬프트 불충분, Thaler 사례 | <https://www.crowell.com/en/insights/client-alerts/us-copyright-office-releases-part-2-of-artificial-intelligence-report-clarifying-copyrightability-of-generative-ai-outputs> |
+| 28 | 한국저작권위원회: 생성형 인공지능 활용 저작물의 저작권 등록 안내서 | government | 2025-06 | AI 활용 저작물 등록 기준 원문 | <https://www.copyright.or.kr/information-materials/publication/research-report/view.do?brdctsno=54253> |
+| 29 | 전자신문: AI 활용 창작물도 등록 가능, 정부 첫 가이드라인 | news | 2025-07-01 | 등록 안내서 요지 | <https://www.etnews.com/20250701000303> |
+| 30 | 법률신문: 문체부 공정이용 안내서 발간 | news | 2026-02 | 2026-02-26 공정이용 안내서 | <https://www.lawtimes.co.kr/news/articleView.html?idxno=217415> |
+| 31 | 대한민국 정책브리핑: 인공지능기본법 22일 시행, 워터마크 표시 의무 | government | 2026-01 | 시행일, 표시 의무, 계도기간 | <https://www.korea.kr/news/policyNewsView.do?newsId=148958380> |
+| 32 | 대륜: AI 기본법 시행령 과태료 계도기간 | law firm | 2026-01 | 계도기간 세부 | <https://www.daeryunlaw.com/newsletter/news/246> |
+| 33 | Cooley: EU AI Act Transparency Obligations Take Effect 2 August 2026 | law firm analysis | 2026-08-03 | 제50조 적용, Omnibus 영향 | <https://www.cooley.com/news/insight/2026/2026-08-03-eu-ai-act-transparency-obligations-take-effect-2-august-2026> |
+| 34 | EU Code of Practice on Transparency of AI-generated Content | government | 2026 | 표시 의무 준수 경로 | <https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content> |
+
+<a id="g5_aaa_practice"></a>
+## [보완] AAA 실무·공식 변경사항
+
+주제 원문: AAA 아트 디렉션·라이팅·렌더링 실무 가이드 + Blender 5.x / Unreal Engine 5.7–5.8 공식 변경점 (2026-09 기준)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Blender 5.0 Release Notes | 공식 릴리스 노트 | 2025-11 | 5.0 Cycles, EEVEE, API 변경의 1차 출처 | <https://developer.blender.org/docs/release_notes/5.0/> |
+| 2 | Blender 5.0: Python API | 공식 릴리스 노트 | 2025-11 | MCP 스크립트 호환성에 영향을 주는 파괴적 변경 | <https://developer.blender.org/docs/release_notes/5.0/python_api/> |
+| 3 | Blender 5.0: Color Management | 공식 릴리스 노트 | 2025-11 | ACEScg, ACES 2.0, AgX HDR | <https://developer.blender.org/docs/release_notes/5.0/color_management/> |
+| 4 | EEVEE & Viewport - Blender 5.0 | 공식 릴리스 노트 | 2025-11 | EEVEE 식별자 변경 | <https://developer.blender.org/docs/release_notes/5.0/eevee/> |
+| 5 | Blender 5.1 Release Notes | 공식 릴리스 노트 | 2026-03 | Python 3.13, 성능, 신규 노드 | <https://developer.blender.org/docs/release_notes/5.1/> |
+| 6 | Blender 5.2 LTS Release Notes | 공식 릴리스 노트 | 2026-07 | 현재 안정판 기능 | <https://developer.blender.org/docs/release_notes/5.2/> |
+| 7 | Blender 5.3 Release Notes (dev) | 공식 개발 문서 | 2026 | 다음 버전이 개발 중임을 확인 | <https://developer.blender.org/docs/release_notes/5.3/> |
+| 8 | Blender 5.2 LTS is here: discover its 5 key features \| CG Channel | 업계 뉴스 | 2026-07 | 5.2 요약과 LTS 기간 교차 확인 | <https://www.cgchannel.com/2026/07/blender-5-2-lts-is-here-discover-its-5-key-features/> |
+| 9 | Blender 5.1 is here: discover its 5 key features \| CG Channel | 업계 뉴스 | 2026-03 | 5.1 요약 교차 확인 | <https://www.cgchannel.com/2026/03/discover-5-key-features-in-blender-5-1/> |
+| 10 | Blender 5.1 is here \| DIGITAL PRODUCTION | 업계 뉴스 | 2026-03-19 | 5.1 출시 시점 | <https://digitalproduction.com/2026/03/19/blender-5-1-is-here/> |
+| 11 | Blender 5.2 LTS Released - Phoronix | 업계 뉴스 | 2026-07 | 5.2 교차 확인 | <https://www.phoronix.com/news/Blender-5.2-Released> |
+| 12 | Light Objects - Blender 5.2 LTS Manual | 공식 매뉴얼 | 2026 | 라이트 단위(W, W/m²)와 노출 보정 | <https://docs.blender.org/manual/en/latest/render/lights/light_object.html> |
+| 13 | Using Physically Correct Brightness in Cycles - Blendergrid | 실무 가이드 |  | Cycles 물리 밝기와 lux 범위 | <https://blendergrid.com/articles/cycles-physically-correct-brightness> |
+| 14 | Unreal Engine 5.8 is now available | 공식 발표 | 2026-06-17 | 5.8 기능 1차 출처 | <https://www.unrealengine.com/news/unreal-engine-5-8-is-now-available> |
+| 15 | Unreal Engine 5.8 Release Notes | 공식 릴리스 노트 | 2026-06 | 5.8 상세 | <https://dev.epicgames.com/documentation/unreal-engine/unreal-engine-5-8-release-notes> |
+| 16 | Unreal Engine 5.8 Performance Highlights - Tom Looman | 전문가 블로그 | 2026 | 5.8 성능 기능 해설 | <https://tomlooman.com/unreal-engine-5-8-performance-highlights/> |
+| 17 | Unreal Engine 5.8 Debuts Lumen Lite and Production-Ready MegaLights (Guru3D) | 업계 뉴스 | 2026-06 | Lumen Lite 2배, Switch 2 60fps | <https://www.guru3d.com/story/unreal-engine-58-debuts-lumen-lite-and-productionready-megalights/> |
+| 18 | Unreal Engine 5.7 is now available | 공식 발표 | 2025-11 | Substrate, PCG 정식화, MegaLights Beta | <https://www.unrealengine.com/news/unreal-engine-5-7-is-now-available> |
+| 19 | Unreal Engine 5.7: foliage, PCG and in-Editor AI \| DIGITAL PRODUCTION | 업계 뉴스 | 2025-11-12 | 5.7 교차 확인 | <https://digitalproduction.com/2025/11/12/unreal-engine-5-7-foliage-pcg-and-in-editor-ai/> |
+| 20 | Using Physical Lighting Units in Unreal Engine (5.8 docs) | 공식 문서 | 2026 | lux, EV100 기준 | <https://dev.epicgames.com/documentation/unreal-engine/using-physical-lighting-units-in-unreal-engine?lang=en-US> |
+| 21 | Physical Lighting Units (UE 4.27 docs) | 공식 문서 |  | 태양, 달, 별 조도와 EV100 수치 | <https://docs.unrealengine.com/4.27/en-US/BuildingWorlds/LightingAndShadows/PhysicalLightUnits> |
+| 22 | Lighting in Unreal with photography principles using PBL — Magnopus | 스튜디오 블로그 |  | 사진 원리 기반 물리 라이팅 실무 | <https://www.magnopus.com/blog/lighting-in-unreal-with-photography-principles> |
+| 23 | Lumen Performance Guide (UE 5.8 docs) | 공식 문서 | 2026 | Lumen 품질과 성능 레버 | <https://dev.epicgames.com/documentation/en-us/unreal-engine/lumen-performance-guide-for-unreal-engine> |
+| 24 | Lumen GI in UE5: Settings, Asset Prep, and Performance Tuning (2026) | 실무 블로그 | 2026 | Final Gather Quality 수치 | <https://bitsoulhosting.com/marketplace/blog/ue5-lumen-gi-settings-asset-prep-performance-2026> |
+| 25 | Unreal MCP Plugin (UE 5.8): Setup, Limits, Alternatives \| Ludus AI | 실무 블로그 | 2026 | 공식 MCP 플러그인 셋업과 한계 | <https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup> |
+| 26 | Epic's Official MCP Plugin Is Here (UE 5.8) \| StraySpark | 실무 블로그 | 2026 | 공식 MCP와 서드파티 비교 | <https://www.strayspark.studio/blog/epic-official-mcp-plugin-ue5-8-vs-third-party> |
+| 27 | The Secret Ingredient to Photorealism — Blender Guru | 실무자 튜토리얼 |  | 다이내믹 레인지와 노출 원칙 | <https://andrew-price-a9bl.squarespace.com/tutorials/secret-ingredient-photorealism> |
+| 28 | Cinematic Lighting in Blender • Creative Shrimp | 실무자 강좌 |  | Gleb Alexandrov 라이팅 강좌 | <https://www.creativeshrimp.com/cinematic-lighting-in-blender> |
+| 29 | Interior Rendering: The Complete Guide [2026] - ArchRender | 실무 가이드 | 2026 | archviz 카메라, 샘플, 포털, 창 노출 | <https://www.archrender.ai/blog/interior-rendering-the-complete-guide-2026> |
+| 30 | Modular Scene in UE4: Blockout, Vertex Paint, Decals (80.lv) | 80.lv 브레이크다운 |  | AAA식 모듈러 환경 워크플로 | <https://80.lv/articles/001agt-004adk-005cg-modular-scene-in-ue4-blockout-vertex-paint-decals> |
+| 31 | SanXia Street 1940: Modular Approach, Trim Sheets, Decals (80.lv) | 80.lv 브레이크다운 |  | 트림 시트와 데칼 사례 | <https://80.lv/articles/005cg-001agt-sanxia-street-1940-modular-approach-trim-sheets-decals> |
+| 32 | Get Away: Lighting & Composition in Environment Art (80.lv) | 80.lv 브레이크다운 |  | 구도와 라이팅 | <https://80.lv/articles/get-away-lighting-composition-in-environment-art> |
+| 33 | Environment Art \| The Level Design Book | 실무 서적(웹) |  | 환경 아트 프로세스와 스토리텔링 | <https://book.leveldesignbook.com/process/env-art> |
+| 34 | Environment Artist Playbook: From Blockout to Final Pass \| RMCAD | 교육 기관 블로그 |  | 블록아웃부터 최종 패스까지의 라이팅 단계 | <https://www.rmcad.edu/blog/environment-artist-playbook-from-blockout-to-final-pass/> |
+| 35 | Why AI 3D Models Look Bad — and How to Fix It (Tripo) | 벤더 블로그 | 2025–2026 | AI 3D 결함 분류와 해결 | <https://www.tripo3d.ai/blog/why-ai-3d-models-look-bad> |
+| 36 | Texel Density Standards for AAA First-Person Shooter Games? — polycount | 실무자 포럼 |  | 텍셀 밀도 관행 | <https://polycount.com/discussion/234887/texel-density-standards-for-aaa-first-person-shooter-games> |
+| 37 | Beyond Extent │ Texel Density | 실무 해설 |  | 텍셀 밀도 원리 | <https://www.beyondextent.com/deep-dives/deepdive-texeldensity> |
+| 38 | Kruithof curve (Wikipedia) | 백과사전 |  | 조도와 색온도의 쾌적성 관계 | <https://en.wikipedia.org/wiki/Kruithof_curve> |
+| 39 | Illuminance Levels Indoors: Standard Lux Level Chart (Prana Air) | 업체 블로그 |  | 실내 공간별 lux | <https://www.pranaair.com/blog/us/illuminance-levels-indoors-the-standard-lux-levels/> |
+
+<a id="g6_benchmarks_models"></a>
+## [보완] 벤치마크·모델 비교
+
+주제 원문: 최신 3D·CAD·공간지능 벤치마크와 프런티어 모델 정량 비교 (2026-09-27 기준)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | ScoreIA La Forge results (open data, 2026-09-24) | GitHub 데이터 저장소 (직접 확인) | 2026-09-24 | MCP 전용 3D 과제의 최신 모델 8종 프로그램 채점 결과 | <https://github.com/drakkB/scoreia-forge-results> |
+| 2 | arena-ai-leaderboards daily snapshots | GitHub 미러 (직접 확인) | 2026-09-26 | arena.ai Code, Vision, Text 보드의 최신 Elo와 CI, 투표 수 | <https://github.com/oolong-tea-2026/arena-ai-leaderboards> |
+| 3 | Arena code.json snapshot 2026-09-26 | 데이터 파일 (직접 확인) | 2026-09-25 갱신 |  | <https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/code.json> |
+| 4 | Arena vision.json snapshot 2026-09-26 | 데이터 파일 (직접 확인) | 2026-09-13 갱신 |  | <https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/vision.json> |
+| 5 | Introducing Claude Opus 5.5 | 벤더 공식 발표 (직접 확인) | 2026-09-22 | OSWorld 2.0, Terminal-Bench 4.0 등 Astra 비교를 포함한 공식 표와 가격 | <https://www.anthropic.com/claude-opus-5-5> |
+| 6 | Claude Fable 5.1 and Mythos 5.1 | 벤더 공식 발표 (직접 확인) | 2026-09 | OSWorld 2.0 partial/strict 등 공식 수치 | <https://www.anthropic.com/claude-fable-and-mythos-5-1> |
+| 7 | Claude Sonnet 5 | 벤더 공식 발표 (직접 확인) | 2026-06-30 | Sonnet 5 수치는 차트 이미지뿐이라는 점 확인, 가격 $2/$10 | <https://www.anthropic.com/news/claude-sonnet-5> |
+| 8 | GPT-6 Astra: A new generation of intelligence | 벤더 공식 발표 (차단, 검색 결과로만 확인) | 2026-09-03 |  | <https://openai.com/index/gpt-6-astra/> |
+| 9 | GPT-6 Astra: Features, Benchmarks, and Pricing (DataCamp) | 2차 기사 |  | OSWorld 2.0 72.6%, ScreenSpot-Pro 92.7%, BenchCAD 95.9% 조건 설명 | <https://www.datacamp.com/blog/gpt-6-astra> |
+| 10 | ScreenSpot Pro Leaderboard (BenchLM) | 집계 사이트 | 2026-09 |  | <https://benchlm.ai/benchmarks/screenspot-pro> |
+| 11 | GPT-6 Astra Benchmark Results Analysis (DataLearnerAI) | 집계 사이트 |  | MMMU-Pro 86.9 | <https://www.datalearner.com/en/ai-models/pretrained-models/gpt-6-astra/analysis> |
+| 12 | Best LLMs for 3D (modelgrep) | 집계 사이트 | 2026-09 | Design Arena 3D Elo | <https://modelgrep.com/best/3d> |
+| 13 | Blender AI Leaderboard | 투표 아레나 (차단, 검색 요약) | 2026-09 |  | <https://blenderai.org/leaderboard> |
+| 14 | Blender AI Arena Methodology | 아레나 방법론 (차단, 검색 결과) |  |  | <https://blenderai.org/methodology> |
+| 15 | 3DCodeBench GitHub | GitHub (직접 확인) | 2026-06-01 |  | <https://github.com/gaoypeng/3dcodebench> |
+| 16 | 3DCodeBench arXiv 2606.01057 | 학술 논문 (검색 요약) | 2026-06 |  | <https://arxiv.org/abs/2606.01057> |
+| 17 | 3DHarnessBench arXiv 2609.06535 | 학술 논문 (검색 요약) | 2026-09 |  | <https://arxiv.org/html/2609.06535v1> |
+| 18 | 3DHarnessBench GitHub | GitHub (직접 확인) |  |  | <https://github.com/llada60/3DHarnessBench> |
+| 19 | BenchCAD LEADERBOARD.md | 공식 리더보드 (직접 확인) | 2026-06 |  | <https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md> |
+| 20 | CADGenBench build123d-mcp comparison | 제3자 비교 문서 (직접 확인) | 2026-09 |  | <https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md> |
+| 21 | CADWorld: Computer-Use Benchmark for Long-Horizon CAD | 학술 논문 (검색 요약) | 2026-09 |  | <https://arxiv.org/abs/2609.16251> |
+| 22 | Gemini 3.8 Flash Benchmarks Explained (Vellum) | 2차 기사 | 2026-09 |  | <https://www.vellum.ai/blog/gemini-3-8-flash-benchmarks-explained> |
+| 23 | Introducing Gemini 3.8 Flash and 3.8 Flash Cyber | 벤더 공식 (차단) | 2026-09-02 |  | <https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/> |
+| 24 | Gemini 3.8 Flash: Benchmarks, Pricing and the Real Numbers (Fello AI) | 2차 기사 |  | 3.5 Pro 미출시 상태, OSWorld 2.0 59.0% | <https://felloai.com/gemini-3-8-flash/> |
+| 25 | Grok 4.7 Release: Same Price, Longer Horizons (llm-stats) | 2차 기사 | 2026-09-21 |  | <https://llm-stats.com/blog/research/grok-4-7-launch> |
+| 26 | xAI Launches Grok 4.7 (SQ Magazine) | 2차 기사 | 2026-09 |  | <https://sqmagazine.co.uk/xai-launches-grok-4-7-coding-model/> |
+| 27 | GLM-5.3 vs Kimi K3 vs DeepSeek V4 Pro (Kingy AI) | 2차 기사 | 2026-08 |  | <https://kingy.ai/blog/glm-5-3-vs-kimi-k3-vs-deepseek-v4-pro/> |
+| 28 | MineBench PR #152 (GPT-6 Astra Pro) | GitHub PR (직접 확인) | 2026-09-05 |  | <https://github.com/Ammaar-Alam/minebench/pull/152> |
+| 29 | EASI issue #39 (GPT6 Astra) | GitHub 이슈 | 2026-09-12 | EASI에 Astra 평가 결과가 아직 없음 | <https://github.com/EvolvingLMMs-Lab/EASI/issues/39> |
+| 30 | BlenderGym project page / leaderboard | 학술 프로젝트 페이지 (이전 세션 수집본 확인) | 2025 |  | <https://blendergym.github.io/> |
+| 31 | VIGA arXiv 2601.11109 | 학술 논문 (검색 요약) | 2026-01 |  | <https://arxiv.org/abs/2601.11109> |
+| 32 | Generating CAD Code with Vision-Language Models for 3D Designs (CADCodeVerify) | 학술 논문 (검색 요약) | 2024-10 |  | <https://arxiv.org/abs/2410.05340> |
+| 33 | CAD-Recode arXiv 2412.14042 | 학술 논문 (검색 요약) | 2024-12 |  | <https://arxiv.org/pdf/2412.14042> |
+| 34 | LayoutVLM arXiv 2412.02193 | 학술 논문 (검색 요약) | 2024-12 |  | <https://arxiv.org/html/2412.02193> |
+| 35 | Holodeck arXiv 2312.09067 | 학술 논문 (검색 요약) | 2023-12 |  | <https://arxiv.org/html/2312.09067v2> |
+| 36 | SceneSmith arXiv 2602.09153 | 학술 논문 (검색 요약) | 2026-02 |  | <https://arxiv.org/abs/2602.09153> |
+| 37 | SceneCraft arXiv 2403.01248 | 학술 논문 (검색 요약) | 2024-03 |  | <https://arxiv.org/abs/2403.01248> |
+| 38 | LL3M arXiv 2508.08228 | 학술 논문 (검색 요약) | 2025-08 |  | <https://arxiv.org/abs/2508.08228> |
+| 39 | Claude Opus 5.5 WebDev Ranking Puts Anthropic Ahead of GPT-6 Astra (remio) | 2차 기사 | 2026-09-23 |  | <https://www.remio.ai/post/claude-opus-5-5-webdev-ranking-puts-anthropic-ahead-of-gpt-6-astra> |
+| 40 | I Tried Claude Opus 5.5 vs GPT Astra in Blender (YouTube) | 영상 (내용 미확인, 존재만 확인) | 2026-09 |  | <https://www.youtube.com/watch?v=gr1v3ddUr7A> |
 
