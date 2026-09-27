@@ -7,7 +7,7 @@ AI가 만든 장면에서 가장 자주 나오는 **형태·배치 오류**(떠 
 
 | 파일 | 역할 |
 |---|---|
-| `scene_audit.py` | 장면 전체 점검 → JSON 리포트 (떠 있음·바닥 아래로 박힘·천장 위로 뚫림·유닛 간 관통·가구–벽/천장 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·이름 기준 치수 범위 이탈) |
+| `scene_audit.py` | 장면 전체 점검 → JSON 리포트 (떠 있음·바닥 아래로 박힘·다른 물체 속으로 파고듦(`sunk_into`)·천장 위로 뚫림·유닛 간 관통·가구–벽/천장 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·이름 기준 치수 범위 이탈) |
 | `placement_utils.py` | 배치 함수: 바닥 붙이기, 아래 표면에 올리기(책상 위 소품), 옆에 붙이기, 벽에 붙이기, 특정 지점 바라보기, 평면 간격 측정·규칙 검사 |
 | `review_views.py` | AI 자기비평용 4방향 검토 렌더 (위 정사영 / 정면 / 측면 / 3/4 원근). 오브젝트마다 다른 색으로 칠해 겹침·간격이 잘 보이게 함 |
 | `tests/test_scripts.py` | 자동 테스트 |
@@ -50,7 +50,7 @@ print(report["interpenetrations"])
 ## 사용법 2 — 헤드리스 (Claude Code / Codex가 스크립트로 빌드하는 방식)
 
 ```bash
-blender -b scene.blend --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --ceiling-z 2.3 --out audit.json
+blender -b scene.blend --python 03_playbooks/scripts/scene_audit.py -- --floor-z 0 --ceiling-z 2.3 --collection Room --out audit.json
 ```
 
 ```python
@@ -90,6 +90,10 @@ print(pu.check_clearances([
 ```python
 # 한국 구축 아파트(천장 2.3 m) 기준 점검 예
 report = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)
+
+# 방 내부와 건물 외관을 한 장면에 둘 때: 컬렉션별로 따로 검사 (천장 규칙은 방에만)
+room_rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30, collection="Room")
+bldg_rep = scene_audit.audit_scene(floor_z=0.0, collection="Building")
 # units[*].size_wdh_m = [폭, 깊이, 높이], units[*].size_rule = 적용된 규칙 이름
 ```
 
@@ -104,6 +108,7 @@ bpyenv/bin/python 03_playbooks/scripts/tests/test_scripts.py
 
 테스트 내용
 - 떠 있는 의자·상판을 관통한 상자·깊이 2.5 m 소파·스케일 미적용 오브젝트를 모두 잡아내는지, 테이블 아래로 넣은 의자(바운딩박스만 겹침)를 관통으로 **오탐하지 않는지**
+- 박힘 판정: 바닥에 5 cm 박힌 암체어, 슬래브에 7.5 cm 박힌 계단을 "떠 있음"이 아니라 `sunk_into`로 보고. 컬렉션 범위 검사(방 천장 규칙이 건물 기둥에 적용되지 않음), 기둥 위 15 cm 뜬 지붕 슬래브 검출
 - 이름 매칭(CamelCase, `door_handle`·`table_lamp`·`turntable`·`indoor_plant` 제외, 암체어가 의자 규칙에 걸리지 않음), 구조물 판정(`Wall_N` vs `wall_shelf`)
 - 90°·30° 회전한 소파의 폭·깊이 오탐 없음, 천장(2.30 m)을 뚫은 옷장, 벽 속으로 박힌 수납장 검출, 벽–바닥은 검사하지 않음
 - 바닥 붙이기·표면 위 올리기(이미 표면 위일 때 다시 호출해도 뚫고 내려가지 않음)·옆 배치·벽에 붙이기·방향 맞추기·간격 검사

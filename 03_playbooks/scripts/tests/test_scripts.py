@@ -143,6 +143,44 @@ def test_names_rotation_structures():
     print("test_names_rotation_structures OK")
 
 
+def test_sunk_and_collection_scope():
+    reset()
+    room = bpy.data.collections.new("Room"); bpy.context.scene.collection.children.link(room)
+    bld = bpy.data.collections.new("Building"); bpy.context.scene.collection.children.link(bld)
+
+    def into(o, col):
+        for c in list(o.users_collection):
+            c.objects.unlink(o)
+        col.objects.link(o)
+        return o
+
+    into(box("Floor", (4, 3, 0.02), (2, 1.5, -0.01)), room)
+    into(box("armchair_sunk", (0.85, 0.85, 0.9), (1.0, 1.0, 0.40)), room)     # 바닥에 5 cm 박힘
+    into(box("wardrobe", (1.0, 0.6, 2.36), (3.0, 2.5, 1.18)), room)           # 방 천장 2.30 을 넘음
+    into(box("building_slab", (4, 4, 0.2), (12, 2, 0.1)), bld)
+    into(box("pillar_A", (0.3, 0.3, 3.0), (10.3, 0.3, 1.7)), bld)             # 3.2 m 기둥: 방 천장 기준이면 오탐
+    into(box("stair_step", (1, 0.3, 0.25), (11, 1.0, 0.25)), bld)             # 슬래브에 7.5 cm 박힘
+    into(box("roof_slab", (4, 4, 0.2), (12, 2, 3.45)), bld)                   # 기둥 위 15 cm 떠 있음
+    bpy.context.view_layer.update()
+
+    rep = sa.audit_scene(floor_z=0.0, ceiling_z=2.30, collection="Room")
+    u = units_by_name(rep)
+    assert set(u) == {"Floor", "armchair_sunk", "wardrobe"}, set(u)                       # 방 컬렉션만 보고
+    assert any(i.startswith("below_floor") for i in u["armchair_sunk"]["issues"])
+    assert any(i.startswith("sunk_into:Floor") for i in u["armchair_sunk"]["issues"]), u["armchair_sunk"]
+    assert "floating_or_wall_mounted" not in u["armchair_sunk"]["issues"]                 # 박힘을 떠 있음으로 오탐하지 않음
+    assert any(i.startswith("above_ceiling") for i in u["wardrobe"]["issues"])
+
+    rep = sa.audit_scene(floor_z=0.0, collection="Building")                             # 건물은 천장 규칙 없이
+    u = units_by_name(rep)
+    assert not any(i.startswith("above_ceiling") for i in u["pillar_A"]["issues"])
+    assert any(i.startswith("sunk_into:building_slab") for i in u["stair_step"]["issues"]), u["stair_step"]
+    assert "floating_or_wall_mounted" not in u["stair_step"]["issues"]
+    assert "floating_or_wall_mounted" in u["roof_slab"]["issues"], u["roof_slab"]
+    assert all(p["a"] in u or p["b"] in u for p in rep["interpenetrations"])
+    print("test_sunk_and_collection_scope OK")
+
+
 def test_placement_fixes():
     reset()
     box("Floor", (10, 10, 0.02), (0, 0, -0.01))
@@ -211,6 +249,7 @@ def test_review_renders():
 if __name__ == "__main__":
     test_audit_detects_problems()
     test_names_rotation_structures()
+    test_sunk_and_collection_scope()
     test_placement_fixes()
     test_review_renders()
     print("ALL TESTS PASSED on Blender", bpy.app.version_string)

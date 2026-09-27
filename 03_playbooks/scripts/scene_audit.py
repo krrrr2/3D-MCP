@@ -4,7 +4,7 @@ scene_audit.py - AI가 만든 Blender 장면의 형태/배치 오류를 자동 �
 검사 항목
   - 오브젝트(부모 기준으로 묶은 "유닛")별 실제 치수(m), 위치, 바닥 높이
   - 떠 있음(floating): 아래에 받쳐주는 면이 없음 (벽걸이/천장 조명이면 정상일 수 있음)
-  - 바닥 아래로 박힘(below_floor)
+  - 바닥 아래로 박힘(below_floor), 다른 물체 속으로 파고듦(sunk_into: 슬래브에 박힌 계단, 바닥에 박힌 다리 등)
   - 서로 관통(interpenetration): 바운딩박스가 겹치고 실제 면끼리 교차
   - 스케일 미적용 / 음수 스케일
   - Non-manifold 엣지, 재질 없음, UV 없음
@@ -183,8 +183,11 @@ def _is_supported(unit, others, floor_z, tol):
 
 
 def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
-                structure_names=("floor", "ground", "wall", "ceiling", "terrain")):
+                structure_names=("floor", "ground", "wall", "ceiling", "terrain"), collection=None):
     """장면을 점검해서 dict 리포트를 반환한다.
+
+    collection: 컬렉션 이름. 주면 그 컬렉션(하위 컬렉션 포함)에 든 유닛만 보고하고, ceiling_z 도 그 유닛에만 적용한다.
+        (방 내부와 건물 외관처럼 천장 높이가 다른 것을 한 장면에서 따로 검사할 때. 받침면·관통 상대는 장면 전체를 쓴다)
 
     floor_z: 바닥 높이(m). None 이면 바닥 판정은 레이캐스트 결과만 사용.
     ceiling_z: 천장 높이(m). 주면 이보다 위로 나간 유닛을 above_ceiling 으로 표시 (예: 한국 구축 아파트 2.3).
@@ -217,11 +220,42 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
             "bvh": BVHTree.FromPolygons(verts, polys),  # 월드 좌표 BVH (받침/관통 판정용)
         })
 
+    if collection is not None:
+        col = bpy.data.collections[collection]
+        scoped = {o.name for o in col.all_objects}
+        in_scope = lambda u: u["root"].name in scoped or any(m.name in scoped for m in u["meshes"])
+    else:
+        in_scope = lambda u: True
+
     report = {"units": [], "interpenetrations": [], "summary": {}}
     ignored = lambda name: _is_structure(name, structure_names)
 
-    # 2) 유닛별 검사
-    for u in units:
+    # 2) 관통 검사 (먼저 계산해서 '박힘' 판정에도 씀): 바운딩박스가 tol 이상 겹치는 쌍만 정밀 검사
+    partners = {i: [] for i in range(len(units))}
+    for i in range(len(units)):
+        for j in range(i + 1, len(units)):
+            a, b = units[i], units[j]
+            if ignored(a["root"].name) and ignored(b["root"].name):
+                continue  # 구조물끼리(벽–바닥 등)는 검사하지 않음
+            depth = _bbox_overlap_depth(a["bbox"], b["bbox"])
+            if depth <= tol:
+                continue
+            pairs = a["bvh"].overlap(b["bvh"])
+            if not pairs:
+                continue
+            partners[i].append(j)
+            partners[j].append(i)
+            if in_scope(a) or in_scope(b):
+                report["interpenetrations"].append({
+                    "a": a["root"].name, "b": b["root"].name,
+                    "intersecting_face_pairs": len(pairs),
+                    "bbox_overlap_depth_m": round(depth, 4),
+                })
+
+    # 3) 유닛별 검사
+    for idx, u in enumerate(units):
+        if not in_scope(u):
+            continue
         root, (bmin, bmax) = u["root"], u["bbox"]
         dims = bmax - bmin
         issues = []
@@ -239,16 +273,25 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
             if not m.data.uv_layers:
                 issues.append(f"no_uv:{m.name}")
 
+        support = None
         if not ignored(root.name):
             if ceiling_z is not None and bmax.z > ceiling_z + tol:
                 issues.append(f"above_ceiling:{round(bmax.z - ceiling_z, 4)}m")
-            if floor_z is not None and bmin.z < floor_z - tol:
+            below = floor_z is not None and bmin.z < floor_z - tol
+            if below:
                 issues.append(f"below_floor:{round(floor_z - bmin.z, 4)}m")
             supported, support = _is_supported(u, [o for o in units if o is not u], floor_z, tol)
             if not supported:
-                issues.append("floating_or_wall_mounted")
-        else:
-            support = None
+                # 받침면보다 아래로 파고든 경우: '떠 있음'이 아니라 '박힘'으로 보고
+                # 관통 상대의 윗면이 내 바닥보다 위, 내 꼭대기 이하에 있으면 그 위에 '박혀' 있는 것
+                sunk = [units[j] for j in partners[idx]
+                        if bmin.z + tol < units[j]["bbox"][1].z <= bmax.z]
+                if sunk:
+                    o = max(sunk, key=lambda o: o["bbox"][1].z)
+                    issues.append(f"sunk_into:{o['root'].name}={round(min(o['bbox'][1].z, bmax.z) - bmin.z, 4)}m")
+                    support = o["root"].name
+                elif not below:
+                    issues.append("floating_or_wall_mounted")
 
         w, d, h = _oriented_size(root, u["verts"])
         key, rule = _size_rule_for(root.name, size_rules) if not ignored(root.name) else (None, None)
@@ -271,23 +314,6 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
             "issues": issues,
         })
 
-    # 3) 관통 검사: 바운딩박스가 tol 이상 겹치는 쌍만 정밀 검사
-    for i in range(len(units)):
-        for j in range(i + 1, len(units)):
-            a, b = units[i], units[j]
-            if ignored(a["root"].name) and ignored(b["root"].name):
-                continue  # 구조물끼리(벽–바닥 등)는 검사하지 않음
-            depth = _bbox_overlap_depth(a["bbox"], b["bbox"])
-            if depth <= tol:
-                continue
-            pairs = a["bvh"].overlap(b["bvh"])
-            if pairs:
-                report["interpenetrations"].append({
-                    "a": a["root"].name, "b": b["root"].name,
-                    "intersecting_face_pairs": len(pairs),
-                    "bbox_overlap_depth_m": round(depth, 4),
-                })
-
     n_issue_units = sum(1 for u in report["units"] if u["issues"])
     report["summary"] = {
         "units": len(report["units"]),
@@ -295,6 +321,7 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
         "interpenetrating_pairs": len(report["interpenetrations"]),
         "floor_z": floor_z,
         "ceiling_z": ceiling_z,
+        "collection": collection,
         "tolerance_m": tol,
     }
     return report
@@ -302,17 +329,19 @@ def audit_scene(floor_z=None, tol=0.005, size_rules=None, ceiling_z=None,
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    floor_z, ceiling_z, out, tol = None, None, None, 0.005
+    floor_z, ceiling_z, collection, out, tol = None, None, None, None, 0.005
     for k, v in zip(argv[::2], argv[1::2]):
         if k == "--floor-z":
             floor_z = float(v)
         elif k == "--ceiling-z":
             ceiling_z = float(v)
+        elif k == "--collection":
+            collection = v
         elif k == "--out":
             out = v
         elif k == "--tol":
             tol = float(v)
-    report = audit_scene(floor_z=floor_z, ceiling_z=ceiling_z, tol=tol)
+    report = audit_scene(floor_z=floor_z, ceiling_z=ceiling_z, tol=tol, collection=collection)
     text = json.dumps(report, ensure_ascii=False, indent=2)
     if out:
         with open(out, "w", encoding="utf-8") as f:
