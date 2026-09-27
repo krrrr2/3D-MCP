@@ -10,7 +10,8 @@ AI가 만든 장면에서 가장 자주 나오는 **형태·배치 오류**(떠 
 | `scene_audit.py` | 장면 전체 점검 → JSON 리포트 (떠 있음·바닥 아래로 박힘·다른 물체 속으로 파고듦(`sunk_into`)·천장 위로 뚫림·유닛 간 관통·가구–벽/천장 관통·스케일 미적용·음수 스케일·non-manifold·재질/UV 없음·이름 기준 치수 범위 이탈) |
 | `placement_utils.py` | 배치 함수: 바닥 붙이기, 아래 표면에 올리기(책상 위 소품), 옆에 붙이기, 벽에 붙이기, 특정 지점 바라보기, 평면 간격 측정·규칙 검사 |
 | `review_views.py` | AI 자기비평용 4방향 검토 렌더 (위 정사영 / 정면 / 측면 / 3/4 원근). 오브젝트마다 다른 색으로 칠해 겹침·간격이 잘 보이게 함 |
-| `tests/test_scripts.py` | 자동 테스트 |
+| `building_audit.py` | **건축 상식 검사** — "사람이 설계한 건물처럼 말이 되는가". 문(벽에 안 뚫림·뜸·열면 벽·허공/낭떠러지·막힘), 창(어정쩡한 창턱·높이 제각각·실내 창·창 앞 벽·가구가 가림), 방(밀폐·갈 수 없음·창 없는 생활 공간·복도처럼 길쭉함·천장 이상·빈 방·똑같은 빈 방 반복), 벽(천장까지 안 닿음·모서리 틈), 계단(단 높이 불균일·어디로도 안 감), 벽을 보고 앉는 소파 + **백룸 위험도** |
+| `tests/test_scripts.py`, `tests/test_building_audit.py` | 자동 테스트 |
 
 **검증**: Blender **4.2.23 LTS**와 **5.0.1**(pip `bpy` 모듈, 헤드리스)에서 모든 테스트 통과. 5.x에서 폐기 예정인 `use_nodes` 경고가 나지 않게 했고, 한국어 UI에서 노드 이름이 번역되어도 동작하도록 노드를 이름이 아니라 타입으로 찾습니다.
 
@@ -64,6 +65,31 @@ paths = render_review_views("review/", engine="CYCLES", samples=16, res=768)
 - GPU가 없는 서버에서는 `engine="CYCLES"`(CPU)만 동작합니다. EEVEE·Workbench는 GPU/EGL이 필요합니다.
 - 출력 폴더는 `"//review/"`처럼 .blend 파일 기준 상대 경로로 줘도 됩니다(내부에서 `bpy.path.abspath`로 변환).
 - Blender GUI(MCP 연결)에서는 `engine="BLENDER_WORKBENCH"`가 가장 빠릅니다(오브젝트별 랜덤 색 + 외곽선).
+
+## 건축 상식 검사 — `building_audit.py`
+
+`scene_audit.py`가 물리 오류(떠 있음·관통·치수)를 잡는다면, 이 스크립트는 **백룸(Backrooms)처럼 기묘한 결과**를 만드는 건축적 비상식을 잡습니다. 특정 국가 법규가 아니라 넓게 잡은 "상식 범위"입니다(임계값은 `LIMITS`에서 조정).
+
+```python
+import sys; sys.path.append(r"...\3D-MCP\03_playbooks\scripts")
+import building_audit
+rep = building_audit.audit_building(collection="House")     # collection 생략 시 장면 전체
+print(rep["summary"])            # errors, warnings, liminal_risk(low/medium/high), liminal_reasons
+for i in rep["issues"]:
+    print(i["severity"], i["code"], i["object"], i["detail"])
+```
+
+**이름 규칙**(에이전트에게 이렇게 짓게 하세요. `obj["role"]`, `obj["room_type"]` 커스텀 프로퍼티가 있으면 우선)
+- 방 바닥 `Floor_<방종류>[_번호]`(예: `Floor_living`, `Floor_bedroom_2`, `Floor_hall`, `Floor_bathroom`) — 방 종류로 창 필요 여부·복도 여부를 판단합니다.
+- 외부 지면 `Ground`, 벽 `Wall_...`, 천장 `Ceiling...`, 지붕 `..._roof`, 문 `Door_...`/`..._door`, 창 `Window_...`/`..._window`
+- 계단은 이름에 `stair(s)`가 들어간 부모 아래 단을 자식 메시로(`stairs_main_step_0` …)
+- 문·창 구멍은 벽에 **Boolean으로 실제로 뚫어야** 합니다(커터는 숨기면 검사에서 빠짐).
+
+**검사 근거**: 문 앞 비움 구역 = 문 폭 × 문 폭(NVlabs SAGE 배치 솔버), 문은 방과 방·외부를 잇고 창은 외벽에(Holodeck·Infinigen Indoors), 모든 방에 동선으로 갈 수 있어야 함(SceneSmith Reachability). 나머지 범위(창턱 0.03~0.25 m는 어정쩡함, 천장 2.1~4.5 m, 2×단높이+단너비 0.55~0.70 m 등)는 상식 기준입니다.
+
+**테스트**: 거실·침실·욕실·복도·정원 계단이 있는 정상적인 집은 오류·경고 0건, 일부러 이상하게 만든 집(구멍 안 뚫린 현관, 30 cm 뜬 문, 열면 벽인 문, 3 m 낭떠러지 문, 창턱 10 cm 창, 방↔방 실내 창, 가구가 가린 창, 문 없는 방, 12×2 m 빈 방, 똑같은 빈 방 3개, 천장까지 안 닿는 벽, 10 cm 벽 틈, 단 높이 제각각인 계단, 벽을 보고 앉은 소파)은 전부 잡고 백룸 위험도 `high`.
+
+**못 잡는 것**: 곡선·경사 벽의 정밀 판정(로컬 축 기준 상자로 근사), L자 방의 복도 판정(바닥 bbox 기준), 미감(재질·조명·비례의 아름다움). 이건 4방향 렌더 비평과 사람 눈으로 봐야 합니다.
 
 ## 배치 함수 예시
 
