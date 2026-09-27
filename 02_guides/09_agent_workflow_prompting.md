@@ -747,7 +747,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 | ahujasid 서버 ↔ 애드온 소켓 | **180초** | 서버 내부 | 클라이언트 값을 늘려도 이 한도는 남습니다 |
 | ahujasid 애드온 `exec()` | **제한 없음** | — | 무한 루프나 거대한 루프는 Blender 자체를 멈춥니다 |
 | Claude Code 툴 타임아웃 `MCP_TOOL_TIMEOUT` | 설정하지 않으면 약 28시간 | 환경변수, 또는 `.mcp.json` 서버별 `"timeout"`(ms) | [MCP 문서](https://code.claude.com/docs/en/mcp) |
-| Claude Code 유휴 타임아웃 `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT` | **검증 기록마다 다름(5분 / stdio 기준 30분)** | 환경변수 | 진행 알림 없이 오래 걸리는 툴이 끊길 수 있습니다. 긴 작업 전에 공식 문서로 확인하고 명시적으로 설정하세요 |
+| Claude Code 유휴 타임아웃 `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT` | stdio 서버(ahujasid·공식 Blender 서버 기본) **30분**, HTTP·SSE·WebSocket·claude.ai 커넥터 **5분** (공식 문서 기준, 검토 단계에서 원문 확인) | 환경변수 | 진행 알림 없이 오래 걸리는 툴이 끊길 수 있습니다. 긴 렌더는 헤드리스로 분리하세요 |
 | Gemini CLI | 600,000ms(10분) | settings.json `timeout` | |
 | Codex | [AI 모델 가이드](01_ai_models_and_clients.md) 참고 | `~/.codex/config.toml` | 공식 문서를 직접 확인하지 못함 |
 | headless QA 서버 [ellmos](https://github.com/ellmos-ai/ellmos-blender-use-mcp) `blender_run_script` | 최대 600,000ms(10분), 출력 tail 기본 8,000자(최대 50,000자) | — | README에 규모에 비해 과장된 문구가 많습니다(신뢰도 낮음). 채택 전에 동작을 확인하세요 |
@@ -881,7 +881,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 | 누가 | 무엇을·어떻게 | 결과 | 교훈 |
 |---|---|---|---|
 | [RobLe3](https://github.com/RobLe3/cc-blender-skill) (2026-05 전후, Claude Code) | 칼, 병, 의자, 선글라스, 데스크 램프, 아바타. 치수표 → 11단계 → 시각 검증 → IoU/bbox 수치 검증 → [quality-refinement-autoloop](https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/quality-refinement-autoloop/SKILL.md)로 실패 원인을 진단하고 스킬을 패치해 재빌드 | 실패 렌더까지 공개. 미감은 범위 밖이라고 명시 | 스킬 자체를 결과에 맞춰 고치는 루프 |
-| [elithril blender-kiln](https://github.com/elithril/blender-kiln) (2026-08-27) | 텍스트 브리프 → 웹용 GLB 15종. 단계마다 씬 정보·스크린샷, 파괴적 작업은 제안 후 선택 | 1,456.2kB → 132.7kB(91%), MCP·headless 결과 동일 | 대화형으로 만들고 headless로 재현 |
+| [elithril blender-kiln](https://github.com/elithril/blender-kiln) (2026-08-27) | 텍스트 브리프 → 웹용 GLB 15종(주의: 갤러리 15종은 스킬·MCP 실행 결과가 아니라 `blender --background --python` 스크립트 경로 결과라고 README가 밝힘). 단계마다 씬 정보·스크린샷, 파괴적 작업은 제안 후 선택 | 1,456.2kB → 132.7kB(91%), MCP·headless 결과 동일 | 대화형으로 만들고 headless로 재현 |
 | [bsantanna](https://github.com/bsantanna/roblox-flex-with-friends) (2026-07, Claude Code) | Roblox 게임(5개 존, Luau 모듈 100개 이상)을 며칠 만에 개발, Blender MCP로 공간 관계 측정·다각도 검증 | 플레이 가능한 게임 | 코드만으로 3D 공간을 검증할 수 없다 |
 | [MMMvinki](https://github.com/MMMvinki/little-prince-planet-world) (2026-09-10) | 생성 스크립트를 파일로 보관해 행성 8개와 캐릭터·소품 제작, GLB 파싱 테스트로 구면 카메라 252곳 검증 | 모델링 마찰은 줄었지만 검증 인프라가 상당히 필요 | 스크립트를 원본으로 남기면 재현과 테스트가 됨 |
 | [hideki711014](https://github.com/hideki711014/roo-blendermcp-jp-rules) (2026-05, qwen3.5:9b) | 일본어 UI Blender를 로컬 9B 모델로 제어. 관찰된 실패를 규칙에 실패 예시로 넣음 | 시각 검증 5/5, 충돌 회피 2/2 | 현지화 UI는 type 기반 탐색, 작은 모델은 절차 규칙 |

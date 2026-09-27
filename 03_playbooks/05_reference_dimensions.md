@@ -12,7 +12,7 @@
 - **출처끼리 값이 다르면 모두 적었습니다.** 예를 들어 소파–커피테이블 간격은 인테리어 가이드 356~457, SceneSmith 300~500, Infinigen 450~600 mm입니다(8절). 권장 기본값은 여러 출처가 겹치는 구간에서 골랐습니다.
 - **Infinigen 값은 "표준"이 아니라 랜덤 생성 범위입니다.** 의자 좌판 윗면이 약 0.47~0.54 m로 표준(0.43~0.48 m)보다 높습니다. 부품 구조를 참고하는 용도로만 쓰세요.
 - **신뢰도의 한계:** 대부분 웹 검색 요약 두 개 이상으로 교차 확인했고, NKBA PDF·KS 원문·일부 법령 조문은 직접 열람하지 못했습니다. 냉장고, 미국 문·천장고, 암체어·콘솔, 한국 저상 침대·로우 소파는 출처가 없어 "낮음"입니다.
-- **스크립트와 연결됩니다.** 이 표의 범위로 [`scene_audit.py`](scripts/README.md)의 치수 검사를 돌릴 수 있습니다. 기본 규칙은 대체로 맞지만, 이름 부분 일치와 90° 회전 때문에 오탐이 납니다(`counter_stool`, `armchair`, `desk_lamp`, `indoor_plant`, 옆벽에 붙인 소파·문). 11절의 한국 프리셋 `size_rules`를 쓰세요.
+- **스크립트와 연결됩니다.** 이 표의 범위로 [`scene_audit.py`](scripts/README.md)의 치수 검사를 돌릴 수 있습니다. 작성 중 발견한 오탐(이름 부분 일치, 90° 회전, 암체어·스툴 규칙 부재)과 천장 관통 미검사는 스크립트에 반영해 고쳤습니다. 한국 구축 아파트는 11절처럼 `ceiling_z=2.30`과 한국 프리셋을 쓰세요.
 
 ---
 
@@ -30,7 +30,7 @@
 
 | 시스템 | 단위·축 | 크기 표기 | 회전 | 출처 |
 |---|---|---|---|---|
-| 이 저장소 스크립트 | m, Z-up, 원점 = 바닥 접점, 가구 정면 −Y | 월드 bbox [x, y, z] | Z 회전만 | [scripts/README](scripts/README.md) |
+| 이 저장소 스크립트 | m, Z-up, 원점 = 바닥 접점, 가구 정면 −Y | `size_wdh_m` [폭 w, 깊이 d, 높이] (가구 방향 기준) + 월드 bbox | Z 회전만 | [scripts/README](scripts/README.md) |
 | Holodeck 프롬프트 | cm | [length, width, height] | 0/90/180/270° | [prompts.py](https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py), [floor_objects.py](https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/floor_objects.py) |
 | SceneSmith 툴 | m, z = 0 직립 고정 | generate_assets [w, d, h] | yaw °(반시계), local +Y가 'toward' | [furniture_tools.py](https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/furniture_tools.py) |
 | LayoutVLM | m, z-up, 원점 = 방 중심 | bbox | 0° = +X, 반시계, degree | [base_prompt.py](https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py) |
@@ -480,60 +480,52 @@
 
 ## 11. `scene_audit.py` 규칙과의 대응
 
-[`scene_audit.py`](scripts/scene_audit.py)의 `DEFAULT_SIZE_RULES`는 이 문서를 근거로 한 "명백한 오류" 탐지용 넓은 범위입니다. 유닛(최상위 부모)의 **월드 bbox 전체**를 재므로, 의자·스툴의 `z`는 좌판이 아니라 등받이까지 포함한 전체 높이입니다. 이름은 소문자로 바꾸고 공백·하이픈을 `_`로 바꾼 뒤 **부분 문자열**로, 긴 키부터 맞춥니다.
+[`scene_audit.py`](scripts/scene_audit.py)의 `DEFAULT_SIZE_RULES`는 이 문서를 근거로 한 "명백한 오류" 탐지용 넓은 범위입니다. 이 문서 작성 과정에서 나온 오탐 제안(이름 부분 일치, 90° 회전, 암체어·스툴·콘솔·바 테이블 규칙 부재, 천장 관통 미검사)은 **2026-09-27 스크립트에 반영했고 테스트를 통과했습니다**(Blender 4.2.23 LTS·5.0.1).
 
-| 키 | 현재 범위(m) | 이 표의 근거 | 판정 |
-|---|---|---|---|
-| `dining_table` | z 0.68~0.80 | 711~762, KR 720~750 | 적정 |
-| `coffee_table` | z 0.30~0.55 | 406~457, 소파 좌판 − 0~50 | 적정 |
-| `desk` | z 0.68~0.80 | KR 700~740, US 711~762 | 적정. 단 `desk_lamp`, `standing_desk`도 이 규칙에 걸림 |
-| `table` | z 0.35~0.80 | 사이드 500~660, 협탁 610~710, 콘솔 760~910, 바 1016~1067 | `console_table`·`bar_table`이 오탐. `turntable`·`vegetable_*`도 걸림 |
-| `stool` | z 0.40~0.85 | 바 스툴 좌판 711~762 + 등받이 305~508 → 전체 최대 약 1.27 | 등받이 있는 바 스툴 오탐. `counter_stool`은 `counter` 규칙(0.84~0.96)에 걸려 오탐 |
-| `chair` | z 0.70~1.20, x·y 0.35~0.80 | 식탁 의자 전체 813~965, 좌판 폭 400~500 | 식탁 의자는 적정. `armchair`(폭 710~1000, 깊이 760~1000)가 이 규칙에 걸려 오탐 |
-| `sofa` | z 0.60~1.10, y 0.70~1.20, x 1.20~3.50 | 높이 760~915, 깊이 760~1020, 폭 1320~2440 | 값은 적정. 옆벽에 붙여 90° 돌리면 x·y가 바뀌어 오탐 |
-| `bed` | z 0.30~1.40, x 0.85~2.30, y 1.85~2.40 | 매트리스 폭 800~1930, 길이 1900~2134, Infinigen 프레임 폭 최대 2.4 | 거의 적정. EU 싱글 800 매트리스만 있으면 x 하한 경계. 회전 문제 같음. `bedside_lamp`도 걸림 |
-| `door` | z 1.95~2.50, x 0.60~1.20 | KR 문틀 2000~2100(욕실·창고 1800~), DIN 문짝 610~1110 | 동·서쪽 벽의 문은 x가 두께(35~110)라 오탐. `indoor_plant`·`outdoor_lamp`·`door_handle`이 이 규칙에 걸림. 창고문 1800 오탐 |
-| `counter` | z 0.84~0.96 | KR 850~900, US 914, Archimesh 약 880 | 적정. `bar_counter`(1016~1067)와 `counter_stool` 오탐 |
-| `bookshelf` | z 0.70~2.40, y 0.20~0.45 | BILLY 280(유리문 300), 1060/2020/2370 | 적정. `bookcase`라는 이름은 규칙이 없음. KR 구축 천장 2300보다 높은 2370도 통과 |
+- **치수 측정**: 유닛(최상위 부모) 전체를 **가구 자체 방향 기준**으로 잽니다. `w` = 수평 긴 변, `d` = 수평 짧은 변, `z` = 높이. 옆벽에 붙인 소파·침대·문도, 30°처럼 비스듬히 놓은 가구도 오탐하지 않습니다. 의자·스툴의 `z`는 좌판이 아니라 등받이까지 포함한 전체 높이입니다.
+- **이름 매칭**: CamelCase·구분자를 단어로 나눈 뒤 **단어 단위로** 맞춥니다(`DiningTable` → `dining_table` 규칙). `turntable`·`indoor_plant`는 매칭되지 않고, `door_handle`·`table_lamp`·`desk_lamp`처럼 부속품 단어가 뒤에 붙으면 규칙을 적용하지 않습니다.
+- **구조물·천장**: 이름의 마지막 핵심 단어가 `floor`·`wall`·`ceiling`이면 구조물입니다. 가구가 벽·천장을 뚫으면 관통으로 잡고, `ceiling_z`를 주면 천장 위로 나간 유닛을 `above_ceiling`으로 표시합니다.
 
-`CoffeeTable`, `DiningTable`처럼 CamelCase로 쓰면 `_`가 없어 `coffee_table` 대신 일반 `table` 규칙만 적용됩니다. 에이전트에게 **snake_case 영어 이름**을 쓰게 하세요([templates/CLAUDE.md](templates/CLAUDE.md)).
+| 키 | 기본 범위(m) | 이 표의 근거 |
+|---|---|---|
+| `dining_table` | z 0.68~0.80 | 711~762, KR 720~750 |
+| `coffee_table` | z 0.30~0.55 | 406~457, 소파 좌판 − 0~50 |
+| `console_table` | z 0.70~0.95 | 760~910 (낮음) |
+| `bar_table` | z 0.95~1.12 | 1016~1067 |
+| `bedside_table`, `nightstand` | z 0.40~0.80 | 610~710, 매트리스 윗면 ±50, KR 저상형 |
+| `desk` | z 0.68~0.80 | KR 700~740, US 711~762 |
+| `table` | z 0.35~0.80 | 사이드 500~660 등 |
+| `bar_stool` | z 0.68~1.30 | 좌판 711~762 + 등받이 최대 508 |
+| `counter_stool` | z 0.50~1.20 | 좌판 550~660 (+등받이) |
+| `stool` | z 0.40~0.85 | — |
+| `armchair` | z 0.60~1.10, w·d 0.60~1.10 | 폭 710~1000, 깊이 760~1000 |
+| `chair` | z 0.70~1.20, w·d 0.35~0.80 | 식탁 의자 전체 813~965, 좌판 폭 400~500 |
+| `sofa` | z 0.60~1.10, w 1.20~3.50, d 0.70~1.20 | 높이 760~915, 폭 1320~2440, 깊이 760~1020 |
+| `bed` | z 0.30~1.40, w 1.85~2.45, d 0.80~2.30 | 매트리스 길이 1900~2134, 폭 800(EU 싱글)~1930 |
+| `wardrobe` | z 1.60~2.45, d 0.33~0.70 | PAX 깊이 350/580, 높이 2010/2360 |
+| `bookshelf`, `bookcase` | z 0.70~2.40, d 0.20~0.45 | BILLY 280(유리문 300), 1060/2020/2370 |
+| `door` | z 1.80~2.50, w 0.60~1.20 | KR 문틀 2000~2100, 욕실·창고 1800~ |
+| `double_door` | z 1.95~2.50 | — |
+| `bar_counter` | z 0.98~1.10 | 1016~1067 |
+| `counter` | z 0.84~0.96 | KR 850~900, US 914 |
 
-**한국 프리셋 (파일을 고치지 않고 `size_rules`로 넘기기)**
-
-회전 오탐을 피하려고 높이(z)만 검사합니다. 값이 빈 규칙(`{}`)은 "검사 안 함"으로 동작하므로, 긴 키로 오탐 이름을 먼저 가로챕니다. 아래 이름 매칭 결과는 `_size_rule_for()`만 떼어 Python으로 확인했습니다(Blender에서 장면 전체를 돌린 테스트는 아님).
+**한국 구축 아파트 점검 예 (파일을 고치지 않고 `size_rules`·`ceiling_z`로 넘기기)**
 
 ```python
+from scene_audit import audit_scene, DEFAULT_SIZE_RULES
 KR_SIZE_RULES = {
-    # 오탐 방지용 예외(빈 규칙 = 검사 안 함). 같은 길이 키끼리는 먼저 적은 쪽이 우선이므로 맨 앞에 둡니다.
-    "indoor": {}, "outdoor": {}, "door_handle": {}, "_lamp": {},
+    **DEFAULT_SIZE_RULES,
     "dining_table": {"z": [0.70, 0.78]},    # KR 720~750
-    "coffee_table": {"z": [0.30, 0.55]},    # 406~457
-    "console_table": {"z": [0.70, 0.95]},   # 760~910 (낮음)
-    "bedside_table": {"z": [0.40, 0.80]},   # 610~710, 매트리스 윗면 ±50, KR 저상형 고려
-    "nightstand": {"z": [0.40, 0.80]},
-    "bar_table": {"z": [0.95, 1.12]},       # 1016~1067
     "desk": {"z": [0.68, 0.78]},            # KR 700~740
-    "table": {"z": [0.35, 0.80]},
-    "counter_stool": {"z": [0.50, 1.20]},   # 좌판 550~660 (+등받이 최대 508)
-    "bar_stool": {"z": [0.68, 1.30]},       # 좌판 711~762 (+등받이)
-    "stool": {"z": [0.40, 0.85]},
-    "armchair": {"z": [0.60, 1.10]},        # 소파 높이 기준 (낮음)
-    "chair": {"z": [0.70, 1.20]},           # 전체 높이 813~965
-    "sofa": {"z": [0.60, 1.10]},            # 760~915
-    "bed": {"z": [0.30, 1.40]},             # 헤드보드 포함
-    "wardrobe": {"z": [1.60, 2.30]},        # 구축 천장 2300 (신축이면 2.45)
-    "bookshelf": {"z": [0.70, 2.30]},
-    "bookcase": {"z": [0.70, 2.30]},
-    "bar_counter": {"z": [0.98, 1.10]},
     "counter": {"z": [0.84, 0.92]},         # KR 850 (신규 900)
-    "double_door": {"z": [1.95, 2.20]},
-    "door": {"z": [1.80, 2.20]},            # KR 문틀 2000~2100, 욕실·창고 1800~
+    "door": {"z": [1.80, 2.20], "w": [0.60, 1.10]},  # KR 문틀 2000~2100, 욕실·창고 1800~
+    "wardrobe": {"z": [1.60, 2.30], "d": [0.33, 0.70]},
 }
-report = scene_audit.audit_scene(floor_z=0.0, size_rules=KR_SIZE_RULES)
+report = audit_scene(floor_z=0.0, ceiling_z=2.30, size_rules=KR_SIZE_RULES)  # 신축이면 ceiling_z=2.40~2.50
 ```
 
-- 폭·깊이 검사가 필요하면 가구를 0°/180°로 놓은 상태에서만 x·y 규칙을 추가하세요.
-- `scene_audit.py`는 `floor`, `wall`, `ceiling` 이름이 붙은 유닛을 관통 검사에서 뺍니다. 그래서 **가구가 천장이나 벽을 뚫어도 잡지 못합니다.** 한국 구축 장면에서는 위 프리셋처럼 키 큰 수납의 z 상한을 2.30으로 두는 것이 간단한 대용입니다.
+- 에이전트에게 **영어 snake_case 이름에 종류 단어를 넣게** 하세요(`sofa_3seat`, `bedside_table_L`). 한국어 이름은 인식하지 않습니다([templates/CLAUDE.md](templates/CLAUDE.md)).
+- 가구 이름을 `..._wall`로 끝내면 구조물로 분류되니 피하세요(`wall_shelf`는 가구로 인식).
 
 ---
 
@@ -546,13 +538,13 @@ report = scene_audit.audit_scene(floor_z=0.0, size_rules=KR_SIZE_RULES)
 | 문짝 치수로 벽을 뚫음 | 문틀이 벽에 파묻히거나 틈이 생김 | 벽은 개구부(문틀 외곽)로, 문짝은 약 60 mm 작게 |
 | 층고를 직통 계단으로 | 공동주택 기준 위반, 비현실적 | 높이 2 m 이내마다 계단참(8단 + 참 + 8단) |
 | 한국 장면에 미국식 천장고를 기본값으로 | 문·상부장·펜던트 비율이 어긋남 | 구축 2300 / 신축 2400~2500 중 하나를 명시 |
-| PAX 2360을 구축 아파트에 | 천장 관통(`scene_audit`은 천장 관통을 못 잡음) | 2010 모델, 또는 z 상한 2.30 규칙 |
+| PAX 2360을 구축 아파트에 | 천장 관통 | 2010 모델이나 맞춤장. `audit_scene(ceiling_z=2.30)`으로 검출 |
 | Infinigen 샘플 범위를 표준으로 씀 | 좌판 윗면 470~540 → 식탁과 무릎 간격 부족 | 표준 430~480, 관계식으로 검증 |
 | 좌판 높이와 전체 높이를 혼동 | `chair` 규칙의 z는 등받이까지 포함 | 좌판은 부품(`chair_seat`) 윗면으로 따로 잼 |
 | 큐브 크기 계산 실수 | `primitive_cube_add`의 size와 scale을 섞어 쓰면 치수가 절반·두 배로 틀어짐 | size·scale 규칙을 하나로 고정하고 만든 뒤 bbox로 확인([ProfRino Assembly Skill](https://github.com/ProfRino/Blender-MCP-Assembly-Skill)은 size=2 규칙을 둠) |
 | mm·cm·m 혼동 | 100배·1000배 크기 오류 | Holodeck cm, CAD mm, Blender m. 단위를 매번 명시하고 가져온 뒤 스케일 Apply |
 | 모든 가구를 평균값으로 | CG처럼 보임 | 범위 안에서 조금씩 다르게 |
-| 90° 돌린 가구를 x·y 규칙으로 검사 | 옆벽 소파·침대·문 오탐 | z만 검사하거나, 수평 최대·최소 치수로 비교 |
+| 월드 x·y 치수로 가구 크기를 판단 | 옆벽에 붙인 소파·침대·문의 폭·깊이가 바뀌어 보임 | 가구 방향 기준 폭·깊이로 비교(`scene_audit`의 `size_wdh_m`이 이렇게 잼) |
 | NKBA "통행 없으면 915" 인용 | 필요 이상으로 넓은 여유 | 813(통행 없음) / 914(비켜 지나감) / 1118(걸어서 지나감) |
 | TV 거리 기준을 섞음 | 너무 멀거나 가까움 | 시야각 기준과 유통 가이드 기준 중 하나로 통일 |
 

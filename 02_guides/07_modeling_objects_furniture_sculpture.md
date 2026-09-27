@@ -285,7 +285,7 @@ print(scene_audit.audit_scene(floor_z=0.0)["summary"])
 ```
 
 - 확인한 결과는 다음과 같습니다. 위 스펙으로는 `[]`가 나옵니다. 좌판 윗면은 0.45로 범위 안이고, scene_audit에서는 유닛 1개(0.44×0.42×0.84 m)가 바닥에 지지된 것으로 나오며 issue는 `no_material`뿐입니다. 등받이 가로대를 앞으로 4 cm 옮기면 `['GAP chair_back_post_L-chair_back_rail 12.5mm', 'GAP chair_back_post_R-chair_back_rail 12.5mm', 'DETACHED chair_back_rail']`가 나옵니다. 좌판을 20 mm 내리면 다리 4개가 `TOO_DEEP ... 20.0mm`로 잡힙니다. 연결 맵에 없는 쌍이 겹치면(예: 쿠션이 등받이 기둥을 뚫음) `UNPLANNED_PENETRATION`이 나옵니다.
-- `BLENDER_MCP_SAFE_MODE=1`은 파일 I/O를 막으므로 `json.load`와 import가 차단될 수 있습니다. 그 경우 코드 A와 SPEC dict를 그대로 붙여 넣으세요. blend-ai는 샌드박스가 `os`, `sys`, `pathlib`, `open`, `eval` 등 25개 import와 builtin을 막으므로 파일 import 방식은 동작하지 않습니다. 붙여 넣기 방식이 그 샌드박스에서 동작하는지는 (미확인)입니다.
+- `BLENDER_MCP_SAFE_MODE=1`은 `open()`·`os` 같은 **직접** 파일 I/O를 막으므로 `json.load(open(...))`가 차단되고, `sys.path` 추가 후 import가 되는지는 (미확인)입니다(bpy를 통한 저장·렌더·import/export는 허용). 그 경우 코드 A와 SPEC dict를 그대로 붙여 넣으세요. blend-ai는 샌드박스가 `os`, `sys`, `pathlib`, `open`, `eval` 등 25개 import와 builtin을 막으므로 파일 import 방식은 동작하지 않습니다. 붙여 넣기 방식이 그 샌드박스에서 동작하는지는 (미확인)입니다.
 - 원자료의 다른 검사 로직도 재사용할 수 있습니다. [3D Print Toolbox](https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/mesh_helpers.py)의 기본값은 thickness_min 0.001, threshold_zero 0.0001, 왜곡 45°, 날카로움 160°, 오버행 45°입니다. 가구에서는 **thickness_min을 0.005~0.01로 올리면** 종이처럼 얇은 판을 잡을 수 있습니다. 두께 검사는 노멀이 올바르다는 전제가 필요합니다. [blender-image-to-3d validate.py](https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py)는 음수 스케일·tri budget·UV 누락을 **FAIL**로, 미적용 scale/rotation(1e-4 초과)은 **WARN**으로 처리합니다. 원자료 요약은 "미적용 스케일도 실패"라고 적었지만 검증에서 WARN으로 정정됐습니다.
 
 ### 2.5 렌더 검사: 눈은 숫자 다음

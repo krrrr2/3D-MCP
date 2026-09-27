@@ -335,7 +335,7 @@ safe mode에서 이 `sys.path` import가 막히면 `scene_audit.py` 파일 내�
 | 약 180초에서 명령이 끊김 | 서버 소켓 타임아웃 180초(server.py) | 코드를 5~20줄로 나누기. 렌더·베이크는 해상도·샘플을 낮추거나 경로 C로 |
 | Poly Haven 다운로드 중 Blender 멈춤 | 다운로드가 메인 스레드에서 돎 | 1k·2k로 요청 |
 | 씬이 큰데 AI가 오브젝트를 일부만 앎 | `get_scene_info`는 오브젝트를 **10개까지만** 반환하고 치수도 없음 | 압축 씬 요약 코드를 실행하게 하거나 `scene_audit.audit_scene()` 사용 |
-| Tripo 생성 실패 | Premium 전용 | [tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp) 등 대안 |
+| Tripo 생성 실패 | Premium 전용 | Premium 구독, 또는 [Tripo SDK](https://pypi.org/project/tripo3d/)·ComfyUI 노드(공식 tripo-mcp는 2025-04-14 이후 방치, 비권장) |
 | `KeyError: 'Principled BSDF'` | 한국어 등 현지화 UI에서 노드 이름이 번역됨 | `next(n for n in mat.node_tree.nodes if n.type == 'BSDF_PRINCIPLED')` |
 | `'BLENDER_EEVEE_NEXT'` 관련 오류 | 5.x에서 식별자가 `'BLENDER_EEVEE'`로 바뀜(4.2~4.x는 `_NEXT`) | `'BLENDER_EEVEE' if bpy.app.version >= (5, 0, 0) else 'BLENDER_EEVEE_NEXT'` |
 | `mat.use_nodes` DeprecationWarning | 5.0에서 폐기 예고(6.0에서 제거 예정) | `if bpy.app.version < (5, 0, 0): mat.use_nodes = True` |

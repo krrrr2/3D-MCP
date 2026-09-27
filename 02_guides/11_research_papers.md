@@ -207,7 +207,7 @@ BlenderGym 재질 과제에서 GPT-4o의 광도 손실은 3.653으로 사람(0.6
 |---|---|---|
 | 도구 없이 4뷰 → CAD 코드 | Gemini 3.1 Pro | BenchCAD 공식 0.289. 최신 세대 미등재 |
 | 3D 대상 → Blender 코드 복원 | Opus 5 | 3DHarnessBench. Opus 5.5·Fable 5.1 미평가 |
-| 코드 CAD 생성·편집 + MCP | Opus 5 | CADGenBench 0.677. 제3자 단일, Astra 미포함 |
+| 코드 CAD 생성·편집 + MCP | Opus 5 | CADGenBench 0.677. build123d-mcp 도구 저자의 자체 평가(여러 제출 중 최고값), Astra 미포함 |
 | 도구 사용 CAD 재구성 | Astra | 95.9%(벤더 자체 보고, 미확인) |
 | Three.js/WebGL 3D 장면 코드 | Astra | Design Arena 3D (신뢰도 낮음) |
 | Blender 절차적 모델링 코드 | GPT-5.5(2026-06 세대 기준) | 3DCodeArena Elo(arXiv 요약 기준) |

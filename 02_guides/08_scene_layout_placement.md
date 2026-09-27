@@ -558,7 +558,7 @@ AND 주동선 ≥ 0.9 m AND 비평 6개 항목 ≥ 9 (또는 3라운드 도달).
   bpy.ops.wm.save_as_mainfile(filepath=os.path.join(d, '02_furniture.blend'), copy=True)
   ```
 
-  MCP 서버의 safe mode가 파일 I/O를 막으면 폴더를 미리 만들어 두세요.
+  ahujasid 서버의 safe mode(`BLENDER_MCP_SAFE_MODE=1`)는 `os.makedirs` 같은 직접 파일 I/O를 막으므로(bpy 렌더·저장은 허용) 폴더를 미리 만들어 두거나 헤드리스로 실행하세요.
 - ahujasid 애드온은 `undo_push`를 호출하지 않고, Claude Code의 `/rewind`는 Blender 상태를 되돌리지 못합니다. 롤백은 저장해 둔 파일로만 믿을 수 있습니다([Blender MCP 가이드 9.6절](02_blender_mcp.md)).
 - 롤백 기준은 4.9절 표(한 항목 −2점 또는 총점 −1점)를 씁니다. 되돌린 뒤에는 같은 수정을 반복하지 않게 "이전 시도와 실패 이유"를 프롬프트에 남기세요.
 

@@ -124,7 +124,7 @@ ahujasid 서버는 FastMCP `instructions`와 prompt로 모델에게 다음 규�
 | Poly Pizza | 가능(`BLENDERMCP_POLYPIZZA_*`, 정확한 이름은 README) | — | CC-BY 표기 |
 | Hyper3D Rodin | 가능(`BLENDERMCP_HYPER3D_*`) | 가능 | 체험 키 일일 한도 |
 | Hunyuan3D | Tencent Cloud 키(SECRET_ID·SECRET_KEY) 또는 로컬 API URL | 가능 | **[한국 주의]** 아래 참고 |
-| Tripo | **불가** | 전용 | 대안: Tripo 공식 [tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp)(MIT, alpha) |
+| Tripo | **불가** | 전용 | 대안: [Tripo Python SDK](https://pypi.org/project/tripo3d/)나 ComfyUI 노드. 공식 [tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp)는 마지막 커밋 2025-04-14로 사실상 방치(비권장) |
 
 - Premium은 2026-09-25 커밋('feat: integrate premium')으로 추가됐습니다. 기기 3대 활성화, 월 쿼터, Pro 플랜의 고품질 모델 제한이 있고, **가격은 확인하지 못했습니다**([Premium 페이지](https://www.mcp-for-blender.com/premium)).
 - **[한국 주의] Hunyuan3D 라이선스**: Tencent Hunyuan3D 계열 오픈웨이트 라이선스([Hunyuan3D-2 LICENSE](https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE))의 적용 지역은 "worldwide, excluding the European Union, United Kingdom and South Korea"이고, 출력물 사용도 제한합니다. 따라서 **한국에서 로컬 가중치로 돌리는 것(ahujasid 로컬 API URL 모드, RFingAdam 로컬 백엔드, Hunyuan3D-2 공식 Blender 애드온 등)은 라이선스 범위 밖입니다.** Tencent Cloud API 경유 사용은 별도 약관을 따르는데, 그 원문은 확인하지 못했습니다. 자세한 내용은 [에셋·라이선스 가이드](10_assets_pipeline_licensing.md)를 보세요.
@@ -277,7 +277,7 @@ stars와 날짜는 조사 시점(2026-09-26~27) 기준입니다. 규모가 작�
 | 도구 | 역할 | 비고 |
 |---|---|---|
 | [Meshy MCP](https://github.com/meshy-dev/meshy-mcp-server) (`@meshy-ai/meshy-mcp-server`, MIT) | text/image-to-3D, retexture, auto-rig, 3D 프린트 분석 | 유료 크레딧. Meshy Bridge 애드온 포트(5324)는 미확인. 생성 tool이 없는 공식 서버와 조합하기 좋음 |
-| [Tripo 공식 tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp) (MIT, 약 206 stars, alpha) | Tripo 생성 + Tripo Blender 애드온 연동 | ahujasid에서 Tripo가 Premium 전용이 되어 대안이 됨 |
+| [Tripo 공식 tripo-mcp](https://github.com/VAST-AI-Research/tripo-mcp) (MIT, 약 206 stars, alpha) | Tripo 생성 + Tripo Blender 애드온 연동 | **비권장**: 마지막 커밋 2025-04-14로 사실상 방치(교차검증). Tripo가 필요하면 [SDK](https://pypi.org/project/tripo3d/) 경로를 쓰세요 |
 | [Hunyuan3D-2 공식 Blender 애드온](https://github.com/Tencent-Hunyuan/Hunyuan3D-2) (약 15k stars) | 로컬 API 서버로 Blender 안에서 생성 | **[한국 주의]** 라이선스 지역 제외 |
 | [Context7](https://github.com/upstash/context7) | 라이브러리 문서를 버전별로 주입 | Blender 문서가 등록돼 있는지는 미확인. Blender 전용 조회 tool이 더 직접적 |
 | [fake-bpy-module](https://github.com/nutti/fake-bpy-module) | 2.78~5.2 bpy 스텁(`pip install fake-bpy-module-5.1`) | 오프라인으로 버전별 API 존재 여부 확인(11.3절) |
@@ -703,7 +703,7 @@ and use exact socket names returned. Never guess enum identifiers.
 | `pip install mcp-blender` 후 이상한 코드가 설치됨 | PyPI 이름이 다른 패키지 | RFingAdam은 소스로 설치(5.1절) |
 | 헤드리스 리눅스에서 EEVEE 렌더 실패 | GPU·EGL 컨텍스트 없음 | Cycles(CPU) 사용 |
 | 스크린샷 루프가 길어지자 `invalid_request_error` | 이미지 20개 초과 시 치수 제한 강화 | 각 변 2000px 이하, 캡처는 800~1000px(9.4절) |
-| Tripo 생성이 안 됨 | ahujasid에서 Premium 전용 | Tripo 공식 tripo-mcp나 다른 생성기 |
+| Tripo 생성이 안 됨 | ahujasid에서 Premium 전용 | Premium 구독, [Tripo SDK](https://pypi.org/project/tripo3d/)·ComfyUI 노드, 또는 다른 생성기(tripo-mcp는 방치 상태라 비권장) |
 | 로컬 Hunyuan3D를 한국에서 사용 | 라이선스 지역 제외 | 다른 생성기를 쓰거나 Tencent Cloud 약관을 별도 검토 |
 | Windows에서 명령이 약 4분 동안 무반응 | 미해결 이슈 #339/#357 | 재시작, 최신 버전, 헤드리스 우회 |
 

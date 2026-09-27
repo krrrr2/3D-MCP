@@ -91,9 +91,9 @@
 | 용도 | 1순위 | 대안 | 반드시 알아 둘 것 |
 |---|---|---|---|
 | Blender 실시간 조작 | 커뮤니티 표준 [MCP for Blender](https://github.com/ahujasid/blender-mcp)(PyPI `mcp-for-blender` [2.1.0](https://pypi.org/project/mcp-for-blender/), 2026-09-25, MIT, 36개 tool) 또는 Claude 공식 [Blender 커넥터](https://claude.com/connectors/blender)(Blender Lab 제작, v1.0.1, 애드온 최소 Blender 5.1.0, GPL-3.0-or-later) | [newo-ether 포크](https://github.com/newo-ether/blender-mcp)(노드 그래프를 패치 방식으로 편집), blend-ai(186 tools, 임의 코드 차단, AGPL) | **공식·커뮤니티 둘 다 `localhost:9876`** 이라 동시에 켜면 충돌합니다. 커뮤니티 서버의 Tripo 생성은 유료 Premium 전용입니다 |
-| 재현 가능한 빌드·최종 렌더 | headless `blender -b --python build.py` | — | MCP 도구 호출은 유휴 타임아웃(기본 5분)에 걸릴 수 있습니다([Claude Code MCP](https://code.claude.com/docs/en/mcp)). 긴 렌더는 headless로 |
+| 재현 가능한 빌드·최종 렌더 | headless `blender -b --python build.py` | — | MCP 도구 호출은 소켓 타임아웃(커뮤니티 서버 180초)이나 유휴 타임아웃(stdio 30분·HTTP 서버 5분)에 걸릴 수 있습니다([Claude Code MCP](https://code.claude.com/docs/en/mcp)). 긴 렌더는 headless로 |
 | mm 정밀 부품(조인트·하드웨어) | [build123d-mcp](https://github.com/pzfreo/build123d-mcp)(Apache-2.0) | OpenSCAD 계열 MCP | 성능 개선 수치(0.360 → 0.457)는 도구 저자 자체 보고입니다 |
-| 3D 생성 | 로컬: [TRELLIS.2](https://github.com/microsoft/TRELLIS.2)·[Pixal3D](https://github.com/TencentARC/Pixal3D)(MIT, ComfyUI 본체 지원 [nodes_trellis2](https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_extras/nodes_trellis2.py)) / 상용: [Meshy MCP](https://github.com/meshy-dev/meshy-mcp-server), [Rodin CLI](https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md), Tripo SDK | [Step1X-3D](https://github.com/stepfun-ai/Step1X-3D)(Apache-2.0) | 4단계의 라이선스 표를 먼저 보세요 |
+| 3D 생성 | 로컬: [TRELLIS.2](https://github.com/microsoft/TRELLIS.2)·[Pixal3D](https://github.com/TencentARC/Pixal3D)(MIT, ComfyUI 본체 지원 [nodes_trellis2](https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_extras/nodes_trellis2.py)) / 상용: [Meshy MCP](https://github.com/meshy-dev/meshy-mcp-server), [Rodin CLI](https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md), Tripo SDK | [Step1X-3D](https://github.com/stepfun-ai/Step1X-3D)(Apache-2.0이지만 텍스처 모듈에 Hunyuan 코드 포함 — 검토 필요) | 4단계의 라이선스 표를 먼저 보세요 |
 | 재질·텍스처 | Poly Haven(MCP의 `set_texture`), ambientCG, [Substance 3D Painter MCP](https://github.com/elliezu/SubstancePainterMCP) | [Comfy-Org 공식 ComfyUI MCP](https://github.com/Comfy-Org/comfy-mcp), RTX Remix 내장 MCP([CHANGELOG](https://raw.githubusercontent.com/NVIDIAGameWorks/toolkit-remix/main/CHANGELOG.md)) | Poly Haven 연동은 2026-09-21 [PR #367](https://github.com/ahujasid/blender-mcp/pull/367) 이후 버전을 쓰세요 |
 | 엔진 마무리 | UE 5.8 공식 실험적 Unreal MCP(`http://127.0.0.1:8000/mcp`, AllToolsets 필요) + [Epic Claude Code 플러그인](https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin) | — | 4장 참고 |
 | API 문서 조회 | MCP의 `bpy_api_lookup`, `describe_node_type`, [fake-bpy-module](https://github.com/nutti/fake-bpy-module) | Context7, 공식 커넥터의 문서 기능 | 모델 학습 데이터에는 구버전 bpy 코드가 많습니다 |
@@ -370,7 +370,7 @@ review_render로 beauty + False Color + 수치(clip_pct, value_range)를 저장�
 | Hunyuan3D 2.0/2.1/Omni/Part, HY-World 2.0, HY-Motion | Tencent Community License | **[한국] 적용 지역 밖. 출력물 포함 사용하지 않음** |
 | TRELLIS.2 | 코드·모델 MIT. 단 nvdiffrast는 NVIDIA 비상업, 이미지 인코더는 DINOv3 License, 파이프라인 기본 배경 제거기 RMBG-2.0은 비상업 | 법무 검토 필요. 배경 제거한 알파 PNG를 직접 넣으세요 |
 | Pixal3D | MIT(추론 시 DINOv3 로드) | 인코더 라이선스 확인 필요 |
-| Step1X-3D | Apache-2.0 | 지역 제한 없는 대안 |
+| Step1X-3D | 코드 Apache-2.0. 단 텍스처 모듈에 Hunyuan3D 2.0 라이선스 코드가 섞여 있고 nvdiffrast(비상업)에 의존 | **텍스처 단계는 법률 검토 전 보류**. 형상만 쓰는 경우도 검토 필요([10 가이드](../02_guides/10_assets_pipeline_licensing.md)) |
 | SAM 3D Objects | SAM License(상업 허용, 금지 용도 제외), VRAM 32GB 이상 | 가능 |
 | PartCrafter | MIT | 가능 |
 | PartPacker, Roblox Cube, CHORD | 비상업·연구 전용 | 상업 불가 |
@@ -715,7 +715,7 @@ Cycles면 Light Group을 역할별로 나눠라. 한 번에 한 변수만 바꾸
 4. **EEVEE 최종이라면:** 엔진 식별자는 5.x에서 `BLENDER_EEVEE`(4.2~4.5는 `BLENDER_EEVEE_NEXT`), `use_bloom`·`use_ssr`·`use_gtao`는 없습니다. 레이트레이싱 켜기(팩토리 씬은 꺼짐), 해상도 1:1, Fast GI step 16 등으로 설정하고 같은 장면의 Cycles 레퍼런스와 약 30% 이내인지 비교합니다(scenario 기준).
 5. **합성 순서(커뮤니티 권고, 미검증):** 디노이즈 → (AO) → 색 보정(CDL) → Glare → 약한 렌즈 효과 → 비네트 → 그레인 마지막. 렌더 노이즈를 그레인 대용으로 쓰지 않습니다.
 6. **Glare 노드는 5.x 소켓 방식:** Strength·Size 0~1(Size 기본 0.5), Iterations 2~5, Streaks 1~16, Fade 0.75~1, 기본 Type은 **Streaks**(Bloom 아님)입니다. 구버전 자료의 "Size 8~9, mix -0.7" 같은 값은 입력할 수 없습니다([node_composite_glare.cc v5.2.2](https://raw.githubusercontent.com/blender/blender/v5.2.2/source/blender/nodes/composite/nodes/node_composite_glare.cc)). 효과를 분명히 보이게 올렸다가 의식되지 않을 때까지 내립니다.
-7. **최종 렌더는 headless로:** `blender -b scene.blend --python render_final.py`. MCP 호출로 긴 렌더를 돌리면 유휴 타임아웃(기본 5분)에 걸릴 수 있습니다.
+7. **최종 렌더는 headless로:** `blender -b scene.blend --python render_final.py`. MCP 호출로 긴 렌더를 돌리면 소켓 타임아웃(커뮤니티 서버 180초)이나 유휴 타임아웃(stdio 30분·HTTP 서버 5분)에 걸릴 수 있습니다.
 8. **렌더를 직접 보고 판정:** 뷰포트 스크린샷은 최종 판단 근거가 아닙니다. *"렌더를 직접 보지 않고는 완료를 보고하지 말라"*([scenario expert](https://raw.githubusercontent.com/scenario-labs/skills/main/skills/dcc/blender/scenario-blender-expert/SKILL.md)).
 9. **비평가 판정:** CG 티 체크리스트(Standard 뷰 변환, 기본 50 mm, 크기 0 광원, 정면 조명, 날카로운 90° 모서리, 균일 roughness·순수 흑백·원색, 보이는 타일링, 축 정렬 등간격 배치, 틀린 스케일, 과한 CA·글로우, 구워진 조명, 먼지·마모 부재. [조명 가이드](../02_guides/06_lighting_rendering_art_direction.md) 7절)를 항목별로 "통과/문제(근거 뷰)"로 답하게 하고, Blocker/Major/Minor/Note로 분류해 SHIP / SHIP WITH NOTES / NO-SHIP으로 결론 냅니다([arjun988 qa-review](https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/qa-review/SKILL.md)).
 
@@ -933,7 +933,7 @@ Unity·Godot·Roblox 경로는 [기타 MCP 가이드](../02_guides/03_other_mcp_
 | 뷰포트는 맞는데 렌더가 회색 | Material Output·Principled 중복 | `nodes.clear()` 후 재구성 (7) |
 | 웨더링이 안 보여 값을 과하게 올림 | EEVEE에서 Pointiness·Bevel 미지원 | Cycles로 확인하거나 베이크 (7, 9) |
 | GLB에서 AO·displacement가 사라짐 | glTF가 절차 노드·displacement를 안 내보냄 | 베이크, `glTF Material Output` 그룹, 슬롯 감사 (11) |
-| 긴 렌더가 도중에 끊김 | MCP 유휴 타임아웃(기본 5분) | 최종 렌더는 headless (10) |
+| 긴 렌더가 도중에 끊김 | 소켓 타임아웃 180초 / MCP 유휴 타임아웃(stdio 30분·HTTP 5분) | 최종 렌더는 headless (10) |
 | 같은 수정이 계속 반복됨 | 컨텍스트 오염, 여러 곳 동시 수정 | 결함 하나씩, 2회 실패 시 `/clear` + PROGRESS.md (3) |
 | "완료했다"는데 결과가 다름 | 증거 없는 완료 보고 | 렌더·감사 JSON 첨부를 완료 조건으로, 비평가 분리 (3) |
 | 한국에서 쓸 수 없는 모델 출력이 섞임 | Hunyuan 계열 라이선스 확인 누락 | 4단계 라이선스 표, provenance 컴포넌트 기록 (4, 11) |

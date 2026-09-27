@@ -460,7 +460,7 @@ print("clearance:", pu.check_clearances([("sofa", "coffee_table", 0.35, 0.45), (
 print("facing:", {n: facing_ok(O[n], O[t]) for n, t in [("sofa", "tv_stand"), ("armchair", "coffee_table")]})
 ```
 
-- 한국 프리셋 `size_rules`(오탐 예외 포함)는 [치수표](05_reference_dimensions.md) 11절의 `KR_SIZE_RULES`를 그대로 넘기세요. 이름은 부분 문자열로 맞추므로 `CoffeeTable`처럼 쓰면 `coffee_table` 규칙이 적용되지 않습니다.
+- 한국 프리셋 `size_rules`와 `ceiling_z`(구축 2.30)는 [치수표](05_reference_dimensions.md) 11절의 `KR_SIZE_RULES` 예시를 그대로 넘기세요. 이름은 부분 문자열로 맞추므로 `CoffeeTable`처럼 쓰면 `coffee_table` 규칙이 적용되지 않습니다.
 - 소품 물리 안착(2~5 cm 띄워 두고 rigid body로 떨어뜨린 뒤 변환 확정, 1 m 이상 이동하거나 45° 이상 기울면 실패)은 [배치 가이드](../02_guides/08_scene_layout_placement.md) 4.7절 코드를 쓰세요.
 
 **왜 이렇게 쓰나**
@@ -665,7 +665,7 @@ print("done: LGT_key/fill/rim", round(key_w), "W key")
 - **언제:** 플레이북 단계 10, 게이트 G3 직전.
 
 ```text
-최종 렌더를 준비한다. 긴 렌더를 MCP로 돌리지 않는다(소켓 타임아웃 180초, Claude Code 유휴 타임아웃 기본 5분).
+최종 렌더를 준비한다. 긴 렌더를 MCP로 돌리지 않는다(커뮤니티 서버 소켓 타임아웃 180초, Claude Code 유휴 타임아웃 stdio 30분·HTTP 서버 5분).
 1) 렌더 전 점검: scene.camera 존재, 카메라·구도 G2 이후 변경 없음, scene_audit 0건, 색관리 AgX 유지.
 2) Cycles 설정: 기본 상한(samples 4096) + adaptive threshold 0.01, 디노이즈 OIDN(입력 Albedo+Normal, prefilter Accurate).
    유리가 많으면 transmission bounces 16 이상. 실용광이 많은 실내는 max bounces 16 이상.
@@ -879,7 +879,7 @@ spec 경로, 현재 단계, 최신 버전 파일, 오브젝트 인덱스(유닛 
 - 품질 프로필 3단계는 [claude-3d-harness](https://github.com/MAX-786/claude-3d-harness)가 체크포인트 수·수정 횟수·해상도로 품질과 비용을 수치화한 방식입니다(fast 64spp, standard 256spp, cinematic 512spp).
 - 점수 하락 롤백 기준은 SceneSmith 설정이고, 롤백은 자동이 아니라 planner가 "강하게 고려"하는 방식입니다(검증 정정).
 - "같은 문제로 두 번 교정했다면 컨텍스트가 실패한 시도로 오염된 상태이니 새로 시작하라"는 Claude Code 공식 권고입니다([best-practices](https://code.claude.com/docs/en/best-practices)). `/rewind`는 MCP로 바꾼 Blender 상태를 되돌리지 못하므로 `.blend` 버전 저장이 필수입니다.
-- MCP 출력이 10,000토큰을 넘으면 경고, 기본 한도는 25,000토큰(`MAX_MCP_OUTPUT_TOKENS`)입니다. 긴 렌더는 유휴 타임아웃(`CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`, 기본 5분)에 걸릴 수 있습니다([MCP 문서](https://code.claude.com/docs/en/mcp)).
+- MCP 출력이 10,000토큰을 넘으면 경고, 기본 한도는 25,000토큰(`MAX_MCP_OUTPUT_TOKENS`)입니다. 긴 렌더는 유휴 타임아웃(`CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`, 기본값 stdio 서버 30분·HTTP 서버 5분)에 걸릴 수 있습니다([MCP 문서](https://code.claude.com/docs/en/mcp)).
 - Codex에서 GPT-6 Astra를 effort 지정 없이 돌리면 기본값 low로 실행되어 비교가 무효가 됩니다([AI 모델 가이드](../02_guides/01_ai_models_and_clients.md)).
 
 ---
