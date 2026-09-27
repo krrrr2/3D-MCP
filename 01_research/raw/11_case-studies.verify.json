@@ -1,0 +1,359 @@
+{
+  "verdicts": [
+    {
+      "claim": "Claude Opus 5.5 출시일은 2026-09-22이고, 공식 페이지는 비전과 computer use를 강점으로 든다(3D·Blender 언급 없음).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/claude/opus",
+        "https://www.anthropic.com/news"
+      ],
+      "note": "제품 페이지에 'Opus 5.5 is our best Opus model for vision and computer use'라고 적혀 있고, 3D·Blender 언급은 없다. 뉴스룸에서도 2026-09-22 'Introducing Claude Opus 5.5'를 확인했다. 같은 공지에 'Fable 5.1 수준 성능, Opus 5 대비 운영 비용 40% 절감'이라는 문구도 있어 모델 선택 절에 넣을 만하다."
+    },
+    {
+      "claim": "Claude Fable 5.1은 2026-09-01에 발표됐다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/claude/fable",
+        "https://www.anthropic.com/news"
+      ],
+      "note": "제품 페이지와 뉴스룸 모두 2026-09-01 발표로 적혀 있다. 뉴스룸 기준으로는 Claude Mythos 5.1과 함께 발표됐다. 제품 페이지에는 3D 언급이 없다."
+    },
+    {
+      "claim": "GPT-6 Astra는 2026-09-03 OpenAI가 출시했다(2차 출처. 원 공지는 X에 있어 미확인).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/yangqiong/gpt6-astra-3d",
+        "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ],
+      "note": "yangqiong README에 'released by OpenAI on September 3, 2026'라고 적혀 있고 OpenAI X 공지 링크가 붙어 있다. 독립 큐레이션 두 곳이 정황을 뒷받침한다. carpentry-liu cases.json의 가장 이른 sourceDate가 2026-09-03이고, Tripo 카탈로그의 Astra 항목도 09-03부터 시작한다. OpenAI 1차 출처(developers.openai.com)는 이번에도 egress 차단으로 열지 못했다. '2차 출처 기준' 표기는 유지해야 한다."
+    },
+    {
+      "claim": "UE 5.8에는 공식 Unreal MCP 플러그인이 있다(bAutoStartServer 기본값 false, CaptureViewport, SceneTools 등 툴셋, 비활성 플러그인 약 28개).",
+      "verdict": "partially",
+      "correction": "per-simmons 가이드 원문은 'Unreal MCP, official, experimental, built into 5.8'이다. '실험적(experimental)' 단계라는 점을 반드시 적어야 한다. 약 28개는 기본 비활성인 툴셋 플러그인 수다(AllToolsets + PythonScriptPlugin으로 활성화). 근거는 이 저장소 하나뿐이고 Epic 공식 문서(dev.epicgames.com)는 차단되어 교차 확인하지 못했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/docs/00-GETTING-STARTED.md"
+      ],
+      "note": "know_how에서 '포트 충돌과 비활성 툴셋 때문에 첫날을 통째로 날린 사례'라고 쓴 부분은 과장이다. 원문은 'Gotchas that cost an hour'다."
+    },
+    {
+      "claim": "Blender Lab에 공식 MCP 서버가 있다(bpy-dev 배포판이 upstream으로 blender.org/lab/mcp-server를 가리킴. 원문은 차단되어 미열람).",
+      "verdict": "partially",
+      "correction": "bpy-dev NOTICE.md에 'modified distribution of Blender Lab's Blender MCP project'라고 적혀 있고, upstream은 projects.blender.org/lab/blender_mcp, 원본 파일 표기는 'SPDX: 2026 Blender Authors, GPL-3.0-or-later'다. 존재 자체는 이 파생 저장소를 통해 간접 확인된다. 다만 기능·출시일·'공식 제품' 여부는 1차 출처(blender.org, projects.blender.org 모두 차단)로 확인하지 못했다. 라이선스가 GPL-3.0이라는 점(mcp-for-blender는 MIT)도 함께 적어야 한다.",
+      "evidence_urls": [
+        "https://github.com/bpy-dev/blender-mcp",
+        "https://raw.githubusercontent.com/bpy-dev/blender-mcp/main/NOTICE.md"
+      ]
+    },
+    {
+      "claim": "ahujasid/blender-mcp는 mcp-for-blender로 이름이 바뀌었고 약 29.4k stars이며 Poly Haven, Sketchfab, Poly Pizza, Hyper3D Rodin, Hunyuan3D, Tripo와 연동된다.",
+      "verdict": "partially",
+      "correction": "저장소 표시명 ahujasid/mcp-for-blender, 29.4k stars, 2.7k forks는 확인했다. PyPI 패키지도 mcp-for-blender로 바뀌었다(2.1.0, 2026-09-25 배포, 활발히 유지 중). 무료 기능 목록에 있는 것은 Poly Haven, Sketchfab, Poly Pizza, Hyper3D Rodin, Hunyuan3D다. Tripo는 유료 'Premium'(자체 API 키 없이 Hunyuan3D, Tripo, Rodin 생성)에서만 언급된다. 또 텔레메트리가 있다. 최소 익명 사용 기록은 기본으로 수집되고, 콘텐츠 수집은 opt-in이며 AI 모델 학습에 쓰일 수 있다고 README에 명시되어 있다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://pypi.org/pypi/mcp-for-blender/json"
+      ]
+    },
+    {
+      "claim": "Simon Willison의 GPT-6 Astra(Medium) + headless Blender 반복 3회는 각각 2분39초, 3분51초, 5분59초 걸렸다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/simonw/til/blob/main/llms/blender-coding-agents-macos.md",
+        "https://github.com/simonw/gpt-6-astra-blender-pelican-bicycle/blob/main/codex-transcript.md"
+      ],
+      "note": "'ChatGPT macOS app, Codex mode'가 맞다. 첫 실행에서 제한 환경 때문에 Blender가 크래시해 재시도한 기록도 transcript에서 확인했다. 작업 폴더 날짜는 2026-09-04다."
+    },
+    {
+      "claim": "Fable 5.1 원프롬프트 3D 게임: 24분, $9.90, 75턴, 출력 95,832 토큰, 재시도 없이 통과.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Nipale-ai/fable-5-1-one-prompt-game",
+        "https://github.com/Nipale-ai"
+      ],
+      "note": "README 표와 일치한다. case study의 'GLM-5.3 비교 저장소(27분, 다른 게임)'도 Nipale-ai/glm-5-3-one-prompt-game 설명으로 확인했다."
+    },
+    {
+      "claim": "Fable 5.1 에이전트 스웜의 Union Square 트윈은 리뷰어 점수가 재질 6/10, 시각 충실도 6/10, 조명 7/10, 성능 6/10이다(목표 8.5~9).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md",
+        "https://github.com/PhiloLabs/fable51-worlds"
+      ],
+      "note": "점수는 모두 'NOT adjusted' 2차 패스 값이다. 재질·시각 충실도·조명·성능의 목표는 8.5이고, 지리 정확도·건물 인지도 등은 목표 9다. 'Nine independent reviewer agents'는 union-square-sf/README에서 확인했다. who 필드의 'VerizonCao'는 확인하지 못했다."
+    },
+    {
+      "claim": "Robo Open에서 FBX가 100배(2m→200m)로 들어왔고 FBX_SCALE_UNITS로 고쳤다. Meshy는 30크레딧, 프로토타입 52분, 세션 전체 4시간23분.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/az9713/gpt-6-astra-tennis-game",
+        "https://raw.githubusercontent.com/az9713/gpt-6-astra-tennis-game/main/DEVELOPMENT-JOURNEY.md",
+        "https://raw.githubusercontent.com/az9713/gpt-6-astra-tennis-game/main/PREFLIGHT_RESULTS.md"
+      ],
+      "note": "수치는 모두 일치한다. 단, 항목 설명의 '실패 15건'은 틀렸다. 'What went wrong' 절에는 22건이 번호로 나열되어 있다. '게임성은 사람이 평가하지 않았다'는 v0.1~0.2 기준이고, v0.3에서 사람 플레이테스트로 리턴 불가 문제가 발견되어 고쳤다(§10)."
+    },
+    {
+      "claim": "Vizuara 심장 챕터(약 11,000프레임)를 A10G 약 50대로 84분에 Cycles 1080p, 384 samples 렌더했다. 수정은 보통 2라운드.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/VizuaraAI/fable-visual-learning-pipeline"
+      ],
+      "note": "표 기준 심장 챕터는 8:03, 10,964프레임, 청크 709개, 84분, 실패 0이다. 컴포지트는 5분 더 걸렸다. 'Two rounds were typical for us'도 확인했다. 저장소에 LICENSE 파일은 없다."
+    },
+    {
+      "claim": "같은 Blender 과제를 Max로 돌렸을 때 Astra 43분·출력 61K 토큰, Opus 5.5 1시간57분·507K 토큰이었고 결과 외관은 거의 같았다(X 원문 미확인, 2차 요약).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ],
+      "note": "2차 요약 문구와 일치한다(#123). 다만 같은 행 제목은 'same look, 3x fewer tokens'인데 61K 대 507K는 약 8.3배다. 한쪽은 출력 토큰, 다른 쪽은 전체 토큰일 가능성이 커서 토큰 효율 배율의 근거로 쓰면 안 된다. X 원문은 확인하지 못했다."
+    },
+    {
+      "claim": "Roblox의 studio-rust-mcp-server는 2026-04-03에 아카이브됐고 Roblox Studio 내장 MCP 서버 사용을 권장한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server"
+      ],
+      "note": "GitHub 페이지에 2026-04-03 아카이브(read-only)로 표시되어 있고, README 경고에서 built-in MCP Server를 권장한다. 491 stars. create.roblox.com 문서는 차단됐다."
+    },
+    {
+      "claim": "How to Suck(Unity 협동 게임)은 GPT-6 Astra가 코드, Blender 모델, 애니메이션, 멀티플레이를 만들었고 첫 반복에 39시간, Pro x20 주간 한도 2회분이 들었다(작성자 자기 보고).",
+      "verdict": "partially",
+      "correction": "39시간은 첫 자율 반복에 걸린 시간이 맞다. 그러나 README는 'The two weekly limits cover the project's development, including subsequent iterations'라고 적고 있다. 주간 한도 2회분은 첫 반복만이 아니라 이후 반복까지 포함한 전체 개발 소모량이다.",
+      "evidence_urls": [
+        "https://github.com/breineng/how-to-suck"
+      ]
+    },
+    {
+      "claim": "Tripo 카탈로그 447건 중 Blender 관련은 96건(GPT-6 Astra 81건)이고, Astra 게시물은 2026-09-03~06에 집중된다(이 조사에서 직접 파싱해 집계).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/TripoGrowthLab/awesome-3d-prompts/main/docs/catalog.en.md"
+      ],
+      "note": "447건(6개 모델: Astra 291, Fable 5.1 79, Opus 5.5 33, Kimi K3 20, Fable 5 18, Opus 5 13)과 카테고리 수를 확인했다. catalog.en.1~9를 직접 파싱해 본문에 'Blender'가 들어간 항목을 세면 97건(Astra 82, Fable 5.1 10, Opus 5.5 2, 기타 3)으로, 집계 방식이나 갱신 시점 차이인 ±1 수준이다. Astra Blender 항목 82건 중 52건이 09-03~06에 몰려 있다. 참고로 447건 중 216건(48%)은 원문 프롬프트가 아니라 Tripo가 쓴 'Build brief based on the linked work'다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "ahujasid/blender-mcp (mcp-for-blender)",
+      "status": "issue",
+      "detail": "유지보수가 활발하고(PyPI mcp-for-blender 2.1.0, 2026-09-25) MIT이며 29.4k stars다. 고칠 점: ① Tripo 연동은 유료 Premium에서만 제공된다. ② 텔레메트리를 알려야 한다(기본 익명 사용 기록, opt-in 시 프롬프트·코드·스크린샷 수집, AI 학습 활용 가능, DISABLE_TELEMETRY=true로 끔). ③ know_how에서 인용한 PR 중 #353(멀티뷰 몽타주)은 2026-09-08 현재 open(미병합)이고, #359(검사 도구 18개)는 closed(소유자가 거절)다. '기능이 추가됐다'로 읽히지 않게 적어야 한다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/mcp-for-blender/pull/353",
+        "https://github.com/ahujasid/mcp-for-blender/pull/359",
+        "https://pypi.org/pypi/mcp-for-blender/json"
+      ]
+    },
+    {
+      "name": "per-simmons/unreal-agent-harness",
+      "status": "issue",
+      "detail": "196 stars, 12 commits로 존재하고 내용 대부분(8123 포트, AllToolsets, 787 100배 스케일, RelativeScale3D 0.01, FocusOnActors 크래시, Cesium 패치)을 확인했다. 수정할 점: ① LICENSE 파일이 없어 '공개 저장소'라도 재사용 권한이 없다. ② Unreal MCP는 'experimental'이다. ③ '첫날을 통째로 날림'은 원문 'cost an hour'다. ④ TRELLIS는 '얼룩지고 스케일·방향 틀림'이 아니라 'recognizable, lighter, softer; color-only', 'looked good, just small'이다(얼룩짐·오스케일은 Meshy). ⑤ 조명 서술이 두 단계를 섞었다. PPV 노출 11 → PPV 제거 후 오토 노출 + 4000K·피치 -8° 골든아워, 이후 너무 주황빛이라 6500K·피치 -38°로 복귀했다. ⑥ BUILD-LOG는 MSE 4가 비행 시 너무 공격적이라 8로 되돌렸다고 기록한다(4는 정지 히어로 샷에만).",
+      "evidence_urls": [
+        "https://github.com/per-simmons/unreal-agent-harness",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/BUILD-LOG.md"
+      ]
+    },
+    {
+      "name": "PhiloLabs/fable51-worlds",
+      "status": "ok",
+      "detail": "MIT(OSM ODbL, USGS 3DEP 별도)이고 514 stars다. 점수, 리뷰어 9명, 147장, 34개 시점, 결함 목록이 모두 원문과 일치한다. 다만 who 필드의 'VerizonCao'는 확인하지 못했다.",
+      "evidence_urls": [
+        "https://github.com/PhiloLabs/fable51-worlds",
+        "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md"
+      ]
+    },
+    {
+      "name": "VizuaraAI/fable-visual-learning-pipeline",
+      "status": "issue",
+      "detail": "수치와 함정(GPU 컴포지터 segfault → CPU, OIDN, DOF 초점 거리 문제)은 확인했다. LICENSE 파일이 없으므로 '공개 저장소'라고만 쓰지 말고 '라이선스 미지정'으로 표기해야 한다.",
+      "evidence_urls": [
+        "https://github.com/VizuaraAI/fable-visual-learning-pipeline"
+      ]
+    },
+    {
+      "name": "az9713/gpt-6-astra-tennis-game (Robo Open)",
+      "status": "issue",
+      "detail": "Unity 6000.5.7f1, URP 17.5.0, Unity Pipeline 0.6.0-exp.1, Blender 5.2.1, Meshy 30크레딧, 422 리깅 실패, 1.8m 정규화는 확인했다. 틀린 점: '실패 15건'은 22건이다. '사람이 게임성을 평가하지 않음'은 v0.3 사람 플레이테스트로 더 이상 맞지 않는다. 현재 로컬 버전은 v0.5.1이다. 원작 영상 제목은 'FABLE 5.1 Is Here And It's PERFECT For Vibe Coding Games (FULL Unity + Blender Workflow)'로 확인했다.",
+      "evidence_urls": [
+        "https://github.com/az9713/gpt-6-astra-tennis-game",
+        "https://raw.githubusercontent.com/az9713/gpt-6-astra-tennis-game/main/DEVELOPMENT-JOURNEY.md"
+      ]
+    },
+    {
+      "name": "ProfRino/Blender-MCP-Assembly-Skill",
+      "status": "issue",
+      "detail": "규칙(size=2, bmesh, verify_bounds/verify_overlap, finalize/audit_all)은 README와 일치한다. LICENSE 파일이 없고, status_date 2026-05-25는 확인하지 못했다. 정량 평가가 없다는 점은 맞다.",
+      "evidence_urls": [
+        "https://github.com/ProfRino/Blender-MCP-Assembly-Skill"
+      ]
+    },
+    {
+      "name": "RobLe3/cc-blender-skill",
+      "status": "ok",
+      "detail": "v1.3.0, MIT, 스킬 30개다. Blender 5.1.1에서 6개 씬 클래스로 검증했고 실패 렌더도 공개했다. Haiku 테스터 + Opus 패처 약 10배 저렴, Sonnet 4.6·Opus 4.7·Haiku 4.5 기준도 맞다. 작업 순서도 원문과 같다. 치수 참조표는 README에 '7 categories'라고 적혀 있다.",
+      "evidence_urls": [
+        "https://github.com/RobLe3/cc-blender-skill"
+      ]
+    },
+    {
+      "name": "viettranx/3dviz-pro-max",
+      "status": "ok",
+      "detail": "MIT다. 레시피 223, 레코드 440, 키트 22, 스타일 37을 확인했다. 전후 평가 19→23→23→25(기준 21, 30점 만점, n=1), T3는 Blender 베이크 2개, T4는 없음, 2026-09-09 Claude Code 2.1.265 검증도 일치한다.",
+      "evidence_urls": [
+        "https://github.com/viettranx/3dviz-pro-max"
+      ]
+    },
+    {
+      "name": "realsee-developer/realsee-astra-blender",
+      "status": "ok",
+      "detail": "코드·프롬프트는 MIT, 데이터 권리는 별도다. 396개 파일 5.66 GiB, Blender 5.2.1 LTS + Codex, 85초 영상, USDZ, smoke 테스트(3개 프로세스로 저장→재열기→편집 확인)를 확인했다. 스크립트가 공간 전용이라 턴키 재현은 안 된다는 점도 README에 명시되어 있다.",
+      "evidence_urls": [
+        "https://github.com/realsee-developer/realsee-astra-blender"
+      ]
+    },
+    {
+      "name": "openerai/blender-previz-video (한국어 스킬)",
+      "status": "issue",
+      "detail": "내용은 일치한다(Blender 5.0 이상, Higgsfield Bridge, bl_* MCP, bl_get_skill 모듈, 13개 규칙). 보완할 점: 워크플로 원출처가 Higgsfield 블로그의 @adilinthewild 글(2026-08-28)이고, 이 저장소는 그 방법론을 한국어 Claude Code 스킬로 재구성한 것이다. '한국 사례'라기보다 '한국어 재패키징'이다. LICENSE 파일은 없고 README에 '문서 텍스트는 MIT'라고만 적혀 있다.",
+      "evidence_urls": [
+        "https://github.com/openerai/blender-previz-video"
+      ]
+    },
+    {
+      "name": "octopus7/astra-blender-forest (한국 사례로 분류)",
+      "status": "issue",
+      "detail": "수치(3,800/3,839그루, 16,573 인스턴스, 메시 127개, 셀 36개, seed 42, 테스트 30개)와 MIT를 확인했다. 한국 사례라는 근거는 README_KO(영·한·일 3개 언어 중 하나)뿐이다. 프로필에는 국적 정보가 없다. README는 'ChatGPT 대화, Codex 아님'이라고만 적고 모델명 Astra는 저장소 이름에만 나온다. '한국 사례'와 'Astra'는 추정으로 표기해야 한다.",
+      "evidence_urls": [
+        "https://github.com/octopus7/astra-blender-forest",
+        "https://github.com/octopus7"
+      ]
+    },
+    {
+      "name": "flopperam/unreal-engine-mcp",
+      "status": "issue",
+      "detail": "Aura 인수, MIT, 고수준 도구, 'GPT-5 vs Claude'와 객체 4,000개 이상 영상 링크는 확인했다. 누락: 오픈소스 로컬 버전은 UE 5.5·5.6·5.7만 지원한다(UE 5.8 사례와 호환 불명). 호스팅 Flop MCP는 로컬 버전과 코드를 공유하지 않는 별개 서버이고 API 키가 필요하다. 가격은 README에 없다.",
+      "evidence_urls": [
+        "https://github.com/flopperam/unreal-engine-mcp"
+      ]
+    },
+    {
+      "name": "Roblox/studio-rust-mcp-server",
+      "status": "ok",
+      "detail": "2026-04-03 아카이브, 내장 MCP 권장, 491 stars를 확인했다.",
+      "evidence_urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server"
+      ]
+    },
+    {
+      "name": "HurtzDonutStudios/ai-forge-mcp",
+      "status": "ok",
+      "detail": "비판적 검토 대상으로 분류한 것은 타당하다. 월 $35/$65/$149(Founder), Nuitka 컴파일로 소스 비공개, 도구 565개와 서버 16개 주장, 'AI Legends' MMO를 확인했다. 추가로 README가 Hunyuan3D를 'Open source under MIT License'라고 잘못 쓰고 있다. 실제로는 Tencent Hunyuan Community License이고 한국이 적용 지역에서 빠져 있다.",
+      "evidence_urls": [
+        "https://github.com/HurtzDonutStudios/ai-forge-mcp",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE"
+      ]
+    },
+    {
+      "name": "teshnizi2/astra-fable-3d-iris",
+      "status": "ok",
+      "detail": "MIT다. 도구 비활성 상태의 순수 코드 생성 비교라서 MCP나 시각 피드백 루프가 아니다. 하네스 차이(Codex CLI 0.153.4 대 Claude Code 2.1.263)와 결함 서술이 모두 일치한다.",
+      "evidence_urls": [
+        "https://github.com/teshnizi2/astra-fable-3d-iris"
+      ]
+    },
+    {
+      "name": "hi-godot/cyberpunk-hud-demo + Godot AI",
+      "status": "issue",
+      "detail": "friction log 날짜 2026-04-15, 호출 수, 빈틈(씬 인스턴싱, 게임 뷰 스크린샷, theme_create 폴더)을 확인했다. '약 2시간'은 로그와 README 어디에서도 확인하지 못했다. 도구 46개와 작업 120개 이상은 godot-ai README에서 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/hi-godot/cyberpunk-hud-demo/main/docs/friction-log-cyberpunk-hud.md",
+        "https://github.com/hi-godot/godot-ai"
+      ]
+    },
+    {
+      "name": "hahaliu1029/house-3d",
+      "status": "ok",
+      "detail": "Apache-2.0(연구자는 라이선스를 기재하지 않음)이다. '엄격한 순위 불가', 모델명은 유지보수자 라벨 기준, 3200×1800 3분 영상, GPT6 모던 스타일 9개 공간·64점 가구를 확인했다.",
+      "evidence_urls": [
+        "https://github.com/hahaliu1029/house-3d"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://github.com/HurtzDonutStudios/ai-forge-mcp",
+      "reason": "유료 구독 상품의 마케팅 README다. 'AAA', '도구 565개' 같은 주장을 뒷받침할 공개 에셋이나 독립 검증이 없고, 코드는 Nuitka로 컴파일된 비공개다. 제3자 라이선스도 틀리게 적었다(Hunyuan3D를 MIT로 표기. 실제는 EU·영국·한국이 제외된 Tencent 커뮤니티 라이선스)."
+    },
+    {
+      "url": "https://github.com/TripoGrowthLab/awesome-3d-prompts",
+      "reason": "3D 생성 벤더(Tripo)가 큐레이션했고 Tripo 사이트 CTA가 붙어 있다. 447건 중 216건(48%)이 원문 프롬프트가 아니라 Tripo가 쓴 'Build brief'다. 결과 품질은 검증하지 않았다. 프롬프트 템플릿 출처로는 유용하지만 '실제 사용된 프롬프트'로 인용할 때는 브리프 여부를 확인해야 한다."
+    },
+    {
+      "url": "https://github.com/yangqiong/gpt6-astra-3d",
+      "reason": "X 게시물의 2차 요약이다. 데이터 손상이 있다. 금액의 '$'가 '<!-- creations:start -->' 주석으로 치환되어 있고, 같은 항목이 다른 순위 번호로 두 번 나온다. 헤더는 'Collected 2026-09-05 · Covering Sep 3–5'인데 행은 09-24까지 있다. 제목과 수치가 어긋나는 곳도 있다(zavrenn '3x fewer tokens' 대 61K/507K는 약 8.3배). 수치 인용 시 주의해야 한다."
+    },
+    {
+      "url": "https://github.com/magiccreator-ai/awesome-gpt-6-astra",
+      "reason": "상업 갤러리 magiccreator.ai로 유도하는 큐레이션이다. 2차 요약이고, Blender·3D 섹션은 '24건 이상'이 아니라 정확히 24건이다. 원문 검증은 제한적이다."
+    },
+    {
+      "url": "https://x.com/",
+      "reason": "X 게시물 기반 사례(Matt Shumer, Tom Krcha, Stefan_3D_AI, zavrenn, 3DVR3, SpenserFX 등)의 시간·토큰·품질은 모두 작성자 자기 보고이고, 이번 검증에서도 원문에 접근하지 못했다. 모델 비교는 전부 n=1이다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Hunyuan3D 2.x 라이선스: 대한민국(과 EU, 영국)이 적용 지역에서 제외됨",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE",
+      "why_important": "한국어 지식베이스에서 가장 중요한 누락이다. 라이선스 원문에 'THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'라고 적혀 있고 Hunyuan3D-2.1도 같다. mcp-for-blender의 Hunyuan3D 연동이나 AI Forge 파이프라인을 한국에서 쓰면 라이선스 공백이 생긴다. 이미지→3D 도구를 추천할 때 반드시 경고해야 한다."
+    },
+    {
+      "name": "MCP for Unity (CoplayDev/unity-mcp)",
+      "url": "https://github.com/CoplayDev/unity-mcp",
+      "why_important": "대표적인 Unity MCP 서버(v10.0.0, 2026-06-30)인데 items에서 빠졌다. Aura가 후원·유지보수하고 Godot AI 제작진과 같은 팀이다. flopperam도 Aura에 인수됐다. 조사에는 근거가 약한 'Unity 공식 Codex 플러그인'만 있다(yangqiong의 X 요약 한 줄, 1차 출처 미확인)."
+    },
+    {
+      "name": "Godot AI MCP 서버 본체 (hi-godot/godot-ai)",
+      "url": "https://github.com/hi-godot/godot-ai",
+      "why_important": "HUD 데모만 인용했고 서버 자체(도구 46개, 작업 120개 이상, MCP for Unity 제작진)는 추천 MCP 목록에 없다."
+    },
+    {
+      "name": "bpy-dev/blender-mcp (Blender Lab MCP 개량판 + BlenderBench)",
+      "url": "https://github.com/bpy-dev/blender-mcp",
+      "why_important": "Blender Lab 공식 MCP(GPL-3.0)의 파생판이다. GUI 없이 저장된 .blend를 다루는 _for_cli 도구, 런타임 bpy API 조회, 27개 과제·270라운드 BlenderBench 벤치마크(CLIP 유사도)를 제공한다. headless 방식과 MCP 방식을 잇는 도구로, 모델 비교가 n=1뿐이라는 한계를 보완할 자료다."
+    },
+    {
+      "name": "mcp-for-blender 텔레메트리와 Premium 정책",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "why_important": "가장 많이 쓰이는 Blender MCP다. 기본 익명 사용 기록을 수집하고, opt-in 시 프롬프트·코드·스크린샷을 수집해 AI 학습에 쓸 수 있다. Tripo 등 일부 생성 연동은 유료다. 기업이나 기밀 프로젝트 사용자가 알아야 할 정보다."
+    },
+    {
+      "name": "Anthropic Opus 5.5 공지: 'Fable 5.1 수준, Opus 5 대비 40% 저렴'",
+      "url": "https://www.anthropic.com/news",
+      "why_important": "모델별 사용법 절에서 비용과 품질을 판단할 때 쓸 공식 근거다. 현재 조사는 n=1 X 비교에만 기대고 있다."
+    },
+    {
+      "name": "Infinigen (Princeton, BSD), Stable-Fast-3D, Flue blender_adapter",
+      "url": "https://github.com/princeton-vl/infinigen",
+      "why_important": "per-simmons 가이드가 추천한 자료다. Infinigen은 절차적 Blender 생성 라이브러리이고, SF3D(https://github.com/Stability-AI/stable-fast-3d)는 로컬 이미지→3D, Flue(https://github.com/SFKislev/Flue)는 'api-index를 먼저 검색하고 undo_push' 패턴이다. 오브젝트·배치 품질을 높이는 오픈소스 대안인데 items에 없다."
+    },
+    {
+      "name": "chongdashu/unreal-mcp (커뮤니티 Unreal MCP, experimental, MIT)",
+      "url": "https://github.com/chongdashu/unreal-mcp",
+      "why_important": "UE 5.8 공식 MCP 이전부터 널리 쓰인 커뮤니티 서버로 UE 5.5 이상에서 동작한다. 조사는 Vibe Jam 스타터팩만 언급했다."
+    },
+    {
+      "name": "Nipale GLM-5.3 비교 저장소",
+      "url": "https://github.com/Nipale-ai/glm-5-3-one-prompt-game",
+      "why_important": "case study에서 언급했지만 URL이 빠졌다. 같은 프롬프트, 같은 머신으로 27분에 다른 게임이 나온, 오픈 모델 대조 사례다."
+    },
+    {
+      "name": "Chong-U 원작 영상 위치",
+      "url": "https://www.youtube.com/watch?v=DQfL_l5lRpk",
+      "why_important": "gaps에서 '공개 위치를 찾지 못했다'고 했지만 az9713 README에 원작 영상 링크와 제목('FABLE 5.1 Is Here And It's PERFECT For Vibe Coding Games (FULL Unity + Blender Workflow)')이 있다. 프로젝트 파일은 비공개라고 명시되어 있다."
+    }
+  ]
+}

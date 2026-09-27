@@ -136,6 +136,12 @@ def test_placement_fixes():
 
     v = pu.check_clearances([("Chair_floating", "Desk", 0.3)])
     assert v and v[0]["clearance_m"] == 0.1, v
+    assert pu.check_clearances([("Chair_floating", "Desk", 0.05, None)]) == []
+
+    # 벽에 등 붙이기: +Y 벽 안쪽 면 y=2.0, 간격 0.05 → 유닛 최대 y = 1.95
+    pu.place_against_wall(t, wall_y=2.0, gap=0.05)
+    _, mx = pu.world_bbox(t)
+    assert abs(mx.y - 1.95) < 1e-6, mx
     print("test_placement_fixes OK")
 
 

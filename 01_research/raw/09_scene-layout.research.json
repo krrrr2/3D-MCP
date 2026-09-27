@@ -1,0 +1,1127 @@
+{
+  "topic": "Object placement and scene layout: AI(LLM/VLM)와 MCP로 방·환경의 오브젝트 배치와 레이아웃을 그럴듯하게 만드는 방법 (연구, 도구, 실무 기법, 수치 규칙, 사례)",
+  "summary_ko": [
+    "핵심 결론: 최신 모델(GPT-5.x, Claude Sonnet/Opus, Gemini 3)도 좌표를 '직접' 찍게 하면 충돌·부유·방향 오류가 반복된다. 2024-2026년 연구와 실무 시스템은 모두 같은 구조로 수렴했다. (1) LLM은 오브젝트 목록과 관계형 제약(against_wall, facing, near/far, on_top_of, aligned)을 만들고 (2) 수치 solver가 좌표를 풀고(DFS/MILP, gradient, simulated annealing) (3) collision·physics 검사를 한 뒤 (4) top-down 렌더를 VLM이 비평하는 루프를 돈다.",
+    "공개 코드 기준 대표 구현은 다음과 같다. Holodeck(DFS 제약 solver, Apache-2.0), LayoutVLM(CVPR 2025, 제약 7종 + Adam gradient solver), Infinigen Indoors(Blender 네이티브 constraint language + simulated annealing, BSD-3), I-Design(Blender 배치 스크립트 포함), SceneWeaver(NeurIPS 2025, Blender 소켓 기반 reflect 에이전트), SceneSmith(ICML 2026 Spotlight, designer/critic/planner 에이전트 + snap/physics 툴, MIT), SAGE(NVIDIA, CVPR 2026, FastMCP로 레이아웃 툴을 노출하는 MCP 서버, Apache-2.0).",
+    "MCP 관점에서 가장 직접적인 참고 구현은 NVlabs/sage의 server/layout.py다. 이 파일은 FastMCP로 generate_room_layout, get_current_layout 등을 노출하고, 배치는 Holodeck식 제약 + DFS(grid_size=20, Shapely 충돌 검사, 3.5 cm 패딩)로, 위에 올리는 소품은 후보 150개 샘플링 + physics critic으로 처리한다. Blender 쪽 MCP 사례로는 Vibe3DScene(LangGraph + Blender-MCP + penetration 검사 + VLM 시각 검사)과 blend-ai(snap, rigid body, 시각 피드백 툴)가 있다.",
+    "실무 레시피는 다음과 같다. ① 에셋 정규화: 단위 m, 원점은 바닥 중앙, 정면 축 통일(Blender는 -Y. glTF 원본은 +Z가 정면). ② 큰 앵커 가구부터 벽→바닥→벽걸이→천장→소품 순서로 계층 배치. ③ 객체마다 제약 3-5개. ④ 매 단계 BVHTree overlap과 scene.ray_cast로 충돌·부유 검사. ⑤ 필요하면 rigid body로 떨어뜨려 안착시킨 뒤 bake_to_keyframes 또는 visual transform을 적용. ⑥ top-down orthographic 1024px + 측면 4뷰 렌더를 VLM이 채점. SceneSmith 설정 기준으로 6개 항목이 모두 9점 이상이면 종료, 최대 3라운드, 점수가 떨어지면 체크포인트로 롤백한다.",
+    "실제 코드와 프롬프트에 박혀 있는 수치 규칙 예시: 소파–TV 2-3 m, 사이드테이블은 벽에서 0.3 m 이내, 조명 간격 1 m 이상(Infinigen). 소파–커피테이블 0.3-0.5 m, 주동선 0.7-1.0 m, 무관한 물체끼리 최소 0.2 m, 벽 그림은 1.4-1.7 m 높이에 가구 상단에서 20-40 cm 위(SceneSmith). 동선 60-90 cm, 문 회전반경 약 90 cm, 가구 점유율 30-40%(SAGE). near 50-150 cm, far 150 cm 이상(Holodeck). 업계 통용 수치(TV 시청거리 약 1.2-1.6×대각선, 식탁 의자 뒤 90-120 cm, 침대 옆 60-90 cm, 러그 테두리 30-45 cm 등)는 이번 세션에서 원문을 확인하지 못했으므로 보조 기준으로만 쓸 것.",
+    "자주 보고되는 실패 유형: 에셋 정면 방향 불일치(Holodeck issue #92, I-Design Blender 스크립트의 +π 보정), 메쉬 스케일 정규화 누락(LayoutVLM issue #9), 비균일 스케일로 인한 왜곡, 한 번에 너무 큰 코드를 실행하다 실패(blender-mcp README의 '작은 단계로 나눠라'). SAGE 프롬프트의 금지 목록은 '떠 있는 물체, 바닥 과밀, 비정상 크기, 충돌, 방향 오류, 벽에서 떨어진 소파'이다.",
+    "야외·환경 배치는 Geometry Nodes의 Distribute Points on Faces(Poisson Disk: Distance Min, Density Max, Density Factor)로 최소 간격을 보장하고, 밀도 마스크(경로·건물 주변 제외, 거리 기반 falloff), 3·5·7개 단위 클러스터, 전경·중경·배경 밀도 차등(hero 구역은 의도는 높게 잡음은 낮게, 배경은 실루엣만)을 조합한다. 2026년 연구에는 WorldClaw(Tencent Hunyuan), LandCraft, GardenDesigner, 도시 스케일 생성(RAISECity, MajutsuCity) 등이 있지만 대부분 코드가 미공개거나 일부만 공개됐다.",
+    "제약사항: 이번 조사 세션은 WebSearch 한도가 소진됐고 arxiv.org, 각 프로젝트 github.io, docs.blender.org, reddit 등 대부분 도메인이 egress 차단이었다. 그래서 GitHub 저장소(README, 소스, 프롬프트, 설정 파일)를 1차 출처로 삼아 수치와 구현 세부를 확인했다. 논문 본문의 정량 결과와 인테리어 표준 원문은 대부분 확인하지 못했다."
+  ],
+  "items": [
+    {
+      "name": "Holodeck (allenai/Holodeck)",
+      "category": "연구 시스템 / LLM + 제약 solver",
+      "what_it_is": "텍스트로 방 구조, 문·창문, 오브젝트 선택, 제약 기반 레이아웃을 생성하는 시스템(CVPR 2024). LLM(GPT-4o-2024-05-13)이 객체마다 'global | 제약1 | 제약2...' 형식의 관계 제약을 출력하고, DFS solver(권장) 또는 MILP solver가 좌표를 푼다. 에셋은 Objaverse(objathor), 실행 환경은 AI2-THOR/Unity 2020.3.25f1.",
+      "how_to_use": "pip install -r requirements.txt 후 python holodeck/main.py --query \"a living room\" --openai_api_key <KEY>. 실무에서는 코드를 그대로 쓰기보다 prompts.py의 제약 어휘와 floor_objects.py의 DFS 로직을 Blender MCP 워크플로에 이식하는 편이 유용하다. 제약 어휘: global(edge/middle), distance(near 50-150 cm, far 150 cm 이상), position(in front of/around/side of/left of/right of), alignment(center aligned), rotation(face to). 벽걸이 객체는 'wall object | above, floor object | 바닥에서의 높이(cm)' 형식.",
+      "strengths": "제약 어휘가 단순해서 어떤 LLM에도 이식하기 쉽다. 프롬프트 지침이 실용적이다('앵커는 global 제약만', '큰 것부터', '뒤에 놓는 것은 앞의 것에만 의존', '같은 종류는 정렬', 'edge 우선', '의자는 around'). DFS는 grid_size, 회전 4방향(0/90/180/270), Shapely 충돌 검사, 제약 가중치(global 1.0, relative 0.5, direction 0.5, alignment 0.5, distance 1.8)를 쓴다. SAGE와 R³L 등 후속 연구의 기반이다.",
+      "weaknesses": "회전이 90° 단위로 이산화된다. AI2-THOR 의존성이 깨져 headless 실행 문제(issue #90), 데이터 다운로드 불가(issue #94, 2026-05), 에셋 정면 정렬 혼란(issue #92)이 있다. Blender 연동 기능은 없다.",
+      "license_or_price": "Apache-2.0 (OpenAI API 비용 별도)",
+      "status_date": "2023-12 공개, 이슈는 2026-05까지 활동. 메인테이너 응답은 드묾",
+      "urls": [
+        "https://github.com/allenai/Holodeck",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/floor_objects.py",
+        "https://github.com/allenai/Holodeck/issues/92"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "LayoutVLM (sunfanyunn/LayoutVLM)",
+      "category": "연구 시스템 / VLM + 미분 가능 최적화",
+      "what_it_is": "VLM(gpt-4o 기본)이 에셋을 그룹으로 묶고, 그룹별로 제약 프로그램(Python 호출)을 작성하면 gradient solver가 위치와 회전을 최적화하는 방법(CVPR 2025). 렌더 이미지에 좌표 마크와 에셋 이름을 오버레이해 VLM에 보여주고, gpt-4o-mini로 제약을 필터링한다(self-consistency).",
+      "how_to_use": "scene.json(task_description, layout_criteria, boundary.floor_vertices, wall_height, assets{path, boundingBox x/y/z})을 준비하고 Rotated_IoU CUDA 확장을 컴파일한 뒤 python main.py --scene_json_file ... 를 실행한다. 제약 API 7종: on_top_of(a,b), against_wall(a,wall), distance_constraint(a,b,min,max,weight), align_with(a,b,angle), point_towards(a,b,angle), align_x, align_y. 규칙: 바닥이 x-y 평면, z가 위, 원점은 방 중심, 0°는 +x를 바라봄, 각도는 degree, 바닥 물체 z = bbox 높이/2, 객체마다 위치 제약 1개와 방향 제약 1개 이상.",
+      "strengths": "solver 세부가 공개돼 있다. Adam lr 0.01, ExponentialLR gamma 0.96, 400 iterations, overlap loss(IoU×1000), 기존 제약 ×100, 100 iteration마다 Shapely로 방 경계 안으로 투영. 대안으로 scipy trust-constr와 dual_annealing도 지원한다. 제약 API가 MCP 툴 설계의 좋은 템플릿이 된다.",
+      "weaknesses": "OpenAI 전용 코드이고 CUDA 확장 컴파일이 필요하다. 평가 코드와 파인튜닝 코드는 미공개(issues #16, #17). 일부 메쉬 스케일·회전 정규화 문제가 보고됐다(issue #9, blender_render.py의 render_existing_scene 사용 시).",
+      "license_or_price": "README에 라이선스 명시 없음(확인 불가)",
+      "status_date": "CVPR 2025. 이슈 활동 2026-01까지",
+      "urls": [
+        "https://github.com/sunfanyunn/LayoutVLM",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/grad_solver.py",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/layoutvlm.py",
+        "https://github.com/sunfanyunn/LayoutVLM/issues/9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Infinigen Indoors (princeton-vl/infinigen) - constraint language + simulated annealing solver",
+      "category": "절차적 생성 / Blender 네이티브 제약 언어",
+      "what_it_is": "Blender 기반 절차적 실내 생성기(CVPR 2024). Python DSL(constraint language)로 방·가구 관계를 선언하면 simulated annealing solver(Metropolis-Hastings, 지수 냉각, 위반을 줄이는 move는 항상 수락)가 addition/deletion/pose/reassignment/swap move로 해를 찾는다. v2.0.0a1/a2에서 procfunc 기반으로 전면 재작성됐다(Python 3.11, uv, PyPI infinigen==2.0.0a2, 프리뷰).",
+      "how_to_use": "v1.x 예시: python -m infinigen_examples.generate_indoors --seed 0 --task coarse --output_folder outputs/indoors/coarse -g fast_solve.gin singleroom.gin -p compose_indoors.terrain_enabled=False restrict_solving.restrict_parent_rooms=[\\\"DiningRoom\\\"] (CPU 약 8분). 특정 가구만 풀려면 restrict_solving.restrict_child_primary=[\\\"KitchenCounter\\\"], consgraph_filters, compose_indoors.solve_steps_large=30 등을 쓴다. 내보내기: python -m infinigen.tools.export ... -f usdc -r 1024. 전체 씬 내보내기는 USDC만 지원하고, 머티리얼은 Albedo/Roughness/Normal/Metallic만 베이크된다. 제약 예(home.py): cl.StableAgainst(cu.back, cu.walltags, margin=uniform(0.1,0.3)), t.distance(tvstands).hinge(2,3).minimize(), cl.accessibility_cost(t, furniture).minimize(weight=5), cl.angle_alignment_cost(t, sofas, cu.front), cl.focus_score(s, tvstands) < 0.5, cl.min_distance_internal(lights) >= 1.",
+      "strengths": "관계(StableAgainst, SupportedBy, front_against 등)와 비용항(accessibility, angle alignment, center_stable_surface, focus_score)을 사람이 읽을 수 있는 코드로 표현한다. 이 문법을 LLM이 작성하는 DSL의 모범으로 삼을 수 있다. 결과물이 곧바로 .blend 파일이고, Blender 절차적 에셋과 머티리얼 품질이 높다. BSD-3.",
+      "weaknesses": "무겁다(방 하나에 CPU로 수 분, 대규모 생성은 256GB 설정 예시). v2.0은 알파라서 에셋 커버리지가 제한적이고, 새 배치 시스템은 문서화가 부족하다. 외부 에셋(Objaverse 등)을 끼워 넣으려면 코드 작업이 필요하다.",
+      "license_or_price": "BSD-3-Clause, 무료",
+      "status_date": "Indoors는 v1.4.0부터, 최신 v2.0.0a2 알파(2026년 기준, 정확한 날짜 미확인)",
+      "urls": [
+        "https://github.com/princeton-vl/infinigen",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen/core/constraints/example_solver/annealing.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/ExportingToExternalFileFormats.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "I-Design (atcelen/IDesign)",
+      "category": "연구 시스템 / 멀티에이전트 + 백트래킹 + Blender 배치",
+      "what_it_is": "Interior Designer / Interior Architect / Engineer 에이전트가 객체와 scene graph를 만들고, Layout Corrector와 Layout Refiner가 수정한 뒤, 백트래킹 알고리즘으로 좌표를 확정하는 시스템(ECCV 2024). OpenShape로 Objaverse 에셋을 검색하고 place_in_blender.py로 Blender에 배치한다. GPT-V가 렌더를 채점한다.",
+      "how_to_use": "IDesign(no_of_objects=15, user_input=\"A creative livingroom\", room_dimensions=[4.0,4.0,2.5]) → create_initial_design() → correct_design() → refine_design() → create_object_clusters() → backtrack() → to_json() → Blender에서 place_in_blender.py 실행. 관계 어휘: 객체 간 on/left of/right of/in front/behind/under/above, 방 요소 기준 on/in the corner, is_adjacent, facing(벽 방향 west/east/north/south_wall).",
+      "strengths": "관계 어휘가 제한적이라 LLM 출력이 안정적이다. Blender 배치 코드가 공개돼 있어 MCP 워크플로에 바로 응용할 수 있다(glTF import → origin을 BOUNDS 중심으로 → 목표 크기로 스케일 → 위치 → z 회전).",
+      "weaknesses": "place_in_blender.py는 z_angle에 +π를 더하는 보정을 한다(에셋 정면 규약 불일치의 흔적). 목표 크기로 비균일 스케일을 적용해 형태가 왜곡될 수 있다. 오래된 모델(GPT-4-1106, GPT-3.5)용 코드이고 라이선스 표기가 없다.",
+      "license_or_price": "라이선스 미표기",
+      "status_date": "ECCV 2024",
+      "urls": [
+        "https://github.com/atcelen/IDesign",
+        "https://raw.githubusercontent.com/atcelen/IDesign/main/schemas.py",
+        "https://raw.githubusercontent.com/atcelen/IDesign/main/agents.py",
+        "https://raw.githubusercontent.com/atcelen/IDesign/main/place_in_blender.py"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "LayoutGPT (weixi-feng/LayoutGPT)",
+      "category": "연구 시스템 / in-context layout 생성",
+      "what_it_is": "CSS 스타일 레이아웃 프롬프트와 3D-FRONT 예시를 in-context로 제공해 LLM이 bedroom/living room 3D 레이아웃(위치, 크기, 방향)을 직접 생성하는 방법(NeurIPS 2023).",
+      "how_to_use": "python run_layoutgpt_3d.py --dataset_dir ./ATISS/data_output. 실무 교훈: 비슷한 방 예시 K개를 retrieval로 붙이면 LLM의 좌표 출력 품질이 크게 오른다. MCP 프롬프트에 레퍼런스 레이아웃 JSON 2-3개를 넣는 방식으로 응용할 수 있다.",
+      "strengths": "구현이 단순하다. few-shot 예시의 효과를 보여준 초기 레퍼런스. MIT.",
+      "weaknesses": "좌표를 직접 생성하므로 충돌과 벽 관통이 생긴다(후속 연구들이 solver를 추가한 이유). 3D-FRONT 데이터 의존.",
+      "license_or_price": "MIT(포함된 GLIGEN/GLIP/ATISS 구성요소는 각 원 라이선스)",
+      "status_date": "NeurIPS 2023",
+      "urls": [
+        "https://github.com/weixi-feng/LayoutGPT"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneWeaver (Scene-Weaver/SceneWeaver)",
+      "category": "연구 시스템 / self-reflective 에이전트 + Blender",
+      "what_it_is": "planning → execution → 수정을 반복하는 reason-act-reflect 에이전트(NeurIPS 2025). 툴이 모듈화돼 있다. Initializer(GPT, MetaScenes, PhyScene/DiffuScene/ATISS), Implementer(SD + Tabletop Digital Cousins, GPT, rule-based), Modifier(레이아웃·회전·크기 수정, 관계 추가, 객체 삭제). Infinigen/Blender 위에서 동작한다.",
+      "how_to_use": "배경 모드: python main.py --prompt \"Design me a bedroom.\" --cnt 1 --basedir PATH. 대화형(소켓) 모드는 터미널 2개를 쓴다. 한쪽에서 python -m infinigen.launch_blender -m infinigen_examples.generate_indoors_vis --save_dir debug/ 로 Blender 서버를 띄우고, 다른 쪽에서 main.py ... --socket 을 실행한다(blender-mcp와 같은 소켓 브리지 구조). Isaac Sim용 USD 내보내기를 지원한다.",
+      "strengths": "여러 생성기(LLM, 데이터셋, 절차적)를 툴로 조합하는 설계가 MCP 툴 세트 설계와 직접 대응된다. Blender UI에서 진행을 실시간으로 볼 수 있다. BSD-3.",
+      "weaknesses": "bpy==3.6.0 고정. AzureOpenAI 기본이라 다른 LLM으로 바꾸려면 API 모듈을 수정해야 한다. 설치가 무겁다(Infinigen 의존).",
+      "license_or_price": "BSD-3-Clause",
+      "status_date": "NeurIPS 2025 (arXiv 2509.20414)",
+      "urls": [
+        "https://github.com/Scene-Weaver/SceneWeaver",
+        "https://raw.githubusercontent.com/Scene-Weaver/SceneWeaver/main/README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneSmith (nepfaff/scenesmith)",
+      "category": "연구 시스템 / 에이전트 기반 시뮬레이션용 실내 생성",
+      "what_it_is": "floor_plan → furniture → wall_mounted → ceiling_mounted → manipuland의 5단계로, 각 단계마다 planner / designer / critic 에이전트가 툴 호출로 방을 채우는 시스템(ICML 2026 Spotlight). 에셋은 SAM3D(32GB VRAM) 또는 Hunyuan3D-2(24GB)로 생성하거나 HSSD/Objaverse에서 검색한다. 출력은 Drake directives, MuJoCo MJCF, USD(실험적), Blender house.blend.",
+      "how_to_use": "python main.py +name=exp (experiment.pipeline.stop_stage=furniture 로 단계 제어). 가구 툴: generate_assets(설명, 원하는 치수 [w,d,h] m), add_furniture_to_scene_tool(asset_id, x, y, yaw°: z=0, 직립 고정), move/remove/rescale(uniform), snap_to_object_tool(id, target, orientation='toward'|'away'), check_physics, check_facing_tool, observe_scene. 설정값(base_furniture_agent.yaml): model gpt-5.2, designer/critic reasoning high, planner low, max_critique_rounds 3, early_finish_min_score 9, 한 항목이 2점 이상 하락하거나 총점이 1점 이상 하락하면 체크포인트 롤백, 렌더는 top 1024² + 측면 4뷰 512², snap step 0.01 m / margin 0.01 m, natural noise XY σ 0.03 m / yaw σ 1°, 충돌 판정 VHACD, 관통 임계 1 mm, 45° 이상 기울면 '넘어진 가구'.",
+      "strengths": "현재 공개된 것 중 가장 완성도 높은 '에이전트 + 툴 + 비평' 레퍼런스. 프롬프트 YAML에 실무 규칙이 그대로 들어 있다(커피테이블–소파 0.3-0.5 m, 주동선 0.7-1 m, 무관한 물체 간 최소 0.2 m, 벽 그림 높이 1.4-1.7 m, 가구 상단 위 20-40 cm, 'check_physics로 충돌 0 확인 전 완료 금지'). MIT.",
+      "weaknesses": "GPU 요구량이 크다(전체 파이프라인 45GB 이상 권장, L40S에서 테스트). OpenAI API 중심. 로보틱스 시뮬레이션용이라 AAA 미감(라이팅, 머티리얼)은 별도로 보강해야 한다. 코드 분석상 add/move 툴 자체에는 자동 충돌 해소가 없고, 별도의 check_physics와 snap 툴에 의존한다.",
+      "license_or_price": "MIT",
+      "status_date": "ICML 2026 Spotlight, arXiv 2602.09153, 약 600 stars",
+      "urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/README.md",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_critic_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_planner_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/furniture_tools.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/snapping_helpers.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/wall_agent/designer_agent.yaml"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SAGE (NVlabs/sage) - MCP 기반 레이아웃 서버",
+      "category": "연구 시스템 / MCP 서버로 구현된 장면 생성",
+      "what_it_is": "임베디드 AI 과제로부터 시뮬레이션용 방을 대량 생성하는 에이전트 프레임워크(CVPR 2026, arXiv 2602.10116). server/는 'MCP Scene Generation pipeline'의 서버 구현이고, layout.py가 FastMCP로 generate_room_layout, get_current_layout, clear_layout, get_room_details, list_rooms, get_layout_from_json 등의 툴을 노출한다. VLM은 Qwen3-VL, LLM은 GPT/gpt-oss-120b, 3D 생성은 TRELLIS, 머티리얼은 MatFuse, 시뮬레이션은 Isaac Sim/Lab을 쓴다. SAGE-10k(50개 방 유형, 1만 씬)를 공개했다.",
+      "how_to_use": "직접 돌리기보다 MCP 툴 설계와 배치 알고리즘의 레퍼런스로 쓰기를 권한다. object_placement_planner.py 흐름: LLM(claude-sonnet-4-20250514 또는 gpt-oss-120b 호출 코드 존재)이 Holodeck식 제약(edge/middle, close to/near/far, in front of/left of/right of/around, face to/face same as, center aligned)을 객체당 4-5개 생성 → DFS solver(grid_size=20, max_duration=max(300, n×60)초) → Shapely bbox 충돌 검사(3.5 cm 패딩) → 문·창 회전 영역을 사전 차단. 벽걸이는 벽마다 2D 그리드(density 20)에 가장자리 0.1 m 마진. 올려놓는 소품은 get_random_placements_on_target_object로 후보 150개를 샘플링한 뒤 physics critic으로 필터링. 프롬프트 규칙: 가구 점유율 30-40%, 주요 가구 사이 60-90 cm, 문 회전반경 약 90 cm 비움.",
+      "strengths": "'레이아웃 기능을 MCP 툴로 노출하고 LLM은 제약만 쓰게 한다'는 패턴의 실제 대규모 구현이다. physics critic과 semantic critic을 플래그로 켜고 끌 수 있다. Apache-2.0.",
+      "weaknesses": "Slurm, Isaac Sim, 자체 모델 서버 등 인프라 요구가 크다. README에 MCP 툴 문서가 없어 코드를 직접 읽어야 한다. 출력이 USD/Isaac 중심이고 Blender 연동은 언급이 없다.",
+      "license_or_price": "Apache-2.0(포함된 구성요소는 BSD-3/MIT/NVIDIA License 등 각자)",
+      "status_date": "CVPR 2026, arXiv 2602.10116",
+      "urls": [
+        "https://github.com/NVlabs/sage",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/README.md",
+        "https://github.com/NVlabs/sage/tree/main/server",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "HSM - Hierarchical Scene Motifs (3dlg-hcvc/hsm) + SceneMotifCoder (3dlg-hcvc/smc)",
+      "category": "연구 시스템 / 모티프(반복 배치 패턴) 기반 계층 생성",
+      "what_it_is": "SMC(3DV 2025 oral): Blender에서 만든 예시 배치(예: 테이블 위 식기 세트, 선반의 책)를 보고 LLM이 배치 프로그램을 작성하고, 이를 meta-program으로 일반화해 재사용한다. HSM(3DV 2026): 방 → 가구 → 가구 위 소품을 계층적으로 생성하고, 모티프와 support region(받침 면)을 사용한다. HSSD 에셋(약 72GB)을 쓴다.",
+      "how_to_use": "HSM: ./setup.sh → python main.py -d \"room description\"(README 기준 씬당 약 $0.80, 약 10분). SMC: Blender 3.6 LTS에서 예시를 만들고 custom property로 의미 라벨을 단 뒤 glb로 내보내 learn.py → inference.py. 실무 응용: 식탁 세팅, 책장, 욕실 소품처럼 반복되는 소품 배치를 '모티프 함수'(예: place_row(n, spacing), place_stack(n), place_grid)로 만들어 MCP 툴로 노출한다.",
+      "strengths": "소품 배치(책, 식기, 병 등)의 규칙성을 코드로 재현한다. 결과가 SceneEval로 평가 가능하다. MIT.",
+      "weaknesses": "HSSD 의존(용량이 크고 라이선스 확인 필요). OpenAI API 필수.",
+      "license_or_price": "MIT",
+      "status_date": "SMC 3DV 2025, HSM 3DV 2026",
+      "urls": [
+        "https://github.com/3dlg-hcvc/hsm",
+        "https://github.com/3dlg-hcvc/smc"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "DiffuScene / PhyScene / ATISS (3D-FRONT 학습형 생성 모델)",
+      "category": "연구 시스템 / 데이터 학습형(diffusion, autoregressive)",
+      "what_it_is": "ATISS(NeurIPS 2021): floor plan 조건의 autoregressive transformer. DiffuScene(CVPR 2024): 객체 속성(class, 위치, 방향, 크기, shape latent)의 순서 없는 집합에 대한 denoising diffusion. 텍스트 조건 생성, 씬 완성, 재배치를 지원한다. PhyScene(CVPR 2024 highlight): guided diffusion에 충돌, 방 경계, reachability guidance를 추가해 물리적으로 상호작용 가능한 씬을 만든다.",
+      "how_to_use": "3D-FRONT/3D-FUTURE를 받아 preprocess_data.py로 전처리(top-down 투영 포함)하고, 사전학습 가중치로 생성한다. PhyScene은 ProTHOR 연동으로 임의 floor plan에 생성하는 lite 경로를 제공한다. SceneWeaver가 이들을 Initializer 툴로 쓰는 것처럼, LLM 에이전트의 '초기 배치 제안기'로 쓰는 것이 실무적이다.",
+      "strengths": "실제 인테리어 분포를 학습해 통계적으로 자연스러운 배치를 만든다. 빠르다.",
+      "weaknesses": "학습한 방 유형(bedroom/living/dining/library)과 3D-FUTURE 카테고리 밖으로 일반화가 약하고 open-vocabulary가 아니다. 데이터셋 라이선스 제약(원문 미확인). README상 Blender 연동 언급이 없다.",
+      "license_or_price": "각 repo LICENSE 파일(세부 미확인). 3D-FRONT 이용약관 별도",
+      "status_date": "ATISS 2021, DiffuScene/PhyScene 2024",
+      "urls": [
+        "https://github.com/nv-tlabs/ATISS",
+        "https://github.com/tangjiapeng/DiffuScene",
+        "https://github.com/PhyScene/PhyScene"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "ReSpace / DirectLayout / OptiScene / MesaTask / NaLA (LLM 파인튜닝형 레이아웃, 2025-2026)",
+      "category": "연구 시스템 / 파인튜닝·선호정렬 LLM",
+      "what_it_is": "ReSpace(ICLR 2026, Stanford): 구조화된 씬 표현(SSR, JSON)으로 SG-LLM을 SFT + preference alignment로 학습해 객체 추가·삭제·교체 편집을 한다(3D-FUTURE 에셋, 가중치는 HF). DirectLayout(NeurIPS 2025): BEV 레이아웃 → 3D lifting → refinement, CoT 기반 보상. 학습 모델은 공개하지 않았고 저자는 최신 LLM으로 대체 가능하다고 밝힘. OptiScene(NeurIPS 2025): Qwen2.5-7B-Instruct에 SFT + 2단계 DPO, 3D-SynthPlace 데이터셋. MesaTask(NeurIPS 2025 spotlight): 탁상 씬용 Spatial Reasoning Chain(객체 추론 → 관계 추론 → scene graph → 3D), MesaTask-10K(약 10,700개), DPO + 물리 후처리. NaLA(ECCV 2026): 포인트클라우드를 native 3D 토큰으로 LLM(Qwen2.5-7B)에 넣는 레이아웃 에이전트.",
+      "how_to_use": "상용 프론티어 모델 + MCP 워크플로를 쓴다면 직접 쓰기보다 아이디어를 가져오는 편이 좋다. ReSpace의 'add/remove/swap 편집 명령 분해', MesaTask의 '관계 추론 → scene graph → 좌표' 3단계 체인, DirectLayout의 'BEV(top-down) 먼저 → 높이 lifting' 순서를 프롬프트 체인으로 재현한다. 로컬 모델이 필요하면 ReSpace와 OptiScene 코드를 참고한다.",
+      "strengths": "소형 LLM으로도 구조화된 레이아웃 출력이 가능함을 보여준다. 편집(추가·삭제) 시나리오가 명확하다.",
+      "weaknesses": "가중치 미공개인 경우가 있다(DirectLayout 모델, OptiScene 가중치 'coming soon', NaLA 체크포인트는 계획 단계). 3D-FRONT 계열 카테고리 한계. Blender 연동은 README 기준 없음.",
+      "license_or_price": "OptiScene MIT, NaLA MIT, MesaTask Apache, ReSpace/DirectLayout 라이선스 미표기",
+      "status_date": "2025-06 ~ 2026 (ICLR/ECCV 2026)",
+      "urls": [
+        "https://github.com/GradientSpaces/respace",
+        "https://github.com/rxjfighting/DirectLayout",
+        "https://github.com/PolySummit/OptiScene",
+        "https://github.com/InternRobotics/MesaTask",
+        "https://github.com/adamcwan/NaLA-code"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneReVis (Runder-sun/SceneReVis)",
+      "category": "연구 시스템 / Render→Evaluate→Revise 멀티턴 RL",
+      "what_it_is": "Qwen2.5-VL을 SFT 후 GRPO 기반 multi-turn RL로 학습한 7B 모델. add_object, move_object, rotate_object 등의 툴 호출로 씬을 편집하고, Blender 4.0.2로 overhead + diagonal 2뷰를 렌더해 스스로 평가하고 수정한다. 보상은 voxel 기반 물리(충돌, 경계 이탈)와 VLM 평가(rationality, spatial layout, accessibility 0-10). SceneChain-12K(11,444개 대화 궤적, 약 8만 장 렌더)를 공개했다.",
+      "how_to_use": "상용 모델로 MCP 루프를 짤 때 '2뷰 렌더 → 0-10 루브릭 채점 → 툴 호출 수정'을 그대로 쓴다. 로컬 대안으로 SceneReVis-7B를 사용할 수 있다.",
+      "strengths": "렌더 피드백 루프를 학습으로 강화한 최신 사례. 코드, 데이터, 가중치가 공개됐다. MIT.",
+      "weaknesses": "7B 모델이라 스타일 이해와 개방형 에셋 대응은 상용 모델보다 약할 수 있다(미검증).",
+      "license_or_price": "MIT",
+      "status_date": "arXiv 2602.09432 (2026-02)",
+      "urls": [
+        "https://github.com/Runder-sun/SceneReVis"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneAssistant / Code-as-Room / R³L (2026 Blender·코드 기반 에이전트)",
+      "category": "연구 시스템 / 시각 피드백 에이전트, 코드 생성",
+      "what_it_is": "SceneAssistant: 액션 API로 배치하고, 매 스텝 Blender EEVEE 렌더(step_i.png)를 VLM(기본 Gemini 3 Flash Preview)이 보고 다음 행동을 결정한다. 에셋은 Hunyuan3D-2 + Z-Image로 생성하며 예시는 20스텝. Code-as-Room(arXiv 2605.18451): top-down 방 이미지 한 장을 13단계 파이프라인으로 실행 가능한 Blender(3.6+) 코드로 변환한다(Apache-2.0). R³L(ICML 2026, arXiv 2605.06758): 상대적 공간 관계로부터 3D 레이아웃을 추론하며 retriever/planner/solver 구조이고 Holodeck과 LayoutVLM을 기반으로 한다(MIT).",
+      "how_to_use": "Code-as-Room은 레퍼런스 평면도·무드보드 이미지 → Blender 코드 경로에 해당하므로, 사용자가 원하는 배치를 top-down 스케치로 주는 워크플로의 근거가 된다. SceneAssistant의 스텝별 렌더 로그 구조(scene.json + step_i_state.json)는 MCP 세션 체크포인트 설계에 참고할 만하다.",
+      "strengths": "Blender 연동이 명확하다. 최신 모델(Gemini 3 Flash)을 기본으로 쓴다.",
+      "weaknesses": "모두 초기 코드(커밋 수 적음). SceneAssistant는 라이선스 미표기. 정량 결과는 논문 원문 미확인.",
+      "license_or_price": "Code-as-Room Apache-2.0, R³L MIT, SceneAssistant 미표기",
+      "status_date": "2026",
+      "urls": [
+        "https://github.com/ROUJINN/SceneAssistant",
+        "https://github.com/YxuanAr/Code-as-Room",
+        "https://github.com/Neal2020GitHub/R3L"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "기타 기존 연구: AnyHome, SceneTeller, SceneCraft, 3D-GPT",
+      "category": "연구 시스템 / 초기 LLM 장면 생성",
+      "what_it_is": "AnyHome(ECCV 2024): 자유 텍스트 → 구조화된 집 레이아웃 → floor plan → 배치 → SDS 정제와 텍스처. 모듈별 코드를 점진적으로 공개했다. SceneTeller(ECCV 2024): LLM in-context 레이아웃 → 3D-FUTURE 조립 → 3DGS 스타일화. 코드 공개(2024-12), MIT. SceneCraft(ICML 2024, Hu et al.): 텍스트를 Blender Python 코드로 바꾸는 LLM 에이전트. scene graph 청사진과 GPT-V 렌더 비평 루프를 쓴다(논문 원문 미확인, 코드 공개 여부 미확인). 3D-GPT(3DV): 멀티 에이전트가 Infinigen 절차적 함수 호출 스크립트를 생성한다.",
+      "how_to_use": "SceneCraft의 'scene graph → 관계 제약 → Blender 코드 → 렌더 비평' 구조가 오늘날 Blender MCP 워크플로의 원형이다. 3D-GPT는 Infinigen 함수 문서를 LLM 컨텍스트로 제공하는 방식을 참고할 만하다.",
+      "strengths": "개념적 원형.",
+      "weaknesses": "모델이 오래됐고(GPT-4 시대) 일부 코드는 미완.",
+      "license_or_price": "SceneTeller MIT, 나머지 미확인",
+      "status_date": "2023-2024",
+      "urls": [
+        "https://github.com/FreddieRao/anyhome_github",
+        "https://github.com/sceneteller/SceneTeller",
+        "https://github.com/Chuny1/3DGPT",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "2026 후속 연구 워치리스트 (Awesome-3D-Scene-Generation 기준)",
+      "category": "연구 동향",
+      "what_it_is": "2026년 학회와 arXiv의 레이아웃·에이전트 장면 생성 연구: Scenethesis(ICLR 2026, NVIDIA, 언어 + 비전 에이전트), HOG-Layout(CVPR 2026, VLM 기반 계층 생성·최적화·편집), LaviGen(CVPR 2026), SceneOrchestra(ECCV 2026, 전체 tool-call 궤적 생성), Global Graph-Validated Optimization(ECCV 2026), SpatialGrammar(arXiv 2026, LLM 실내 생성용 DSL), SceneMosaic(arXiv 2026, 하이브리드 에이전트 레이아웃 진화), ScenePilot(grow-and-repair), Global-Local MCTS(VLM 트리 탐색), SceneCode(관절 객체 포함 실행 가능 월드 프로그램), MANSION(다층 건물), WorldClaw(Tencent Hunyuan 에이전트 오픈월드, arXiv 2608.05248, 현재 repo는 README만), GardenDesigner(CVPR 2026, 강남 정원 미학 원칙을 에이전트 체인으로 인코딩), LandCraft(AAAI 2026, 조경, 코드 준비 중), RAISECity/MajutsuCity/Yo'City(도시 스케일).",
+      "how_to_use": "새 기법을 도입할 때 '제약 DSL(SpatialGrammar)', '툴콜 궤적 학습(SceneOrchestra)', '트리 탐색(MCTS)', '성장-수리 정책(ScenePilot)' 같은 키워드로 추적한다. 실무에 바로 쓸 수 있는 것은 코드가 공개된 SceneSmith, SAGE, SceneReVis, Code-as-Room 정도다.",
+      "strengths": "2026년 연구 흐름을 한눈에 볼 수 있다.",
+      "weaknesses": "이번 세션에서는 대부분 초록과 원문을 확인하지 못했다(arXiv와 프로젝트 페이지 접근 차단). 목록의 학회 표기만 확인됨.",
+      "license_or_price": "각기 다름",
+      "status_date": "2026-09 기준 목록",
+      "urls": [
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw",
+        "https://github.com/RyuZhihao123/LandCraft_26"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneEval (3dlg-hcvc/SceneEval)",
+      "category": "평가 벤치마크",
+      "what_it_is": "텍스트 조건 실내 장면 생성의 의미적 정합성을 평가하는 프레임워크(WACV 2026 oral). 지표 10개 중 VLM이 필요 없는 것은 Collision, Navigability, Out of Bounds, Opening Clearance이고, VLM(GPT-4o)이 필요한 것은 Object Count, Attribute, Object-Object Relationship, Object-Architecture Relationship, Support, Accessibility다. SceneEval-500 데이터셋. ATISS, DiffuScene, LayoutGPT, InstructScene, Holodeck, LayoutVLM, HSM 출력을 지원한다.",
+      "how_to_use": "자신의 MCP 파이프라인 결과(객체 transform + 에셋 id)를 SceneEval JSON 형식으로 내보내 자동 채점한다. 이 지표들을 그대로 MCP 에이전트의 셀프 체크리스트로 써도 된다.",
+      "strengths": "'레이아웃이 제대로 됐는가'를 정량화하는 표준 체크리스트. MIT.",
+      "weaknesses": "VLM 지표는 GPT-4o 의존. 에셋 소스가 3D-FUTURE, Objathor, HSSD 등으로 제한된다.",
+      "license_or_price": "MIT",
+      "status_date": "WACV 2026, arXiv 2503.14756",
+      "urls": [
+        "https://github.com/3dlg-hcvc/SceneEval",
+        "https://raw.githubusercontent.com/3dlg-hcvc/SceneEval/main/README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderGym (richard-guyunqi/BlenderGym-Open)",
+      "category": "평가 벤치마크 / VLM의 Blender 편집 능력",
+      "what_it_is": "VLM 시스템의 3D 그래픽 편집 능력을 평가하는 벤치마크(CVPR 2025 Highlight). task 카테고리에 object placement(--task placement)가 포함된다. GPT-4o, Claude, Gemini, InternVL2, Qwen2-VL 등 20개 이상의 VLM을 지원한다.",
+      "how_to_use": "모델을 고를 때 placement 과제로 후보 모델(Claude, GPT, Gemini)의 Blender 배치 편집 능력을 직접 비교한다. inference.py → evaluation.py → eval_renders/overall_scores.json.",
+      "strengths": "Blender 실제 편집 기반 평가.",
+      "weaknesses": "라이선스 미표기. 2026년 최신 모델 결과는 확인 못함.",
+      "license_or_price": "미표기",
+      "status_date": "2025-04 공개",
+      "urls": [
+        "https://github.com/richard-guyunqi/BlenderGym-Open"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "데이터셋: 3D-FRONT / 3D-FUTURE, HSSD, Objaverse(objathor)",
+      "category": "데이터셋 / 에셋",
+      "what_it_is": "3D-FRONT/3D-FUTURE(Alibaba): 전문가가 디자인한 실내 레이아웃과 가구 모델. ATISS, DiffuScene, PhyScene, LayoutGPT, ReSpace, SceneTeller의 학습·조립 기반이다. HSSD(Habitat Synthetic Scenes Dataset): 211개 씬, 18,656개 실물 기반 객체 모델. HSM과 SceneSmith가 사용한다. objathor(allenai): Objaverse 에셋을 GPT-4 annotation(카테고리, 설명 등)과 함께 AI2-THOR 에셋으로 변환한다(Holodeck, LayoutVLM 사용).",
+      "how_to_use": "레이아웃 few-shot 예시나 규칙 추출에는 3D-FRONT 씬 JSON을 쓴다(3D-FRONT-ToolBox로 파싱). 배치용 에셋은 정면 방향, 실측 크기, 받침 면(support surface)이 annotation된 것(HSSD, objathor)을 우선한다.",
+      "strengths": "정면·크기 정규화된 에셋은 배치 실패의 절반을 없앤다.",
+      "weaknesses": "3D-FRONT와 HSSD는 연구·비상업 약관일 가능성이 높다(이번 세션에서 원문 미확인이므로 상업 사용 전 반드시 확인). Objaverse는 객체별 CC 라이선스가 제각각이다.",
+      "license_or_price": "각 데이터셋 약관(미확인), objathor 코드는 Apache-2.0",
+      "status_date": "3D-FRONT 2020-21, HSSD 2023",
+      "urls": [
+        "https://github.com/3D-FRONT-FUTURE/3D-FRONT-ToolBox",
+        "https://github.com/3dlg-hcvc/hssd",
+        "https://github.com/allenai/objathor",
+        "https://github.com/nv-tlabs/ATISS"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Vibe3DScene (3DSceneAgent/Vibe3DScene)",
+      "category": "MCP 기반 Blender 장면 에이전트",
+      "what_it_is": "LangGraph 런타임 + MCP 툴(langchain-mcp-adapters) + Blender-MCP로 자연어 장면을 만드는 에이전트. direct_mode/plan_mode와 실험적 dual-agent 구성을 지원한다. VLM 시각 검사 위에 형상 관통(penetration) 검사를 옵션으로 추가할 수 있다(SCENE_AGENT_ENABLE_PENETRATION_VERIFY=true). 에셋 생성·검색은 TRELLIS.2, Tripo, Hyper3D Rodin, Sketchfab, PolyHaven.",
+      "how_to_use": "Python 3.11+, Blender 3.6+, Node 18+, Redis(권장). plan_mode로 과제를 계획한 뒤 실행하고, penetration verify를 켜서 충돌 씬을 거른다.",
+      "strengths": "'VLM 눈 + 기하 검사'를 결합한 MCP 레퍼런스 구현. Apache-2.0.",
+      "weaknesses": "지원 LLM 목록과 정량 품질이 README에 불명확하다. 커뮤니티 규모 작음(약 90 stars).",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2026 활동 중(커밋 87개)",
+      "urls": [
+        "https://github.com/3DSceneAgent/Vibe3DScene",
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/README.md",
+        "https://github.com/topics/blender-mcp"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "blend-ai (HoldMyBeer-gg/blend-ai)",
+      "category": "Blender MCP 서버 / 배치 관련 툴 풍부",
+      "what_it_is": "175개 툴을 가진 Blender MCP 서버. Transforms(위치·회전·스케일·apply·snap), Objects(origin 설정 등), Physics(rigid body, bake), Modeling(Array 등), OpenGL 렌더 기반 시각 피드백 루프를 제공한다. Blender 4.2+ 지원(5.1까지 테스트). stdio 전송으로 Claude Code/Desktop 등에서 쓸 수 있다.",
+      "how_to_use": "배치 작업에서는 execute_code 대신 snap, origin, rigid body 같은 전용 툴을 우선 호출하게 프롬프트한다(툴 단위가 작을수록 실패가 국소화된다).",
+      "strengths": "원자적 툴이 많아 단계별로 검증하기 쉽다.",
+      "weaknesses": "AGPL-3.0이라 상용 통합 시 주의. 툴 수가 많으면 컨텍스트를 많이 쓴다.",
+      "license_or_price": "AGPL-3.0-or-later",
+      "status_date": "2026",
+      "urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "blender-skills (arjun988/blender-skills) - set-dressing / scene-assembly 스킬",
+      "category": "에이전트 스킬 라이브러리 (Claude Code/Cursor/Codex + Blender MCP)",
+      "what_it_is": "94개 Blender 스킬 모음(v1.3.0, MIT). 배치 관련으로 scene-assembly, set-dressing, physics-sim, collision-proxy, geometry-nodes가 있다. set-dressing 규칙: 밀도 구역(Hero 상호작용 구역은 의도는 높게 잡음은 낮게, 중경은 스토리 클러스터, 배경은 드물게 실루엣만, 이동 경로는 비움). 스토리 비트 하나(버려진 식사, 쓰던 작업대, 급한 탈출)마다 소품 3-7개와 마모·데칼 단서 1-2개. 금지: 균일하게 깔린 잡동사니, 이유 없이 문·창 막기. scene-assembly: COL_Layout/COL_SetDressing/COL_Lights 등 컬렉션 계층, 그레이박스로 스케일과 동선을 먼저 확정, 모듈 키트는 그리드 스냅, 반복 메쉬는 인스턴싱.",
+      "how_to_use": ".claude/skills/set-dressing/SKILL.md를 에이전트에 로드하고 '그레이박스 → 동선 확인 → 스토리 클러스터 dressing' 순서를 강제한다.",
+      "strengths": "아트 디렉션 관점의 배치 규칙(스토리텔링 클러스터)을 에이전트가 따를 수 있는 형태로 정리했다.",
+      "weaknesses": "수치(회전·스케일 지터 범위 등)는 없다. 개인 프로젝트.",
+      "license_or_price": "MIT",
+      "status_date": "2026 (v1.3.0)",
+      "urls": [
+        "https://github.com/arjun988/blender-skills",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/set-dressing/SKILL.md",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/scene-assembly/SKILL.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Blender Python API: mathutils.bvhtree.BVHTree / Scene.ray_cast / rigidbody 연산자",
+      "category": "Blender API (충돌·스냅·물리 안착)",
+      "what_it_is": "BVHTree: FromObject(object, depsgraph, *, deform=True, cage=False, epsilon=0.0), FromBMesh(bmesh, *, epsilon=0.0), FromPolygons(vertices, polygons, *, all_triangles=False, epsilon=0.0). 메서드는 overlap(other_tree)(겹치는 폴리곤 인덱스 쌍 리스트), ray_cast(origin, direction, distance), find_nearest, find_nearest_range. Scene.ray_cast(depsgraph, origin, direction, distance)는 월드 공간 evaluated geometry에 대해 (result, location, normal, index, object, matrix)를 반환한다. 연산자: rigidbody.bake_to_keyframes(frame_start=1, frame_end=250, step=1), rigidbody.object_settings_copy, rigidbody.connect.",
+      "how_to_use": "MCP의 execute_blender_code로 배치 검증 유틸을 먼저 등록한 뒤, 에이전트가 매 배치 후 호출하게 한다(know_how의 코드 참고). BVHTree.FromObject는 오브젝트 로컬 좌표이므로, 두 객체의 overlap은 bmesh.transform(obj.matrix_world)로 월드 변환한 FromBMesh 트리끼리 비교한다.",
+      "strengths": "정확한 메쉬 수준 충돌 검사와 표면 스냅이 가능하다. 추가 설치 불필요.",
+      "weaknesses": "overlap은 표면 교차만 잡고, 한 물체가 다른 물체 안에 완전히 들어간 경우는 못 잡는다(AABB 포함 검사를 병행해야 함). 고폴리 메쉬는 느리다(decimate 프록시 권장).",
+      "license_or_price": "Blender GPL, 무료",
+      "status_date": "Blender main 브랜치 소스 기준(2026-09)",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/makesrna/intern/rna_scene_api.cc",
+        "https://raw.githubusercontent.com/blender/blender/main/scripts/startup/bl_operators/rigidbody.py"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Geometry Nodes 산포: Distribute Points on Faces (+ Instance on Points)",
+      "category": "Blender 절차적 scatter (외부 환경 배치)",
+      "what_it_is": "Distribute Points on Faces 노드. 입력은 Mesh, Selection, Distance Min(기본 0), Density Max(기본 10), Density(기본 10), Density Factor(0-1), Seed. 모드는 Random과 Poisson Disk(최소 간격 보장). 출력은 Points, Normal, Rotation. Instance on Points와 조합해 식생, 바위, 소품을 산포한다. Geo-Scatter(구 Scatter5, BD3D의 상용 애드온)는 이 위에 biome 프리셋과 마스크 UI를 얹은 도구로 알려져 있다(이번 세션에서 원문 미확인).",
+      "how_to_use": "Poisson Disk로 수종별 Distance Min을 준다(예: 큰 나무 3-6 m, 관목 1-2 m, 바위 0.5-2 m; 실무 경험치). Density Factor에 vertex group·텍스처·경로 거리 기반 마스크를 연결해 밀도 falloff를 만든다. 나무는 월드 Z 정렬, 바위와 풀은 표면 Normal 정렬 + 약간의 틸트. 스케일 랜덤 0.8-1.2, Z 회전 0-360°. 경로와 건물 주변은 Selection으로 제외한다.",
+      "strengths": "비파괴적이고 LLM이 노드 파라미터만 조정하면 된다(좌표를 직접 찍는 것보다 안정적).",
+      "weaknesses": "Geo-Scatter 등 상용 애드온의 세부 기능, 버전, 가격은 이번 세션에서 확인하지 못했다.",
+      "license_or_price": "Blender 내장 무료. Geo-Scatter는 유료(가격 미확인)",
+      "status_date": "Blender main 소스 기준",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/geometry/nodes/node_geo_distribute_points_on_faces.cc"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "glTF 좌표 규약 (정면 방향 정규화의 기준)",
+      "category": "표준 / 방향 규약",
+      "what_it_is": "glTF 2.0 스펙: 오른손 좌표계, +Y가 위, 에셋의 정면은 +Z, 에셋의 왼쪽은 +X를 향한다. 단위는 m, 각도는 radian. Blender는 Z-up이고 관례상 정면이 -Y(Front 뷰가 -Y 쪽에서 봄)이므로, glTF import 시 Y-up→Z-up 변환으로 glTF +Z 정면이 Blender -Y 정면이 된다.",
+      "how_to_use": "에셋을 들여올 때 '정면 = Blender -Y, 원점 = 바닥 중앙, 크기 = 실측 m, 회전·스케일 적용(Ctrl+A)'으로 정규화하고, 에셋 메타데이터(front_axis, size_m)를 저장해 LLM에 제공한다. 솔버 규약(LayoutVLM은 0°가 +X, SceneSmith는 local +Y가 'toward')과의 오프셋을 한 곳에서 관리한다.",
+      "strengths": "방향 오류를 구조적으로 제거한다.",
+      "weaknesses": "Objaverse나 생성형 3D 에셋은 스펙을 따르지 않는 경우가 많아 VLM으로 정면을 판별해야 한다(다각도 렌더 → '어느 뷰가 정면인가' 질의).",
+      "license_or_price": "Khronos 공개 스펙",
+      "status_date": "glTF 2.0",
+      "urls": [
+        "https://raw.githubusercontent.com/KhronosGroup/glTF/main/specification/2.0/Specification.adoc"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "좌표를 직접 쓰게 하지 말고 '관계 제약 → 수치 solver'로 분리하라",
+      "why": "Holodeck, LayoutVLM, Infinigen, SAGE 모두 LLM은 의미(누가 누구를 보고, 어디에 붙는지)만 결정하고 좌표는 solver가 푼다. LLM이 직접 쓴 좌표(LayoutGPT류)는 충돌과 벽 관통이 잦다.",
+      "example": "LLM 출력(JSON): {\"id\":\"sofa_1\",\"relations\":[[\"against_wall\",\"wall_S\"],[\"facing\",\"tv_1\"],[\"distance\",\"tv_1\",2.0,3.0]]}, {\"id\":\"coffee_table_1\",\"relations\":[[\"in_front_of\",\"sofa_1\"],[\"distance\",\"sofa_1\",0.35,0.5],[\"center_aligned\",\"sofa_1\"]]}. 이후 Blender 내부 Python solver(그리드 DFS 또는 scipy)가 좌표를 계산한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ]
+    },
+    {
+      "tip": "제약 어휘는 7-10개로 제한하고 정의를 수치로 못박아라",
+      "why": "어휘가 모호하면 모델마다 해석이 달라진다. Holodeck은 near를 50-150 cm, far를 150 cm 이상으로 정의했고, LayoutVLM은 7개 함수 시그니처(on_top_of, against_wall, distance_constraint(min,max), align_with, point_towards, align_x, align_y)로 고정했다.",
+      "example": "권장 세트: against_wall(obj, wall, gap=0.02), facing(obj, target), next_to(obj, target, gap), on_top_of(obj, support), centered_on(obj, target), aligned(obj, target, axis), distance(obj, target, min, max), in_corner(obj, corner), clear_zone(obj, side, depth).",
+      "urls": [
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py"
+      ]
+    },
+    {
+      "tip": "객체당 제약 3-5개, 앵커 → 큰 가구 → 작은 가구 순서, 뒤의 객체는 앞의 것에만 의존",
+      "why": "SAGE 프롬프트는 '객체당 4-5개 제약이 planner를 크게 돕는다'고 명시한다. Holodeck은 '앵커는 global 제약만, 큰 것 먼저, 뒤에 놓는 객체는 앞의 객체에만 의존, 같은 종류는 정렬, 의자는 around'를 지시한다. 의존 그래프가 DAG가 되어 solver가 순차적으로 풀 수 있다.",
+      "example": "거실 순서: 러그 → 소파(against_wall, 초점 벽 맞은편) → TV장(맞은편 벽 중앙) → 커피테이블 → 암체어 2개(소파와 L자 또는 마주 보기) → 사이드테이블 → 플로어 램프 → 벽 그림 → 천장 조명 → 소품.",
+      "urls": [
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py"
+      ]
+    },
+    {
+      "tip": "계층 단계로 나눠 배치하라: floor plan → 바닥 가구 → 벽걸이 → 천장 → 표면 위 소품",
+      "why": "SceneSmith(5단계), HSM(방 → 가구 → 소품), SAGE(floor/wall/on-object 3분류)가 공통으로 채택했다. 단계마다 필요한 툴과 검사가 다르다(바닥은 2D 충돌, 벽은 벽면 2D 그리드, 소품은 support surface + 물리).",
+      "example": "MCP 세션을 단계별 체크포인트로 나눈다. 각 단계 끝에서 .blend를 저장해 두면, 다음 단계에서 문제가 생겨도 해당 단계만 롤백하면 된다(SceneSmith의 reset_scene_to_checkpoint 패턴).",
+      "urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://github.com/3dlg-hcvc/hsm",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py"
+      ]
+    },
+    {
+      "tip": "에셋 정규화가 배치 품질의 절반이다: 원점은 바닥 중앙, 정면 축 통일, 실측 m 스케일, 회전·스케일 적용",
+      "why": "Holodeck issue #92(에셋 정면 정렬 혼란), LayoutVLM issue #9(메쉬 스케일·회전 정규화 문제), I-Design의 z_angle +π 보정, 비균일 스케일 왜곡이 모두 이 문제에서 나온다. glTF 스펙상 원본 정면은 +Z이고 Blender에서는 -Y가 된다.",
+      "example": "Blender: 가져온 뒤 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True). bbox 하단 중앙에 3D 커서를 두고 origin_set(type='ORIGIN_CURSOR'). 목표 치수는 최대 축 기준 uniform scale로 맞춘다(비균일 스케일 금지). 정면 판별은 4방향 렌더를 VLM에 보여주고 '서랍·좌석·화면이 보이는 뷰'를 고르게 한다.",
+      "urls": [
+        "https://github.com/allenai/Holodeck/issues/92",
+        "https://github.com/sunfanyunn/LayoutVLM/issues/9",
+        "https://raw.githubusercontent.com/atcelen/IDesign/main/place_in_blender.py",
+        "https://raw.githubusercontent.com/KhronosGroup/glTF/main/specification/2.0/Specification.adoc"
+      ]
+    },
+    {
+      "tip": "방향(facing) 계산은 규약을 명시하고 공식으로 처리하라",
+      "why": "LLM은 '소파가 TV를 보게'는 잘 판단하지만 yaw 각도 부호에서 자주 틀린다. LayoutVLM은 0°가 +X이고 반시계 +, SceneSmith는 yaw를 degree 반시계로 쓰며 'toward'는 local +Y다. 규약이 섞이면 180°나 90° 오류가 난다.",
+      "example": "Blender 정면이 -Y인 에셋에서 target을 바라보게 하려면: d = target.xy - obj.xy; obj.rotation_euler.z = atan2(d.x, -d.y). 벽에 등을 붙일 때는 벽 법선(방 안쪽 방향) n에 대해 yaw = atan2(n.x, -n.y). 배치 후에는 check_facing(정면 벡터와 target 방향의 내적 > 0.9)으로 검증한다(SceneSmith는 시각 판단 대신 check_facing_tool로 검증하도록 강제).",
+      "urls": [
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_critic_agent.yaml"
+      ]
+    },
+    {
+      "tip": "raycast로 바닥·표면에 스냅하라 (자기 자신에 맞는 것을 피할 것)",
+      "why": "LLM이 준 z값은 거의 항상 틀린다. Scene.ray_cast는 월드 공간 evaluated geometry에 대해 (result, location, normal, index, object, matrix)를 준다.",
+      "example": "dg = bpy.context.evaluated_depsgraph_get(); bb=[obj.matrix_world @ Vector(c) for c in obj.bound_box]; minz=min(v.z for v in bb); origin = Vector((obj.location.x, obj.location.y, minz - 0.001)); hit, loc, nrm, idx, hobj, _ = scene.ray_cast(dg, origin, Vector((0,0,-1))); if hit: obj.location.z += loc.z - minz. 테이블 위 소품은 ray 시작점을 받침 객체 bbox 위(+2 m)로 두고, hobj가 목표 받침 객체인지 확인한다. 모서리 4점과 중심에서 ray를 쏴 기울어짐(normal.z < 0.95)을 검사한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/makesrna/intern/rna_scene_api.cc"
+      ]
+    },
+    {
+      "tip": "충돌 검사는 AABB로 1차 거르고 월드 좌표 BVHTree overlap으로 2차 확인하라",
+      "why": "BVHTree.FromObject는 로컬 좌표 트리라 두 객체를 그대로 비교하면 틀린다. overlap()은 표면 교차만 잡으므로, 완전히 포함된 경우를 잡으려면 AABB 포함 검사가 추가로 필요하다. SceneSmith는 관통 임계 1 mm, 무관한 객체 간 world bounds 최소 0.2 m, SAGE는 bbox에 3.5 cm 패딩을 쓴다.",
+      "example": "def wtree(o, dg): e=o.evaluated_get(dg); m=e.to_mesh(); bm=bmesh.new(); bm.from_mesh(m); bm.transform(o.matrix_world); t=BVHTree.FromBMesh(bm); bm.free(); e.to_mesh_clear(); return t. 판정: pairs = wtree(a,dg).overlap(wtree(b,dg)); collide = len(pairs) > 0. 고폴리 에셋은 decimate한 프록시로 검사한다. 결과는 '[(a,b,침투깊이추정)]' 텍스트로 LLM에 돌려준다.",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ]
+    },
+    {
+      "tip": "소품(책, 컵, 쿠션, 돌 더미)은 rigid body로 '떨어뜨려' 안착시킨 뒤 변환을 굳혀라",
+      "why": "쌓기와 기대기처럼 자연스러운 접촉은 solver보다 물리가 잘 만든다. SceneSmith는 5초(dt 0.001) 시뮬레이션으로 안정성을 검사하고, 45° 이상 기울면 '넘어짐'으로 판정한다. SAGE는 on-top 후보 150개를 physics critic으로 거른다.",
+      "example": "소품: rigid_body.type='ACTIVE', collision_shape='CONVEX_HULL'(오목한 그릇은 'MESH'). 가구와 바닥: 'PASSIVE', 'MESH'. 소품을 2-5 cm 띄워 놓고 scene.frame_set(1..120)으로 순차 진행 → bpy.ops.object.visual_transform_apply() → rigid body 제거. 또는 bpy.ops.rigidbody.bake_to_keyframes(frame_start=1, frame_end=120) 후 마지막 프레임 값을 쓴다. 안착 후 원위치에서 1 m 이상 이동했거나 45° 이상 기울었으면 실패로 보고 재배치한다(SceneSmith의 position_threshold 1.0, tilt 45°).",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/scripts/startup/bl_operators/rigidbody.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ]
+    },
+    {
+      "tip": "스냅은 '접근 후 한 스텝 후퇴' 방식으로 하라 (벽·가구에 딱 붙이기)",
+      "why": "SceneSmith의 snap_to_object는 방향을 정한 뒤 0.01 m 스텝으로 전진하다가 충돌하면 한 스텝 물러나고 0.01 m 마진을 남긴다. 부동소수점 오차로 생기는 관통과 틈을 동시에 막는다.",
+      "example": "against_wall: 벽 법선 반대 방향으로 1 cm씩 이동하다가 BVH/AABB 거리가 5 mm 미만이 되면 1 스텝 후퇴. 기능적 정면이 있는 가구(서랍장, 옷장, 가전)는 orientation='away'로 정면이 방 안을 향하게 하고, 의자는 orientation='toward'로 테이블을 향하게 한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/snapping_helpers.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml"
+      ]
+    },
+    {
+      "tip": "그리드·각도 스냅 후 '자연 노이즈'를 소량 더해 기계적 정렬감을 없애라",
+      "why": "완벽하게 정렬된 배치는 CG처럼 보이고, 무작위 회전은 '혼돈'으로 보인다(SceneSmith critic의 CHAOS DETECTION 항목). SceneSmith는 Natural 프로파일로 가구 XY σ 0.03 m / yaw σ 1°, 소품 XY σ 0.01 m / yaw σ 3°를 준다.",
+      "example": "벽붙이 가구: yaw를 90° 단위로 스냅한 뒤 ±1° 노이즈. 자유 배치 의자: 15° 단위 + ±3°. 소품: 5 mm 그리드 + ±3-8°. 위치는 1-5 cm 그리드. 식탁 의자는 일부를 5-10 cm 빼 두어 '사용 중' 느낌을 준다.",
+      "urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml"
+      ]
+    },
+    {
+      "tip": "top-down orthographic + 측면 4뷰를 좌표 그리드·ID 라벨과 함께 렌더해 VLM 비평 루프를 돌려라",
+      "why": "VLM은 원근 뷰만 보면 거리를 잘 못 읽는다. SceneSmith는 top 1024² + side 4×512²(top_plus_sides)를 쓰고 'top-down 뷰가 좌표 읽기에 최적'이라고 명시한다. LayoutVLM은 렌더에 좌표 마크와 에셋 이름을 오버레이하고, SceneReVis는 overhead + diagonal 2뷰를 쓴다.",
+      "example": "Blender: cam.data.type='ORTHO'; cam.data.ortho_scale=max(W,D)*1.1; 방 중심 위 높이 10 m에서 수직으로 내려다봄. 0.5 m 간격 그리드 평면(emission 얇은 선)과 객체 ID 텍스트(또는 PIL 후처리 오버레이)를 넣고 Workbench/EEVEE로 빠르게 렌더. MCP에서는 get_viewport_screenshot 대신 이 전용 렌더 함수를 등록해 쓴다.",
+      "urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/layoutvlm.py",
+        "https://github.com/Runder-sun/SceneReVis"
+      ]
+    },
+    {
+      "tip": "비평 루브릭은 점수화하고 종료·롤백 규칙을 명시하라",
+      "why": "종료 조건이 없으면 에이전트가 끝없이 고치거나 오히려 망친다. SceneSmith planner는 Realism/Functionality/Layout/Completeness/Prompt Following/Reachability 6항목을 0-10점으로 매긴다. 모두 9점 이상이면 즉시 종료하고, 최대 3라운드(소품은 2라운드), 같은 문제가 2회 이상 반복되면 중단한다. 한 항목이 2점 이상 떨어지거나 총점이 1점 이상 떨어지면 체크포인트로 롤백한다. 물리 충돌이 있으면 Realism은 최대 4점으로 제한한다.",
+      "example": "Critic 프롬프트: \"아래 top-down과 측면 이미지를 보고 6개 항목을 0-10점으로 채점하라. 충돌 보고가 비어 있지 않으면 Realism ≤ 4. 각 문제는 (object_id, 문제, 구체적 수정: 이동 벡터 m 또는 회전°)로 출력하라.\"",
+      "urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_critic_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_planner_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml"
+      ]
+    },
+    {
+      "tip": "'충돌 0 확인 전 완료 금지'를 프롬프트에 하드 규칙으로 넣어라",
+      "why": "SceneSmith 디자이너 지시문은 'check_physics로 충돌 0을 확인하기 전에는 작업을 끝내면 안 된다. 해결 못 하는 충돌은 객체 삭제가 낫다'고 명시한다. SAGE 프롬프트는 떠 있는 물체, 바닥 과밀, 비정상 크기, 충돌, 방향 오류, 벽에서 떨어진 소파를 금지 목록으로 둔다.",
+      "example": "시스템 프롬프트 끝에: \"DONE 조건: collisions==[] AND floating==[] AND blocked_doors==[] AND min_walkway>=0.9m. 하나라도 위반하면 DONE을 선언하지 말고 수정하거나 해당 객체를 삭제하라.\"",
+      "urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py"
+      ]
+    },
+    {
+      "tip": "MCP 툴은 원자적으로, 한 번 호출에 객체 1-3개만 다뤄라",
+      "why": "mcp-for-blender(구 blender-mcp) README는 '복잡한 작업은 작은 단계로 나눠야 할 수 있다'고 경고한다. 긴 execute_blender_code는 타임아웃과 부분 실패가 나기 쉽다(2026년 이슈에 timeout 사례 다수). SAGE와 SceneSmith는 add, move, remove, snap, check처럼 잘게 쪼갠 툴을 쓴다.",
+      "example": "권장 MCP 툴 세트(직접 구현 시): get_room_state()→JSON, add_asset(asset_id, x, y, yaw), move(id, x, y, yaw), snap(id, target, mode), drop_to_surface(id), check_scene()→{collisions, floating, out_of_bounds, blocked_openings, walkway_min}, render_topdown()→PNG, checkpoint(name) / rollback(name).",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/blender-mcp/issues?q=is%3Aissue%20scene",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/furniture_tools.py"
+      ]
+    },
+    {
+      "tip": "문·창 주변과 동선을 '금지 영역'으로 먼저 깔고 가구를 놓아라",
+      "why": "SAGE는 문·창 회전 영역을 사전에 차단 영역으로 계산하고, 문 회전반경 약 90 cm와 주요 가구 사이 60-90 cm 동선을 규칙으로 둔다. SceneEval도 Opening Clearance와 Navigability를 독립 지표로 둔다. 나중에 동선을 확보하려 하면 전체 재배치가 필요해진다.",
+      "example": "방 폴리곤에서 문 앞 0.9×0.9 m, 창 앞 0.6 m 깊이, 주동선 폭 0.9 m 스트립을 빼서 배치 가능 영역을 만든다. 가구 배치 뒤에는 2D occupancy grid(5 cm)에서 로봇 반경 0.25-0.3 m로 BFS 연결성을 검사한다(모든 방 입구와 주요 가구 앞이 도달 가능해야 함).",
+      "urls": [
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py",
+        "https://github.com/3dlg-hcvc/SceneEval"
+      ]
+    },
+    {
+      "tip": "실내 치수 규칙(코드와 프롬프트에서 확인된 값)",
+      "why": "LLM이 스스로 판단하게 두기보다 수치를 주입하면 결과가 안정된다. 아래는 실제 오픈소스 시스템에 들어 있는 값이다.",
+      "example": "Infinigen home.py: 소파–TV장 2-3 m(hinge), 사이드테이블은 벽에서 0.3 m 이내, 소파 벽 마진 0.1-0.3 m, 조명 간 최소 1 m, 벽 장식은 바닥에서 0.6 m 이상, 식탁당 의자 3-6개, 방 가구 fullness 0.6-0.9. SceneSmith: 커피테이블–소파 0.3-0.5 m, 카운터 뒤 0.5-0.7 m, 주동선 0.7-1.0 m, 무관한 물체 간 0.2 m 이상, 그림·거울 중심 1.4-1.7 m, 대형 작품 1.2-1.5 m, 선반 1.2-1.8 m, 시계 1.5-1.8 m, 가구 상단 위 20-40 cm, 그룹 간격 0.1-0.3 m. SAGE: 가구 점유율 30-40%, 동선 60-90 cm, 문 회전 90 cm. Holodeck: near 50-150 cm, far 150 cm 이상, 같은 종류 벽걸이는 같은 높이.",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/wall_agent/designer_agent.yaml",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py"
+      ]
+    },
+    {
+      "tip": "업계 통용 인테리어 수치(보조 기준, 이번 세션에서 원문 미확인)",
+      "why": "NKBA, THX/SMPTE 등에서 널리 인용되는 경험 규칙. 원문 사이트 접근이 차단돼 수치를 재확인하지 못했으므로, 프롬프트에 넣을 때는 범위로 주고 필요하면 원문을 확인할 것.",
+      "example": "주동선 90-120 cm(최소 75 cm). 소파–커피테이블 35-50 cm, 커피테이블 길이는 소파의 약 2/3. TV 시청거리: SMPTE 약 30° 시야각이면 약 1.6×대각선, THX 약 36-40°이면 약 1.2×대각선(65인치 ≈ 2.0-2.6 m), 화면 중심은 앉은 눈높이 약 100-110 cm. 식탁: 테이블 가장자리–벽 90 cm(의자 빼기), 뒤로 통행하면 110-120 cm, 1인당 폭 60 cm, 펜던트는 상판 위 75-90 cm. 침대: 양옆 60-90 cm, 발치 90 cm 이상, 협탁 상판은 매트리스 상단 ±5 cm. 러그: 거실은 모든 좌석 앞다리가 러그 위, 벽과 30-45 cm 여백. 침실은 침대 양옆으로 45-60 cm 노출. 식탁 러그는 테이블보다 사방 60 cm 이상. 주방 작업 삼각형은 각 변 1.2-2.7 m, 합 7.9 m 이하. 대화 그룹 좌석 간 2.4-3 m 이내. 조명은 ambient + task + accent 3층.",
+      "urls": []
+    },
+    {
+      "tip": "초점(focal point)과 그룹핑을 먼저 정하라",
+      "why": "Infinigen은 focus_score(소파가 TV를 향함)와 angle_alignment_cost(커피테이블 정면을 소파에 정렬)로 '시선 방향'을 최적화한다. SceneSmith critic은 '대화 영역 일관성'과 '관련 가구의 스케일 매칭(책상–의자 높이)'을 평가한다. 초점이 없으면 가구가 벽을 따라 흩어진 '대기실' 배치가 된다.",
+      "example": "프롬프트: \"1) 이 방의 초점 1개(TV벽/벽난로/창 전망)를 정하라. 2) 기능 그룹(대화, 식사, 작업, 수면)을 정의하고 그룹마다 앵커와 멤버를 나열하라. 3) 그룹 사이 주동선을 먼저 그어라. 4) 그 다음에 relations를 작성하라.\"",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_critic_agent.yaml"
+      ]
+    },
+    {
+      "tip": "외부 환경은 scatter 파라미터를 LLM이 조정하게 하고, 스토리 클러스터와 밀도 구역으로 구성하라",
+      "why": "수천 개 인스턴스를 LLM이 좌표로 찍는 것은 불가능하다. Geometry Nodes Poisson Disk(Distance Min, Density Max, Density Factor)로 최소 간격을 보장하고 마스크로 falloff를 만든다. blender-skills의 set-dressing은 Hero 구역은 의도는 높게 잡음은 낮게, 중경은 스토리 클러스터, 배경은 실루엣만, 이동 경로는 비움, 비트당 소품 3-7개 규칙을 둔다.",
+      "example": "숲길 씬: 경로 커브에서 거리 attribute를 계산해 0-1.5 m는 Density 0, 1.5-4 m는 풀·관목 고밀도(점점 감소), 4 m 이상은 나무(Distance Min 4 m). 카메라 3분할 교차점에 hero 바위 + 쓰러진 나무 클러스터(3-5개, 크기 1:0.6:0.3), 전경에 프레이밍용 잎, 배경은 저밀도 실루엣. 스케일 0.8-1.2, Z 회전 랜덤, 바위는 normal 정렬 + 표면에 10-20% 묻기.",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/geometry/nodes/node_geo_distribute_points_on_faces.cc",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/set-dressing/SKILL.md"
+      ]
+    },
+    {
+      "tip": "few-shot 레퍼런스 레이아웃을 붙여라 (retrieval-augmented layout)",
+      "why": "LayoutGPT는 비슷한 3D-FRONT 방 K개(K=8 예시)를 in-context로 붙이는 방식이 효과적임을 보였다. SceneSmith 디자이너도 레퍼런스 이미지가 있으면 '개념을 가져오되 실제 방에 맞게 변형하라'고 지시한다. Code-as-Room은 top-down 이미지 한 장에서 Blender 코드를 생성한다.",
+      "example": "사용자 무드보드나 평면도 스케치(top-down)를 첨부하고 \"이 스케치의 그룹 구성과 동선을 유지하되 방 치수 4.2×3.6 m에 맞춰 relations JSON을 작성하라\"고 지시한다. 3D-FRONT 씬 JSON을 요약해 2-3개 예시로 넣는다(상업 용도라면 데이터 약관 확인).",
+      "urls": [
+        "https://github.com/weixi-feng/LayoutGPT",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_initial_instruction.yaml",
+        "https://github.com/YxuanAr/Code-as-Room"
+      ]
+    },
+    {
+      "tip": "평가 지표를 에이전트의 셀프 체크리스트로 재사용하라",
+      "why": "SceneEval의 10개 지표(Collision, Navigability, Out of Bounds, Opening Clearance, Count, Attribute, Obj-Obj Relationship, Obj-Architecture Relationship, Support, Accessibility)는 '제대로 된 배치'의 정의로 그대로 쓸 수 있다.",
+      "example": "check_scene() 툴이 앞의 4개(기하) 지표를 수치로 반환하고, VLM 비평이 나머지 6개를 판정한다. 최종 보고서에 10개 항목 pass/fail 표를 출력하게 한다.",
+      "urls": [
+        "https://github.com/3dlg-hcvc/SceneEval"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "SAGE: 레이아웃을 FastMCP 툴로 노출한 대규모 장면 생성 (NVIDIA)",
+      "who": "NVIDIA, UIUC, Cornell, Stanford",
+      "date": "2026 (CVPR 2026, arXiv 2602.10116)",
+      "what_was_made": "임베디드 과제 기반의 시뮬레이션용 실내 씬. SAGE-10k 데이터셋(50개 방 유형·스타일, 1만 씬), 생성 3D 객체 56.5만 개.",
+      "process": "server/layout.py가 FastMCP 서버로 generate_room_layout(벽·문·창 floor plan), get_current_layout, get_room_details, list_rooms 등을 노출한다. 객체 배치는 LLM이 객체마다 Holodeck식 제약 4-5개를 쓰고, DFS solver(grid_size=20, 시간 제한 max(300, n×60)초)가 Shapely bbox 충돌(3.5 cm 패딩)과 문·창 차단 영역을 고려해 푼다. 벽걸이는 벽면 2D 그리드(가장자리 0.1 m 마진). 소품은 후보 150개 샘플링 후 physics critic으로 필터링하고, 불안정한 객체는 제거한다. 프롬프트 규칙은 점유율 30-40%, 동선 60-90 cm, 문 회전 90 cm이고, 금지 목록은 떠 있는 물체, 과밀, 비정상 크기, 충돌, 방향 오류, 벽에서 떨어진 소파다.",
+      "tools": "FastMCP, GPT / gpt-oss-120b / claude-sonnet-4-20250514(코드 내 호출), Qwen3-VL, TRELLIS, MatFuse, Isaac Sim/Lab, Shapely",
+      "ai_model": "GPT 계열, Claude Sonnet 4(코드상), Qwen3-VL",
+      "outcome": "코드 공개(Apache-2.0). 'MCP 서버 + 제약 solver + physics critic' 조합이 대규모로 동작함을 보여주는 1차 사례. 단 README에 MCP 툴 문서가 부족하다.",
+      "urls": [
+        "https://github.com/NVlabs/sage",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ]
+    },
+    {
+      "title": "SceneSmith: designer, critic, planner 에이전트가 툴로 방을 채우는 파이프라인",
+      "who": "nepfaff 외 (ICML 2026 Spotlight)",
+      "date": "2026-02 (arXiv 2602.09153)",
+      "what_was_made": "floor plan부터 가구, 벽걸이, 천장, 소품까지 채운 시뮬레이션용 실내 씬(Drake/MuJoCo/USD + Blender house.blend). 151단어 프롬프트 하나로 커뮤니티 센터 전체를 만든 데모(탁구대 옆 라켓 등 맥락 배치).",
+      "process": "단계마다 planner가 designer(초기 설계) → critic(6항목 0-10점) → designer(수정) 사이클을 최대 3회 돌리고, 모두 9점 이상이면 조기 종료, 점수가 떨어지면 체크포인트로 롤백한다. 디자이너 규칙은 객체를 A(대상을 향함)/B(기능적 정면)/C(대칭)로 분류해 snap orientation을 고르고, 위치나 회전을 바꿀 때마다 check_physics를 호출한다. 렌더는 top 1024² + 측면 4뷰. 모델은 gpt-5.2(reasoning high).",
+      "tools": "Drake(물리), VHACD(충돌), Blender EEVEE Next(렌더), SAM3D / Hunyuan3D-2(에셋 생성), HSSD / Objaverse(검색), CLIP",
+      "ai_model": "OpenAI GPT-5 계열(설정 파일상 gpt-5.2), Gemini 이미지 생성 옵션",
+      "outcome": "MIT로 공개, 약 600 stars. 프롬프트 YAML이 실무 규칙집 역할을 한다. 요구 GPU는 45GB 이상.",
+      "urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_planner_agent.yaml"
+      ]
+    },
+    {
+      "title": "SceneWeaver: Blender 소켓 서버와 reflect 에이전트의 대화형 장면 합성",
+      "who": "Yandan Yang, Baoxiong Jia, Shujie Zhang, Siyuan Huang",
+      "date": "NeurIPS 2025 (arXiv 2509.20414)",
+      "what_was_made": "텍스트 프롬프트('Design me a bedroom.')로 만든 실내 씬. Isaac Sim용 USD로 내보낼 수 있다.",
+      "process": "Infinigen Blender를 소켓 서버로 띄우고(python -m infinigen.launch_blender ...), 에이전트가 --socket으로 연결해 Initializer, Implementer, Modifier 툴을 반복 호출하며 스스로 평가하고 수정한다. 사용자는 Blender UI에서 진행 상황을 실시간으로 본다. blender-mcp와 같은 소켓 브리지 구조다.",
+      "tools": "Blender(bpy 3.6), Infinigen, MetaScenes, PhyScene/DiffuScene/ATISS, Stable Diffusion + Tabletop Digital Cousins, OpenShape/Holodeck 검색",
+      "ai_model": "Azure OpenAI GPT(교체 가능)",
+      "outcome": "BSD-3로 공개. 여러 생성기를 툴로 조합하는 MCP식 설계의 학술 레퍼런스.",
+      "urls": [
+        "https://github.com/Scene-Weaver/SceneWeaver",
+        "https://raw.githubusercontent.com/Scene-Weaver/SceneWeaver/main/README.md"
+      ]
+    },
+    {
+      "title": "Vibe3DScene: LangGraph + MCP + Blender-MCP 장면 에이전트 (penetration 검사 추가)",
+      "who": "3DSceneAgent (오픈소스 커뮤니티)",
+      "date": "2026",
+      "what_was_made": "웹 UI, CLI, Blender 클라이언트에서 자연어로 3D 씬을 구성하는 에이전트.",
+      "process": "plan_mode에서 과제를 계획한 뒤 MCP 툴(씬 제어, 렌더, 검색, 재구성, 3D 생성)을 호출한다. 기본 검증은 VLM 시각 검사이고, SCENE_AGENT_ENABLE_PENETRATION_VERIFY=true로 형상 관통 검사를 추가한다. 에셋은 TRELLIS.2, Tripo, Rodin, Sketchfab, PolyHaven.",
+      "tools": "LangGraph, langchain-mcp-adapters, Blender-MCP, FastAPI, Redis, Blender 3.6+",
+      "ai_model": "README에 명시 없음(환경 설정으로 공급자 선택)",
+      "outcome": "Apache-2.0. 'VLM 눈만으로는 관통을 못 잡는다'는 문제를 기하 검사로 보완한 실무형 사례.",
+      "urls": [
+        "https://github.com/3DSceneAgent/Vibe3DScene",
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/README.md"
+      ]
+    },
+    {
+      "title": "I-Design: LLM 멀티에이전트 설계를 Blender로 배치한 사례와 방향 보정 quirk",
+      "who": "Ata Çelen 외",
+      "date": "ECCV 2024",
+      "what_was_made": "사용자 취향 대화 → scene graph → 백트래킹 좌표 → Objaverse 에셋을 Blender에 배치하고 렌더한 뒤 GPT-V가 평가.",
+      "process": "place_in_blender.py가 glb를 import하고, 부모 해제와 transform 적용, origin_set(ORIGIN_GEOMETRY, BOUNDS), 목표 치수에 맞춘 비균일 scale, 위치 지정, z 회전(z_angle/180·π + π) 순서로 처리한다.",
+      "tools": "OpenAI GPT-4/GPT-4-1106/GPT-3.5, OpenShape, Objaverse, Blender",
+      "ai_model": "GPT-4 계열, GPT-V(평가)",
+      "outcome": "실패와 교훈: +π 보정은 에셋 정면 규약이 맞지 않는다는 증거이고, 비균일 스케일은 가구 비율을 왜곡할 수 있다. 에셋 정규화 단계가 필요한 이유를 보여준다.",
+      "urls": [
+        "https://github.com/atcelen/IDesign",
+        "https://raw.githubusercontent.com/atcelen/IDesign/main/place_in_blender.py"
+      ]
+    },
+    {
+      "title": "실패 사례 모음: 에셋 정면·스케일 정규화 문제 (Holodeck #92, LayoutVLM #9)",
+      "who": "GitHub 사용자 보고",
+      "date": "2025-07 ~ 2025-09",
+      "what_was_made": "Holodeck/objathor 에셋과 LayoutVLM 데이터셋 렌더",
+      "process": "Holodeck #92: 에셋 파일 자체는 정면이 정렬돼 있지 않은데 씬 생성 시에는 축 정렬돼 나온다. 회전 메타데이터(objaverse_holodeck_database.json)를 찾을 수 없다는 보고. LayoutVLM #9: blender_render.py의 render_existing_scene으로 렌더하면 일부 메쉬의 스케일과 회전이 틀리게 나온다는 보고.",
+      "tools": "Holodeck, objathor, LayoutVLM, Blender",
+      "ai_model": "GPT-4o 기반 annotation",
+      "outcome": "두 이슈 모두 메인테이너 답변이 없다. 교훈: 레이아웃 알고리즘보다 먼저 에셋의 front 축과 실측 스케일을 정규화하고, 그 메타데이터를 파이프라인 전체에서 일관되게 써야 한다.",
+      "urls": [
+        "https://github.com/allenai/Holodeck/issues/92",
+        "https://github.com/sunfanyunn/LayoutVLM/issues/9"
+      ]
+    },
+    {
+      "title": "SceneReVis: Render→Evaluate→Revise 루프를 RL로 학습한 7B 모델",
+      "who": "Runder-sun 외",
+      "date": "2026-02 (arXiv 2602.09432)",
+      "what_was_made": "툴 호출(add_object, move_object, rotate_object 등)로 실내 씬을 반복 수정하는 모델 SceneReVis-7B와 SceneChain-12K 데이터.",
+      "process": "Blender 4.0.2로 overhead + diagonal 2뷰를 렌더하고, VLM 추론과 voxel 기반 물리(충돌, 경계 이탈) 보상, VLM 채점(rationality, layout, accessibility 0-10)을 쓴다. SFT 후 GRPO 기반 multi-turn RL로 학습한다.",
+      "tools": "Blender 4.0.2, Qwen2.5-VL",
+      "ai_model": "Qwen2.5-VL 파인튜닝(SceneReVis-7B)",
+      "outcome": "MIT로 코드, 데이터, 가중치 공개. 상용 모델을 쓰는 MCP 루프에서도 '2뷰 렌더 + 루브릭 + 툴 수정' 구조를 그대로 적용할 수 있다.",
+      "urls": [
+        "https://github.com/Runder-sun/SceneReVis"
+      ]
+    },
+    {
+      "title": "mcp-for-blender(구 blender-mcp) 커뮤니티의 실사용 한계",
+      "who": "ahujasid 및 커뮤니티",
+      "date": "2026-03 ~ 2026-09",
+      "what_was_made": "Claude, Cursor, Codex 등에서 Blender를 제어하는 MCP 애드온(약 29.4k stars). 2026-09-16 issue #366에서 'blender-mcp is now mcp-for-blender' 개명을 공지했다.",
+      "process": "README 예시 프롬프트는 'dungeon low poly scene with a dragon guarding a pot of gold', 'beach vibe using HDRIs, textures, and models like rocks' 등이다. README는 '복잡한 작업은 더 작은 단계로 나눠야 할 수 있다', 'Poly Haven 다운로드가 UI를 멈출 수 있다'고 명시한다. 2026년 이슈로 타임아웃(Windows 11, 약 5분 지연), Blender 5.2의 scene update handler 등록 실패, headless 모드에서 bpy.app.timers 미작동이 보고됐다.",
+      "tools": "mcp-for-blender(uvx mcp-for-blender), Poly Haven, Sketchfab, Poly Pizza, Hyper3D Rodin, Hunyuan3D, Tripo",
+      "ai_model": "임의 MCP 클라이언트(Claude, Cursor, Codex 등)",
+      "outcome": "배치 전용 툴(스냅, 충돌, 물리)은 기본 제공되지 않아 execute_blender_code로 직접 구현해야 한다. 레이아웃 품질은 사용자가 설계한 검증 루프에 달려 있다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/blender-mcp/issues?q=is%3Aissue%20scene"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "allenai/Holodeck GitHub",
+      "url": "https://github.com/allenai/Holodeck",
+      "source_type": "GitHub repo",
+      "date": "2023-12~",
+      "why_useful": "제약 기반 실내 레이아웃의 대표 오픈소스"
+    },
+    {
+      "title": "Holodeck prompts.py (object/wall constraints prompt)",
+      "url": "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+      "source_type": "소스 코드(프롬프트)",
+      "why_useful": "제약 어휘와 수치 정의(near 50-150 cm 등), 배치 지침 원문"
+    },
+    {
+      "title": "Holodeck floor_objects.py (DFS/MILP solver)",
+      "url": "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/floor_objects.py",
+      "source_type": "소스 코드",
+      "why_useful": "solver 가중치, 회전 4방향, Shapely 충돌 검사"
+    },
+    {
+      "title": "Holodeck issue #92 rotation doubts",
+      "url": "https://github.com/allenai/Holodeck/issues/92",
+      "source_type": "GitHub issue",
+      "date": "2025-09-03",
+      "why_useful": "에셋 정면 정렬 실패 사례"
+    },
+    {
+      "title": "sunfanyunn/LayoutVLM GitHub",
+      "url": "https://github.com/sunfanyunn/LayoutVLM",
+      "source_type": "GitHub repo",
+      "date": "CVPR 2025",
+      "why_useful": "VLM + 미분 최적화 레이아웃"
+    },
+    {
+      "title": "LayoutVLM base_prompt.py",
+      "url": "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py",
+      "source_type": "소스 코드(프롬프트)",
+      "why_useful": "제약 함수 7종, 좌표·회전 규약"
+    },
+    {
+      "title": "LayoutVLM grad_solver.py",
+      "url": "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/grad_solver.py",
+      "source_type": "소스 코드",
+      "why_useful": "Adam lr 0.01, 400 iter, IoU loss ×1000 등 solver 세부"
+    },
+    {
+      "title": "LayoutVLM layoutvlm.py",
+      "url": "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/layoutvlm.py",
+      "source_type": "소스 코드",
+      "why_useful": "그룹핑, 시각 마크 렌더, self-consistency 필터"
+    },
+    {
+      "title": "LayoutVLM issue #9 mesh normalization",
+      "url": "https://github.com/sunfanyunn/LayoutVLM/issues/9",
+      "source_type": "GitHub issue",
+      "date": "2025-07-13",
+      "why_useful": "스케일·회전 정규화 실패 사례"
+    },
+    {
+      "title": "princeton-vl/infinigen GitHub",
+      "url": "https://github.com/princeton-vl/infinigen",
+      "source_type": "GitHub repo",
+      "why_useful": "Blender 네이티브 절차적 실내 생성"
+    },
+    {
+      "title": "Infinigen HelloRoom.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md",
+      "source_type": "공식 문서",
+      "why_useful": "실내 생성 명령, gin 옵션, 제약 제한 옵션"
+    },
+    {
+      "title": "Infinigen CHANGELOG.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md",
+      "source_type": "공식 문서",
+      "why_useful": "v1.4.0 Indoors부터 v2.0.0a2까지의 버전 이력"
+    },
+    {
+      "title": "Infinigen2.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md",
+      "source_type": "공식 문서",
+      "why_useful": "2.0 알파 상태, uv/Python 3.11"
+    },
+    {
+      "title": "Infinigen home.py constraints (v1.16.0)",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py",
+      "source_type": "소스 코드",
+      "why_useful": "constraint language 실례와 수치(소파–TV 2-3 m 등)"
+    },
+    {
+      "title": "Infinigen annealing.py (v1.16.0)",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen/core/constraints/example_solver/annealing.py",
+      "source_type": "소스 코드",
+      "why_useful": "simulated annealing solver 구조"
+    },
+    {
+      "title": "Infinigen ExportingToExternalFileFormats.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/ExportingToExternalFileFormats.md",
+      "source_type": "공식 문서",
+      "why_useful": "USDC 내보내기 한계"
+    },
+    {
+      "title": "atcelen/IDesign GitHub + agents.py/schemas.py/place_in_blender.py",
+      "url": "https://github.com/atcelen/IDesign",
+      "source_type": "GitHub repo",
+      "date": "ECCV 2024",
+      "why_useful": "멀티에이전트 설계와 Blender 배치 코드"
+    },
+    {
+      "title": "IDesign place_in_blender.py",
+      "url": "https://raw.githubusercontent.com/atcelen/IDesign/main/place_in_blender.py",
+      "source_type": "소스 코드",
+      "why_useful": "Blender 배치 절차와 +π 보정 quirk"
+    },
+    {
+      "title": "weixi-feng/LayoutGPT",
+      "url": "https://github.com/weixi-feng/LayoutGPT",
+      "source_type": "GitHub repo",
+      "date": "NeurIPS 2023",
+      "why_useful": "in-context 레이아웃 생성"
+    },
+    {
+      "title": "Scene-Weaver/SceneWeaver",
+      "url": "https://github.com/Scene-Weaver/SceneWeaver",
+      "source_type": "GitHub repo",
+      "date": "NeurIPS 2025",
+      "why_useful": "reflect 에이전트와 Blender 소켓 모드"
+    },
+    {
+      "title": "nepfaff/scenesmith",
+      "url": "https://github.com/nepfaff/scenesmith",
+      "source_type": "GitHub repo",
+      "date": "ICML 2026",
+      "why_useful": "에이전트 장면 생성의 최신 레퍼런스"
+    },
+    {
+      "title": "SceneSmith furniture designer_agent.yaml",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml",
+      "source_type": "프롬프트",
+      "why_useful": "클리어런스 수치, snap/facing 규칙, 검증 절차"
+    },
+    {
+      "title": "SceneSmith stateful_critic_agent.yaml",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_critic_agent.yaml",
+      "source_type": "프롬프트",
+      "why_useful": "비평 루브릭 6항목과 CHAOS DETECTION"
+    },
+    {
+      "title": "SceneSmith base_furniture_agent.yaml",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+      "source_type": "설정 파일",
+      "why_useful": "gpt-5.2, 라운드, 임계값, 렌더 해상도, 노이즈 수치"
+    },
+    {
+      "title": "SceneSmith base_manipuland_agent.yaml",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml",
+      "source_type": "설정 파일",
+      "why_useful": "소품 물리 안착(5 s, dt 0.001), support surface 파라미터"
+    },
+    {
+      "title": "SceneSmith snapping_helpers.py",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/snapping_helpers.py",
+      "source_type": "소스 코드",
+      "why_useful": "스냅 알고리즘(0.01 m 스텝, 충돌 시 후퇴)"
+    },
+    {
+      "title": "SceneSmith wall designer_agent.yaml",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/wall_agent/designer_agent.yaml",
+      "source_type": "프롬프트",
+      "why_useful": "벽걸이 높이 규칙"
+    },
+    {
+      "title": "NVlabs/sage",
+      "url": "https://github.com/NVlabs/sage",
+      "source_type": "GitHub repo",
+      "date": "CVPR 2026",
+      "why_useful": "MCP 기반 장면 생성 서버"
+    },
+    {
+      "title": "SAGE server/layout.py",
+      "url": "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py",
+      "source_type": "소스 코드",
+      "why_useful": "FastMCP 레이아웃 툴 정의"
+    },
+    {
+      "title": "SAGE object_placement_planner.py",
+      "url": "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py",
+      "source_type": "소스 코드",
+      "why_useful": "DFS solver 파라미터, 동선·점유율 규칙, 모델 호출"
+    },
+    {
+      "title": "hzxie/Awesome-3D-Scene-Generation",
+      "url": "https://github.com/hzxie/Awesome-3D-Scene-Generation",
+      "source_type": "큐레이션 리스트",
+      "date": "2026-09 확인",
+      "why_useful": "2025-2026 후속 연구 목록과 학회 정보"
+    },
+    {
+      "title": "3dlg-hcvc/SceneEval",
+      "url": "https://github.com/3dlg-hcvc/SceneEval",
+      "source_type": "GitHub repo",
+      "date": "WACV 2026",
+      "why_useful": "레이아웃 품질 평가 지표 10종"
+    },
+    {
+      "title": "3dlg-hcvc/hsm",
+      "url": "https://github.com/3dlg-hcvc/hsm",
+      "source_type": "GitHub repo",
+      "date": "3DV 2026",
+      "why_useful": "계층적 모티프 배치, 비용과 시간"
+    },
+    {
+      "title": "3dlg-hcvc/smc (SceneMotifCoder)",
+      "url": "https://github.com/3dlg-hcvc/smc",
+      "source_type": "GitHub repo",
+      "date": "3DV 2025",
+      "why_useful": "예시 기반 배치 프로그램 학습, Blender 예시 작성"
+    },
+    {
+      "title": "Runder-sun/SceneReVis",
+      "url": "https://github.com/Runder-sun/SceneReVis",
+      "source_type": "GitHub repo",
+      "date": "2026-02",
+      "why_useful": "렌더 피드백 RL 사례"
+    },
+    {
+      "title": "3DSceneAgent/Vibe3DScene",
+      "url": "https://github.com/3DSceneAgent/Vibe3DScene",
+      "source_type": "GitHub repo",
+      "date": "2026",
+      "why_useful": "MCP + Blender-MCP 장면 에이전트"
+    },
+    {
+      "title": "GitHub topic: blender-mcp",
+      "url": "https://github.com/topics/blender-mcp",
+      "source_type": "GitHub topic 목록",
+      "date": "2026-09",
+      "why_useful": "Blender MCP 생태계 저장소 목록"
+    },
+    {
+      "title": "ahujasid/blender-mcp (mcp-for-blender)",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "대표 Blender MCP와 사용상 한계"
+    },
+    {
+      "title": "Blender source: mathutils_bvhtree.cc",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc",
+      "source_type": "Blender 소스(docstring)",
+      "why_useful": "BVHTree API 시그니처"
+    },
+    {
+      "title": "Blender source: rna_scene_api.cc",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/makesrna/intern/rna_scene_api.cc",
+      "source_type": "Blender 소스",
+      "why_useful": "Scene.ray_cast 정의"
+    },
+    {
+      "title": "Blender source: bl_operators/rigidbody.py",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/scripts/startup/bl_operators/rigidbody.py",
+      "source_type": "Blender 소스",
+      "why_useful": "bake_to_keyframes 연산자"
+    },
+    {
+      "title": "Blender source: node_geo_distribute_points_on_faces.cc",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/geometry/nodes/node_geo_distribute_points_on_faces.cc",
+      "source_type": "Blender 소스",
+      "why_useful": "Poisson Disk scatter 입력 소켓"
+    },
+    {
+      "title": "glTF 2.0 Specification",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/glTF/main/specification/2.0/Specification.adoc",
+      "source_type": "공식 스펙",
+      "why_useful": "정면 +Z, +Y up, 단위 m"
+    },
+    {
+      "title": "arjun988/blender-skills set-dressing SKILL.md",
+      "url": "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/set-dressing/SKILL.md",
+      "source_type": "에이전트 스킬 문서",
+      "why_useful": "세트 드레싱 밀도 구역과 스토리 클러스터 규칙"
+    },
+    {
+      "title": "HoldMyBeer-gg/blend-ai",
+      "url": "https://github.com/HoldMyBeer-gg/blend-ai",
+      "source_type": "GitHub repo",
+      "why_useful": "snap, 물리 툴을 가진 Blender MCP"
+    },
+    {
+      "title": "richard-guyunqi/BlenderGym-Open",
+      "url": "https://github.com/richard-guyunqi/BlenderGym-Open",
+      "source_type": "GitHub repo",
+      "date": "CVPR 2025",
+      "why_useful": "VLM의 Blender placement 편집 벤치마크"
+    },
+    {
+      "title": "PhyScene / DiffuScene / ATISS repos",
+      "url": "https://github.com/PhyScene/PhyScene",
+      "source_type": "GitHub repo",
+      "date": "CVPR 2024",
+      "why_useful": "물리 guidance diffusion 레이아웃"
+    },
+    {
+      "title": "GradientSpaces/respace",
+      "url": "https://github.com/GradientSpaces/respace",
+      "source_type": "GitHub repo",
+      "date": "ICLR 2026",
+      "why_useful": "텍스트 기반 씬 편집(add/remove/swap)"
+    },
+    {
+      "title": "YxuanAr/Code-as-Room",
+      "url": "https://github.com/YxuanAr/Code-as-Room",
+      "source_type": "GitHub repo",
+      "date": "2026",
+      "why_useful": "top-down 이미지 → Blender 코드"
+    },
+    {
+      "title": "3dlg-hcvc/hssd",
+      "url": "https://github.com/3dlg-hcvc/hssd",
+      "source_type": "GitHub repo",
+      "why_useful": "HSSD 규모(211 씬, 18,656 객체)"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "SAGE(NVlabs)의 server/layout.py는 FastMCP로 generate_room_layout, get_current_layout 등 레이아웃 툴을 노출하는 MCP 서버다.",
+      "url": "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py"
+    },
+    {
+      "claim": "SAGE 배치 플래너는 DFS solver grid_size=20, bbox 3.5 cm 패딩, on-top 후보 150개 샘플링 + physics critic을 쓰고, 프롬프트에 '가구 점유율 30-40%, 60-90 cm 동선, 문 회전반경 약 90 cm' 규칙이 있으며, claude-sonnet-4-20250514 호출 코드가 있다.",
+      "url": "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+    },
+    {
+      "claim": "SceneSmith 가구 에이전트 설정: model gpt-5.2, max_critique_rounds 3, early_finish_min_score 9, 롤백 임계(단일 항목 2점, 총합 1점), top 1024² + 측면 4×512² 렌더, snap step/margin 0.01 m, natural noise σ 0.03 m / 1°.",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml"
+    },
+    {
+      "claim": "SceneSmith는 ICML 2026 Spotlight, MIT 라이선스, arXiv 2602.09153이며, 전체 파이프라인에 45GB 이상의 GPU 메모리를 권장한다.",
+      "url": "https://github.com/nepfaff/scenesmith"
+    },
+    {
+      "claim": "SceneSmith 디자이너 프롬프트의 클리어런스: 커피테이블–소파 0.3-0.5 m, 주동선 0.7-1 m, 무관한 객체 간 최소 0.20 m, 카운터 뒤 0.5-0.7 m.",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml"
+    },
+    {
+      "claim": "LayoutVLM의 gradient solver는 Adam lr 0.01, ExponentialLR gamma 0.96, 400 iterations, overlap loss IoU×1000, 기존 제약 ×100을 쓰고, 100 iteration마다 경계 안으로 투영한다.",
+      "url": "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/grad_solver.py"
+    },
+    {
+      "claim": "LayoutVLM 규약: 0° 회전은 +x를 바라보고 반시계 방향이 +, 방 중심이 원점, 객체당 위치 제약과 방향 제약을 최소 1개씩.",
+      "url": "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py"
+    },
+    {
+      "claim": "Holodeck 제약 정의: near는 50-150 cm, far는 150 cm 이상. 앵커는 global 제약만, 큰 것부터, 뒤의 객체는 앞의 것에만 의존.",
+      "url": "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py"
+    },
+    {
+      "claim": "Infinigen home.py 제약: 소파–TV장 distance hinge(2,3), 사이드테이블은 벽에서 0.3 m 이내, 조명 간 min_distance_internal >= 1 m, focus_score < 0.5.",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py"
+    },
+    {
+      "claim": "Infinigen 최신 릴리스는 v2.0.0a2(procfunc 기반 전면 재작성, 알파). Indoors(constraint language + solver)는 v1.4.0에서 도입됐다.",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md"
+    },
+    {
+      "claim": "SceneWeaver는 NeurIPS 2025, BSD-3-Clause이고 bpy==3.6.0을 쓰며, Infinigen Blender 서버에 --socket으로 붙는 대화형 모드가 있다.",
+      "url": "https://raw.githubusercontent.com/Scene-Weaver/SceneWeaver/main/README.md"
+    },
+    {
+      "claim": "SceneEval은 WACV 2026 oral이며, 지표 10종(Collision, Navigability, Out of Bounds, Opening Clearance + VLM 기반 6종)과 SceneEval-500을 제공한다.",
+      "url": "https://github.com/3dlg-hcvc/SceneEval"
+    },
+    {
+      "claim": "HSM은 3DV 2026이며 씬당 약 $0.80, 약 10분이 걸리고 HSSD(약 72GB)를 쓴다.",
+      "url": "https://github.com/3dlg-hcvc/hsm"
+    },
+    {
+      "claim": "blender-mcp는 2026-09-16 issue #366에서 mcp-for-blender로 개명을 공지했다.",
+      "url": "https://github.com/ahujasid/blender-mcp/issues?q=is%3Aissue%20scene"
+    },
+    {
+      "claim": "BVHTree.FromObject(object, depsgraph, *, deform=True, cage=False, epsilon=0.0)와 overlap(other_tree)는 겹치는 인덱스 쌍 리스트를 반환한다.",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc"
+    }
+  ],
+  "gaps": [
+    "이번 세션은 WebSearch 한도(200회)가 이미 소진된 상태에서 시작해 웹 검색을 한 번도 하지 못했다. 또한 arxiv.org, huggingface.co, 각 프로젝트 github.io, docs.blender.org, openaccess.thecvf.com, reddit, wikipedia, rtings/thx/nkba 등이 egress 프록시에서 차단됐다. 그래서 1차 출처는 GitHub(README, 소스, 프롬프트, 설정)로 한정됐다.",
+    "논문 본문의 정량 결과(Holodeck human preference, LayoutVLM vs 베이스라인 점수, SceneSmith·SAGE 평가 수치, SceneEval 결과 표)를 확인하지 못했다.",
+    "FirePlace(CVPR 2025), Architect(2D inpainting 기반 계층 생성), LLplace(Llama 파인튜닝 레이아웃·편집), Open-Universe Indoor Scene Generation(Brown, LLM 프로그램 합성)은 코드 공개 여부, 저장소 URL, 세부 방법을 확인하지 못했다(기억 기반 정보만 있어 항목으로 넣지 않음).",
+    "SceneCraft(Hu et al., ICML 2024)의 코드 공개 여부와 세부(scene graph → Blender 코드 → GPT-V 비평)는 원문 미확인이다.",
+    "Scenethesis, HOG-Layout, SceneOrchestra, SpatialGrammar 등 2026 연구는 큐레이션 리스트의 학회 표기만 확인했고 방법과 코드는 확인하지 못했다. WorldClaw는 README만 있다.",
+    "업계 인테리어 수치(TV 시청거리 SMPTE/THX 공식, NKBA 동선·작업 삼각형, 식탁·침대·러그 치수)는 원문 접근이 차단돼 재확인하지 못했다. 오픈소스 프롬프트(SceneSmith, SAGE, Infinigen, Holodeck)에 들어 있는 값만 검증됐다.",
+    "Geo-Scatter(구 Scatter5)의 최신 버전, 가격, 기능과 Blender 5.x 내장 scatter 관련 신기능은 확인하지 못했다.",
+    "3D-FRONT/3D-FUTURE, HSSD의 상업 이용 가능 여부(라이선스 약관 원문)를 확인하지 못했다.",
+    "Reddit, YouTube, X 등에서 개인 사용자가 Claude/GPT/Gemini + Blender/Unity/Unreal MCP로 방이나 레벨을 배치한 실사용 사례와 실패담은 검색할 수 없어 수집하지 못했다. 사례는 GitHub 기반 연구·오픈소스 사례로 한정됐다.",
+    "사용자가 언급한 'Astra', 'Fable 5.1' 등 특정 프론티어 모델이 레이아웃 과제에서 보이는 성능 차이(BlenderGym placement 결과 등)는 확인하지 못했다.",
+    "Infinigen 2.0(v2.0.0a2)의 새 배치 시스템(room_rand, placement culling)의 구체 API와 릴리스 날짜를 확인하지 못했다."
+  ]
+}

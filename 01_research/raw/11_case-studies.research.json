@@ -1,0 +1,1316 @@
+{
+  "topic": "AI+MCP(및 유사 에이전트 도구 사용) 3D 제작 사례 연구·쇼케이스 모음 (2025-03 BlenderMCP 공개 ~ 2026-09 GPT-6 Astra / Claude Fable 5.1 / Opus 5.5 시기)",
+  "summary_ko": [
+    "[조사 환경 주의] 이 조사 에이전트는 WebSearch 예산이 이미 소진된 상태에서 시작했고, YouTube·X·Reddit·HN·80.lv·CG Channel·zenn·velog·bilibili·openai.com·blender.org·huggingface가 egress 정책으로 차단되어 있었다. 그래서 GitHub(README·원본 로그·QA 리포트)와 anthropic.com을 1차 출처로 삼았고, X 게시물 기반 사례는 GitHub에 올라온 큐레이션 저장소(TripoGrowthLab 카탈로그 447건, carpentry-liu 194건, yangqiong 240여 건, magiccreator 목록)를 거쳐 2차로 확인했다. 그만큼 X 원문 수치는 '작성자 자기 보고'로 봐야 한다.",
+    "흐름은 세 갈래로 굳어졌다. (1) Blender MCP로 실행 중인 Blender를 실시간 조작(ahujasid 원조 → mcp-for-blender로 이름 변경, 약 29.4k stars. Blender Lab 공식 MCP 서버도 존재), (2) Codex/Claude Code가 `blender --background --python`으로 bpy 스크립트를 실행하는 headless 방식(Simon Willison, Vizuara, Nipale, Realsee 등. 일부 프롬프트는 'Blender MCP를 쓰지 말라'고 명시), (3) 엔진 공식 MCP(UE 5.8 Unreal MCP 플러그인, Roblox Studio 내장 MCP, Unity 공식 Codex 플러그인)로 레벨 조립. 세 방식을 섞는 사례가 가장 많다.",
+    "사례는 2026-09-03 GPT-6 Astra 출시(2차 출처 기준) 직후 48시간 동안 폭발적으로 늘었다. Tripo 카탈로그 447건 가운데 Blender 관련이 96건이고, 그중 81건이 GPT-6 Astra, 10건이 Claude Fable 5.1이다. Claude 쪽은 Fable 5.1(2026-09-01)과 Opus 5.5(2026-09-22) 사례가 뒤를 잇는다(에이전트 스웜으로 도시 재현, 교육 영상 파이프라인, 24분·$9.90짜리 원프롬프트 게임 등).",
+    "모델 비교는 거의 전부 n=1이고 결과도 엇갈린다. 같은 Blender 과제에서 Astra가 더 빠르고 토큰도 적게 썼다는 보고(43분/61K 대 Opus 5.5 1시간57분/507K), 제품 비율(Quest 3)은 Opus 5.5가 더 정확했다는 보고, 특정 광장 복원은 Fable이 낫다는 보고가 함께 있다. 엄격한 비교 연구(teshnizi2 iris)에서도 두 모델 모두 작동은 했지만 기계적 결함이 있었다. 절대 순위를 매기지 말고 작업 유형별로 골라 써야 한다.",
+    "고품질에 도달한 사례들의 공통점은 다음과 같다. ① 기존 에셋과 실측 데이터 활용(CC0 모듈러 키트, Epic City Sample, OSM·LiDAR·Google 3D Tiles, 스캔 데이터), ② 유기체·캐릭터 베이스 메시는 이미지→3D(Tripo, Meshy, Hyper3D Rodin)로 만들고 에이전트는 조립·UV·리깅·텍스처 보정을 맡음, ③ 렌더·조명 품질 기준을 체크리스트로 명문화(Vizuara 6항목, Cycles 384 samples + DOF + motion blur), ④ 스크린샷·렌더를 보고 고치는 시각 검증 루프, ⑤ 사람이 결함 목록을 주고 2~21회 반복 수정.",
+    "실패 패턴은 반복해서 나타난다. FBX·GLB 임포트 시 100배 스케일 오류(두 사례에서 독립적으로 발생), 이미지→3D 결과물이 약 1.4m로 작게 들어오고 Y-up 축으로 들어오는 문제, 파트가 떨어져 있거나 떠 있는 조립, 옆에서 보면 얇은 캐릭터, 핀 구멍 누락이나 부품 간섭, 벽 폴리곤 와인딩이 뒤집혀 벽이 사라지는 문제, 1~3m마다 반복되는 절차적 텍스처, 부족한 얼굴·옷 디테일(Meshy 7이 Astra보다 나았던 사례), 어색한 애니메이션(모캡으로 보완), 그리고 스크린샷 캡처 경로 자체가 틀린 경우.",
+    "가구·인테리어·배치 사례(Realsee 스캔 복원, Tom Krcha의 사진→가구 분리 모델, Wentao Zhu의 관절 가구, yamahigashi의 평면도→Tripo 소품→Blender MCP 배치, hahaliu의 4개 스타일 인테리어)는 모두 같은 순서를 따른다. 벽·바닥·천장·개구부 같은 구조를 먼저 만들고, 주요 가구, 소품 순으로 채운다. 가구는 개별 오브젝트로 분리하고, 근거가 없는 공간은 지어내지 말고 기록해 둔다. 그래도 작성자 스스로 '세부가 꽤 틀린다'고 인정한다.",
+    "독립적으로 검증된 'AAA급' 사례는 찾지 못했다. Fable 5.1 에이전트 스웜으로 만든 Union Square 디지털 트윈은 리뷰어 에이전트 9명 점수로 재질 6/10, 시각 충실도 6/10, 조명 7/10, 성능 6/10을 받았다(목표 8.5~9). SNS의 '포토리얼' 결과물 상당수는 Blender 그레이박스·프리비즈 위에 Seedance 2.5·PixVerse 같은 AI 비디오를 입힌 것이어서, 실제 3D 렌더와 구분해서 봐야 한다.",
+    "비용·시간 참고값(대부분 자기 보고): Simon Willison 반복 1회당 2분39초~5분59초 / Nipale Fable 5.1 게임 24분, $9.90, 출력 95,832 토큰 / Robo Open 프로토타입 52분(세션 전체 4시간23분, Meshy 30크레딧) / How to Suck(Unity 협동 게임) 39시간, Pro x20 주간 한도 2회분 / SpenserFX 빈티지 체육관 10시간, 21회 수정, 130만 폴리곤 / Vizuara 8분 챕터 약 11,000프레임을 A10G 약 50대로 84분 렌더 / Godot 게임 Astra Max 53분(Pro x5 주간 한도 4%) 대 Medium 25분(1%).",
+    "성공 사례의 공통 노하우를 추리면 다음과 같다. 에이전트에게 '눈'(뷰포트 캡처를 파일로 저장·디코드, 3각도 QA)을 달아 준다. 임포트 직후 bounds로 실측한다. 반복 배치는 인스턴싱과 모듈러 키트로 처리한다. bpy 스크립트와 설정 파일을 원본(source of truth)으로 두고 MCP는 점검용으로 쓴다. 조립 규칙 스킬을 쓴다. 빌더와 리뷰어를 분리한다. 삼각형 예산·전방축·콜리전 같은 게임 에셋 제약을 프롬프트에 명시한다.",
+    "한국 사례는 GitHub에서 두 건만 확인했다. octopus7/astra-blender-forest(ChatGPT 채팅만으로 300×300m 숲 생성, 나무 3,800그루, 인스턴스 16,573개, UE HISM 내보내기)와 openerai/blender-previz-video(Claude Code 스킬: Blender 그레이박스 프리비즈 → Seedance 2.5 v2v, Higgsfield Bridge MCP)다. 한국어 유튜브·블로그 사례는 네트워크 차단으로 확인하지 못했다."
+  ],
+  "items": [
+    {
+      "name": "TripoGrowthLab/awesome-3d-prompts (Tripo 3D 프롬프트 카탈로그)",
+      "category": "사례 갤러리/프롬프트 모음",
+      "what_it_is": "GPT-6 Astra, Claude Fable 5/5.1, Opus 5/5.5, Kimi K3로 만든 3D 결과물 447건을 제작자·날짜·모델·프롬프트·X 원문 링크와 함께 정리한 카탈로그(2026-07-19~09-25). 게임 121, 씬 97, 인터랙티브 90, 애니메이션 82, 에셋 54건. Blender 관련 96건.",
+      "how_to_use": "docs/catalog.en.N.md에서 'Blender MCP', 'floor plan', 'furniture' 등으로 검색해 실제 사용된 긴 프롬프트를 템플릿으로 가져다 쓴다. 'Build brief based on the linked work' 표시가 붙은 항목은 Tripo가 요약한 문장이지 원문 프롬프트가 아니다.",
+      "strengths": "프롬프트 원문(UV 재베이크, 드래곤 복원, 로마 전장 등)이 매우 구체적이다. X 원문 링크와 날짜·모델 라벨이 붙어 있다.",
+      "weaknesses": "3D 생성 서비스 벤더(Tripo)가 큐레이션해서 Tripo 사용 사례가 과대 대표될 수 있다. 결과 품질은 검증하지 않았다. 원문 X는 이번에 확인하지 못했다.",
+      "license_or_price": "저장소 공개(작품 권리는 원작자에게 있음)",
+      "status_date": "2026-09-26 확인(447건)",
+      "urls": [
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts",
+        "https://raw.githubusercontent.com/TripoGrowthLab/awesome-3d-prompts/main/docs/catalog.en.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "carpentry-liu/awesome-astra-3d (근거 등급 포함 사례 DB)",
+      "category": "사례 갤러리/검증 DB",
+      "what_it_is": "GPT-6 Astra 3D 사례 194건과 방법 참고 12건을 담은 DB. 사례마다 근거 등급(official 15, author 63, secondary 116, reference 12), 산출물 유형(렌더·실제 지오메트리·편집 가능 프로젝트·웹), 한계와 실패 메모가 붙어 있다. data/cases.json으로 공개한다.",
+      "how_to_use": "cases.json을 내려받아 category='建筑与室内'(건축·실내)나 'Blender 建模'(Blender 모델링)로 거르고 evidenceLevel='author' 이상만 참고한다. outcome과 summary에 한계가 적혀 있다.",
+      "strengths": "'수록·작성자 주장·링크 접근 가능 ≠ 재현됨'을 명시하고, 실패 샘플과 대조 실험을 남겨 둔다. OpenAI 공식 쇼케이스 항목(Solace, Courtyard House, Architecture Studio 등)도 들어 있다.",
+      "weaknesses": "중국어 위주다. Astra 전용이라 Claude 사례는 대조군으로만 등장한다.",
+      "license_or_price": "MIT(코드만)",
+      "status_date": "2026-09-26",
+      "urls": [
+        "https://github.com/carpentry-liu/awesome-astra-3d",
+        "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "yangqiong/gpt6-astra-3d (반응 순 라운드업)",
+      "category": "사례 갤러리",
+      "what_it_is": "GPT-6 Astra 출시(2026-09-03) 이후의 3D 게시물을 X 반응 순으로 정리한 목록. 좋아요·조회수, 사용 도구, 모델 간 A/B 수치(시간·토큰·비용)가 한 줄 요약으로 붙어 있다.",
+      "how_to_use": "'MCP', 'Opus', 'Fable', 'Blender' 행을 골라 모델 비교 수치나 작업 시간을 참고한다. 표의 금액은 '$' 기호가 HTML 주석으로 깨져 있다(예: '~<!-- -->3.3').",
+      "strengths": "Opus 5.5 대 Astra, Fable 대 Astra 비교 수치가 많다. 반응도 순이라 대표 사례를 빨리 파악할 수 있다.",
+      "weaknesses": "X 게시물의 2차 요약이다. 수치는 작성자 자기 보고이고 통화 표기가 손상되어 있다.",
+      "license_or_price": "공개 저장소",
+      "status_date": "2026-09-05 수집 시작, 이후 계속 갱신",
+      "urls": [
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "magiccreator-ai/awesome-gpt-6-astra",
+      "category": "사례 갤러리",
+      "what_it_is": "GPT-6 Astra 데모 목록. Blender & 3D 섹션에 Tom Krcha의 증기기관차(편집 가능 오브젝트 3,295개), Thomas Ricouard의 Blender→UE5 주택, Alix Ollivier의 포토리얼 박쥐 등 24건 이상이 있다.",
+      "how_to_use": "건축·기계·캐릭터 재현 사례의 원문 링크를 찾을 때 쓴다.",
+      "strengths": "공통 한계(수작업 보정 빈번, 정확도 미검증)를 따로 정리해 두었다.",
+      "weaknesses": "2차 요약이다.",
+      "license_or_price": "공개",
+      "status_date": "2026-09-22 최근 검토",
+      "urls": [
+        "https://github.com/magiccreator-ai/awesome-gpt-6-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "per-simmons/unreal-agent-harness (Claude + UE 5.8 공식 Unreal MCP 도시 구축 하네스)",
+      "category": "사례 저장소/하네스",
+      "what_it_is": "Claude Code가 UE 5.8 공식 Unreal MCP로 도시(뉴욕)를 짓고 스스로 QA하는 하네스. AGENTIC-GAMEDEV-GUIDE.md(2026-06-18 시작)와 BUILD-LOG.md에 5가지 빌드 방식 비교, 크래시·스케일 오류 수정 기록, Cesium 설정값이 들어 있다.",
+      "how_to_use": "Unreal MCP를 쓸 때 설정 함정(bAutoStartServer=false, 포트 충돌, AllToolsets+PythonScriptPlugin 활성화)과 CaptureViewport 디코드 파이프라인을 그대로 참고한다.",
+      "strengths": "실패와 수치가 매우 구체적이다(MSE, 조명 6500K, 100배 스케일). '하네스가 학습보다 낫다'는 결론이 명확하다.",
+      "weaknesses": "macOS·M4 Max 환경 기준이고 Claude 세부 모델 버전은 명시하지 않았다. 영상 링크가 없다.",
+      "license_or_price": "공개 저장소(196 stars)",
+      "status_date": "2026-06-24 마지막 푸시",
+      "urls": [
+        "https://github.com/per-simmons/unreal-agent-harness",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/BUILD-LOG.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "PhiloLabs/fable51-worlds (Claude Fable 5.1 에이전트 스웜 월드)",
+      "category": "사례 저장소/QA 방법론",
+      "what_it_is": "Fable 5.1 에이전트 스웜이 실제 장소(Union Square SF, 교토 히가시야마, Death Star Trench Run 오마주)를 조사하고, 코드로 모델링·렌더·검증해 Three.js 앱으로 내놓는 프로젝트. 동일 브리프의 GPT-6 Astra 결과와 나란히 비교한 영상을 제공한다.",
+      "how_to_use": "FINAL_QA_REPORT.md와 qa/discrepancies.md를 읽고 리뷰어 에이전트 구성(건축가·지리·테크니컬 아티스트·인터랙션)과 사진 동일 시점 비교 방식을 따라 한다.",
+      "strengths": "'빌더는 자기 작업을 채점하지 않는다'는 원칙을 지키고, 조정하지 않은 점수와 남은 결함을 공개한다(147장 비교 시트, 34개 시점).",
+      "weaknesses": "게임 엔진이 아닌 순수 Three.js라 오프라인 렌더 품질과는 다르다.",
+      "license_or_price": "MIT(OSM ODbL 등 데이터 라이선스는 별도)",
+      "status_date": "2026-09-02 QA 리포트",
+      "urls": [
+        "https://github.com/PhiloLabs/fable51-worlds",
+        "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "VizuaraAI/fable-visual-learning-pipeline",
+      "category": "사례 저장소/프로덕션 파이프라인",
+      "what_it_is": "Claude Code(Fable 5.1)가 Blender 5.2 bpy 키트와 샷 빌더를 작성해 교육 챕터 영상 5편을 만든 전체 파이프라인. EEVEE 720p 1프레임 컨택트시트로 검토한 뒤 Modal GPU에서 Cycles 1080p로 최종 렌더한다.",
+      "how_to_use": "품질 기준 '6항목 바'와 /vl-review-shots → /vl-fix-shots 루프, docs/LESSONS.md의 함정을 참고한다.",
+      "strengths": "품질 기준을 체크리스트로 명문화했다. 렌더 수치(11,000프레임, A10G 약 50대, 84분, 실패 청크 0)가 있다. 사람이 감독 역할을 맡는 구조가 명확하다.",
+      "weaknesses": "교육 영상용(비실시간)이다. Modal 비용은 명시하지 않았다.",
+      "license_or_price": "공개 저장소",
+      "status_date": "2026-09",
+      "urls": [
+        "https://github.com/VizuaraAI/fable-visual-learning-pipeline"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "az9713/gpt-6-astra-tennis-game (Robo Open 개발 여정)",
+      "category": "사례 저장소/실패 기록",
+      "what_it_is": "Codex/GPT-6 Astra + Blender 5.2.1 + Meshy + Unity 6000.5.7f1(URP 17.5.0)로 만든 테니스 프로토타입. 사람의 결정, 도구 역할, 실패 15건, 비용을 증거와 함께 공개한 개발 여정 문서가 있다.",
+      "how_to_use": "PREFLIGHT_RESULTS.md와 DEVELOPMENT-JOURNEY.md를 읽고 '작은 픽스처로 먼저 파이프라인 검증 → 유료 생성은 그다음' 순서를 따라 한다.",
+      "strengths": "스케일·애니메이션 컬링·캡처 경로·WebGL 링크 실패 등 경계 조건 실패를 구체적으로 기록했다.",
+      "weaknesses": "원작(Chong-U 영상)의 자산 없이 새로 재구성한 것이다. 게임성은 사람이 평가하지 않았다.",
+      "license_or_price": "제3자 자산 라이선스는 별도 확인 필요",
+      "status_date": "2026-09-05 프리플라이트, 이후 v0.5.1",
+      "urls": [
+        "https://github.com/az9713/gpt-6-astra-tennis-game"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "ProfRino/Blender-MCP-Assembly-Skill",
+      "category": "스킬(조립 정확도)",
+      "what_it_is": "Blender MCP로 지오메트리를 만들 때 파트 분리, 스케일 오류, 실린더 회전 오류, 틈을 막는 SKILL.md. 의자 조립 Before/After 예시가 있다.",
+      "how_to_use": "에이전트 스킬 폴더에 SKILL.md를 넣는다. 핵심 규칙: cube는 size=2로 만들어 scale 값을 half-extent와 일치시키기, 방향성 부재에는 Euler 회전 쓰지 않기, 두 점 사이 부재는 bmesh로 만들기, 스케일 후 즉시 transform apply, verify_bounds/verify_overlap/audit_all 호출.",
+      "strengths": "가구·기계처럼 '붙어 있어야 하는' 오브젝트에 바로 효과가 있다.",
+      "weaknesses": "정량 평가와 테스트한 모델 정보가 없다.",
+      "license_or_price": "공개",
+      "status_date": "2026-05-25",
+      "urls": [
+        "https://github.com/ProfRino/Blender-MCP-Assembly-Skill"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "RobLe3/cc-blender-skill (text-to-blender 오케스트레이션 스킬)",
+      "category": "스킬(작업 순서)",
+      "what_it_is": "ahujasid blender-mcp 위에서 동작하는 Claude Code 플러그인(v1.3.0). block-out → camera → lighting → forms → materials → detail → render → composite → export 순서를 강제하고, 실제 치수 참조표(7개 카테고리)와 품질 개선 자동 루프를 제공한다.",
+      "how_to_use": "Haiku가 테스트하고 Opus가 패치하는 검증 패턴(약 10배 저렴)을 참고한다. 실패 상태 렌더도 공개되어 있다.",
+      "strengths": "6개 씬 클래스(검, 병, 의자, 비행사, 데스크 램프, 아바타)에서 끝까지 검증했다. 체리피킹이 없다.",
+      "weaknesses": "Claude Sonnet 4.6, Opus 4.7, Haiku 4.5 기준이라 최신 모델에서는 재검증이 필요하다.",
+      "license_or_price": "공개",
+      "status_date": "2026-05-01",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "viettranx/3dviz-pro-max",
+      "category": "스킬(3D 시각화 지식베이스)",
+      "what_it_is": "아이디어를 Three.js/Blender 씬으로 만드는 에이전트 스킬. 레시피 223, 지식 레코드 440, 키트 22, 스타일 37개와 T0~T4 품질 티어를 갖췄다. Claude Code 2.1.265로 검증했다.",
+      "how_to_use": "'Frames, not assurances' 원칙대로 capture.py로 실제 프레임을 찍어 보고한다.",
+      "strengths": "조명 리그·색공간·톤매핑 기본값이 들어 있고, 전후 평가를 공개한다(기준선 21점 → 스킬 적용 19→23→23→25점, 30점 만점, n=1).",
+      "weaknesses": "대부분의 레시피가 렌더로 검증되지 않았다. T3는 키트 2개만, T4는 미증명이다.",
+      "license_or_price": "MIT",
+      "status_date": "2026-09-11",
+      "urls": [
+        "https://github.com/viettranx/3dviz-pro-max"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "realsee-developer/realsee-astra-blender",
+      "category": "사례 저장소/인테리어 복원 프롬프트",
+      "what_it_is": "Realsee 스캔 내보내기(CAD, 포인트클라우드, 파노라마; 원본 396개 파일, 5.66 GiB)를 참조해 Codex의 GPT-6 Astra가 편집 가능한 Blender 공간을 복원한 실제 프로젝트. 프롬프트, 튜토리얼, 85초 워크스루를 공개한다.",
+      "how_to_use": "prompts/quickstart.en.md의 프롬프트를 그대로 쓴다: 구조 먼저, 주요 가구는 그다음, 소품은 나중에. 근거 없는 방은 만들지 않기. 저장 후 다시 열어 벽과 문이 독립적으로 편집되는지 확인하기.",
+      "strengths": "가구·배치 이전에 공간 구조를 바로잡는 순서가 명확하고, tools/project.py smoke 테스트가 있다.",
+      "weaknesses": "스크립트가 해당 공간 전용이라 그대로 재사용할 수 없다.",
+      "license_or_price": "코드 MIT, 데이터 권리 별도",
+      "status_date": "2026-09-15",
+      "urls": [
+        "https://github.com/realsee-developer/realsee-astra-blender"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "danielsobrado/Codex-and-Blender",
+      "category": "워크플로 레퍼런스",
+      "what_it_is": "YAML/JSON 설정 → 결정적 bpy 스크립트 → headless Blender CLI → GPT-6 Astra 멀티뷰 리뷰 → (선택) Blender MCP 실시간 점검으로 이어지는 재현 가능한 워크플로. Coastal Jungle 데모를 포함한다.",
+      "how_to_use": "'Git 설정 + Blender Python이 원본이고 MCP는 점검 레이어'라는 원칙을 따른다. reproducibility_check.py로 클린 빌드를 두 번 돌려 결과를 비교한다.",
+      "strengths": "자율 수정 루프 안전장치(acceptance.yaml 불변, MCP로 한 수정은 반드시 원본에 반영)가 있다.",
+      "weaknesses": "정량 수치(시간, 토큰)가 없다.",
+      "license_or_price": "공개",
+      "status_date": "2026-09-13",
+      "urls": [
+        "https://github.com/danielsobrado/Codex-and-Blender"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "syaripin-i8i/blender-astra-texture-guide",
+      "category": "사례 저장소/텍스처 보정",
+      "what_it_is": "Tripo로 만든 캐릭터 의상 텍스처를 Astra가 Blender MCP와 Python, 이미지 생성으로 다시 마감하는 절차와 실제 사용한 프롬프트 7개(일본어, Blender 5.1.2).",
+      "how_to_use": "저장소 URL과 함께 '이 절차로 한 부위부터 마감해 줘'라고 지시한다. 순서: 읽기 → 백업 → 부위·UV 분석 → 이미지 생성 → 위치 보정·분할 적용 → 전후 비교 → 확인본 저장.",
+      "strengths": "한 부위씩 확장하는 안전한 절차다. 얼굴·눈·머리·형태는 유지한다.",
+      "weaknesses": "Tripo 모델에서만 검증했다. 범용 스크립트는 없다.",
+      "license_or_price": "공개",
+      "status_date": "2026-09-09",
+      "urls": [
+        "https://github.com/syaripin-i8i/blender-astra-texture-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "openerai/blender-previz-video (한국어 Claude Code 스킬)",
+      "category": "스킬(프리비즈→AI 영상)",
+      "what_it_is": "Blender 그레이박스 블로킹으로 카메라·컷·타이밍·동선을 먼저 고정하고, 뷰포트 렌더를 Seedance 2.5 같은 영상 모델에 video-to-video로 넣는 한국어 스킬. Higgsfield Bridge 커넥터와 Blender 플러그인(bl_* MCP 도구)을 쓴다.",
+      "how_to_use": "~/.claude/skills/에 클론한 뒤 /blender-previz-video로 호출한다. 프롬프트 규칙 13가지 중 핵심은 '블로킹과 텍스트가 충돌하면 블로킹이 이긴다'를 명시하는 것이다.",
+      "strengths": "구조 레이어는 고정하고 스타일 레이어만 교체해 재사용할 수 있다.",
+      "weaknesses": "최종 영상은 3D 렌더가 아니라 AI 영상이다. Blender 5.0 이상이 필요하다.",
+      "license_or_price": "공개(Higgsfield는 유료)",
+      "status_date": "2026-09-08",
+      "urls": [
+        "https://github.com/openerai/blender-previz-video"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "teshnizi2/astra-fable-3d-iris (동일 프롬프트 비교 프로토콜)",
+      "category": "모델 비교 연구",
+      "what_it_is": "GPT-6 Astra와 Claude Fable 5.1에 같은 동결 프롬프트(6날 기계식 조리개 애니메이션)를 주고 Blender 5.2.1 EEVEE에서 같은 설정으로 렌더해 비교한 연구. 사전 등록 프로토콜과 해시 기록이 있다.",
+      "how_to_use": "모델을 비교할 때 프롬프트 동결, 동일 렌더 설정, 소스 무수정, 실패 기록 보존 방식을 그대로 따라 한다.",
+      "strengths": "가장 엄격한 공개 비교다. 두 모델의 물리적 결함을 소스 수준에서 분석했다.",
+      "weaknesses": "과제 1개뿐이다. 하네스가 서로 달라(Codex CLI 0.153.4 대 Claude Code 2.1.263) 순위의 근거로 쓸 수 없다.",
+      "license_or_price": "공개",
+      "status_date": "2026-09-08",
+      "urls": [
+        "https://github.com/teshnizi2/astra-fable-3d-iris"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "hi-godot/cyberpunk-hud-demo (Godot AI MCP 마찰 로그)",
+      "category": "사례 저장소/MCP 한계 기록",
+      "what_it_is": "Claude Code가 Godot AI MCP 도구만으로 사이버펑크 HUD와 일시정지 메뉴를 만든 사례(약 2시간, 2026-04-15). 도구 호출 수와 실패·우회 방법을 기록한 friction log를 공개했다.",
+      "how_to_use": "MCP 도구에 빈틈(씬 인스턴싱 도구 없음, 게임 뷰 스크린샷 실패)이 있으면 스크립트로 우회하는 패턴을 참고한다.",
+      "strengths": "도구별 실패를 정직하게 기록했다.",
+      "weaknesses": "3D가 아니라 UI 사례다.",
+      "license_or_price": "공개",
+      "status_date": "2026-04-15",
+      "urls": [
+        "https://github.com/hi-godot/cyberpunk-hud-demo",
+        "https://raw.githubusercontent.com/hi-godot/cyberpunk-hud-demo/main/docs/friction-log-cyberpunk-hud.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "flopperam/unreal-engine-mcp (현재 Aura 소유)",
+      "category": "MCP 서버 + 쇼케이스",
+      "what_it_is": "create_town, construct_house, construct_mansion, create_maze 같은 고수준 건축 도구를 제공하는 Unreal MCP. 'GPT-5 vs Claude' 동시 건축 대결, 프롬프트 한 번으로 객체 4,000개 이상인 메트로폴리스, 미로·저택 데모 영상을 공개했다.",
+      "how_to_use": "대량 배치에는 LLM이 개별 액터를 찍는 대신 파라메트릭 고수준 도구를 호출하게 하는 설계를 참고한다.",
+      "strengths": "대규모 레이아웃을 빠르게 만든다.",
+      "weaknesses": "결과물 품질은 프리미티브 위주로 추정된다(영상은 확인 불가). 호스팅 버전은 API 키가 필요하다.",
+      "license_or_price": "로컬 오픈소스 + 호스팅(유료 추정)",
+      "status_date": "2026-06-26 푸시",
+      "urls": [
+        "https://github.com/flopperam/unreal-engine-mcp"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "octopus7/astra-blender-forest (한국 사례)",
+      "category": "사례 저장소/절차적 환경",
+      "what_it_is": "Codex가 아닌 ChatGPT 채팅의 Astra로 생성한 Blender Python 패키지. 300×300m 로우폴리 호수 숲을 만든다(나무 3,800그루, 인스턴스 16,573개, 재사용 메시 127개, 랜드마크 12곳, seed 42). UE HISM 내보내기와 임포트 스크립트를 포함한다.",
+      "how_to_use": "Blender 4.2 이상에서 01_build_scene.py를 실행한 뒤, 02_export_unreal.py로 셀과 에셋 ID별 FBX와 배치 매니페스트를 만들고, UE에서 03_import_unreal.py를 실행한다.",
+      "strengths": "대규모 배치를 메시 공유와 인스턴싱으로 처리한다. 순수 Python 테스트 30개가 있다.",
+      "weaknesses": "콜리전, LOD, World Partition은 범위 밖이다. Blender·UE 런타임 실행은 검증 기록에 없다.",
+      "license_or_price": "LICENSE 참조",
+      "status_date": "2026-09-14",
+      "urls": [
+        "https://github.com/octopus7/astra-blender-forest"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "mohakmalviya/blender-astra-mcp (배칭 측정)",
+      "category": "MCP 서버(토큰 효율)",
+      "what_it_is": "inspect, discover, execute, capture 4개 도구만 둔 Blender MCP 브리지. 동일 변환 50개를 개별 호출(1,949 토큰)과 배치 1회(1,018 토큰)로 처리해 비교했다.",
+      "how_to_use": "관련 편집을 한 번의 execute 배치로 묶는다.",
+      "strengths": "측정 방법이 투명하다(cl100k_base 인코딩, 페이로드 토큰 47.77% 감소).",
+      "weaknesses": "제작자도 전체 비용이 47.77% 준다는 뜻은 아니라고 명시했다.",
+      "license_or_price": "공개",
+      "status_date": "2026-09-09",
+      "urls": [
+        "https://github.com/mohakmalviya/blender-astra-mcp"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "에이전트에게 '눈'을 먼저 달아라. 변경할 때마다 스크린샷을 찍고, 디코드하고, 보고, 고치는 루프를 만든다.",
+      "why": "per-simmons는 '에이전트는 우리가 눈을 만들어 주지 않으면 못 본다'고 결론 내렸다. UE CaptureViewport가 반환하는 수 MB짜리 base64 PNG가 컨텍스트를 채우기 때문에 파일로 빼서 작은 PNG와 JSON 사이드카로 디코드했다. Nipale의 Fable 5.1 게임도 스스로 Three.js 뷰어와 스크린샷 스크립트를 만든 뒤에야 bloom과 조명을 튜닝했다.",
+      "example": "UE: EditorAppToolset.CaptureViewport → tool-results/*.txt에 저장 → python3 ue_qa.py decode → 판독 → 수정. Blender MCP에도 2026-09에 멀티뷰 피드백 PR(#353)과 검사 도구 18개 PR(#359)이 올라왔다.",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://github.com/Nipale-ai/fable-5-1-one-prompt-game",
+        "https://github.com/ahujasid/mcp-for-blender/pull/353"
+      ]
+    },
+    {
+      "tip": "빌드 단계마다 세 각도로 QA한다. 탑다운(레이아웃·겹침), 눈높이(미관), 플레이어 시점(게임 감각).",
+      "why": "배치 오류(겹침, 떠 있음)는 탑다운에서, 미감 문제는 눈높이에서, 스케일 감각 오류는 플레이어 시점에서 드러난다.",
+      "example": "per-simmons 하네스: '3-angle QA sweep per build step'. Realsee 후속 프롬프트: '가구를 숨기고 전체 평면도를 보여 준 다음, 입구에서 각 방으로 가는 연결을 보여 줘'.",
+      "urls": [
+        "https://github.com/per-simmons/unreal-agent-harness",
+        "https://github.com/realsee-developer/realsee-astra-blender"
+      ]
+    },
+    {
+      "tip": "임포트 직후 get_bounds나 dimensions로 실측하고, m와 cm, 축(Y-up/Z-up)을 확인한다.",
+      "why": "100배 스케일 오류가 서로 무관한 두 사례에서 똑같이 났다(UE의 Boeing 787 메시 약 6km, Unity의 2m 로봇이 200m). 이미지→3D 결과물은 약 1.4m로 작게, Y-up 축으로 들어왔다. '스케일 오류는 이후 모든 것을 조용히 망가뜨린다.'",
+      "example": "Blender FBX 내보내기에 apply_scale_options='FBX_SCALE_UNITS' 지정. UE에서는 RelativeScale3D=0.01로 보정. 크기를 아는 픽스처(2m 캐릭터)로 먼저 테스트.",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/BUILD-LOG.md",
+        "https://github.com/az9713/gpt-6-astra-tennis-game"
+      ]
+    },
+    {
+      "tip": "반복되는 대량 요소(도시, 숲)는 CC0 모듈러 키트와 인스턴싱으로, 고유 형태는 headless bpy로, 이미지→3D는 일회성 소품에만 쓴다.",
+      "why": "per-simmons의 5가지 방식 비교 결론이다. CC0 키트(Quaternius downtown-city-megakit 153개 모듈)가 '가장 깨끗한 실제 건물'이었고, Meshy·TRELLIS는 '얼룩지고 스케일과 방향이 틀림'이었다. octopus7 숲도 메시 127개를 16,573번 인스턴싱했다.",
+      "example": "Kenney, Quaternius, KayKit City Builder Bits, Poly Haven HDRI(venice_sunset_4k.hdr)를 받아 두고 에이전트에게 '이 폴더의 에셋만으로 도시를 조립하라'고 지시한다(Andrew Walko: 'Everything you need is in Assets/ithappy/Cartoon_City_Free').",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://github.com/octopus7/astra-blender-forest",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "tip": "실내·가구 복원은 구조 → 주요 가구 → 소품 순서로 하고, 근거 없는 공간은 지어내지 말고 기록하게 한다.",
+      "why": "공간 구조가 틀리면 가구 배치가 모두 무의미해진다. 근거 없이 방을 추가하는 것이 흔한 오류다.",
+      "example": "Realsee 프롬프트: 'first understand how the areas connect, then build the walls, floors, ceilings, doors, windows, and openings. Add the main furniture afterward, leaving small objects until later... Model only spaces evidenced by the inputs. Record unclear areas instead of inventing additional rooms.' 그리고 저장 후 다시 열어 벽 한 구간과 문 하나를 실제로 편집해 확인한다.",
+      "urls": [
+        "https://github.com/realsee-developer/realsee-astra-blender"
+      ]
+    },
+    {
+      "tip": "bpy 스크립트와 설정 파일을 원본으로 삼고, MCP는 실시간 점검과 실험 레이어로 쓴다.",
+      "why": "MCP로 뷰포트에서 한 수정은 재현이 안 된다. Codex-and-Blender는 'MCP edits require durable source equivalents'를 규칙으로 두었다. Simon Willison, Sarang Borude(드래곤), Vatroslav(메카)는 headless `blender --background --python`만으로 좋은 결과를 냈다.",
+      "example": "Simon Willison의 프롬프트: 'Use Blender like this: /Applications/Blender.app/Contents/MacOS/Blender --background --python scene.py'. 이어서 'Create a quick skill that describes how to use the currently installed Blender based on what you learned'로 스킬을 만들어 재사용했다.",
+      "urls": [
+        "https://github.com/simonw/til/blob/main/llms/blender-coding-agents-macos.md",
+        "https://github.com/danielsobrado/Codex-and-Blender"
+      ]
+    },
+    {
+      "tip": "가구·기계처럼 '붙어 있어야 하는' 모델에는 조립 규칙과 검증 함수를 스킬로 강제한다.",
+      "why": "Blender MCP 기본 사용 시 흔한 실패가 떨어진 파트(폭발한 의자), 잘못된 실린더 회전, 스케일 미적용이다.",
+      "example": "ProfRino 스킬: 연결부와 접촉면, 최소 겹침을 먼저 계획하고 → cube는 size=2 → 방향성 부재에는 Euler 대신 bmesh로 두 점 사이를 잇기 → 스케일 직후 transform apply → verify_bounds()/verify_overlap() → finalize()/audit_all().",
+      "urls": [
+        "https://github.com/ProfRino/Blender-MCP-Assembly-Skill"
+      ]
+    },
+    {
+      "tip": "'예쁘다'를 체크리스트로 쪼개 샷마다 판정하고, 결함을 한 줄 목록으로 되돌려준다.",
+      "why": "Vizuara는 클라이언트의 'very, very beautiful'을 6항목으로 분해했고, 수정 라운드는 보통 2번이었다. 모델 자체 리뷰보다 사람 눈이 결정적이었다.",
+      "example": "6항목: ① 히어로 에셋에 3단계 스케일 디테일(맨 프리미티브 금지) ② 파티클·대기·아웃포커스 전경 ③ 표면을 뚫고 들어가는 매치컷 ④ 모든 샷에 카메라와 피사체 움직임 ⑤ 문장마다 시각적 증거 ⑥ 섹션별 팔레트와 조명 테마. 수정 지시 예: 's30: washed grey, tissue must be warm and matte; s06: fist is a cluster of balls'.",
+      "urls": [
+        "https://github.com/VizuaraAI/fable-visual-learning-pipeline"
+      ]
+    },
+    {
+      "tip": "빌더 에이전트와 리뷰어 에이전트를 분리하고, 실사진과 같은 시점에서 비교한다.",
+      "why": "PhiloLabs는 '빌더는 자기 작업을 채점하지 않는다'는 원칙 아래 리뷰어 9명(건축가, 테크니컬 아티스트, 환경 아티스트, 인터랙션 등)을 두었다. 그 결과 벽 와인딩 반전, 미러링된 도로 마킹, 떠 있는 옥상 박스, 노출 과다(환경맵 이중 계산) 같은 결함을 잡았다.",
+      "example": "Playwright로 고정 시점 34곳을 캡처해 사진과 나란히 놓은 비교 시트 147장을 만들고, 리뷰어별 점수와 목표치를 표로 남긴다(조정하지 않은 점수).",
+      "urls": [
+        "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md"
+      ]
+    },
+    {
+      "tip": "유기체와 캐릭터 베이스 메시는 이미지→3D로 만들고, 에이전트에게는 리토폴로지·UV·리깅·텍스처 보정과 조립을 맡긴다.",
+      "why": "같은 일러스트로 Astra(High)와 Meshy 7을 비교했을 때 얼굴·옷 디테일은 Meshy가 나았다(8분 대 3분). 성공한 캐릭터 사례 다수(chimerast VRM, Nano 표정, insaneUEFN, Stefan의 말)가 Tripo·Meshy 베이스에 에이전트 후처리를 붙인 하이브리드였다.",
+      "example": "insaneUEFN: Tripo P2로 베이스 메시 → Astra가 Blender에서 휠 지오메트리를 고치고 UV 최적화 → Substance Painter로 텍스처. Hyper3D Rodin MCP를 연결해 용이나 우주선을 생성한 뒤 부품을 분리해 조립한 사례도 있다.",
+      "urls": [
+        "https://github.com/yangqiong/gpt6-astra-3d",
+        "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json"
+      ]
+    },
+    {
+      "tip": "UV와 텍스처 작업은 '사람 아티스트 순서'를 프롬프트에 명시하고, 한 부위씩 진행한다.",
+      "why": "자동 Smart UV Project로 끝내면 페인팅하기 어려운 조각난 UV가 나온다. 한 번에 전체를 바꾸면 되돌리기 어렵다.",
+      "example": "@_sagyoai 프롬프트: observe → design seams → unwrap by region → correct distortion → arrange → bake. 새 UV 맵 이름 'UV_Final', 4K 기준 마진 16px, 아일랜드 간격 32px 이상, base color는 Diffuse Color나 Emit만 베이크(조명과 AO를 굽지 않음), 노멀은 새 UV 기준으로 재베이크. syaripin: 백업 → UV 분석 → 이미지 생성 → 위치 보정 → 전후 비교.",
+      "urls": [
+        "https://github.com/syaripin-i8i/blender-astra-texture-guide",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "tip": "참조 이미지는 여러 뷰로 주고 뷰별 역할과 불일치 해소 규칙을 지정한다. 실루엣에 영향을 주는 요소는 지오메트리로, 미세 디테일만 노멀맵으로 처리하게 한다.",
+      "why": "AI가 생성한 레퍼런스 시트는 뷰끼리 모순이 있다. 우선순위가 없으면 모델이 임의로 섞는다.",
+      "example": "Sarang Borude 드래곤 프롬프트: 'Use the side view for overall proportions, the front view for width and stance, the top and back views for wings and tail... Use geometry for anything affecting the silhouette... normal maps, bump or restrained displacement only for micro-detail.' 해부학적 블록아웃을 검증한 뒤에 2·3차 디테일을 올린다. icesixgod 스킬은 8방향 + 탑뷰, 총 9뷰를 생성하되 원화를 1순위 기준으로 삼는다.",
+      "urls": [
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts",
+        "https://github.com/icesixgod/awesome-astra-blender-characters"
+      ]
+    },
+    {
+      "tip": "게임 에셋용으로 쓸 거라면 프롬프트에 엔진 제약을 수치로 넣는다.",
+      "why": "제약이 없으면 폴리곤 수, 축, 피벗, 콜리전이 엔진에 맞지 않아 임포트 후 다시 작업해야 한다.",
+      "example": "Jonathan Plumb: 'Keep the main render mesh under 15,000 triangles. Name objects clearly, set the forward direction for Unity, create simple collision geometry, apply transforms, save the .blend, and export a game-ready FBX. Show viewport screenshots for approval before export.' Givros(Roblox): 'Verify scale, pivots, materials, and collisions in-game... No placeholders.'",
+      "urls": [
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "tip": "제작 과정을 증거로 남기게 한다(단계별 뷰포트 스크린샷, 타임랩스, 전후 비교).",
+      "why": "에이전트의 '완료했다'는 보고와 실제 결과가 다른 경우가 많다. 증거가 있어야 어디서 망가졌는지 추적할 수 있다.",
+      "example": "tonysuri 로마 전장: 'save a viewport screenshot into a numbered timelapse/ folder after every meaningful addition... assemble those frames into a timelapse video at 2 fps'. 카메라를 원본 이미지와 정확히 일치시키고, 오브젝트마다 GLB로 내보내 재사용한다.",
+      "urls": [
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "tip": "실제 장소와 치수는 모델의 기억이 아니라 데이터를 크롤링해 쓴다.",
+      "why": "Martin Puli는 자기 집을 처음 만들었을 때 '쓰레기(찌그러지고 회색 플라스틱 모형)'가 나왔다. 발자국, 높이, 좌표를 긁어 오는 에이전트를 붙이고 나서야 뉴욕이 제대로 나왔다. OSM은 높이 태그가 약 31%에만 있어 기본값 보정이 필요하다.",
+      "example": "per-simmons: NYC Building Footprints(heightroof), 2017 NYC 1-ft LiDAR DEM, EPSG:2263(피트)을 재투영하고 ×0.3048. Cesium 가로 수준 설정은 MaximumScreenSpaceError=6(히어로 샷은 4), MaximumCachedBytes=1GB, ForbidHoles=true. SSE는 3~4 아래로 내리지 않는다.",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "tip": "모델은 작업별로 나눠 쓰고, 추론 강도(effort)는 반복 단계와 최종 단계에서 다르게 준다.",
+      "why": "비교 보고(n=1)를 모아 보면 속도·토큰은 Astra가 유리하고, 제품 비율·디테일은 Opus 5.5가 낫다는 보고가 있으며, 기획과 코드는 Fable을 선호하는 경우가 있다. AiBattle의 Godot 게임은 Max가 53분(Pro x5 주간 한도 4%), Medium이 25분(1%)이었다.",
+      "example": "RealFedeURU: 기획과 코드는 Fable 5.1, 3D 모델링과 Blender는 GPT-6 Astra, 일부 에셋은 Meshy, 최종 통합은 Godot. RobLe3: 테스트는 Haiku, 패치는 Opus(약 10배 저렴).",
+      "urls": [
+        "https://github.com/yangqiong/gpt6-astra-3d",
+        "https://github.com/RobLe3/cc-blender-skill"
+      ]
+    },
+    {
+      "tip": "엔진 공식 MCP의 설정 함정부터 해결한다(UE 5.8 Unreal MCP 기준).",
+      "why": "플러그인을 켜기만 하면 서버가 뜨지 않는다. 포트 충돌과 비활성 툴셋 때문에 첫날을 통째로 날린 사례가 있다.",
+      "example": "bAutoStartServer=false라서 직접 시작해야 한다. 기본 포트 8000이 다른 앱과 충돌해 EditorPerProjectUserSettings.ini에서 8123으로 바꿨다. 비활성 플러그인이 약 28개라 AllToolsets와 PythonScriptPlugin을 켜야 한다. 에디터 게임 스레드가 하나이므로 모든 변경을 직렬화한다. StaticMeshTools.import_file은 FBX/OBJ만 받고 GLB는 안 된다. Cesium 타일셋에 FocusOnActors를 쓰면 안 된다(크래시).",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/BUILD-LOG.md"
+      ]
+    },
+    {
+      "tip": "스크린샷 장치 자체를 검증 대상으로 본다. 에디터 화면, 빌드 결과, 백그라운드 실행은 서로 다르게 동작한다.",
+      "why": "Robo Open에서는 Unity 자동화 스크린샷이 URP 조명을 틀리게 찍었고(Camera.Render 경로 문제), 백그라운드 테스트에서는 애니메이션이 컬링되어 멈췄다. '나쁜 스크린샷은 씬이 아니라 캡처 경로에 대한 증거'였다.",
+      "example": "Unity: RenderPipeline.SubmitRenderRequest로 캡처하고, AnimationCullingType.AlwaysAnimate와 SkinnedMeshRenderer.updateWhenOffscreen을 켠다. Godot AI MCP: editor_screenshot source='game'이 실패해 CanvasLayer HUD가 캡처되지 않았다.",
+      "urls": [
+        "https://github.com/az9713/gpt-6-astra-tennis-game",
+        "https://raw.githubusercontent.com/hi-godot/cyberpunk-hud-demo/main/docs/friction-log-cyberpunk-hud.md"
+      ]
+    },
+    {
+      "tip": "유료 생성 API는 싼 픽스처로 파이프라인을 끝까지 검증한 뒤에 쓰고, 크레딧 상한과 원장을 둔다.",
+      "why": "Robo Open은 Unity 프로젝트, 에디터 자동화, Blender 애니메이션 임포트, Windows와 WebGL 빌드, 이 4가지를 무료 픽스처로 먼저 증명했다. 그 덕에 Meshy는 30크레딧만 썼다. 자동 리깅이 422로 실패하자 재제출하지 않고 Blender로 직접 16본 리그를 짰다.",
+      "example": "에이전트가 제안한 400크레딧 상한을 사람이 승인했다. 실패한 요청은 원장을 대조한 뒤에만 재시도한다.",
+      "urls": [
+        "https://github.com/az9713/gpt-6-astra-tennis-game"
+      ]
+    },
+    {
+      "tip": "여러 편집은 MCP 호출 하나로 묶고, 거대한 결과(이미지, 로그)는 컨텍스트 밖 파일로 뺀다.",
+      "why": "변환 50개를 개별 호출하면 1,949 토큰, 배치 1회면 1,018 토큰이었다(페이로드 47.77% 감소). Opus 5.5는 같은 Blender 과제에 507K 토큰을 쓴 보고도 있어 비용 관리가 중요하다.",
+      "example": "Godot HUD 사례에서는 batch_execute 한 번으로 node_create 7개를 처리했다. UE 캡처는 비동기 SSE로 파일에 저장했다.",
+      "urls": [
+        "https://github.com/mohakmalviya/blender-astra-mcp",
+        "https://raw.githubusercontent.com/hi-godot/cyberpunk-hud-demo/main/docs/friction-log-cyberpunk-hud.md"
+      ]
+    },
+    {
+      "tip": "시네마틱 '포토리얼'이 목표라면, 그레이박스 프리비즈 위에 AI 비디오를 입히는 방식도 선택지다. 다만 3D 에셋 품질과는 구분한다.",
+      "why": "PixVerse, Higgsfield, AI追光实验室 사례는 Blender에서 카메라와 동선만 고정하고 최종 화면은 Seedance 2.5 같은 영상 모델이 만든다. 실시간 3D나 게임 에셋에는 쓸 수 없다.",
+      "example": "openerai 스킬 규칙: 블로킹 영상은 카메라 궤적, 컷, 타이밍, 동선을 맡고, 텍스트 프롬프트는 재질, 조명, 그레이딩, 의상을 맡는다. 둘이 충돌하면 블로킹이 이긴다는 점을 명시한다.",
+      "urls": [
+        "https://github.com/openerai/blender-previz-video"
+      ]
+    },
+    {
+      "tip": "애니메이션처럼 모델이 막히는 부분은 사람이 만든 데이터로 보완하는 하이브리드를 기본으로 잡는다.",
+      "why": "Stefan_3D_AI는 11일째에 Astra가 어색한 공격 애니메이션을 끝내 만들지 못해, 직접 휘두르는 모습을 촬영하고 영상→모캡으로 변환해 붙였다. mizchi는 동작이 딱딱하고 얼굴·비율을 여러 번 고쳐야 했다고 기록했다.",
+      "example": "squall01337/mixamo-llm-mocap: 카메라 고정 영상 → GVHMR로 SMPL-X 추출 → Mixamo 리그로 리타겟 → headless Blender로 키 입력 → 2×2 리뷰 영상 → 충실도 평가. 에이전트가 이 루프 전체를 돌릴 수 있다.",
+      "urls": [
+        "https://github.com/squall01337/mixamo-llm-mocap",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "tip": "캐릭터와 조형물은 측면 두께부터 확인한다.",
+      "why": "AI가 정면 참조로 만든 모델은 옆에서 보면 얇다. mizchi는 초안의 머리 앞뒤 폭을 좌우 폭과 비슷하게 늘리고, 몸통 깊이를 초안의 1.45배로 수정했다.",
+      "example": "정면, 측면, 3/4, 후면 렌더를 매 반복마다 요구한다. mizchi 저장소 테스트는 '눈이 얼굴 안에 묻히지 않았는지'와 '보행 36프레임 전 정점이 지면 아래로 파고들지 않았는지'를 검사한다.",
+      "urls": [
+        "https://github.com/mizchi/modeling-playground"
+      ]
+    },
+    {
+      "tip": "Blender에서 임의 Python을 실행하는 도구는 샌드박스가 아니라는 점을 전제로 한다. 저장하고 백업한 뒤 실행한다.",
+      "why": "BlenderMCP README는 'ALWAYS save your work'를 경고한다. astra-blender-harness도 execute_blender_code가 승인은 받지만 샌드박스는 아니라고 명시한다. teshnizi2는 생성 코드를 네트워크 차단 래퍼에서 실행했다.",
+      "example": "작업 전에 새 이름으로 저장하고, 원본 UV·이미지·머티리얼을 보존하게 한다(@_sagyoai 프롬프트 1단계).",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/AleBrito124356/astra-blender-harness",
+        "https://github.com/teshnizi2/astra-fable-3d-iris"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "BlenderMCP 런치 데모: 드래곤이 지키는 던전, 해변 씬, 레퍼런스 이미지 → 씬",
+      "who": "Siddharth Ahuja (@sidahuj)",
+      "date": "2025-03 (저장소 생성 2025-03-07)",
+      "ai_model": "Claude(Claude Desktop). 당시 정확한 모델 버전은 미확인",
+      "tools": "BlenderMCP(Blender 애드온 + TCP 소켓 JSON 프로토콜 MCP 서버), Poly Haven, Hyper3D Rodin",
+      "what_was_made": "'Create a low poly scene in a dungeon, with a dragon guarding a pot of gold' 로우폴리 던전, Poly Haven HDRI와 에셋을 쓴 해변 씬, 레퍼런스 이미지 기반 씬, Three.js 내보내기 예제",
+      "process": "애드온이 Blender 안에서 소켓 서버를 열면 MCP 서버가 {type, params} JSON 명령을 보낸다. 프리미티브 생성과 변환, 머티리얼 설정, Poly Haven 에셋·HDRI 다운로드, Rodin 생성 모델 임포트를 자연어로 조작한다.",
+      "outcome": "약 29.4k stars로 생태계의 출발점이 됐다. 이름이 mcp-for-blender로 바뀌었고 Sketchfab, Poly Pizza, Hunyuan3D, Tripo 연동이 추가됐다. Claude Code, Cursor, Codex, Antigravity 등을 지원한다. README가 밝힌 한계: 복잡한 작업은 작은 단계로 나눠야 한다, Poly Haven 다운로드 중 Blender가 멈춘다, 코드 실행 전에 반드시 저장해야 한다. 2026-09에 멀티뷰 피드백과 검사 도구 18개 PR이 올라왔는데, 이는 '보는 능력'이 부족했다는 방증이다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/mcp-for-blender/pull/359"
+      ]
+    },
+    {
+      "title": "Unreal MCP로 GPT-5 대 Claude 건축 대결, 프롬프트 한 번에 객체 4,000개 이상인 메트로폴리스",
+      "who": "flopperam (현재 Aura에 인수)",
+      "date": "2025년 하반기로 추정(저장소 생성 2025-08-06)",
+      "ai_model": "Claude, GPT-5",
+      "tools": "flopperam unreal-engine-mcp(create_town, construct_house, construct_mansion, create_tower, create_maze 등 고수준 도구)",
+      "what_was_made": "두 모델의 동시 건축 대결, 프롬프트 한 번으로 만든 객체 4,000개 이상의 메트로폴리스, 플레이 가능한 미로·저택 단지",
+      "process": "LLM이 액터를 하나씩 찍는 대신 파라메트릭 건축 함수를 호출한다.",
+      "outcome": "대규모 배치가 가능하다는 것을 보여 줬다. 핵심 교훈은 '규모는 고수준 도구 설계에서 나온다'는 것. 영상은 확인하지 못해 시각 품질은 판단 보류(도구 특성상 프리미티브 위주로 추정).",
+      "urls": [
+        "https://github.com/flopperam/unreal-engine-mcp"
+      ]
+    },
+    {
+      "title": "Claude Code + UE 5.8 공식 Unreal MCP로 뉴욕 도시 구축 (5가지 방식 비교)",
+      "who": "per-simmons (가이드에 'Pat'으로 등장)",
+      "date": "2026-06-18 ~ 06-24",
+      "ai_model": "Claude(Claude Code). 세부 버전 미명시. 조사·에셋 작업용 보조 에이전트를 병렬로 사용",
+      "tools": "UE 5.8 공식 Unreal MCP(SceneTools, StaticMeshTools, EditorAppToolset.CaptureViewport, PCGToolset, ProgrammaticToolset), headless Blender bpy, Cesium for Unreal v2.27, Google Photorealistic 3D Tiles, Blender-OSM, Epic City Sample, Meshy(fal.ai), TRELLIS(Replicate), ChatGPT 이미지 생성, Brush(가우시안 스플랫 학습)",
+      "what_was_made": "GTA 바이스시티풍 네온 도시로 시작해 실제 뉴욕으로 방향을 바꿨다. 포토리얼 맨해튼 스트리밍, OSM 돌출 건물(v1→v3), 아르데코·보자르·퓨처리스틱 파사드 키트, 크라이슬러 빌딩 히어로 모델, City Sample 기반 3인칭 플레이",
+      "process": "① 행동(mcp__unreal__call_tool) → ② CaptureViewport(좌표 그리드 주석 포함) → ③ ue_qa.py로 base64를 디코드해 작은 PNG와 JSON으로 → ④ 판독 → ⑤ 수정, 이 루프를 돈다. 빌드 단계마다 탑다운, 눈높이, 플레이어 시점 3각도 QA. 5가지 방식 비교: M1 프리미티브(흰 박스), M2 CC0 키트(가장 깨끗), M4 headless Blender(형태 제어는 좋지만 재질 없음), M5 Meshy(약 4분, PBR이지만 얼룩짐), M6 TRELLIS(약 1분, 색만 있고 작게 임포트됨).",
+      "outcome": "결론은 'CC0 키트는 대량 반복용, Blender는 고유 형태용, 이미지→3D는 일회성 소품용'. 무료 소스 중에 도시 전체이면서 가로 수준까지 선명한 것은 없었다(Google 타일은 가로 수준에서 녹아내림, 스플랫은 블록 하나 단위). 실패와 수정: 787 메시 100배 스케일(RelativeScale3D=0.01), 골든아워 PPV 노출 11이 클리핑돼 오토 노출과 6500K 태양(피치 -38°, 강도 6)으로 복귀, Cesium 스플랫 서브시스템 크래시는 엔진 쪽을 패치. '실험적 AI 도구는 진짜지만 거칠다. 배관 작업에 시간을 잡아 두라.'",
+      "urls": [
+        "https://github.com/per-simmons/unreal-agent-harness",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+        "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/BUILD-LOG.md"
+      ]
+    },
+    {
+      "title": "펠리컨 자전거 씬: 프롬프트 3번으로 반복 개선한 뒤 Blender 스킬 생성",
+      "who": "Simon Willison",
+      "date": "2026-09-05 (저장소 아카이브일)",
+      "ai_model": "GPT-6 Astra (Medium), ChatGPT macOS 앱의 Codex 모드",
+      "tools": "로컬 Blender headless CLI(`--background --python`), MCP 미사용",
+      "what_was_made": "펠리컨이 자전거를 타는 스타일라이즈드 씬 → 해변 축제 배경 → 석양 해안 퍼레이드(꽃바구니, 보드워크, 요트). .blend 파일과 Python 스크립트 공개",
+      "process": "프롬프트 ① 'Use the already install /Applications/Blender to render a scene of a pelican riding a bicycle'(2분39초) ② 'OK add a background and a lot of flair'(3분51초) ③ 'OK make it a whole lot better'(5분59초). 모델이 렌더 이미지를 보고 겹친 지면 같은 문제를 스스로 고쳤다. 마지막으로 'Create a quick skill...'로 Blender Local 스킬을 만들어 이후 작업에 재사용했다.",
+      "outcome": "'Modern frontier models have got really good at using Blender.' 결과는 토이풍 일러스트 품질이다. 첫 실행 때 샌드박스 제한으로 Blender가 크래시해 권한을 받아 재시도했다. 이후 Images 2.5로 만든 참조 이미지와 Astra high로 파베르제풍 달걀도 만들었다(2026-09-09).",
+      "urls": [
+        "https://github.com/simonw/til/blob/main/llms/blender-coding-agents-macos.md",
+        "https://github.com/simonw/gpt-6-astra-blender-pelican-bicycle"
+      ]
+    },
+    {
+      "title": "OpenAI 런치 데모 하우스 'Solace': Blender Python → Cycles 카메라 투어 → UE5 워크스루",
+      "who": "Thomas Ricouard (@Dimillian), OpenAI",
+      "date": "2026-09-03 ~ 09-04",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender Python, Cycles, Unreal Engine 5",
+      "what_was_made": "자연어로 설계한 정원 주택. 건축, 가구, 재질, 조명을 편집 가능한 상태로 만들고, Cycles 카메라 투어 후 UE5에서 실내를 자유롭게 걸어 다닐 수 있게 했다. 같은 글에 HELIOS 태양 집광 구조물, AURELION-07 조선소 순양함, 지베르니 수련 정원도 있다.",
+      "process": "Blender Python으로 씬을 생성하고, 미리보기를 보며 구도와 조명을 조정하고, UE5로 옮겼다(세부 단계는 원문 차단으로 확인 불가).",
+      "outcome": "OpenAI 공식 쇼케이스이고 X 반응은 좋아요 7.1K, 조회 230만. OpenAI 쇼케이스에는 Courtyard House(외관, 지붕 제거 단면, 평면도 연동), Architecture Studio(같은 방 데이터로 치수 평면도와 3D를 동기화해 가구 배치·회전·마감 변경), Physics Museum 등 배치 관련 예제도 있다.",
+      "urls": [
+        "https://developers.openai.com/blog/architectural-visualization-with-astra",
+        "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "사진 한 장 → 가구·가전·장난감까지 분리된 편집 가능 주택 / 증기기관차 도면 → 편집 가능 오브젝트 3,295개",
+      "who": "Tom Krcha (@tomkrcha)",
+      "date": "2026-09-03 ~ 09-04",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender",
+      "what_was_made": "주택 이미지 한 장을 가구, 가전, 장난감이 각각 분리된 오브젝트로 재구성해 로컬에서 60fps 워크스루가 되는 씬. 오래된 증기기관차 그림을 바퀴, 차축, 서스펜션, 로드까지 이름 붙은 기계 어셈블리로 재구성(오브젝트 3,295개, 디테일 수준은 프롬프트로 조절)",
+      "process": "참조 이미지를 주고 '모든 디테일을 편집 가능한 개별 오브젝트로' 만들라고 요구했다. 기관차는 몇 분 만에 결과가 나왔다(작성자 보고).",
+      "outcome": "X 반응이 컸다(각 6.2K, 5.0K 좋아요). 다만 치수 정확도는 검증되지 않았다. 이후 Three.js 런타임 코드만으로 기차를 생성하는 'living code' 버전도 공개했다.",
+      "urls": [
+        "https://x.com/tomkrcha/status/2095598645190291775",
+        "https://x.com/tomkrcha/status/2095756085890310311",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "맨해튼을 Unreal에서 한 거리씩 재현 / 자율 에이전트 사회",
+      "who": "Matt Shumer (@mattshumer_)",
+      "date": "2026-09-03",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Unreal Engine",
+      "what_was_made": "일주일에 걸쳐 거리 단위로 다듬은 맨해튼 월드(좋아요 17.4K, 조회 340만). Astra로 움직이는 인간 에이전트들이 협력해 생존하는 Unreal 월드(좋아요 23K)",
+      "process": "구역 단위, 거리 단위로 작업하고 평가 체크리스트를 유지하며 각 구역을 다듬은 뒤 넘어갔다(Tripo 요약 브리프).",
+      "outcome": "런치 초기 가장 반응이 큰 3D 사례다. 사용한 에셋 출처와 정확도는 공개되지 않았다. 참고로 per-simmons의 오픈소스 뉴욕 실험은 '가로 수준 파사드 데이터가 없다'는 한계를 기록했다.",
+      "urls": [
+        "https://x.com/mattshumer_/status/2095609734845927525",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "'armá Nueva York' 프롬프트 한 줄로 Blender에 맨해튼 생성 (Fable 5 대 GPT 5.6 Sol)",
+      "who": "Martin Puli (@MartinPulitano)",
+      "date": "2026-07-21",
+      "ai_model": "Claude Fable 5, GPT 5.6 Sol(비교)",
+      "tools": "Blender MCP + 스킬 + 라이브러리, 실측 데이터(발자국, 높이, 좌표) 크롤링 에이전트",
+      "what_was_made": "실제 치수와 위치를 따른 맨해튼 Blender 모델. .blend가 '살아 있어서' 문장 몇 개로 타워 추가, 도로 이동, 도시 합성(부에노스아이레스 + 뉴욕)이 가능",
+      "process": "처음에 자기 집을 만들었더니 '찌그러지고 회색인 플라스틱 모형 같은 쓰레기'가 나왔다. 그래서 여러 출처에서 발자국, 높이, 좌표를 긁어 오는 에이전트를 만들고 Blender 자체 도구로 짓게 했다.",
+      "outcome": "'GPT 5.6 Sol이 Fable 5를 크게 이긴다'는 작성자 평가가 있다. 텍스처와 재질은 여전히 약점이라며 조언을 구했다. 공개하겠다던 저장소는 GitHub에서 찾지 못했다.",
+      "urls": [
+        "https://x.com/MartinPulitano/status/2079387760478073087",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "title": "Fable 5.1 에이전트 스웜으로 만든 Union Square SF 디지털 트윈과 리뷰어 9명의 정직한 점수",
+      "who": "PhiloLabs / VerizonCao",
+      "date": "2026-09-02 (QA 리포트), GPT-6 Astra 비교는 2026-09-05",
+      "ai_model": "Claude Fable 5.1 (비교 대상 GPT-6 Astra)",
+      "tools": "Three.js, OSM, USGS 3DEP, Playwright, 리뷰어 에이전트",
+      "what_was_made": "약 800×720m 구역. 건물 492개, 파사드 개구부 11,950개, 인스턴스 모듈 28,003개, 상점 129개(신원 확인 97%), Apple·Nintendo 매장 내부, 보행자 220명과 차량 109대, GLB 206개(5.1MB). 교토 히가시야마와 Death Star Trench Run도 제작",
+      "process": "① 정찰 에이전트가 지도, 표고, 상점 센서스를 출처와 신뢰도 표시와 함께 수집 → ② 스크립트로 파사드 모듈, 가구, 차량 키트 생성 → ③ JSON 스펙에서 Three.js가 조립 → ④ Playwright로 고정 시점 34곳을 캡처해 사진과 비교(시트 147장) → ⑤ 리뷰어 9명(건축가, SF 현지인, 환경 아트, 테크 아트, 인터랙션 등)이 리포트 → 수정 사이클",
+      "outcome": "조정하지 않은 점수(목표 8.5~9): 지리 정확도 7.5, 건물 인지도 5.5(수정 후 추정 6.5), 상점 6, 가로 디테일 6, 시각 충실도 6, 재질 6, 조명 7, 성능 6(가로 57~89fps), 완성도 6.5. 잡아낸 결함: 벽 와인딩 반전으로 벽이 사라짐, 도로 마킹 z 미러링, 떠 있는 옥상 박스, 환경맵 이중 계산으로 노출 과다. 남은 문제: 1~3m마다 반복되는 절차적 텍스처, 블록 같은 보행자 손. 최상급 에이전트 파이프라인으로도 AAA에는 못 미친다는 가장 정직한 증거다.",
+      "urls": [
+        "https://github.com/PhiloLabs/fable51-worlds",
+        "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md"
+      ]
+    },
+    {
+      "title": "교육 챕터 영상 5편: Fable 5.1이 Blender 키트와 샷 빌더를 작성하고 Cycles로 클라우드 렌더",
+      "who": "Vizuara (VizuaraAI)",
+      "date": "2026-09",
+      "ai_model": "Claude Fable 5.1 (Claude Code)",
+      "tools": "Blender 5.2 bpy(kit.py, shots.py), Pillow 2D 오버레이, ElevenLabs 내레이션, Modal GPU(A10G), ffmpeg, Claude Code 스킬(vl-review-shots, vl-fix-shots 등)",
+      "what_was_made": "심장 순환, DNA, 중력 등 약 8~15분짜리 챕터 영상 5편(8분 챕터 1편 약 11,000프레임)",
+      "process": "내레이션 타이밍이 뼈대다 → 샷마다 EEVEE 720p 1프레임 컨택트시트(M1 8GB에서 샷당 2~16초) → 사람이 6항목 바로 결함 목록 작성 → /vl-fix-shots가 먼저 측정하고 수정한 뒤 증거 프레임 렌더 → 통과하면 Modal에서 Cycles 1080p, 24fps, DOF, 모션 블러, 384 samples로 렌더(A10G에서 프레임당 12~44초)",
+      "outcome": "심장 챕터를 A10G 약 50대로 84분에 렌더, 청크 709개 중 실패 0. 수정은 보통 2라운드. 주요 함정: headless에서 GPU 컴포지터 segfault(CPU로 전환), OptiX 대신 OIDN, 카메라 배치 전에 초점 거리를 재서 청크가 새까맣게 나옴, shape key 레이캐스트가 basis가 아닌 활성 키 기준으로 계산됨. '작은 모델도 뭔가 만들긴 하지만 이 바를 넘으려면 훨씬 많은 라운드가 필요하다.'",
+      "urls": [
+        "https://github.com/VizuaraAI/fable-visual-learning-pipeline"
+      ]
+    },
+    {
+      "title": "프롬프트 1개, 24분, $9.90: Fable 5.1이 Blender·FLUX.2·LTX·ACE-Step으로 만든 3D 게임",
+      "who": "Nipale-ai",
+      "date": "2026-09-01",
+      "ai_model": "claude-fable-5-1 (effort high)",
+      "tools": "Blender 5.2 headless bpy, FLUX.2 Q8(스카이와 텍스처), LTX-2.5 i2v, ACE-Step(음악), three.js + UnrealBloom, esbuild, Playwright. 로컬 RTX 5090",
+      "what_was_made": "HTML 파일 하나(4.4MB)로 된 아레나 게임. 이름 붙은 메시 12개를 담은 assets.glb, 홀로 빌보드 영상, 신스웨이브 루프",
+      "process": "프롬프트 요구사항이 '모든 에셋을 직접 보고 나서 수락하라'였다. 음악 7곡을 생성해 스펙트로그램에서 무음 구간을 찾아 6곡을 버리고, make_loop.py로 27마디, 112BPM, 1.2초 크로스페이드 루프를 만들었다. Blender 출력을 보기 위해 자체 뷰어와 스크린샷 스크립트를 만들고, Playwright로 웨이브1 → 상점 → 업그레이드 → 웨이브2를 플레이한 뒤 bloom, 조명, 발광 강도를 튜닝했다.",
+      "outcome": "75턴, 출력 95,832 토큰, 1라운드 통과(재시도 없음). 같은 프롬프트를 GLM-5.3에 준 비교 저장소도 있다(27분, 다른 게임). 스스로 검증하는 에이전트의 모범 사례다.",
+      "urls": [
+        "https://github.com/Nipale-ai/fable-5-1-one-prompt-game"
+      ]
+    },
+    {
+      "title": "Robo Open: Codex/Astra + Blender + Meshy + Unity로 만든 테니스 게임과 실패 15건 공개",
+      "who": "az9713 (Chong-U의 Claude Fable 5.1 테니스 영상에서 영감)",
+      "date": "2026-09-05 프리플라이트 ~ v0.5.1",
+      "ai_model": "GPT-6 Astra (Codex)",
+      "tools": "Unity 6000.5.7f1 + URP 17.5.0, Unity Pipeline 0.6.0-exp.1(에디터 자동화), Blender 5.2.1 LTS, Meshy HTTP API",
+      "what_was_made": "토이 로봇 2체(16본 리그, 클립 6개), 코럴 코트, CPU 상대, 서브, 발리, 파워, 로브, 점수 계산, 메뉴가 있는 Windows 실행 파일",
+      "process": "사람은 의도와 범위를 정하고 승인만 했다(모델링, 리깅, 코딩 개입 없음). 4단계 프리플라이트(프로젝트, 에디터 자동화, 애니메이션 임포트, Windows와 WebGL 빌드)를 무료 픽스처로 먼저 통과한 뒤 Meshy로 로봇 1체를 생성했다(30크레딧). Meshy 자동 리깅이 HTTP 422로 실패하자 Blender 스크립트로 직접 16본 리그를 만들었다. GLB를 1.8m로 정규화하고 발을 지면에 맞췄다.",
+      "outcome": "프로토타입 52분, 세션 전체 4시간23분. 실패 사례: FBX가 100배(200m)로 들어와 FBX_SCALE_UNITS로 수정, 백그라운드 테스트에서 스킨 애니메이션 정지, URP 스크린샷 조명 오류(캡처 경로 문제), WebGL 개발 빌드 링크 실패(정상 빌드 성공까지 53분), C# 타입 오류. 품질은 '프로토타입 수준 애니메이션과 접촉 판정'이고 사람이 재미를 평가하지는 않았다.",
+      "urls": [
+        "https://github.com/az9713/gpt-6-astra-tennis-game"
+      ]
+    },
+    {
+      "title": "같은 프롬프트로 만든 6날 기계식 조리개: GPT-6 Astra 대 Claude Fable 5.1 사전 등록 비교",
+      "who": "teshnizi2",
+      "date": "2026-09-08",
+      "ai_model": "gpt-6-astra, claude-fable-5-1 (high, 이전 max 시도 포함)",
+      "tools": "Blender 5.2.1 LTS EEVEE(64 samples, AgX, 960×960, 30fps, 16초), Codex CLI 0.153.4, Claude Code 2.1.263(도구 비활성)",
+      "what_was_made": "조리개 열림 → 닫힘 → 분해 → 재조립 → 열림 애니메이션",
+      "process": "프롬프트 해시를 동결하고 프로토콜을 등록한 뒤, 생성 코드를 수정 없이 동일 하네스에서 렌더하고 나란히 비교했다. 실패한 시도의 기록도 보존했다.",
+      "outcome": "두 모델 모두 실제로 변하는 개구부와 액추에이터를 구현했다. 물리적 결함도 있었다. Astra는 지지 스페이서가 액추에이터와 겹치고 일부 날이 피벗 축에서 빠지기 전에 옆으로 움직였다. Fable은 날 뿌리에 핀 구멍이 없고 받침대가 후면판과 닿지 않았다. 순위는 매기지 않았다. 교훈: 형상이 '움직이는 것처럼 보이는 것'과 '기계적으로 맞는 것'은 다르다.",
+      "urls": [
+        "https://github.com/teshnizi2/astra-fable-3d-iris"
+      ]
+    },
+    {
+      "title": "같은 평면도로 만든 4가지 인테리어 스타일(프렌치, 이탈리안, 모던, 송대풍): GPT-6 Astra 대 Fable 5.1",
+      "who": "hahaliu1029",
+      "date": "2026-09-05 ~ 09-08",
+      "ai_model": "GPT-6 Astra, Claude Fable 5.1",
+      "tools": "Blender Cycles(8K 데스크톱, 4K 모바일 파노라마), Three.js 실시간 뷰어, 에셋 생성 스크립트",
+      "what_was_made": "주거 평면도 한 장을 기반으로 공간 9개, 배색 3종, 확인 가능한 가구 64점(모던 스타일 기준)을 갖춘 실시간 워크스루와 오프라인 렌더 파노라마. 송대풍은 박물관 자료를 조사해 설계",
+      "process": "대화와 반복 수정으로 만들었다. 같은 방, 같은 스타일로 3분짜리 3200×1800 비교 영상 2편을 제작했다.",
+      "outcome": "원본 프롬프트, 시간, 비용, 샘플링 파라미터를 공개하지 않았고 카메라와 조명도 달라서 작성자 스스로 '엄격한 순위 불가'라고 밝혔다. 가구 비례, 동선, 재질, 조명을 비교하는 방법(같은 기기, 같은 방, 같은 시점)은 참고할 만하다.",
+      "urls": [
+        "https://github.com/hahaliu1029/house-3d"
+      ]
+    },
+    {
+      "title": "Realsee 스캔 → 편집 가능한 Blender 실내 공간 복원",
+      "who": "realsee-developer",
+      "date": "2026-09-11 ~ 09-15",
+      "ai_model": "GPT-6 Astra (Codex)",
+      "tools": "Blender 5.2.1 LTS, Realsee 내보내기(CAD, 포인트클라우드, 파노라마, 텍스처 스캔), Git LFS",
+      "what_was_made": "벽, 바닥, 천장, 문, 창을 영역별로 개별 편집할 수 있는 네이티브 .blend. 85초 워크스루, USDZ 내보내기, GLB 뷰어 포함",
+      "process": "공개된 프롬프트: 먼저 영역 간 연결을 이해하고 → 구조 → 주요 가구 → 소품 순. 소스끼리 위치와 스케일을 맞추고, 근거 없는 방은 만들지 않고 불확실한 곳은 기록한다. 원본 스캔은 숨긴 참조로 남긴다. 저장한 뒤 다시 열어 벽과 문을 실제로 편집해 본다. 후속 지시: '가구를 숨기고 평면도와 입구→각 방 연결을 보여 줘'.",
+      "outcome": "스크립트는 이 공간 전용이라 그대로 쓰기 어렵다. 입력 원본 396개 파일(5.66 GiB)을 공개했다.",
+      "urls": [
+        "https://github.com/realsee-developer/realsee-astra-blender"
+      ]
+    },
+    {
+      "title": "방 사진 한 장 → 관절(경첩, 문, 서랍) 가구가 있는 인터랙티브 3D 씬",
+      "who": "Wentao Zhu (@walterzhu8)",
+      "date": "2026-09-16",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP",
+      "what_was_made": "사진 속 방을 3D로 만들고 문과 서랍이 열리는 관절 동작을 카메라 무브와 함께 데모 영상으로 렌더",
+      "process": "프롬프트: 'Given the room photo I provided, use Blender MCP to build an interactive 3D scene and render it into a demo video. Include articulated object motion (hinges, doors, drawers) and use sensible camera moves to show these effects.'",
+      "outcome": "결과 품질은 X 원문 차단으로 확인하지 못했다(Tripo 카탈로그 2차 출처). 가구를 관절 구조로 만드는 요구의 좋은 템플릿이다.",
+      "urls": [
+        "https://x.com/walterzhu8/status/2100139076816916977",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "title": "참조 이미지 + 평면도 → 소품 분해 → Imagegen 2.5 디자인 → Tripo P2.0 생성 → Blender MCP로 배치한 가구 딸린 주택",
+      "who": "yamahigashi (@yamahigashi)",
+      "date": "2026-09-23",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Imagegen 2.5, Tripo P2.0, Blender MCP + computer use",
+      "what_was_made": "평면도 기반으로 소품까지 배치된 주택",
+      "process": "참조 이미지와 평면도를 준비하고 → 요소를 분해하고 → 소품마다 이미지 생성으로 디자인하고 → Tripo로 3D를 생성하고 → Blender MCP로 배치",
+      "outcome": "'세부가 꽤 틀리지만 한 번에 이만큼 나오는 건 대단하다'(작성자). 배치 자동화는 되지만 정확도는 부족하다는 전형적인 결과다(2차 출처).",
+      "urls": [
+        "https://x.com/yamahigashi/status/2102727459657617891",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "Blender MCP로 만든 걸어 다닐 수 있는 방: 가구를 꺼내고 회전할 수 있는 편집 가능 데이터",
+      "who": "おのふみ (@onofumi_AI)",
+      "date": "2026-09-04",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP",
+      "what_was_made": "가구마다 꺼내고 돌릴 수 있고 방 안을 걸어 다닐 수 있는 3D 공간. 같은 치수로 평면도와 워크스루를 동기화한 1베드룸 사례도 있음",
+      "process": "Blender MCP로 구성했고 편집 가능한 Blender 데이터를 유지했다. 다음 단계로 Midjourney→Blender 파이프라인을 예고했다. UE 월드빌딩에서는 '샷별 배경이 아니라 이야기가 일어나는 실제 공간(문 뒤에 무엇이 있는지)을 설계하라'고 조언했다.",
+      "outcome": "2차 출처. 가구를 개별 오브젝트로 유지하는 것이 이후 배치 수정의 전제라는 점을 보여 준다.",
+      "urls": [
+        "https://x.com/onofumi_AI/status/2096020860121596003",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "기존 Tripo 캐릭터의 UV를 재구성하고 4K로 재베이크 (Blender MCP)",
+      "who": "さ (@_sagyoai)",
+      "date": "2026-09-13",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP",
+      "what_was_made": "옷, 손, 발이 있는 헤드리스 모델의 UV를 옷본 구조로 다시 만들고 기존 텍스처를 4096×4096으로 재베이크",
+      "process": "긴 프롬프트로 사람 아티스트의 순서를 강제했다: 사본 저장 → 원본 UV, 이미지 유지 → 'UV_Final' 생성 → 모든 방향에서 관찰해 봉제선 설계 → 부위별 언랩 → 체커와 Stretch로 왜곡 확인 → Pin/Relax → 결 방향을 V축에 정렬하고 텍셀 밀도를 맞춤 → 마진 16px, 아일랜드 간격 32px → 구 UV에서 새 UV로 베이크(조명과 AO 제외, 노멀은 재베이크) → 전후 비교",
+      "outcome": "작성자는 한 번의 프롬프트로 완료했다고 보고했다(프로젝트 파일은 미검증). UV와 베이크 작업을 AI에게 맡길 때 쓸 수 있는 가장 구체적인 공개 프롬프트다.",
+      "urls": [
+        "https://x.com/_sagyoai/status/2098980384260456813",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "title": "Tripo 캐릭터 의상 텍스처를 이미지 생성으로 재마감",
+      "who": "syaripin-i8i",
+      "date": "2026-09-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender 5.1.2, Blender MCP + Python, 이미지 생성",
+      "what_was_made": "치마, 소매, 리본, 몸통, 다리·신발 재질을 새 무늬로 교체(전후 비교 이미지 공개)",
+      "process": "읽기 → 백업 → 부위·UV 분석 → 이미지 생성(부위별 실제 프롬프트 7개 공개) → 위치 보정·분할 적용 → 거칠기·노멀 강도 조정 → 비교 → 확인본 저장. 한 부위의 결과를 확인한 뒤에 옆 부위로 넓힌다.",
+      "outcome": "얼굴, 눈, 머리, 형태는 보존했다. 다른 서비스 모델이나 텍스처 없는 모델에서는 검증하지 않았다.",
+      "urls": [
+        "https://github.com/syaripin-i8i/blender-astra-texture-guide"
+      ]
+    },
+    {
+      "title": "일본 꽃집 익스플로디드 뷰 애니메이션 (Blender MCP)",
+      "who": "KANA (@KanaWorks_AI)",
+      "date": "2026-09-08",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP",
+      "what_was_made": "초록 차양, '花屋' 간판, 자판기, 자전거, 전봇대가 있는 카툰풍 꽃집. 구성 요소가 폭발하듯 분리됐다가 재조립되는 애니메이션",
+      "process": "매우 구체적인 연출 프롬프트: 의미 있는 구조 레이어로 분해, 자판기 패널과 병·캔까지 분리, 타이밍과 속도를 서로 다르게, 분해 상태에서 잠시 정지 후 역재생, 분해 구간은 중립 스튜디오 배경, 모든 오브젝트와 컬렉션에 이름 붙이기",
+      "outcome": "편집 가능한 프로젝트는 공개되지 않았다. 오브젝트를 계층적으로 나누고 이름을 붙이게 하는 요구가 배치와 편집에 유리하다는 예시다.",
+      "urls": [
+        "https://x.com/KanaWorks_AI/status/2097153139795468365",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "title": "Opus 5.5 대 GPT-6 Astra Blender 대결 (절차적 원프롬프트 샷, 드로리안)",
+      "who": "Stefan_3D_AI / zavrenn / 3DVR3",
+      "date": "2026-09-22 ~ 09-24",
+      "ai_model": "Claude Opus 5.5, GPT-6 Astra",
+      "tools": "Blender(절차적), Higgsfield 플러그인(Nano Banana Pro, Tripo 연동), Codex 채점",
+      "what_was_made": "10초 절차적 샷과 빌드 타임랩스, 드로리안과 시계탑 광장(문 열림과 바퀴 회전 리깅), Quest 3 헤드셋 사진 기반 모델",
+      "process": "같은 프롬프트, 같은 도구로 두 모델을 실행하고 시간, 토큰, 비용을 기록했다.",
+      "outcome": "Stefan: Opus 5.5 35분·199.6k 토큰, Astra 28분·56.6k 토큰(금액 표기 손상), 드로리안은 Opus 73분·218k 토큰. zavrenn: 결과는 거의 같았지만 Astra 43분·출력 61K 대 Opus 1시간57분·507K. 3DVR3: Opus 5.5가 두께, 기울기, 흑백 밸런스에서 이겼고 부위별로 나눠 작업했다. 결론: 품질은 비슷하거나 과제에 따라 다르고, 토큰 효율은 Astra가 확실히 우위(모두 n=1, 2차 출처).",
+      "urls": [
+        "https://x.com/Stefan_3D_AI/status/2102471841046786153",
+        "https://x.com/zavrenn/status/2103181133198639614",
+        "https://x.com/3DVR3/status/2102656183186387182",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "일러스트 한 장 → 3D 캐릭터: GPT-6 Astra(High) 대 Meshy 7",
+      "who": "@happy_modeling",
+      "date": "2026-09-09",
+      "ai_model": "GPT-6 Astra (High)",
+      "tools": "Blender, Meshy 7",
+      "what_was_made": "같은 일러스트로 만든 캐릭터 3D 모델 2종",
+      "process": "Astra는 Blender에서 직접 모델링했고 Meshy 7은 이미지→3D로 생성했다.",
+      "outcome": "Astra는 전신 형태와 의상을 재현했지만 얼굴과 옷 디테일은 Meshy가 앞섰다. 소요 시간은 8분 대 3분. 캐릭터와 유기체는 생성형이 유리하고 에이전트는 후처리를 맡는 분업을 뒷받침한다(2차 출처).",
+      "urls": [
+        "https://x.com/happy_modeling/status/2097832650534990331",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "빈티지 체육관: 10시간, 수정 21회, 폴리곤 130만",
+      "who": "@SpenserFX",
+      "date": "2026-09-08",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender(MacBook Pro)",
+      "what_was_made": "농구 골대 구조와 바닥재까지 연출한 빈티지 체육관 씬",
+      "process": "사람이 약 10시간 동안 21라운드에 걸쳐 수정을 지시했다(특히 골대 구조와 바닥 마감).",
+      "outcome": "고품질 결과에는 사람의 반복 디렉션이 필요하다는 것을 보여 주는 대표 사례다(2차 출처).",
+      "urls": [
+        "https://x.com/SpenserFX/status/2097439078866166018",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "How to Suck: AI가 코드, 3D 모델, 애니메이션, 멀티플레이를 만든 Unity 협동 게임 (배포)",
+      "who": "breineng",
+      "date": "2026-09-14",
+      "ai_model": "GPT-6 Astra (Codex)",
+      "tools": "Unity 6000.3.6f1, Netcode for GameObjects, EOS/Steam, Blender(모델), ElevenLabs(효과음), Qwen2-Audio·CLAP(오디오 자동 평가)",
+      "what_was_made": "1~4인 1인칭 청소기 협동 게임. 장소 3곳, 계약 6개, 청소기 4단계, 17개 언어. Windows 다운로드 제공",
+      "process": "'AI가 혼자서 완성 게임을 만들 수 있는가' 실험. 작성자는 코드, 3D, 애니메이션, 환경, UI, 멀티플레이를 모두 AI가 만들었다고 밝혔다.",
+      "outcome": "첫 반복에 39시간, Pro x20 구독의 주간 한도 2회분을 썼다. 호스트 마이그레이션은 구현하지 않았다. 실제 배포까지 간 드문 사례지만 비주얼은 스타일라이즈드 인디 수준으로 판단된다(미검증).",
+      "urls": [
+        "https://github.com/breineng/how-to-suck"
+      ]
+    },
+    {
+      "title": "Roblox MCP로 만든 카트 레이서 / Blender 스킬로 만든 Cozy Lake와 프랑스 마을",
+      "who": "Givros (@givros)",
+      "date": "2026-09-05, 2026-09-20",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Roblox Studio MCP, Blender, Three.js(에셋 생성용), 자체 Blender 스킬과 프롬프트 라이브러리(Gumroad 판매)",
+      "what_was_made": "Roblox MeshPart와 PBR 텍스처를 쓴 카트 레이서(AI 상대, 체크포인트, 랩 기록). Cozy Lake에 프랑스 마을을 확장한 월드(조회 47.9만)",
+      "process": "프롬프트: Blender에서 메시, UV, 베이크 텍스처를 마감 → 최적화된 MeshPart로 임포트 → 게임 안에서 스케일, 피벗, 재질, 콜리전을 검증 → 실제 게임플레이 스크린샷을 보며 반복하고, 플레이스홀더는 금지",
+      "outcome": "2차 출처. Roblox 공식 studio-rust-mcp-server는 2026-04-03에 아카이브됐고 이제 Studio에 MCP가 내장되어 있다.",
+      "urls": [
+        "https://x.com/givros/status/2096219700879331665",
+        "https://github.com/Roblox/studio-rust-mcp-server",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "[한국] 아스트라 채팅(Codex 아님)으로 만든 300×300m 로우폴리 호수 숲 → UE HISM 내보내기",
+      "who": "octopus7",
+      "date": "2026-09-13 ~ 09-14",
+      "ai_model": "GPT-6 Astra (ChatGPT 채팅)",
+      "tools": "Blender 4.2 이상 Python, Unreal Python Editor Script Plugin",
+      "what_was_made": "지형, 호수와 연못, 트레일, 나무 3,800그루(랜드마크 포함 3,839), 배치 인스턴스 16,573개, 재사용 메시 127개, 랜드마크 영역 12곳(호숫가 마을, 캠프장, 과수원, 전망대)",
+      "process": "50×50m 셀 36개로 나누고 seed 42로 결정적으로 생성한다. 반복 오브젝트는 메시 데이터블록을 공유한다. UE 내보내기 시 반복 에셋은 셀과 에셋 ID별 HISM으로, 고유 오브젝트는 Static Mesh Actor로 보낸다.",
+      "outcome": "순수 Python 테스트 30개(지오메트리, 배치, 결정성, Blender→UE 변환). 콜리전, LOD, World Partition은 범위 밖이다. 채팅만으로도 코드 패키지 형태면 대규모 배치를 할 수 있다는 한국 사례.",
+      "urls": [
+        "https://github.com/octopus7/astra-blender-forest"
+      ]
+    },
+    {
+      "title": "[한국] Blender 프리비즈 → AI 영상 Claude Code 스킬",
+      "who": "openerai",
+      "date": "2026-09-08",
+      "ai_model": "Claude(Claude Code)",
+      "tools": "Blender 5.0 이상, Higgsfield Bridge 커넥터 + Blender 플러그인(bl_* MCP 도구, bl_get_skill 모듈 blender-greybox, blender-lighting-camera 등), Seedance 2.5",
+      "what_was_made": "카메라, 컷, 타이밍, 동선이 고정된 시네마틱 AI 영상 워크플로(스킬)",
+      "process": "인테이크 → 샷 설계 → 블로킹 브리프 → Blender 실행 → 뷰포트 렌더 → 레퍼런스 정리 → 4블록 생성 프롬프트 → 리비전. MCP가 연결되지 않았으면 핸드오프 모드로 전환한다.",
+      "outcome": "최종 화면은 3D 렌더가 아니라 AI 영상이다. 블로킹 마스터는 스타일만 바꿔(실사, 2D 애니, 스톱모션) 재사용할 수 있다.",
+      "urls": [
+        "https://github.com/openerai/blender-previz-video"
+      ]
+    },
+    {
+      "title": "Claude Opus 5 + Blender로 설계한 건담급 메카 (서브에이전트 분업, 실제 공학 시스템)",
+      "who": "Spectro (@Spectromachina)",
+      "date": "2026-07-30 (Fable 5.1 로봇은 2026-09-01)",
+      "ai_model": "Claude Opus 5 (이후 Fable 5.1)",
+      "tools": "Blender, 서브에이전트, GLB 주입",
+      "what_was_made": "터보샤프트 엔진 2기, 전기모터와 유압, APU, 콕핏과 수면 포드, 발 바퀴, FLIR/야간투시 카메라, 40mm·120mm 무기, 다리 리그를 갖춘 메카 블루프린트",
+      "process": "대화형으로 '에이전트를 붙여 다리 설계를 맡겨', '새 GLB를 씬에 주입해', '엔진과 파워트레인은 재사용할 수 있게 저장해'처럼 부위별로 서브에이전트에 배분했다. 제약 조건을 따르는 다리 리그로 힘 계산까지 요구했다.",
+      "outcome": "작성자는 매우 만족했다('its... beautiful'). 공학적 타당성은 검증되지 않았다. 부위별 모듈을 저장해 재사용하는 흐름이 유용하다.",
+      "urls": [
+        "https://x.com/Spectromachina/status/2082760534500188606",
+        "https://github.com/TripoGrowthLab/awesome-3d-prompts"
+      ]
+    },
+    {
+      "title": "1893 시카고 만국박람회를 역사 사진 2,000장으로 재현 (그리고 한계 인정)",
+      "who": "Dan Elton (@moreisdifferent)",
+      "date": "2026-09-12",
+      "ai_model": "GPT-6 Astra, 이후 Claude Fable 5.1로 건물 개선",
+      "tools": "Blender",
+      "what_was_made": "박람회장 3D 재현과 약 5분 워크스루",
+      "process": "'download 2,000 historical photographs and reference information around the fair and use all the information obtained to create a 3D reconstruction in Blender.'",
+      "outcome": "작성자 스스로 '화면이 거칠고 건물에 오류가 있으며, 한 건물은 기존 모델을 가져다 썼는지도 모르겠다'고 밝혔다. 대규모 역사 복원에서의 한계를 보여 주는 정직한 사례다.",
+      "urls": [
+        "https://x.com/moreisdifferent/status/2098795017955418202",
+        "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json"
+      ]
+    },
+    {
+      "title": "Houdini, Rhino, 3ds Max를 MCP나 스크립트로 조작한 사례 (DCC 확장)",
+      "who": "Nick Scarcella(Houdini), Hirokazu Yokohara(Houdini), sokun(Houdini), AIRIlab(Rhino), iPentec(3ds Max)",
+      "date": "2026-09-05 ~ 09-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Houdini MCP, Houdini Python, Rhino, 3ds Max MCP, Blender 스크립트",
+      "what_was_made": "OP-1 Field 신디사이저(Houdini 모델링과 텍스처), 절차적 모델링·조명·애니메이션 테스트, 파라메트릭 비행기 HDA 도구(동체, 날개폭, 후퇴각 등), 참조 이미지 기반 건축 모델(Rhino, 약 40분), 같은 우주선을 Blender 스크립트와 3ds Max MCP로 각각 제작",
+      "process": "참조 이미지를 주고 DCC를 직접 조작했다. Rhino에서는 구조 생성, 레이어 관리, 디테일 수정을 했다.",
+      "outcome": "Nick은 '여전히 문제가 있다', Yokohara는 '여러 번 수정 요청이 필요했다', iPentec은 '떠 있는 글자, 비율, 형태 수정이 필요했다'고 밝혔다. Rhino 40분은 계획안 수준 모델이다. 작업 효율은 좋지만 마감 품질은 사람 몫이다.",
+      "urls": [
+        "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json",
+        "https://github.com/carpentry-liu/awesome-astra-3d"
+      ]
+    },
+    {
+      "title": "생성형 3D를 쓰지 않은 사람식 스컬프팅 테스트 / 모델링 플레이그라운드의 비율 수정",
+      "who": "Hirokazu Yokohara (@Yokohara_h), mizchi",
+      "date": "2026-09-20 / 2026-09",
+      "ai_model": "GPT-6 Astra (Ultra effort) / Astra 계열",
+      "tools": "Blender sculpt / Blender + Three.js 뷰어, IK",
+      "what_was_made": "사람처럼 단계별로 스컬프팅한 모델 / 로우폴리 여행자 캐릭터부터 22본 리그, IK, 보행, 여러 캐릭터(얼굴 텍스처 아틀라스, 머리카락 본)까지",
+      "process": "Yokohara는 사람에게 가르치듯 단계별 지시를 줬다. mizchi는 GLB와 blend를 생성하고 테스트(지면 관통, 눈 매립 검사)로 검증했다.",
+      "outcome": "Yokohara: '예상보다 깨끗하게 나왔다.' mizchi: 측면에서 얇아 보이는 초안을 수정(몸통 깊이 1.45배), 동작이 딱딱하고 얼굴과 비율을 여러 번 조정해야 했다, GLB 표준에는 Blender IK 제약이 저장되지 않는다.",
+      "urls": [
+        "https://github.com/mizchi/modeling-playground",
+        "https://github.com/yangqiong/gpt6-astra-3d"
+      ]
+    },
+    {
+      "title": "Godot AI MCP로 만든 사이버펑크 HUD (Claude Code, 약 2시간) 마찰 로그",
+      "who": "hi-godot",
+      "date": "2026-04-15",
+      "ai_model": "Claude(Claude Code)",
+      "tools": "Godot AI MCP(도구 46개, 작업 120개 이상), Godot 4",
+      "what_was_made": "체력·실드 바, 쿨다운 링, 탄약, 로그 피드, 설정 패널이 있는 일시정지 메뉴(.tscn과 .tres 직접 편집 없음)",
+      "process": "node_* 약 15회, ui_build_layout 6회, theme_* 12회, animation_* 12회, input_map_* 9회, batch_execute 1회 등 호출",
+      "outcome": "빈틈: 씬 인스턴싱 도구 없음(런타임 로더 스크립트로 우회), 게임 뷰 스크린샷 실패, 상하좌우 테두리를 따로 지정할 수 없음, theme_create가 폴더를 자동으로 만들지 않음. MCP 도구가 모든 것을 커버하지 못하면 스크립트로 우회해야 한다는 교훈(UI 사례).",
+      "urls": [
+        "https://github.com/hi-godot/cyberpunk-hud-demo",
+        "https://raw.githubusercontent.com/hi-godot/cyberpunk-hud-demo/main/docs/friction-log-cyberpunk-hud.md"
+      ]
+    },
+    {
+      "title": "GPT-6 Astra High 대 Gemini 3.8 Flash High: 같은 브리프로 만든 3D 문명 시뮬레이션",
+      "who": "Cagri Kacmaz",
+      "date": "2026-09-05 ~ 09-06",
+      "ai_model": "GPT-6 Astra High (ChatGPT 빌드 하네스), Gemini 3.8 Flash High (Google Antigravity)",
+      "tools": "브라우저 3D(WebGL)",
+      "what_was_made": "문명 3개가 자율 진화하는 'WHAT IF? Civilization Lab' 수직 슬라이스",
+      "process": "동일한 PROMPT.md를 주고 수동 QA, 인터랙션 테스트, 녹화로 비교했다.",
+      "outcome": "Astra는 3D 월드를 중심에 두고 카메라 시점 전환이 작동했다. Gemini는 대시보드 패널 중심이었고 지형이 평평했으며 수동 테스트에서 카메라 시점 컨트롤이 실패했다. 작성자는 과학적 벤치마크가 아니라고 명시했다.",
+      "urls": [
+        "https://github.com/cagrikacmaz/gpt-6-astra-vs-gemini-3-8-flash"
+      ]
+    },
+    {
+      "title": "AI Forge MCP: 'AAA 게임 에셋 풀 파이프라인' 주장 (비판적 검토 대상)",
+      "who": "Jeremy Fawcett / Hurtz Donut Studios",
+      "date": "2026-03 ~ 04",
+      "ai_model": "Claude(오케스트레이션), Grok(컨셉), Hunyuan3D, UniRig, HY-Motion 등",
+      "tools": "MCP 서버 16개, 도구 565개(Blender 185, UE5 192, Substance 94 등)",
+      "what_was_made": "'AI Legends' 호러 판타지 MMO를 이 파이프라인으로 만들었다고 주장",
+      "process": "12단계 주장: 컨셉 → 메시 → 정리·UV → 텍스처 → 리깅 → 애니메이션 → AnimBP → 립싱크 → LOD → UE5 임포트",
+      "outcome": "플레이 가능한 데모, 공개 에셋 갤러리, 독립 검증이 없다. 코드는 Nuitka로 컴파일된 비공개이고 월 $35~149 구독이다. 'AAA'를 내건 마케팅은 증거부터 요구해야 한다는 반면교사.",
+      "urls": [
+        "https://github.com/HurtzDonutStudios/ai-forge-mcp"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "ahujasid/blender-mcp (mcp-for-blender) README",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-09 확인",
+      "why_useful": "원조 BlenderMCP의 데모, 통합 서비스, 한계(작은 단계로 나누기, 저장 경고)"
+    },
+    {
+      "title": "per-simmons/unreal-agent-harness: AGENTIC-GAMEDEV-GUIDE.md",
+      "url": "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md",
+      "source_type": "GitHub 문서(1차 제작 기록)",
+      "date": "2026-06-18~",
+      "why_useful": "Claude와 UE 5.8 공식 Unreal MCP 설정 함정, 5가지 빌드 방식 비교, Cesium과 조명 수치"
+    },
+    {
+      "title": "per-simmons/unreal-agent-harness: BUILD-LOG.md",
+      "url": "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/BUILD-LOG.md",
+      "source_type": "GitHub 빌드 로그",
+      "date": "2026-06-19~20",
+      "why_useful": "크래시와 스케일 오류, 그 수정 내역"
+    },
+    {
+      "title": "Simon Willison TIL: Using Blender with coding agents on macOS",
+      "url": "https://github.com/simonw/til/blob/main/llms/blender-coding-agents-macos.md",
+      "source_type": "작성자 블로그(TIL) 원문",
+      "date": "2026-09-05",
+      "why_useful": "GPT-6 Astra와 headless Blender의 최소 워크플로, 반복별 소요 시간, 스킬 생성"
+    },
+    {
+      "title": "simonw/gpt-6-astra-blender-pelican-bicycle (codex-transcript.md 포함)",
+      "url": "https://github.com/simonw/gpt-6-astra-blender-pelican-bicycle",
+      "source_type": "GitHub 저장소",
+      "date": "2026-09-05",
+      "why_useful": "Codex 실행 기록 원본"
+    },
+    {
+      "title": "PhiloLabs/fable51-worlds README",
+      "url": "https://github.com/PhiloLabs/fable51-worlds",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "Fable 5.1 에이전트 스웜 파이프라인과 Astra 비교 영상"
+    },
+    {
+      "title": "fable51-worlds Union Square FINAL_QA_REPORT.md",
+      "url": "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md",
+      "source_type": "QA 리포트",
+      "date": "2026-09-02",
+      "why_useful": "리뷰어 점수(재질 6/10 등)와 구체적 결함 목록. AAA와의 격차를 보여 주는 증거"
+    },
+    {
+      "title": "VizuaraAI/fable-visual-learning-pipeline README",
+      "url": "https://github.com/VizuaraAI/fable-visual-learning-pipeline",
+      "source_type": "GitHub README/튜토리얼",
+      "date": "2026-09",
+      "why_useful": "품질 6항목 바, 렌더 설정과 비용·시간 수치, 함정"
+    },
+    {
+      "title": "Nipale-ai/fable-5-1-one-prompt-game",
+      "url": "https://github.com/Nipale-ai/fable-5-1-one-prompt-game",
+      "source_type": "GitHub README",
+      "date": "2026-09-01",
+      "why_useful": "24분, $9.90, 토큰, 자기 검증 루프 수치"
+    },
+    {
+      "title": "az9713/gpt-6-astra-tennis-game (Robo Open)",
+      "url": "https://github.com/az9713/gpt-6-astra-tennis-game",
+      "source_type": "GitHub README + 개발 여정 문서",
+      "date": "2026-09-05~",
+      "why_useful": "Unity, Blender, Meshy 파이프라인의 실패 15건과 비용·시간"
+    },
+    {
+      "title": "teshnizi2/astra-fable-3d-iris",
+      "url": "https://github.com/teshnizi2/astra-fable-3d-iris",
+      "source_type": "GitHub 비교 연구",
+      "date": "2026-09-08",
+      "why_useful": "사전 등록된 동일 프롬프트 비교와 기계적 결함 분석"
+    },
+    {
+      "title": "hahaliu1029/house-3d",
+      "url": "https://github.com/hahaliu1029/house-3d",
+      "source_type": "GitHub README",
+      "date": "2026-09-08",
+      "why_useful": "인테리어 4개 스타일에 대한 Astra와 Fable 비교"
+    },
+    {
+      "title": "realsee-developer/realsee-astra-blender (+ prompts/quickstart.en.md)",
+      "url": "https://github.com/realsee-developer/realsee-astra-blender",
+      "source_type": "GitHub README/프롬프트",
+      "date": "2026-09-15",
+      "why_useful": "스캔을 실내로 복원하는 공개 프롬프트와 구조→가구→소품 순서"
+    },
+    {
+      "title": "syaripin-i8i/blender-astra-texture-guide",
+      "url": "https://github.com/syaripin-i8i/blender-astra-texture-guide",
+      "source_type": "GitHub README(일본어)",
+      "date": "2026-09-09",
+      "why_useful": "텍스처 재마감 절차와 실제 프롬프트"
+    },
+    {
+      "title": "danielsobrado/Codex-and-Blender",
+      "url": "https://github.com/danielsobrado/Codex-and-Blender",
+      "source_type": "GitHub README",
+      "date": "2026-09-13",
+      "why_useful": "bpy를 원본으로 두고 MCP를 점검용으로 쓰는 구조"
+    },
+    {
+      "title": "mohakmalviya/blender-astra-mcp",
+      "url": "https://github.com/mohakmalviya/blender-astra-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-09-09",
+      "why_useful": "MCP 배칭 토큰 측정"
+    },
+    {
+      "title": "ProfRino/Blender-MCP-Assembly-Skill",
+      "url": "https://github.com/ProfRino/Blender-MCP-Assembly-Skill",
+      "source_type": "GitHub README/스킬",
+      "date": "2026-05",
+      "why_useful": "의자 조립 전후 비교와 조립 규칙"
+    },
+    {
+      "title": "RobLe3/cc-blender-skill",
+      "url": "https://github.com/RobLe3/cc-blender-skill",
+      "source_type": "GitHub README/스킬",
+      "date": "2026-05",
+      "why_useful": "작업 순서와 실패 렌더를 포함한 검증"
+    },
+    {
+      "title": "viettranx/3dviz-pro-max",
+      "url": "https://github.com/viettranx/3dviz-pro-max",
+      "source_type": "GitHub README/스킬",
+      "date": "2026-09-11",
+      "why_useful": "Latent Village 쇼케이스와 평가 점수"
+    },
+    {
+      "title": "hi-godot/cyberpunk-hud-demo friction log",
+      "url": "https://raw.githubusercontent.com/hi-godot/cyberpunk-hud-demo/main/docs/friction-log-cyberpunk-hud.md",
+      "source_type": "GitHub 문서",
+      "date": "2026-04-15",
+      "why_useful": "Godot MCP 도구의 빈틈과 우회 방법"
+    },
+    {
+      "title": "flopperam/unreal-engine-mcp README",
+      "url": "https://github.com/flopperam/unreal-engine-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-06",
+      "why_useful": "GPT-5 대 Claude 대결과 객체 4,000개 이상 메트로폴리스 데모 링크, 고수준 도구 목록"
+    },
+    {
+      "title": "TripoGrowthLab/awesome-3d-prompts 카탈로그",
+      "url": "https://raw.githubusercontent.com/TripoGrowthLab/awesome-3d-prompts/main/docs/catalog.en.md",
+      "source_type": "큐레이션 카탈로그(벤더)",
+      "date": "2026-09-25",
+      "why_useful": "447개 사례의 프롬프트 원문, 모델, 날짜, X 원문 링크"
+    },
+    {
+      "title": "carpentry-liu/awesome-astra-3d data/cases.json",
+      "url": "https://raw.githubusercontent.com/carpentry-liu/awesome-astra-3d/main/data/cases.json",
+      "source_type": "큐레이션 DB(근거 등급 포함)",
+      "date": "2026-09-26",
+      "why_useful": "OpenAI 공식 쇼케이스, 실패와 대조 사례, 한계 메모"
+    },
+    {
+      "title": "yangqiong/gpt6-astra-3d README",
+      "url": "https://github.com/yangqiong/gpt6-astra-3d",
+      "source_type": "큐레이션 라운드업",
+      "date": "2026-09-05~",
+      "why_useful": "Astra 출시일, 반응 상위 사례, Opus 5.5·Fable·Gemini 비교 수치"
+    },
+    {
+      "title": "magiccreator-ai/awesome-gpt-6-astra",
+      "url": "https://github.com/magiccreator-ai/awesome-gpt-6-astra",
+      "source_type": "큐레이션 목록",
+      "date": "2026-09-22",
+      "why_useful": "Blender·3D 데모 24건 이상과 공통 한계"
+    },
+    {
+      "title": "Claude Opus 제품 페이지",
+      "url": "https://www.anthropic.com/claude/opus",
+      "source_type": "공식 제품 페이지",
+      "date": "2026-09-22 출시 명시",
+      "why_useful": "Opus 5.5 출시일, 비전·computer use 강점"
+    },
+    {
+      "title": "Claude Fable 제품 페이지",
+      "url": "https://www.anthropic.com/claude/fable",
+      "source_type": "공식 제품 페이지",
+      "date": "2026-09-01 발표",
+      "why_useful": "Fable 5.1 포지셔닝(3D 언급 없음)"
+    },
+    {
+      "title": "breineng/how-to-suck",
+      "url": "https://github.com/breineng/how-to-suck",
+      "source_type": "GitHub README",
+      "date": "2026-09-14",
+      "why_useful": "배포까지 간 Unity 게임의 시간과 구독 사용량"
+    },
+    {
+      "title": "octopus7/astra-blender-forest",
+      "url": "https://github.com/octopus7/astra-blender-forest",
+      "source_type": "GitHub README(한국 개발자)",
+      "date": "2026-09-14",
+      "why_useful": "한국 사례. 대규모 인스턴싱과 UE 내보내기"
+    },
+    {
+      "title": "openerai/blender-previz-video",
+      "url": "https://github.com/openerai/blender-previz-video",
+      "source_type": "GitHub README(한국어 스킬)",
+      "date": "2026-09-08",
+      "why_useful": "한국어 Claude Code 스킬. 프리비즈→AI 영상 규칙"
+    },
+    {
+      "title": "Roblox/studio-rust-mcp-server",
+      "url": "https://github.com/Roblox/studio-rust-mcp-server",
+      "source_type": "GitHub README(공식)",
+      "date": "2026-04-03 아카이브",
+      "why_useful": "Roblox Studio 내장 MCP로 전환됐다는 사실"
+    },
+    {
+      "title": "cagrikacmaz/gpt-6-astra-vs-gemini-3-8-flash",
+      "url": "https://github.com/cagrikacmaz/gpt-6-astra-vs-gemini-3-8-flash",
+      "source_type": "GitHub 비교 보고",
+      "date": "2026-09-06",
+      "why_useful": "Gemini 계열 비교 사례"
+    },
+    {
+      "title": "HurtzDonutStudios/ai-forge-mcp",
+      "url": "https://github.com/HurtzDonutStudios/ai-forge-mcp",
+      "source_type": "GitHub README(상업)",
+      "date": "2026-04",
+      "why_useful": "검증되지 않은 'AAA' 주장에 대한 비판적 검토 사례"
+    },
+    {
+      "title": "OpenAI 개발자 블로그: Architectural visualization with Astra (접근 차단, 링크만 확인)",
+      "url": "https://developers.openai.com/blog/architectural-visualization-with-astra",
+      "source_type": "공식 블로그(미열람)",
+      "date": "2026-09-04",
+      "why_useful": "Solace 하우스 등 공식 건축 시각화 과정. 원문을 반드시 따로 확인해야 함"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "Claude Opus 5.5 출시일은 2026-09-22이고, 공식 페이지는 비전과 computer use를 강점으로 든다(3D·Blender 언급 없음).",
+      "url": "https://www.anthropic.com/claude/opus"
+    },
+    {
+      "claim": "Claude Fable 5.1은 2026-09-01에 발표됐다.",
+      "url": "https://www.anthropic.com/claude/fable"
+    },
+    {
+      "claim": "GPT-6 Astra는 2026-09-03 OpenAI가 출시했다(2차 출처. 원 공지는 X에 있어 미확인).",
+      "url": "https://github.com/yangqiong/gpt6-astra-3d"
+    },
+    {
+      "claim": "UE 5.8에는 공식 Unreal MCP 플러그인이 있다(bAutoStartServer 기본값 false, CaptureViewport, SceneTools 등 툴셋, 비활성 플러그인 약 28개).",
+      "url": "https://raw.githubusercontent.com/per-simmons/unreal-agent-harness/master/AGENTIC-GAMEDEV-GUIDE.md"
+    },
+    {
+      "claim": "Blender Lab에 공식 MCP 서버가 있다(bpy-dev 배포판이 upstream으로 blender.org/lab/mcp-server를 가리킴. 원문은 차단되어 미열람).",
+      "url": "https://github.com/bpy-dev/blender-mcp"
+    },
+    {
+      "claim": "ahujasid/blender-mcp는 mcp-for-blender로 이름이 바뀌었고 약 29.4k stars이며 Poly Haven, Sketchfab, Poly Pizza, Hyper3D Rodin, Hunyuan3D, Tripo와 연동된다.",
+      "url": "https://github.com/ahujasid/blender-mcp"
+    },
+    {
+      "claim": "Simon Willison의 GPT-6 Astra(Medium) + headless Blender 반복 3회는 각각 2분39초, 3분51초, 5분59초 걸렸다.",
+      "url": "https://github.com/simonw/til/blob/main/llms/blender-coding-agents-macos.md"
+    },
+    {
+      "claim": "Fable 5.1 원프롬프트 3D 게임: 24분, $9.90, 75턴, 출력 95,832 토큰, 재시도 없이 통과.",
+      "url": "https://github.com/Nipale-ai/fable-5-1-one-prompt-game"
+    },
+    {
+      "claim": "Fable 5.1 에이전트 스웜의 Union Square 트윈은 리뷰어 점수가 재질 6/10, 시각 충실도 6/10, 조명 7/10, 성능 6/10이다(목표 8.5~9).",
+      "url": "https://raw.githubusercontent.com/PhiloLabs/fable51-worlds/main/union-square-sf/FINAL_QA_REPORT.md"
+    },
+    {
+      "claim": "Robo Open에서 FBX가 100배(2m→200m)로 들어왔고 FBX_SCALE_UNITS로 고쳤다. Meshy는 30크레딧, 프로토타입 52분, 세션 전체 4시간23분.",
+      "url": "https://github.com/az9713/gpt-6-astra-tennis-game"
+    },
+    {
+      "claim": "Vizuara 심장 챕터(약 11,000프레임)를 A10G 약 50대로 84분에 Cycles 1080p, 384 samples 렌더했다. 수정은 보통 2라운드.",
+      "url": "https://github.com/VizuaraAI/fable-visual-learning-pipeline"
+    },
+    {
+      "claim": "같은 Blender 과제를 Max로 돌렸을 때 Astra 43분·출력 61K 토큰, Opus 5.5 1시간57분·507K 토큰이었고 결과 외관은 거의 같았다(X 원문 미확인, 2차 요약).",
+      "url": "https://github.com/yangqiong/gpt6-astra-3d"
+    },
+    {
+      "claim": "Roblox의 studio-rust-mcp-server는 2026-04-03에 아카이브됐고 Roblox Studio 내장 MCP 서버 사용을 권장한다.",
+      "url": "https://github.com/Roblox/studio-rust-mcp-server"
+    },
+    {
+      "claim": "How to Suck(Unity 협동 게임)은 GPT-6 Astra가 코드, Blender 모델, 애니메이션, 멀티플레이를 만들었고 첫 반복에 39시간, Pro x20 주간 한도 2회분이 들었다(작성자 자기 보고).",
+      "url": "https://github.com/breineng/how-to-suck"
+    },
+    {
+      "claim": "Tripo 카탈로그 447건 중 Blender 관련은 96건(GPT-6 Astra 81건)이고, Astra 게시물은 2026-09-03~06에 집중된다(이 조사에서 직접 파싱해 집계).",
+      "url": "https://raw.githubusercontent.com/TripoGrowthLab/awesome-3d-prompts/main/docs/catalog.en.md"
+    }
+  ],
+  "gaps": [
+    "WebSearch 예산(세션당 200회)이 이 에이전트 시작 시점에 이미 소진되어 새 웹 검색을 한 번도 하지 못했다. 사례 발굴은 GitHub 검색 API, 큐레이션 저장소, 알려진 URL 직접 조회에 의존했다.",
+    "egress 정책으로 YouTube, X/Twitter, Reddit(www, old), Hacker News(Algolia 포함), 80.lv, CG Channel, zenn.dev, velog.io, bilibili, openai.com·developers.openai.com·community.openai.com, blender.org, huggingface.co, tripo3d.ai, noembed가 모두 차단됐다. 그래서 X 게시물 기반 사례(Matt Shumer, Tom Krcha, Stefan_3D_AI, zavrenn 등)의 수치와 품질은 원문으로 교차 확인하지 못했다.",
+    "OpenAI 공식 블로그(architectural-visualization-with-astra, how-to-build-games-with-astra)와 Blender Lab 공식 MCP 페이지 원문을 읽지 못했다. Solace 하우스 제작 절차와 Blender Lab MCP의 기능·출시일은 미확인이다.",
+    "yangqiong 라운드업의 비용 수치는 '$' 기호가 HTML 주석으로 깨져 있다(예: Opus 5.5 ~3.3, Astra ~4.5, 드로리안 7.3). 달러로 추정되지만 확인하지 못했다.",
+    "TripoGrowthLab 카탈로그는 3D 생성 서비스 벤더가 큐레이션해서 Tripo 사용 사례가 과대 대표될 수 있다. 상당수 항목은 원문 프롬프트가 아니라 Tripo가 쓴 요약 브리프다.",
+    "한국 사례는 GitHub에서 두 건(octopus7, openerai)만 확인했다. '블렌더 MCP', '클로드 3D 모델링', 'GPT 아스트라 3D' 관련 한국 유튜브·블로그·카페 사례는 찾지 못했다(검색 불가, 도메인 차단).",
+    "2025년 사례(BlenderMCP 초기 바이럴, levelsio의 Vibe Jam 2025, Unity·Unreal MCP 초기 데모)는 README 수준으로만 확인했다. 당시 사용 모델(Claude 3.x 세대)과 반응 수치는 미확인이다.",
+    "'AAA급'이라고 독립 검증된 AI+MCP 3D 결과물은 찾지 못했다. 공개 점수가 있는 최고 사례(PhiloLabs)도 6~7.5/10이다. 상용 게임에 AI+MCP 3D 에셋이 실제로 쓰였다는 사례(스튜디오 발표 등)도 찾지 못했다.",
+    "게임잼 사례: chongdashu의 Vibe Jam(2026-04) 스타터팩은 확인했지만, 잼 결과물 중 AI+MCP로 만든 3D 우승작 목록은 확인하지 못했다.",
+    "모델명 혼선: 'GPT 5.6 Sol'(2026-07 게시물)과 'GPT-6 Sol'(2026-09 비교 게시물)이 둘 다 등장한다. 같은 제품군인지 확인이 필요하다. Gemini 계열도 'Gemini 3.8 Flash', 'Gemini-4 Pro Preview' 언급만 있고 공식 확인은 하지 못했다.",
+    "Chong-U의 Claude Fable 5.1 Unity 테니스 원작, Martin Puli의 뉴욕 저장소, Dimillian의 Solace 소스는 공개 위치를 찾지 못했다."
+  ]
+}

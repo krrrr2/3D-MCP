@@ -1,0 +1,419 @@
+{
+  "verdicts": [
+    {
+      "claim": "LL3M 서버가 중단되었고, 논문에 쓰인 모델은 Claude Sonnet 3.7이다(Blender 4.4 기반).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md",
+        "https://raw.githubusercontent.com/threedle/ll3m/main/LICENSE"
+      ],
+      "note": "README 원문: 'The model used in the paper, Claude Sonnet 3.7, has been retired. As a result, we have discontinued the LL3M server.' Blender 4.4, python=3.12도 맞다. 누락된 점: LICENSE는 'DEMONSTRATION LICENSE AGREEMENT'로 '비상업적 학술·평가 목적' 전용이고 수정·리버스엔지니어링·상업 사용을 금지한다. items의 'GitHub 공개'라는 라이선스 표기는 '비상업 데모 라이선스'로 고쳐야 한다."
+    },
+    {
+      "claim": "BlenderLLM(Qwen2.5-Coder-7B)은 CADBench 시뮬레이션 평균 74.8%로 GPT-4o 56.5%, o1-Preview 68.7%보다 높고, 문법 오류율은 3.4%(GPT-4o 21.4%)다. Apache-2.0, 2024-12-17 공개.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/FreedomIntelligence/BlenderLLM",
+        "https://raw.githubusercontent.com/FreedomIntelligence/BlenderLLM/main/README.md"
+      ],
+      "note": "README 표: BlenderLLM 0.748±0.085 / GPT-4o 0.565 / o1-Preview 0.687(Sim). Syntax error 3.4% / 21.4%(o1-Preview 15.6%). 가중치 공개일 12/17/2024, Apache-2.0, CADBench 500 sim + 200 wild, BlendNet 12k(수작업 2k + GPT-4o 10k, 16 types)도 맞다. 보충: 점수는 0–1 스코어이고 GPT-4o가 채점자(LLM-as-judge)라는 한계를 같이 적어야 한다."
+    },
+    {
+      "claim": "MeshCoder: arXiv 2508.14879, 41개 카테고리 100만 object-code 쌍, Llama-3.2-1B LoRA, MIT, 2025-11-11 공개.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/InternRobotics/MeshCoder"
+      ],
+      "note": "README와 LICENSE(MIT)에서 확인했다. 2025.11.11 공개분은 학습·추론 코드, 체크포인트, 100K 학습 데이터(전체 1M 중 일부)다."
+    },
+    {
+      "claim": "CAD-Recode는 ICCV 2025 채택이고, Qwen2-1.5B에 선형층 하나를 붙여 점군에서 CadQuery 코드를 생성한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/filaPro/cad-recode",
+        "https://raw.githubusercontent.com/filaPro/cad-recode/main/LICENSE.md"
+      ],
+      "note": "'trained upon Qwen2-1.5B, keeping original tokenizer, and adding a single additional linear layer', 'accepted at ICCV 2025'. 누락된 점: LICENSE.md는 CC BY-NC 4.0(비상업)이다. items의 'LICENSE.md(저장소 참조)'는 'CC BY-NC 4.0, 상업 사용 불가'로 명시해야 한다."
+    },
+    {
+      "claim": "build123d-mcp 워크플로가 한 모델의 CADGenBench 점수를 0.360에서 0.457로, validity를 88%에서 100%로 개선했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/pzfreo/build123d-mcp",
+        "https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/README.md"
+      ],
+      "note": "README 원문: 'On the public CADGenBench leaderboard in June 2026, using build123d-mcp raised the same model's score from 0.360 to 0.457 and CAD validity from 88% to 100%.' 모델명은 밝히지 않았다. 도구 저자의 자기 보고라는 점을 함께 적어야 한다."
+    },
+    {
+      "claim": "build123d-mcp를 쓴 CADGenBench 81 fixture 비교에서 Opus 5가 0.6771, GPT-5.6 Sol이 0.5319, Gemini 3.7 Flash가 0.5078이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md"
+      ],
+      "note": "수치는 정확하다(생성/편집: Opus 0.6583/0.7058, Sol 0.4507/0.6562, Gemini 0.4108/0.6564, 모두 80/81 valid). 다만 공정한 모델 비교로 인용하면 안 된다. (1) Opus 값은 여러 제출 중 'best' 제출(drawing-evidence 합성 run)이다. (2) MCP 버전(0.3.81 / 0.3.79 / 0.3.83), 하네스(Codex, Agy 등), 실행 시기(7/17, 8/14, 9/2)가 모두 다르다. (3) 토큰 +16% / +44%는 문서 스스로 'directional'이라 하고, Opus 토큰은 79 fixture 기준이다. (4) 비교를 한 사람이 build123d-mcp 저자 본인이다."
+    },
+    {
+      "claim": "Infinigen 2.0은 alpha(2.0.0a2)이고 procfunc 기반이며, 지원하는 실내 오브젝트가 제한적이다(sofa_rand, lamp_rand 등).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md",
+        "https://pypi.org/pypi/infinigen/json"
+      ],
+      "note": "원문: 'currently it only has new high quality indoor materials, a limited subset of indoor objects, and simple indoor room arrangements.' PyPI의 2.0.0a2는 2026-08-27에 올라온 pre-release다(기본 stable 버전은 1.15.5). Python 3.11 전용이다."
+    },
+    {
+      "claim": "Infinigen v1 ChairFactory는 leg_height uniform(0.45, 0.5), width 0.4–0.5, 깊이 0.38–0.45를 샘플링한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py"
+      ],
+      "note": "값은 맞다. 해석에는 오류가 있다. 코드에서 좌판은 z=0에 두께 방향 중앙(SOLIDIFY offset=0)으로 놓이고 다리는 -leg_height까지 내려간다. 그래서 좌판 상면 높이는 leg_height + thickness/2 = 약 0.47–0.54 m다. 이는 findings의 표준 좌면 0.43–0.46 m보다 높다. 게다가 이 값들은 설계자가 정한 랜덤 범위이지 '실측형' 데이터가 아니다. summary의 'leg_height 0.45–0.5를 실측형 레퍼런스로 쓸 수 있다'는 표현은 고쳐야 한다."
+    },
+    {
+      "claim": "Blender Boolean modifier는 Float, Exact(Mesh_Arr), Manifold solver를 가진다(main 소스).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/modifiers/intern/MOD_boolean.cc"
+      ],
+      "note": "eBooleanModifierSolver_Float / _Mesh_Arr / _Manifold가 모두 있다. Manifold는 최근 버전에만 있으므로(4.5 LTS에서 도입된 것으로 알려져 있으나 이번에 릴리스 노트는 egress 차단으로 확인하지 못함) 버전 확인이 필요하다고 명시해야 한다."
+    },
+    {
+      "claim": "blender-image-to-3d skill의 게이트는 blockout IoU 0.85 이상 + 비율 오차 5%, forms IoU 0.90 이상 + 2%다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md"
+      ],
+      "note": "band width 허용치 0.05 / 0.03도 맞다. 사소한 점: 단계는 0–10으로 11단계인데 findings는 '10단계'라고 적었다. 관련 오류: know-how에서 'validate.py가 |scale-1|>1e-4를 실패로 처리'한다고 했지만, 실제 코드에서 음수 스케일만 FAIL이고 미적용 scale/rotation은 WARN이다."
+    },
+    {
+      "claim": "kitchen-twin은 GPT-6 Astra가 쓴 Blender DSL로 32개 에셋과 138개 작동 조인트를 만들었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Frank-ZY-Dou/kitchen-twin/main/README.md",
+        "https://raw.githubusercontent.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics/main/README.md"
+      ],
+      "note": "README: '32 modelled assets with 138 working joints', 'GPT-6 Astra then authors every asset in a small Blender modelling language', 독립 verifier 세션, scene.glb 약 15 MB, 파이프라인 비공개. findings가 적은 DSL 구조 'parts / joints / dimensions'는 원문에 없는 각색이다. MJCF/URDF 출력과 약 20초 영상은 README가 아니라 큐레이션 리스트가 저자 X 게시물을 요약한 내용이다. 저자가 밝힌 한계('thin and shiny things are still weak, a few objects are drafts')와 verifier 규칙('must justify every complaint with a frame')이 빠졌다."
+    },
+    {
+      "claim": "FreeCAD BIM의 Blondel ratio 설명은 62–64 cm(24.5–25.5 in)를 편안한 계단으로 규정한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/BIM/ArchStairs.py"
+      ],
+      "note": "원문: 'The Blondel ratio indicates comfortable stairs and should be between 62 and 64cm or 24.5 and 25.5in'. 계산식은 RiserHeight*2 + TreadDepth다."
+    },
+    {
+      "claim": "ahujasid의 Blender MCP는 PyPI 패키지명이 blender-mcp에서 mcp-for-blender로 바뀌었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ahujasid/mcp-for-blender",
+        "https://pypi.org/pypi/mcp-for-blender/json",
+        "https://pypi.org/pypi/blender-mcp/json"
+      ],
+      "note": "README: 'The PyPI package blender-mcp is now mcp-for-blender. Existing setups keep working — uvx blender-mcp still runs the server'. PyPI 기준 mcp-for-blender 2.1.0(2026-09-25), blender-mcp 2.0.0(2026-09-16), 라이선스 MIT, 29.4k★."
+    },
+    {
+      "claim": "PartCrafter는 단일 이미지에서 최대 16개 파트를 생성한다(NeurIPS 2025, MIT).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/wgsxm/PartCrafter",
+        "https://raw.githubusercontent.com/wgsxm/PartCrafter/main/configs/mp16_nt1024.yaml"
+      ],
+      "note": "inference_partcrafter.py에 MAX_NUM_PARTS = 16이 있고, 학습 config의 max_num_parts가 16이다. 2025-09-18 NeurIPS 채택, LICENSE MIT, TripoSG 기반, 8GB 이상 VRAM. 3D-Front로 학습한 PartCrafter-Scene(장면 단위)도 있는데 findings에서 빠졌다."
+    },
+    {
+      "claim": "blender/blender-addons 저장소는 2025-05-09에 archived(read-only)되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/blender/blender-addons"
+      ],
+      "note": "'This repository was archived by the owner on May 9, 2025. It is now read-only.' 3D Print Toolbox의 bl_info는 blender (4,1,0)이다. Extensions 이전 여부는 extensions.blender.org 차단으로 확인하지 못했다."
+    },
+    {
+      "claim": "(items) 파트 단위 image-to-3D의 라이선스는 '모델별 상이 (MIT / NVIDIA / Tencent)'이고, Hunyuan3D-Part는 이미지에서 파트를 생성한다.",
+      "verdict": "partially",
+      "correction": "PartPacker의 NVIDIA Source Code License 3.3은 비상업 연구 목적 전용이다. Tencent Hunyuan 3D-Part Community License는 'DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'라고 명시해 한국에서는 라이선스가 적용되지 않는다(Hunyuan3D 2.1도 같다). 또 Hunyuan3D-Part는 이미지가 아니라 holistic mesh를 입력으로 받는다(P3-SAM 분할 → X-Part). 공개판은 X-Part의 'light version'이다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/NVlabs/PartPacker/main/license.md",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Part/main/LICENSE",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Part/main/README.md",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE"
+      ],
+      "note": "한국어 지식베이스에서는 가장 중요한 라이선스 경고다. mcp-for-blender의 Hunyuan3D 연동도 같은 문제를 안고 있다."
+    },
+    {
+      "claim": "(items) LLaMA-Mesh 라이선스는 'LLaMA 라이선스', Text2CAD는 'LICENSE 파일', ShapeAssembly는 'GitHub 공개'다.",
+      "verdict": "refuted",
+      "correction": "LLaMA-Mesh 코드는 NVIDIA License이고 3.3조에 따라 '연구·평가 목적의 비상업 사용만' 허용된다. Text2CAD는 CC BY-NC-SA 4.0(DFKI)이다. ShapeAssembly는 Brown University 라이선스로 '상업 제품·서비스에 포함하는 용도는 제외'된다. 모두 상업 파이프라인에 직접 쓸 수 없다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/nv-tlabs/LLaMA-Mesh/main/LICENSE",
+        "https://raw.githubusercontent.com/SadilKhan/Text2CAD/main/LICENSE",
+        "https://raw.githubusercontent.com/rkjones4/ShapeAssembly/master/LICENSE"
+      ]
+    },
+    {
+      "claim": "(know-how) bmesh + BVHTree + scene.ray_cast로 된 50줄 정도의 검사 스크립트로 떠 있는 부품 등 대부분의 실패 모드를 자동 검출할 수 있다.",
+      "verdict": "partially",
+      "correction": "FLOATING 검사는 오브젝트 bbox 중심에서 아래로 ray를 쏜다. 그래서 다리 위에 놓인 의자 좌판이나 식탁 상판처럼 '중심 아래가 비어 있는' 부품은 바닥(또는 no-hit일 때 z=0)까지의 거리가 gap으로 잡혀 거의 항상 FLOATING 오탐이 난다. 지지 판정은 ray 한 줄이 아니라, 다른 오브젝트 BVH와의 최소 거리(find_nearest)나 bbox 하면이 아래 부품 bbox 상면과 겹치는지를 기준으로 해야 한다. 또 ProfRino Assembly Skill처럼 연결부에 최소 5 mm overlap을 두라는 관행과 PENETRATION 규칙(JOINT_ 접두사만 허용)이 충돌하므로 허용 규칙을 정해 두어야 한다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ProfRino/Blender-MCP-Assembly-Skill/main/SKILL.md"
+      ],
+      "note": "코드는 직접 읽고 분석했다(Blender에서 실행하지는 않음). BVHTree.overlap이 완전 내포를 못 잡는다는 기존 주의사항은 타당하다."
+    },
+    {
+      "claim": "(case study) Unreal Home Wizard skill은 Sol과 Opus 5.5도 명시하고, 문·천장·상판 높이를 캘리브레이션 앵커로 쓴다.",
+      "verdict": "partially",
+      "correction": "SKILL.md, README, references 4개 파일 어디에도 Sol이나 Opus 5.5 언급이 없다. 이 skill은 Codex용이다(README 'Install in Codex'). 앵커는 'ceiling height or door width' 같은 알려진 치수 하나를 묻는 수준이고, 주방 상판 높이는 언급되지 않는다. 사진 20장, UE 5.8, 물리 논리 QA, '사용자는 1차 버그 탐지자가 아니다' 원칙은 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/skills/unreal-home-wizard/SKILL.md",
+        "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/README.md",
+        "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/skills/unreal-home-wizard/references/questionnaire.md"
+      ]
+    },
+    {
+      "claim": "(items / know-how) Infinigen 2.0은 가구 지오메트리를 'lower base polycount with edge creasing and subsurf'로 재구성했다.",
+      "verdict": "partially",
+      "correction": "CHANGELOG 원문은 'Rebuild table legs, lamps, ceiling lights and handles at low base polycount with edge creasing and subsurf'이다. 가구 전체가 아니라 테이블 다리, 램프, 천장등, 손잡이에 한정된다. 나머지 항목(V2 chair office/wooden-dining, 손잡이 4종, 1–5 panel 문, room_rand, 샘플 256→1024, render validity check)은 맞다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md"
+      ]
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "MCP for Blender (ahujasid/mcp-for-blender)",
+      "status": "ok",
+      "detail": "저장소가 있고 29.4k★, MIT다. PyPI mcp-for-blender 2.1.0(2026-09-25)으로 활발히 유지되고 있다. 기능(Poly Haven / Sketchfab / Poly Pizza, Hyper3D Rodin / Hunyuan3D, GLB/FBX export, 스크린샷, execute_blender_code)과 주의사항(실행 전 저장, 작업 분할, Poly Haven 다운로드 중 UI 블록)이 README와 일치한다. 보충: 연동되는 Hunyuan3D 모델은 라이선스상 한국이 제외된다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/mcp-for-blender",
+        "https://pypi.org/pypi/mcp-for-blender/json"
+      ]
+    },
+    {
+      "name": "blend-ai (HoldMyBeer-gg)",
+      "status": "ok",
+      "detail": "186 tools / 27 modules / 1190 tests, 127.0.0.1:9876, AGPL-3.0-or-later, 148★, Blender 4.2+(5.1에서 테스트)가 확인됐다. 보충: execute_blender_code 샌드박스가 os, sys, pathlib, open, eval 등 25개 import와 builtin을 막는다. 그래서 검사 스크립트가 파일로 JSON 보고서를 쓰는 방식은 이 서버에서 동작하지 않을 수 있다.",
+      "evidence_urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai",
+        "https://raw.githubusercontent.com/HoldMyBeer-gg/blend-ai/main/README.md"
+      ]
+    },
+    {
+      "name": "build123d-mcp",
+      "status": "ok",
+      "detail": "Apache-2.0, 560 commits, 95★, PyPI 0.3.90(2026-09-25). uv 설치 설정, 도구(execute / measure / compare / validate / design_audit / snapshot / export / render_view), 'deterministic checks before visual' 규칙을 default_prompt.md에서 확인했다. 성능 수치는 도구 저자의 자기 보고다.",
+      "evidence_urls": [
+        "https://github.com/pzfreo/build123d-mcp",
+        "https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/default_prompt.md",
+        "https://pypi.org/pypi/build123d-mcp/json"
+      ]
+    },
+    {
+      "name": "build123d (joints 포함)",
+      "status": "ok",
+      "detail": "Python 3.11–3.14(PyPI requires <3.15, >=3.11), Apache-2.0, 0.13.0(2026-09-21). Builder / Algebra mode, OCCT 기반. joints.rst에서 RigidJoint / RevoluteJoint / LinearJoint / CylindricalJoint / BallJoint와 connect_to를 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/gumyr/build123d/dev/README.md",
+        "https://raw.githubusercontent.com/gumyr/build123d/dev/docs/joints.rst",
+        "https://pypi.org/pypi/build123d/json"
+      ]
+    },
+    {
+      "name": "AgentCAD (jdilla1277/agentcad)",
+      "status": "ok",
+      "detail": "명령(run / measure / check-spec / inspect / parts / diff / export), pip install agentcad[mcp], Python >=3.10, <3.13, Apache-2.0, build123d 기본에 CadQuery extra가 확인됐다. PyPI 0.6.0(2026-09-11), 138★.",
+      "evidence_urls": [
+        "https://github.com/jdilla1277/agentcad",
+        "https://pypi.org/pypi/agentcad/json"
+      ]
+    },
+    {
+      "name": "OpenSCAD MCP 서버들 + BOSL2",
+      "status": "ok",
+      "detail": "jhacksman/OpenSCAD-MCP-Server는 197★, MIT이고 SCAD/STL과 4방향 PNG를 낸다. RobertCoop/openscad-mcp는 142★, MIT이고 조립 간섭(interference)·클리어런스 검사를 포함해 이 주제와 특히 관련이 깊은데 findings에서는 강조되지 않았다. codeofaxel/Kiln은 70★, AGPL-3.0의 3D 프린팅 오케스트레이션 도구로, 'OpenSCAD MCP'로 분류한 것은 부정확하다. BOSL2는 BSD-2, OpenSCAD 2021.01 이상, 'BETA CODE'로 확인됐다.",
+      "evidence_urls": [
+        "https://github.com/jhacksman/OpenSCAD-MCP-Server",
+        "https://github.com/RobertCoop/openscad-mcp",
+        "https://github.com/codeofaxel/Kiln",
+        "https://github.com/BelfrySCAD/BOSL2"
+      ]
+    },
+    {
+      "name": "Infinigen v1 가구 factory(chair / dining_table / simple_desk / bedframe / kitchen_cabinet)",
+      "status": "issue",
+      "detail": "샘플링 범위는 코드와 모두 일치한다: 식탁 폭 0.91–1.16, 길이 1.4–2.8, 높이 0.65–0.85, 상판 0.03–0.06, straight 다리 0.05–0.07, stretcher 0.2–0.6 / 책상 N(0.73, 0.05)를 0.6–0.83으로 clip / 침대 1.4–2.4 × 2–2.4, 다리 0.2–0.6, 헤드보드 0.5–1.3 / 캐비닛 측판 0.02, 하단 0.06 / 단일 방 coarse 약 8–13분. 문제는 의자 좌판 상면이 약 0.47–0.54 m로 표준 좌면보다 높고, 식탁 높이 범위(0.65–0.85)도 넓다는 점이다. '실측형 모범 답안'이 아니라 '랜덤 생성 범위'로 소개해야 한다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/tables/dining_table.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/shelves/simple_desk.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md"
+      ]
+    },
+    {
+      "name": "blender-image-to-3d skill (majidmanzarpour/blender-game-skills)",
+      "status": "issue",
+      "detail": "게이트 수치, 단위 규약, init_master의 1.0×2.2 m 문틀, world_gate의 IoU / 10-band / ref_only / render_only는 확인됐다. 문제는 세 가지다. 저장소가 커밋 1개(2026-09-24, 'majidmanzarpour and claude' 공동 커밋)에 90★인 매우 새 저장소다. validate.py에서 미적용 scale/rotation은 WARN이고 FAIL은 음수 스케일, tri budget, UV 누락 등이다. 단계는 0–10으로 11단계다. MIT.",
+      "evidence_urls": [
+        "https://github.com/majidmanzarpour/blender-game-skills/commits/main",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py"
+      ]
+    },
+    {
+      "name": "blender-production skill (per-simmons)",
+      "status": "ok",
+      "detail": "인용문('Plausible mesh bevels provide real highlight surfaces...', 'solve camera/lens before deforming geometry', defect ledger 6개 필드, 'Do not claim ... completion without evidence', macro / meso / micro, 2026-09-09 Blender 5.1.2 검증)이 모두 원문과 일치한다. MIT다. 다만 커밋 1개(2026-09-09, Claude 공동 커밋)에 0★인 미검증 저장소다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/SKILL.md",
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/references/realism.md",
+        "https://github.com/per-simmons/blender-production/commits/master"
+      ]
+    },
+    {
+      "name": "3D Print Toolbox / Archimesh (검사 로직과 치수 기본값)",
+      "status": "ok",
+      "detail": "Print Toolbox 기본값(thickness 0.001, zero 0.0001, 45° / 160° / 45°)과 BVHTree.FromBMesh(epsilon=0.00001) + tree.overlap(tree)가 일치한다. Archimesh 주방은 board 0.018, depth 0.59, height 0.70, 걸레받이 0.16(캐비닛을 그만큼 올림), 상판 0.02, 돌출 0.03이라 상판 상면이 약 0.88 m가 된다. 상부장은 depth 0.35이고 바닥에서 1.5 m에 놓인다(moveZ). 문 1.0×2.1, frame 0.08. 계단 0.14 / 0.30 / 0.03. 모두 코드에서 확인했다. Extensions 배포 여부는 확인하지 못했다(도메인 차단).",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/__init__.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_kitchen_maker.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_door_maker.py"
+      ]
+    },
+    {
+      "name": "파트 단위 생성 모델(PartCrafter / PartPacker / OmniPart / Hunyuan3D-Part)",
+      "status": "issue",
+      "detail": "PartCrafter(MIT, 최대 16파트)와 OmniPart(SIGGRAPH Asia 2025, MIT, 2D 마스크 입력)는 확인됐다. PartPacker(arXiv 2506.09980, 약 10GB)는 NVIDIA Source Code License라 비상업 연구 전용이다. Hunyuan3D-Part(arXiv 2509.06784 / 2509.08643)는 라이선스가 EU, 영국, 한국에서 적용되지 않고, 입력이 메쉬이며, light version만 공개됐다. findings의 '모델별 상이'만으로는 사용자가 위험을 알 수 없다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/NVlabs/PartPacker/main/license.md",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Part/main/LICENSE",
+        "https://raw.githubusercontent.com/HKU-MMLab/OmniPart/main/LICENSE"
+      ]
+    },
+    {
+      "name": "연구 코드 라이선스 전반(LL3M / Text2CAD / CAD-Recode / LLaMA-Mesh / ShapeAssembly)",
+      "status": "issue",
+      "detail": "다섯 개 모두 상업 사용이 제한되지만 findings는 이를 'GitHub 공개'나 'LICENSE 파일'로만 적었다. LL3M은 비상업 데모 라이선스(수정 금지), Text2CAD는 CC BY-NC-SA 4.0, CAD-Recode는 CC BY-NC 4.0, LLaMA-Mesh는 NVIDIA 비상업 라이선스, ShapeAssembly는 상업 제품 포함 금지다. 반면 MeshCoder, CADFusion, ShapeLLM-Omni, PartNet 주석은 MIT, MeshLLM은 Apache-2.0으로 확인됐다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/threedle/ll3m/main/LICENSE",
+        "https://raw.githubusercontent.com/SadilKhan/Text2CAD/main/LICENSE",
+        "https://raw.githubusercontent.com/filaPro/cad-recode/main/LICENSE.md",
+        "https://raw.githubusercontent.com/nv-tlabs/LLaMA-Mesh/main/LICENSE"
+      ]
+    },
+    {
+      "name": "CADGenBench",
+      "status": "ok",
+      "detail": "huggingface/cadgenbench 저장소가 있고 Apache-2.0이다. 4개 지표(Validity 게이트, Shape similarity, Interface match, Topology Betti)가 확인됐다. 실제 리더보드는 HF Space HuggingAI4Engineering/CADGenBench이므로 이 URL도 함께 인용하는 것이 정확하다. 기계 부품 중심이라는 한계 지적은 타당하다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/huggingface/cadgenbench/main/README.md"
+      ]
+    },
+    {
+      "name": "Sverchok / Nova3D / Holodeck 프롬프트",
+      "status": "ok",
+      "detail": "Sverchok는 Blender 5.1 / 4.5 / 3.6 / 2.8, GPL3, 600개 이상 노드로 확인됐다. Nova3D는 721★, 129 commits, 클라이언트 MIT에 호스팅 백엔드가 비공개이고 가격은 공개되지 않았다. Holodeck은 [length, width, height] cm, 방 3–8 m / 최대 48 m², 문 single 1 m / double 2 m, Apache-2.0으로 모두 원문과 일치한다.",
+      "evidence_urls": [
+        "https://github.com/nortikin/sverchok",
+        "https://github.com/RareSense/Nova3D",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py"
+      ]
+    },
+    {
+      "name": "치수 치트시트(일반 표준값)",
+      "status": "ok",
+      "detail": "코드로 확인된 값(Blondel, Archimesh, Holodeck, Infinigen)은 맞다. 나머지는 이번에도 원문 도메인이 차단되어 검증하지 못했다. 다만 US 매트리스 환산(Twin 38×75 in = 0.97×1.91 등), IRC 단높이 7-3/4 in(0.196), 단너비 10 in(0.254), 바 / 카운터 스툴 조합은 널리 알려진 값과 일치한다. 오금 높이 0.40–0.45는 한국 여성 평균보다 높을 수 있다. Size Korea로 재검증이 필요하다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/BIM/ArchStairs.py"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+      "reason": "build123d-mcp 저자(pzfreo)가 자기 도구로 한 비교라 독립 평가가 아니다. 모델마다 MCP 버전, 하네스, 실행 시기가 다르고, Opus 값은 'best' 제출(합성 run)이며, 토큰·비용 비교도 문서 스스로 directional이라고 밝힌다. 인용할 때 '단일 제3자'가 아니라 '도구 저자 자체 평가'로 표기해야 한다."
+    },
+    {
+      "url": "https://github.com/pzfreo/build123d-mcp",
+      "reason": "0.360→0.457 개선 수치는 도구 저자의 자기 보고이고 모델명을 밝히지 않았다. 리더보드 보고서로 교차 확인해야 한다."
+    },
+    {
+      "url": "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+      "reason": "kitchen-twin 저자가 운영하는 2차 큐레이션이라 자기 사례가 포함되어 있고 GPT-6 Astra 중심이다. X·LinkedIn 원문을 인용 요약한 것이므로 수치(3,295개 오브젝트, 54시간 등)는 원 게시물 확인 전까지 '저자 주장'으로 표기해야 한다."
+    },
+    {
+      "url": "https://github.com/Frank-ZY-Dou/kitchen-twin",
+      "reason": "결과물만 공개된 저장소이고 파이프라인이 비공개라 방법론을 재현할 수 없다. findings의 'DSL(parts / joints / dimensions)' 구조는 원문에 없는 각색이다."
+    },
+    {
+      "url": "https://github.com/majidmanzarpour/blender-game-skills",
+      "reason": "커밋 1개(2026-09-24, Claude 공동 작성), 90★로 커뮤니티 검증 이력이 없다. 규칙 자체는 합리적이지만 '검증된 표준'이 아니라 참고 사례로 다뤄야 한다."
+    },
+    {
+      "url": "https://github.com/per-simmons/blender-production",
+      "reason": "커밋 1개, 0★, Claude 공동 작성이다. 내용은 원문과 일치하지만 성숙도가 낮다."
+    },
+    {
+      "url": "https://github.com/runopti/L3GO",
+      "reason": "LICENSE 파일만 있는 빈 placeholder 저장소(커밋 1개)다. 방법 설명의 출처로 인용하면 안 되고 논문(NAACL 2025 demo)을 직접 인용해야 한다."
+    },
+    {
+      "url": "https://x.com/tomkrcha/status/2095756085890310311",
+      "reason": "X 게시물을 직접 열람할 수 없어 큐레이션 리스트를 통해서만 확인했다(uncle_render, superalesha 링크도 같다). 인용한 SEO 스팸형 출처는 발견되지 않았고 인용 출처는 대부분 GitHub 1차 자료다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Tencent Hunyuan3D 계열 라이선스의 한국 적용 제외 조항",
+      "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Part/main/LICENSE",
+      "why_important": "'THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'. Hunyuan3D 2.1, Hunyuan3D-Part, 그리고 mcp-for-blender의 Hunyuan3D 연동을 한국 사용자가 쓸 때 법적 근거가 없다는 점은 한국어 지식베이스에서 반드시 경고해야 한다."
+    },
+    {
+      "name": "Blender MCP Assembly Skill (ProfRino)",
+      "url": "https://github.com/ProfRino/Blender-MCP-Assembly-Skill",
+      "why_important": "의자가 '분해되어 보이는' 문제를 직접 다루는 skill이다(72★). 코드 전 connection map, cube primitive를 size=2로 쓰는 규칙(size=1 + scale일 때 치수가 절반이 되는 LLM의 대표 버그), 실린더 Euler 회전 오류, 연결부 최소 5 mm overlap, verify_bounds / verify_overlap / audit_all 헬퍼를 제공한다. findings의 실패 모드 목록에 '큐브 크기 계산'과 '실린더 회전'이 빠져 있다."
+    },
+    {
+      "name": "IKEA 의자 사진 1장을 인터랙티브 제품 모델로(Doron Taussy, GPT-6 Astra, 2026-09-08)",
+      "url": "https://www.linkedin.com/posts/doron-taussy_i-gave-astra-one-photo-of-an-ikea-chair-and-activity-7503069971481182209-ay6a",
+      "why_important": "가구 한 점을 치수, 재질 전환, 부품 검사, 분해도, flat-pack, 자가 조립까지 만든 사례로, 이 주제(가구 부품 분해)에 가장 직접적인 2026-09 사례다."
+    },
+    {
+      "name": "Tom Krcha: 집 사진 1장에서 가구 포함 Blender 재구성(2026-09-03)과 Porsche 서브디비전 교훈(2026-09-09)",
+      "url": "https://x.com/tomkrcha/status/2095598645190291775",
+      "why_important": "가구·장난감·가전까지 포함한 재구성 사례다. 또 'Naive prompts will fail, refined systematic prompts written by an expert succeed'라는 교훈은 spec-first 전략의 근거가 된다. 기관차 사례는 'primarily MCP, with occasional computer-use checks'로 도구 경로도 밝혀져 있다."
+    },
+    {
+      "name": "Opus 5.5로 새 침대가 아이 방에 맞는지 확인(Shimecki, 2026-09-24)",
+      "url": "https://x.com/scheemunai/status/2103059885361598633",
+      "why_important": "사용자가 요청한 Opus 5.5의 가구 배치·치수 확인 사례로, 평면도 주택 사례 외에 하나 더 있다."
+    },
+    {
+      "name": "kitchen-twin의 verifier 규칙과 저자 한계",
+      "url": "https://raw.githubusercontent.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics/main/README.md",
+      "why_important": "독립 검증 세션은 'must justify every complaint with a frame'이라는 규칙을 따르고, 저자는 'thin and shiny things are still weak, a few objects are drafts, the room shell needs another pass'라고 한계를 밝혔다. 모두 가구 재현 품질에 직결되는 실전 교훈인데 빠졌다."
+    },
+    {
+      "name": "Adam Keating의 생성형 CAD 현황 노트(2026-09-08)",
+      "url": "https://www.linkedin.com/posts/adammichaelkeating_astra-is-far-better-at-understanding-geometry-activity-7503061853816696832-7CRf",
+      "why_important": "'looks like the thing you want'는 쉬워졌지만 'The gap remains in the last mile - particularly in manufacturing'이라는 실무자 평가다. 정밀 가구·하드웨어의 한계를 보여 주는 균형 자료다."
+    },
+    {
+      "name": "Stanford 주방 영상을 MuJoCo 씬(작동 서랍)으로(Linfeng Zhao, openretriever/retriever)",
+      "url": "https://github.com/openretriever/retriever",
+      "why_important": "kitchen-twin과 같은 계열의 '영상에서 조인트가 있는 수납가구' 사례로, 런타임 코드가 공개되어 있다."
+    },
+    {
+      "name": "realsee-astra-blender (실제 프로젝트의 입력, 프롬프트, 모델링 코드 공개)",
+      "url": "https://github.com/realsee-developer/realsee-astra-blender",
+      "why_important": "스캔 export를 레퍼런스로 삼아 벽·문·창을 먼저 만들고 가구를 나중에 배치하는 실제 프롬프트와 코드가 공개되어 있어, '어떻게 했는지'를 재현할 수 있는 드문 자료다."
+    },
+    {
+      "name": "PartCrafter-Scene (3D-Front 기반 장면 단위 파트 생성)",
+      "url": "https://github.com/wgsxm/PartCrafter",
+      "why_important": "같은 저장소에 가구 배치 장면(예: dining_room, 6파트)을 이미지에서 분리 생성하는 모델이 있다. 가구 배치 주제와 직접 관련된다."
+    },
+    {
+      "name": "cc-blender-skill (Claude Code용 Blender skill, 품질 개선 autoloop)",
+      "url": "https://github.com/RobLe3/cc-blender-skill",
+      "why_important": "Claude Code와 Blender 5.x에서 quality-refinement autoloop와 coverage gate를 제공하고 'What works / What doesn't (honestly)' 섹션을 둔 skill이다. Opus 계열 사용자에게 blender-game-skills의 대안이 된다."
+    }
+  ]
+}

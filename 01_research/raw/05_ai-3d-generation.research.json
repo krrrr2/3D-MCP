@@ -1,0 +1,1197 @@
+{
+  "topic": "Text/Image-to-3D 생성 모델·서비스 현황과 MCP 워크플로 활용법 (2026년 9월 기준)",
+  "summary_ko": [
+    "[조사 환경 한계] 이번 조사에서는 WebSearch 할당량이 이미 다 소진된 상태였습니다. 또 huggingface.co, arxiv.org, 각 벤더 공식 사이트(meshy.ai, tripo3d.ai, hyper3d.ai, worldlabs.ai, deepmind.google, autodesk.com)는 egress proxy에서 차단되었습니다. 그래서 GitHub 공개 페이지(README, LICENSE, 커밋 이력, 이슈, 공식 SDK/MCP 코드)와 PyPI만 1차 출처로 삼았습니다. 가격, 공식 스펙, 3D Arena 순위처럼 이 경로로 확인하지 못한 부분은 confidence를 낮게 매기고 gaps에 적었습니다.",
+    "[한국 사용자에게 가장 중요한 점: 라이선스] 로컬 실행용으로 공개된 Tencent Hunyuan 계열 오픈웨이트(Hunyuan3D 2.0/2.1/Omni/Part, HY-World 2.0)의 Community License는 Territory를 '전 세계에서 EU·영국·대한민국을 제외한 지역'으로 정의합니다. 모델 출력물을 Territory 밖에서 쓰거나 배포하는 것도 금지합니다. 즉 한국에서 로컬 Hunyuan 웨이트를 쓰는 것은 라이선스상 허용되지 않습니다. MIT 라이선스인 TRELLIS/TRELLIS.2, TencentARC Pixal3D(Tencent Hunyuan이 아니라 TencentARC 소속이고 MIT), Direct3D-S2, PartCrafter, OmniPart, SceneGen과 Apache-2.0인 Step1X-3D, 상업 사용이 허용되는 SAM License의 SAM 3D Objects가 안전한 대안입니다. 단, TRELLIS.2와 Pixal3D는 DINOv3 License 인코더를 함께 씁니다.",
+    "[오픈소스 최상위권(2026.9)] Microsoft TRELLIS.2(4B, MIT, 2025-12-16 공개, 2026-01-10 학습 코드 공개)는 512³~1536³ O-Voxel로 base color/roughness/metallic/opacity PBR GLB를 만듭니다. 소요 시간은 H100 기준 3초/17초/60초이고 VRAM은 24GB 이상 필요합니다. 이를 backbone으로 쓰는 TencentARC Pixal3D(SIGGRAPH 2026, MIT)는 2026년 5월 추론 코드, 2026년 9월 multi-view 추론 코드가 공개되었습니다. 커뮤니티 비교(image-to-3dlab)에서는 'Best results we have'라는 평가를 받았습니다.",
+    "[상용 API 최신 버전(ComfyUI Partner Nodes 커밋과 SDK로 확인)] Hyper3D Rodin Gen-2.5(2026-05 ComfyUI 지원, 티어 Extreme-Low/Low/Medium/High/Extreme-High), Tripo v3.1-20260211, P1-20260311(low-poly), P2(2026-09, quad), Meshy 7(2026-08), Meshy 7.1(2026-09-20), Tencent Hunyuan 3D Pro API 3.0/3.1(face_count 3,000~1,500,000), Hitem3D v2.0(Sparc3D 2.0/2.1, 1536pro 해상도, 100K~2M faces)이 확인됩니다.",
+    "[토폴로지·폴리곤 제어] 공식 문서와 도구 기준으로 제어 방법은 다음과 같습니다. Rodin은 mesh_mode Raw(500~1,000,000, 기본 500k) 또는 Quad(1,000~50,000, 기본 18k)를 고릅니다. Gen-2.5에서는 Raw가 권장되고 Quad는 legacy tier에 더 적합하다고 안내됩니다. Tripo는 face_limit, quad(FBX 출력), smart_low_poly(500~20K, quad 500~10K)를 씁니다. Meshy는 topology quad/triangle과 target_polycount 100~300,000을 쓰며 smart-topology meshy-t1/t2는 파트가 분리된 메시를 냅니다. Hunyuan Cloud는 LowPoly(3.0 전용, triangle/quadrilateral)와 SmartTopology 노드를 제공합니다.",
+    "[MCP 연동 현황] blender-mcp(addon v1.7)는 Hyper3D Rodin, Hunyuan3D(Tencent Cloud API 또는 로컬 API), Tripo, Sketchfab, Poly Haven, Poly Pizza를 내장하고 있습니다. Meshy 공식 MCP(@meshy-ai/meshy-mcp-server v0.5.2, 24 tools)도 있습니다. Tripo는 공식 tripo-mcp(alpha)와 Go 기반 trident-mcp가 있습니다. Rodin은 공식 rodin3d-skills(Claude plugin), @hyper3d/cli, rodin-api-mcp를 씁니다. Hunyuan은 dcc-ai-hunyuan3d, TRELLIS는 trellis_blender/trellis_mcp/trellis2_mcp가 있습니다. Scenario MCP와 skills는 Meshy, Rodin, Sparc3D, Hunyuan, Tripo, Trellis, 'GPT-6 Astra 3D', Marble을 모두 다룹니다. World Labs용으로는 커뮤니티 worldlabs-mcp가 있습니다.",
+    "[레퍼런스 이미지 준비 노하우] 실사용 파이프라인들이 공통으로 강조하는 원칙이 있습니다. 한 이미지에 오브젝트 하나, 중앙 배치, 단색이나 투명 배경, 3/4 view, 부드러운 조명, 텍스트나 글자 없음입니다. TRELLIS.2는 배경을 제거하지 않으면 구멍과 아티팩트가 심해진다는 이슈(#65)가 있습니다. 반사가 강한 레퍼런스에는 Rodin texture-delight나 Scenario delight를 켭니다. Multi-view 입력 순서는 모델마다 다릅니다. Hitem3D는 front/back/left/right, Tripo는 front/left/back/right(2~4장)이고, Rodin은 최대 5장입니다.",
+    "[가구·조형물 비율 맞추기] 이미지 한 장만으로는 실제 치수가 정해지지 않습니다. Rodin bbox_condition [W,H,L]과 height(cm), Tripo auto_size, Scenario autoSize(실제 m 단위), Hunyuan3D-Omni bbox/point/voxel/pose control, Roblox Cube bbox conditioning 같은 치수·비율 제약을 적극적으로 쓰는 것이 핵심입니다. 서랍, 문, 다리 같은 구조는 Rodin BANG(strength 1~12), Tripo segmentation, Meshy smart-topology, PartCrafter, OmniPart 같은 part-aware 생성으로 분리합니다. 관절 구조가 필요하면 PhysX-Anything(URDF 출력)을 씁니다.",
+    "[후처리는 필수] 독립 QA(3DQA census, 3D Arena 에셋 2,307개와 생성기 23종)에서 TRELLIS.2-4B 출력은 91.1%가 non-watertight, 14.9%에 non-manifold edge가 있었고 100%가 30k tri를 넘었습니다. 표준 흐름은 고해상도 master(최대 1M tri, 4K 텍스처)를 만든 뒤 meshoptimizer나 voxel remesh로 decimate하고, UV를 새로 편 다음 master의 color/metal-rough/normal을 bake하고, LOD(50%/25%)와 collision hull을 만드는 것입니다(asset-studio).",
+    "[용도별 모델 선택 가이드(출처 기반)] 하드서페이스·소품에는 Scenario GPT-6 Astra 3D('props and hard-surface, not characters', named parts와 per-part PBR), Rodin Gen-2.5 Low('clean assets, small hardsurface props'), Tripo P1/P2(game-ready low-poly/quad)가 맞습니다. 고주파 디테일 조형에는 Rodin Extreme-High, TRELLIS.2 1536 cascade, Hitem3D 1536pro가 좋습니다. 캐릭터는 Rodin TAPose와 Meshy pose_mode A/T-pose를 쓰고, 두상·흉상은 Sparc3D Portrait line을 씁니다. 플랫하거나 벡터 스타일인 그림은 TRELLIS.2가 색을 크게 틀리게 뽑는다고 보고되어 있습니다.",
+    "[월드 생성기의 출력 형식] World Labs Marble(1.0 Draft/1.1/1.1 Plus)은 3D Gaussian splat(.spz)이 기본이고 triangle/collider mesh로 내보낼 수 있습니다. HunyuanWorld 1.0은 panorama와 layered mesh, HY-World 2.0(2026-04)은 mesh/3DGS/point cloud를 냅니다(한국 제외 라이선스). NVIDIA Lyra 2.0(2026-04)은 3D 월드 모델입니다. Genie 3는 메시가 아닌 인터랙티브 비디오 프레임을 생성하며, 이 부분은 이번에 직접 확인하지 못했습니다. SAM 3D Objects는 splat(.ply)과 mesh(.glb)를 모두 냅니다.",
+    "[비용 레버] Meshy image-to-3D는 meshy-6/7에서 mesh 20, +texture 30, +8K 35 credits이고 smart-topology t2는 5/15/20, ultra_mode는 +5입니다. Rodin Gen-2.5는 티어당 0.5 credit(Extreme-High만 1.0), HighPack(4K 텍스처)은 +1입니다. Tripo는 H3.1 약 50 credits(약 150초), P1 약 40 credits(약 76초)로 서드파티 문서에서 확인했습니다. DCC에서 텍스처를 직접 입힐 계획이면 texture:false로 비용을 아낄 수 있습니다.",
+    "[실제 사례] zorrobyte/asset-studio는 RTX 5090 한 장으로 로컬에서 Qwen-Image-2512, Pixal3D/TRELLIS.2, Blender를 이어 돌리고 Claude Code용 MCP를 제공합니다. crate 954,901→7,998 tri에 11.1분이 걸렸습니다. 그 밖에 KaelNebula/rodin-via-blender(4-view 캐릭터→Rodin→Blender MCP Quadriflow→FRP 조형물 1.1~2.0m), AIWHOS/sketch-to-3d-codex(스케치→Design Lock→Rodin), aigeboku/blender-ai-3d-setup(Gemini 이미지→Hitem3D→Blender MCP로 교실 가구 배치), elithril/blender-kiln(Claude Code skill, 8단계 파이프라인)이 있습니다."
+  ],
+  "items": [
+    {
+      "name": "Microsoft TRELLIS.2 (TRELLIS.2-4B)",
+      "category": "Image-to-3D 오픈웨이트 (mesh + PBR)",
+      "what_it_is": "Microsoft의 4B 파라미터 image-to-3D 모델입니다. 'O-Voxel'이라는 field-free sparse voxel 표현을 써서 open surface, non-manifold, 내부 구조까지 표현하고 base color, roughness, metallic, opacity PBR 속성을 가진 GLB를 출력합니다. 512³, 1024³, 1024/1536 cascade 파이프라인을 지원하고, 기존 메시에 텍스처만 입히는 Trellis2TexturingPipeline(메시 + 이미지 입력)도 따로 있습니다.",
+      "urls": [
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/README.md",
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/example.py",
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/example_texturing.py",
+        "https://github.com/microsoft/TRELLIS.2/commits/main"
+      ],
+      "confidence": "high",
+      "how_to_use": "Trellis2ImageTo3DPipeline.from_pretrained('microsoft/TRELLIS.2-4B')로 불러오고, 먼저 mesh.simplify(16777216)로 nvdiffrast 한계에 맞춥니다. 그다음 o_voxel.postprocess.to_glb(decimation_target=1000000, texture_size=4096, remesh=True, remesh_band=1, remesh_project=0)로 내보냅니다. 입력은 배경을 제거한 알파 PNG를 권장합니다. retopo를 끝낸 메시에 다시 텍스처를 입힐 때는 Trellis2TexturingPipeline(config_file='texturing_pipeline.json')을 씁니다. MCP나 Blender 연동에는 FishWoWater/trellis_blender, Ladvien/trellis2_mcp, zorrobyte/asset-studio를 쓸 수 있습니다.",
+      "license_or_price": "MIT(코드와 모델). nvdiffrast/nvdiffrec는 별도 라이선스입니다. 이미지 인코더가 DINOv3 License라서 상업 사용 전 확인이 필요하다는 커뮤니티 지적이 있습니다. 무료로 로컬 실행합니다.",
+      "status_date": "Init Release 2025-12-16, 텍스처링 파이프라인 업데이트 2025-12-23, 학습 코드 2026-01-10, 저장소 최근 업데이트 2026-07",
+      "strengths": "오픈 모델 중 최고 수준의 디테일(1536³)과 PBR을 제공합니다. H100 기준 3초(512³), 17초(1024³), 60초(1536³)로 빠릅니다. 한국에서 문제없는 MIT 라이선스이고, 텍스처 전용 파이프라인이 따로 있어 retopo 뒤에 다시 텍스처를 입힐 수 있습니다.",
+      "weaknesses": "Linux와 NVIDIA 24GB 이상 VRAM이 필요합니다. 배경이 있는 입력에서는 구멍과 아티팩트가 심합니다(이슈 #65). 3DQA census에서 91.1%가 non-watertight, 14.9%가 non-manifold였고 전부 30k tri를 넘었습니다. 플랫이나 벡터 스타일 그림에서는 색이 틀린다는 보고가 있습니다. 알파는 텍스처에 남지만 OPAQUE로 export됩니다. normal map은 따로 출력하지 않아 bake가 필요합니다."
+    },
+    {
+      "name": "TencentARC Pixal3D",
+      "category": "Image-to-3D 오픈웨이트 (pixel-aligned, mesh + PBR)",
+      "what_it_is": "TencentARC가 만든 SIGGRAPH 2026 논문 모델입니다. 픽셀 feature를 back-projection으로 3D에 직접 올려서 'near-reconstruction-level' 충실도를 노립니다. 개선 버전은 TRELLIS.2 backbone을 쓰고(원 논문판은 Direct3D-S2 기반) 단일 이미지나 multi-view(카메라 파라미터 포함) 입력에서 PBR GLB를 출력합니다.",
+      "urls": [
+        "https://github.com/TencentARC/Pixal3D",
+        "https://github.com/raven38/pixal3d.cpp",
+        "https://github.com/Bingeljell/image-to-3dlab"
+      ],
+      "confidence": "high",
+      "how_to_use": "python inference.py --image in.png --output out.glb 형태로 실행합니다. VRAM이 부족하면 --low_vram이나 --resolution 1024를 붙입니다. multi-view는 python inference_mv.py --views_dir <dir>입니다. C++/GGML 포트인 pixal3d.cpp는 16GB 카드에서 돌아가고 NVIDIA driver 575 이상이 필요합니다. ComfyUI-Pixal3D 노드도 있습니다. asset-studio는 이 모델을 기본 3D 백엔드로 씁니다.",
+      "license_or_price": "MIT(README 기준, 서드파티는 NOTICE 참조). Tencent Hunyuan Community License가 아니므로 한국 제외 조항이 없습니다. 다만 DINOv3 인코더 라이선스와 HF 웨이트 페이지 라이선스는 따로 확인해야 합니다.",
+      "status_date": "2026-04 SIGGRAPH 2026 채택, 2026-05 추론·학습 코드와 데모 공개, 2026-09 multi-view 추론 코드 공개",
+      "strengths": "image-to-3dlab 비교에서 'Best results we have; one pass, no repaint needed'로 평가됐고 색 채도 보존이 좋습니다. watertight manifold 메시와 UV 텍스처 PBR을 냅니다.",
+      "weaknesses": "새 모델이라 정량 벤치마크가 공개되어 있지 않습니다. README에 GPU 요구사항이 명시되어 있지 않고, 원본은 1536/1024 cascade만 지원합니다."
+    },
+    {
+      "name": "Tencent Hunyuan3D 2.1 (오픈웨이트)",
+      "category": "Image-to-3D 오픈웨이트 (shape + PBR paint)",
+      "what_it_is": "Hunyuan3D-Shape-v2-1(3.3B)과 PBR 텍스처 모델 Hunyuan3D-Paint-v2-1(2B)로 이루어진 'production-ready' 오픈소스 파이프라인입니다. 학습 코드까지 공개되어 있습니다.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/README.md",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE"
+      ],
+      "confidence": "high",
+      "how_to_use": "Hunyuan3DDiTFlowMatchingPipeline.from_pretrained('tencent/Hunyuan3D-2.1')로 shape를 만들고 Hunyuan3DPaintPipeline(Hunyuan3DPaintConfig(max_num_view=6, resolution=512))로 텍스처를 입힙니다. VRAM은 shape 10GB, paint 21GB, 합계 29GB이고 Gradio에서 --low_vram_mode를 쓸 수 있습니다. paint 단계는 약 500,000 faces를 넘으면 멈춘다는 보고가 있으니 그 전에 decimate하세요.",
+      "license_or_price": "Tencent Hunyuan 3D 2.1 Community License입니다. Territory에서 EU, 영국, 대한민국이 제외되고 Territory 밖에서 출력물을 쓰거나 배포하는 것도 금지됩니다. MAU가 100만을 넘으면 별도 라이선스가 필요합니다. 따라서 한국에서는 사용하면 안 됩니다.",
+      "status_date": "2025-06-13 공개, 저장소 최근 업데이트 2025-10-17",
+      "strengths": "shape와 텍스처 분리 구조가 검증되어 있고 생태계가 넓습니다(ComfyUI, Windows 포터블, MLX 포트). 배경이 있는 장면에서도 TRELLIS.2보다 강건했다는 사용자 비교가 있습니다(TRELLIS.2 이슈 #65).",
+      "weaknesses": "한국이 라이선스 대상에서 제외됩니다. 텍스처 해상도가 기본 512 view 기반이고, 2.5/3.0/3.1은 오픈되지 않았습니다."
+    },
+    {
+      "name": "Tencent Hunyuan3D 2.0 계열 (2.0 / 2mv / 2mini / Turbo / FlashVDM) + Blender addon",
+      "category": "Image-to-3D 오픈웨이트 + Blender 연동",
+      "what_it_is": "2025년 1월 공개된 2.0 모델 계열입니다. multiview shape 모델 2mv(front/left/back 입력), 0.6B 경량 2mini, 증류된 Turbo, FlashVDM 가속, Blender addon과 api_server를 포함합니다.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2/main/README.md",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE"
+      ],
+      "confidence": "high",
+      "how_to_use": "python api_server.py --host 0.0.0.0 --port 8080으로 띄운 뒤 Blender addon으로 호출합니다. blender-mcp의 Hunyuan 로컬 모드 기본 URL은 http://localhost:8081이라 포트를 맞춰야 합니다. Turbo는 --subfolder hunyuan3d-dit-v2-0-turbo, 가속은 --enable_flashvdm으로 켭니다.",
+      "license_or_price": "Tencent Hunyuan 3D 2.0 Community License로, 마찬가지로 EU, 영국, 대한민국이 제외됩니다.",
+      "status_date": "2.0 2025-01-21, Blender addon 2025-01-27, 2mv/2mini 2025-03-18, Turbo 2025-03-19, 2.5는 기술 보고서만 공개(2025-06-23)",
+      "strengths": "VRAM 요구가 낮고(shape 6GB, shape+texture 16GB) multi-view 입력을 지원합니다. 공식 Blender addon이 있습니다.",
+      "weaknesses": "한국에서 쓸 수 없는 라이선스이고 2.1보다 품질이 낮습니다."
+    },
+    {
+      "name": "Tencent Hunyuan3D-Omni",
+      "category": "제어형 Image-to-Shape (bbox/point/voxel/skeleton)",
+      "what_it_is": "3.3B image-to-shape 모델에 point cloud, voxel, bounding box, skeletal pose 제어를 추가한 모델입니다. 가구 비율(bbox)이나 캐릭터 포즈(skeleton)를 강제할 때 유용합니다.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni/blob/main/License.txt"
+      ],
+      "confidence": "high",
+      "how_to_use": "python3 inference.py --control_type {point|voxel|bbox|pose} [--use_ema] [--flashvdm] 형태로 실행하며 VRAM 10GB가 필요합니다.",
+      "license_or_price": "Tencent Hunyuan 3D Omni Community License로, EU, 영국, 대한민국이 제외됩니다.",
+      "status_date": "2025-09-25 공개",
+      "strengths": "bbox로 폭·높이·깊이 비율을 직접 제어할 수 있어 가구나 건축 소품처럼 비율이 중요한 오브젝트에 개념적으로 가장 적합합니다.",
+      "weaknesses": "한국 제외 라이선스이고 shape만 생성합니다(텍스처는 별도)."
+    },
+    {
+      "name": "Tencent Hunyuan3D-Part (P3-SAM + X-Part)",
+      "category": "Part segmentation / part generation",
+      "what_it_is": "P3-SAM이 메시에서 파트를 분할하고 bbox를 검출하면, X-Part가 구조가 일관된 개별 파트를 생성하는 파이프라인입니다. X-Part 풀 버전은 Hunyuan3D-Studio에서만 제공됩니다.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Part",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Part/blob/main/LICENSE"
+      ],
+      "confidence": "high",
+      "how_to_use": "생성된 전체 메시를 P3-SAM에 넣어 파트를 분할한 뒤 X-Part로 파트를 완성합니다. 클라우드 버전은 ComfyUI Tencent3DPartNode로 쓸 수 있습니다.",
+      "license_or_price": "Tencent Hunyuan 3D-Part Community License로, EU, 영국, 대한민국이 제외됩니다.",
+      "status_date": "저장소 업데이트 2025-12-05",
+      "strengths": "AI가 생성한 메시나 스캔 메시를 파트 단위로 나눠 편집하고 리깅할 수 있게 해 줍니다.",
+      "weaknesses": "한국 제외 라이선스이고 오픈 버전은 기능이 제한됩니다."
+    },
+    {
+      "name": "Tencent Hunyuan 3D 3.0 / 3.1 (Tencent Cloud Pro/Rapid API, Hunyuan3D Studio)",
+      "category": "상용 API (text/image-to-3D, UV, 텍스처 편집, 파트, smart topology)",
+      "what_it_is": "오픈되지 않은 최신 Hunyuan 3D 모델을 Tencent Cloud API로 제공하는 서비스입니다. ComfyUI Partner Nodes에 TencentTextToModel, ImageToModel, ModelTo3DUV, 3DTextureEdit, 3DPart, SmartTopology 노드가 있습니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_hunyuan3d.py",
+        "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_hunyuan3d.py",
+        "https://raw.githubusercontent.com/dcc-mcp/dcc-ai-hunyuan3d/main/skill/hunyuan3d/tools.yaml",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py"
+      ],
+      "confidence": "medium",
+      "how_to_use": "파라미터는 model '3.0'|'3.1', job_type pro|rapid, generate_type Normal|LowPoly|Geometry|Sketch(LowPoly는 3.1에서 사용 불가), polygon_type triangle|quadrilateral, enable_pbr(metallic/normal/roughness 생성), face_count 3,000~1,500,000(기본 500,000)입니다. blender-mcp에서는 SecretId/SecretKey를 넣고, 중국 본토 계정은 ap-guangzhou(ai3d 2025-05-13 SubmitHunyuanTo3DProJob), 국제 계정은 ap-singapore(hunyuan 2023-09-01, EnablePBR:true)를 씁니다.",
+      "license_or_price": "Tencent Cloud 종량 과금입니다(정확한 가격은 확인하지 못함). 클라우드 서비스 약관이 한국 사용자에게 어떻게 적용되는지는 확인하지 못했습니다. 오픈웨이트 라이선스와는 별개이므로 직접 확인해야 합니다.",
+      "status_date": "ComfyUI 노드 추가 2026-01-25, Parts/UV/TextureEdit 2026-02-15, SmartTopology 2026-03-06",
+      "strengths": "생성, UV, 텍스처 편집, 파트 분할, 리토폴로지를 API 하나로 모두 처리합니다. face_count 범위가 넓습니다.",
+      "weaknesses": "공식 문서에 직접 접근하지 못해 서드파티 래퍼 코드로만 파라미터를 확인했습니다. 한국에서의 서비스 약관도 불명확합니다."
+    },
+    {
+      "name": "Hyper3D Rodin Gen-2 / Gen-2.5 (Deemos)",
+      "category": "상용 API (text/image-to-3D, quad mesh, PBR, part split)",
+      "what_it_is": "Deemos의 상용 3D 생성 모델입니다. Gen-2.5는 Extreme-Low, Low, Medium(기본), High, Extreme-High 티어로 나뉩니다. 이미지 1~5장이나 텍스트를 입력받고, BANG으로 완성된 모델을 파트별로 분리할 수 있습니다. legacy 티어로 Regular, Detail, Smooth, Sketch, Gen-2가 남아 있습니다.",
+      "urls": [
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md",
+        "https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md",
+        "https://github.com/DeemosTech",
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_rodin.py",
+        "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_rodin.py",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-rodin/SKILL.md"
+      ],
+      "confidence": "high",
+      "how_to_use": "npm install --global @hyper3d/cli@latest 후 hyper3d generate로 생성합니다(--mesh-mode Raw|Quad, --quality Raw 500~1,000,000 기본 500k, Quad 1,000~50,000 기본 18k, --texture-delight). 파트 분리는 hyper3d bang --strength 1~12(기본 5) --instruction '...'입니다. quality별 면 수는 High 1M/50k, Medium 500k/18k, Low 60k/8k, Extra-low 20k/4k(Raw/Quad)입니다. material은 PBR, Shaded, All, None 중에서 고릅니다. 그 밖에 bbox_condition [W,H,L], height(cm), TAPose(인간형 T/A pose), seed 0~65535, geometry_instruct_mode(기본 'faithful')가 있습니다. 이미지는 512~4096px, 16MB 이하 JPEG/PNG/WebP여야 합니다. 다운로드 링크는 10분 뒤 만료되므로 바로 받아야 합니다.",
+      "license_or_price": "credit 과금입니다. Gen-2.5 티어는 0.5 credit(Extreme-High만 1.0), HighPack(4K 텍스처)은 +1 credit입니다. 달러 가격은 확인하지 못했습니다.",
+      "status_date": "Gen-2 ComfyUI 노드 2025-09-24, Gen-2.5 노드 2026-05-22, hyper3d-cli 업데이트 2026-09-23",
+      "strengths": "Quad 모드와 bbox 치수 제어가 가능하고 TAPose, delight를 지원합니다. BANG 파트 분리가 있고 MCP, CLI, UE, Godot, ComfyUI 등 연동 경로가 가장 다양합니다. blender-mcp에도 기본으로 내장되어 있습니다.",
+      "weaknesses": "Gen-2.5에서 Quad는 legacy 티어 쪽에 권장된다는 문서 설명이 있습니다. 결과 URL이 10분 만에 만료되고, 가격은 공식 페이지를 확인하지 못했습니다."
+    },
+    {
+      "name": "Tripo (VAST) v3.1 / P1 / P2",
+      "category": "상용 API (text/image/multiview-to-3D, low-poly, quad, rig, segmentation)",
+      "what_it_is": "VAST의 상용 3D 생성 API입니다. model_version으로 v3.1-20260211, v3.0-20250812, v2.5-20250123, Turbo-v1.0-20250506, P1-20260311(low-poly/game-ready topology)을 쓸 수 있고, 2026년 9월 P2(quad 메시 P-series)가 추가되었습니다. 리깅, retarget, segmentation, mesh completion, stylize(LEGO/voxel 등)도 제공합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+        "https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md",
+        "https://pypi.org/project/tripo3d/",
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_tripo.py",
+        "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_tripo.py",
+        "https://github.com/mordor-forge/trident-mcp/blob/main/docs/MCP_TOOLS.md"
+      ],
+      "confidence": "high",
+      "how_to_use": "pip install tripo3d(v0.4.2, 2026-07-01)로 설치합니다. SDK 기본값이 v2.5-20250123이므로 model_version='v3.1-20260211'이나 'P1-20260311'을 반드시 명시하세요. 주요 파라미터는 geometry_quality standard|detailed(v3.x), texture_quality standard|detailed|extreme(ComfyUI 기준 2K/4K/8K), pbr=True, face_limit(-1이면 적응형, 최대 2M), quad=True(FBX 출력), smart_low_poly(500~20K, quad는 500~10K), generate_parts, auto_size, orientation='align_image', texture_alignment='geometry'입니다. multiview 입력은 front/left/back/right 순서로 2~4장입니다.",
+      "license_or_price": "credit 과금입니다. 서드파티 기록에 따르면 H3.1 text-to-3D 약 50 credits(약 150초), P1 약 40 credits(약 76초)입니다. SDK는 MIT입니다.",
+      "status_date": "v3.0 2025-08-12, v3.1 2026-02-11(ComfyUI 2026-05-09), P1 2026-03-11(ComfyUI 2026-05-29), P2 ComfyUI 2026-09-15, v3 API 이전 2026-09-10",
+      "strengths": "low-poly와 quad 전용 모델(P1/P2)로 게임용 토폴로지를 바로 얻을 수 있습니다. 파트 생성, segmentation, 리깅까지 한 곳에서 처리됩니다.",
+      "weaknesses": "공식 가격과 문서 페이지에 접근하지 못했고, 공식 tripo-mcp는 alpha 상태입니다(8 commits). 버전을 지정하지 않으면 구버전이 사용됩니다."
+    },
+    {
+      "name": "Meshy 6 / 7 / 7.1 + Smart Topology (meshy-t1/t2)",
+      "category": "상용 API (text/image/multi-image-to-3D, remesh, retexture, rig, animate)",
+      "what_it_is": "Meshy의 3D 생성 플랫폼입니다. image-to-3D는 meshy-5/6/7(latest는 7), text-to-3D는 meshy-5/6(latest는 6)을 쓰고, ComfyUI에는 meshy-7.1까지 추가되었습니다. smart-topology(meshy-t1/t2)는 파트가 분리된 geometry와 설정 가능한 polycount를 제공합니다. 8K 텍스처, ultra_mode, multi-view retexture를 지원합니다.",
+      "urls": [
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/README.md",
+        "https://github.com/meshy-dev/meshy-mcp-server/commits/main",
+        "https://github.com/meshy-dev/meshy-mcp-server/releases",
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_meshy.py",
+        "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_meshy.py",
+        "https://github.com/scenario-labs/skills/blob/main/skills/scenario-meshy/SKILL.md"
+      ],
+      "confidence": "high",
+      "how_to_use": "npx add-mcp @meshy-ai/meshy-mcp-server --env MESHY_API_KEY=msy_...으로 연결합니다(Claude Code, Claude Desktop, Cursor, Codex, VS Code 등 지원). 주요 파라미터는 topology quad|triangle, target_polycount 100~300,000(ComfyUI 기본 300,000), symmetry_mode auto|on|off, pose_mode A-pose|T-pose, should_remesh, enable_pbr(ComfyUI 기본 false이므로 반드시 켤 것), texture_resolution 2k|4k|8k, ultra_mode입니다. 'an image beats text' 규칙에 따라 이미지 스타일 입력이 텍스트보다 우선합니다. Rigging과 Animation은 둘 중 하나를 고르는 관계이고 순서대로 거치는 단계가 아닙니다.",
+      "license_or_price": "credits 기준입니다. meshy-7/6은 mesh 20, +texture 30, +8K 35이고, meshy-t2 smart-topology는 5/15/20, meshy-5는 5/15, ultra_mode +5, remesh 5, rig 5, animate 3, uv-unwrap 5입니다.",
+      "status_date": "MCP v0.5.0(Meshy 7, Smart Topology, 8K) 2026-08-11, v0.5.2 2026-09-22, ComfyUI Meshy-7 2026-08-24, 7.1 2026-09-20",
+      "strengths": "공식 MCP 서버가 가장 완성도 높습니다(24 tools: remesh, retexture, UV unwrap, rig, animate, 프린트 검증). quad topology와 polycount를 직접 지정할 수 있습니다.",
+      "weaknesses": "credit 소모가 큽니다(최고 품질 35 + ultra 5). text-to-3D에는 최신 7이 적용되지 않습니다. 공식 문서 페이지는 확인하지 못했습니다."
+    },
+    {
+      "name": "Hitem3D (Math Magic) / Sparc3D",
+      "category": "상용 API (image/multi-view-to-3D, 초고해상도 geometry)",
+      "what_it_is": "Sparc3D(Sparcubes + Sparconv-VAE, 1024³ 고해상도 sparse 표현) 연구를 상용화한 Hitem3D 서비스입니다. 모델은 hitem3dv1/v1.5/v2.0과 scene-portraitv1.5가 있고, Scenario에서는 Sparc3D 2.0/2.1(Base line은 소품, Portrait line은 두상·흉상)로 제공됩니다.",
+      "urls": [
+        "https://github.com/GeekatplayStudio/comfyui-hitem3d",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-sparc3d/SKILL.md",
+        "https://github.com/lizhihao6/Sparc3D",
+        "https://github.com/aigeboku/blender-ai-3d-setup"
+      ],
+      "confidence": "medium",
+      "how_to_use": "해상도는 512³, 1024³(권장), 1536³, 1536pro에서 고릅니다. face는 100,000~2,000,000(Sparc3D 2.0에는 이 옵션이 없음)이고, request type은 geometry_only|texture_only|both, 포맷은 OBJ/GLB/STL/FBX입니다. multi-view는 front, back, left, right 4장(장당 20MB 이하)입니다. 텍스트 프롬프트는 받지 않고 이미지로만 방향을 줍니다. 작업 시간 중앙값이 17~21분이므로 타임아웃이 나도 다시 실행하지 말고 jobs_wait로 기다리세요.",
+      "license_or_price": "리소스 패키지를 구매하는 방식입니다(정확한 가격은 확인하지 못함).",
+      "status_date": "Sparc3D 논문 2025(arXiv 2505.14521), Hitem3D v2.0과 Sparc3D 2.1은 2026년 기준 제공 중",
+      "strengths": "1536pro와 최대 2M faces의 높은 geometry 디테일을 제공합니다. 두상·흉상 전용 Portrait 라인이 있습니다.",
+      "weaknesses": "작업이 매우 느리고(17~30분 이상) 공식 가격과 스펙 페이지를 확인하지 못했습니다. 기본이 고폴리 출력이라 retopo가 필수입니다."
+    },
+    {
+      "name": "StepFun Step1X-3D",
+      "category": "Image-to-3D 오픈웨이트 (geometry + texture)",
+      "what_it_is": "1.3B geometry 모델(watertight TSDF)과 3.5B texture 모델로 구성된 오픈 모델입니다. 2D LoRA 같은 제어 기법을 3D로 옮길 수 있다고 주장합니다.",
+      "urls": [
+        "https://github.com/stepfun-ai/Step1X-3D"
+      ],
+      "confidence": "high",
+      "how_to_use": "VRAM 27~29GB가 필요하고 50 step에 약 152초가 걸립니다. GLB를 출력하며 LoRA 파인튜닝을 지원합니다.",
+      "license_or_price": "Apache License 2.0으로 한국 사용에 문제가 없습니다.",
+      "status_date": "2025-05-13 공개, 저장소 최근 업데이트 2025-09-08",
+      "strengths": "관대한 Apache 라이선스, watertight geometry, LoRA 커스터마이즈가 장점입니다.",
+      "weaknesses": "2025년 모델이라 TRELLIS.2나 Pixal3D보다 디테일이 떨어질 가능성이 큽니다(독립 비교는 확인하지 못함). VRAM 요구도 높습니다."
+    },
+    {
+      "name": "DreamTech Direct3D-S2",
+      "category": "Image-to-Shape 오픈웨이트 (고해상도 mesh only)",
+      "what_it_is": "Spatial Sparse Attention으로 1024³ 해상도 geometry를 생성하는 모델입니다. 텍스처는 생성하지 않습니다.",
+      "urls": [
+        "https://github.com/DreamTechAI/Direct3D-S2"
+      ],
+      "confidence": "high",
+      "how_to_use": "512 해상도는 10GB, 1024는 약 24GB VRAM이 필요합니다. OBJ로 출력하고 remesh 옵션으로 삼각형 수를 줄일 수 있습니다. 텍스처는 TRELLIS.2 texturing이나 Meshy retexture 등으로 따로 입힙니다.",
+      "license_or_price": "MIT",
+      "status_date": "v1.0/v1.1 2025-05-30",
+      "strengths": "MIT 라이선스이고 VRAM 대비 해상도가 높습니다. Pixal3D 원 논문판의 backbone이기도 합니다.",
+      "weaknesses": "텍스처가 없고 2025년 모델입니다."
+    },
+    {
+      "name": "Meta SAM 3D Objects",
+      "category": "Image(+mask)-to-3D 오픈웨이트 (splat + mesh, 장면 레이아웃)",
+      "what_it_is": "이미지 한 장과 객체 mask로 가림이나 복잡한 배경이 있는 실제 사진에서도 객체의 형태, 텍스처, 레이아웃(위치·자세)을 복원하는 모델입니다. 단일 객체와 다중 객체를 모두 지원합니다.",
+      "urls": [
+        "https://github.com/facebookresearch/sam-3d-objects",
+        "https://raw.githubusercontent.com/facebookresearch/sam-3d-objects/main/README.md",
+        "https://github.com/facebookresearch/sam-3d-objects/blob/main/LICENSE"
+      ],
+      "confidence": "high",
+      "how_to_use": "python demo.py로 실행하며 입력은 image와 mask(SAM으로 생성)이고 seed를 지정합니다. 출력은 Gaussian splat .ply와 mesh .glb입니다. 실내 사진에서 가구 여러 개를 동시에 복원해 레이아웃 참고용으로 쓸 수 있습니다.",
+      "license_or_price": "SAM License(Meta 커스텀)입니다. worldwide, royalty-free로 상업 사용이 허용되지만 ITAR, 군사 용도, 제재 대상은 금지되고 역공학도 금지됩니다.",
+      "status_date": "체크포인트 2025-11-19, encoder weights 2026-06-01, 3D Artist Object Set과 HF Leaderboard 2026-06-02",
+      "strengths": "실사진과 가림에 강하고 객체 배치 정보를 함께 추정합니다. 한국에서도 상업 사용이 가능합니다.",
+      "weaknesses": "게임용 PBR 텍스처나 토폴로지를 목표로 한 모델은 아닙니다. README에 하드웨어 요구사항이 없습니다."
+    },
+    {
+      "name": "Stability AI SPAR3D / Stable Fast 3D",
+      "category": "Image-to-3D 오픈웨이트 (고속, UV 메시, material 예측)",
+      "what_it_is": "point cloud를 중간 단계로 쓰는 고속 feed-forward image-to-3D 모델입니다. 뒷면이 틀리면 point cloud를 직접 편집해 고칠 수 있습니다. UV unwrap된 메시와 material 예측을 출력합니다.",
+      "urls": [
+        "https://github.com/Stability-AI/stable-point-aware-3d",
+        "https://github.com/Stability-AI/stable-point-aware-3d/blob/main/LICENSE.md"
+      ],
+      "confidence": "high",
+      "how_to_use": "기본 VRAM 10.5GB, low VRAM 모드에서는 약 7GB가 필요합니다. HF gated 접근 승인을 받아야 하고, gradio 데모에서 point cloud를 편집할 수 있습니다.",
+      "license_or_price": "Stability AI Community License입니다. 연매출 100만 달러 미만이면 상업 사용이 가능하고, 넘으면 Enterprise 라이선스가 필요합니다.",
+      "status_date": "2025년 초 공개(정확한 날짜는 저장소에 없음)",
+      "strengths": "매우 빠르고 VRAM이 적게 들며 UV 메시를 출력합니다. 빠른 프리비즈에 적합합니다.",
+      "weaknesses": "충실도가 낮고(image-to-3dlab에서 'lower fidelity'로 평가) 매출 기준 라이선스 제한이 있습니다."
+    },
+    {
+      "name": "ByteDance Seed3D 1.0",
+      "category": "상용/연구 Image-to-3D (simulation-ready)",
+      "what_it_is": "ByteDance Seed가 만든 'high-fidelity simulation-ready 3D assets' 생성 모델입니다. Volcano Engine 데모와 API로 제공됩니다.",
+      "urls": [
+        "https://github.com/Seed3D/Seed3D"
+      ],
+      "confidence": "low",
+      "how_to_use": "Volcano Engine(ByteDance 클라우드)에서 씁니다. GitHub에는 보고서 PDF와 영상만 있습니다.",
+      "license_or_price": "확인하지 못했습니다(오픈웨이트는 확인되지 않음).",
+      "status_date": "GitHub 업데이트 2025-10-22. 'Seed3D 2.0'이라는 이름은 SEO성 서드파티 저장소에서만 보여 확인하지 못했습니다.",
+      "strengths": "시뮬레이션(로보틱스)용 에셋을 지향합니다.",
+      "weaknesses": "세부 스펙, 가격, 라이선스가 불명확하고 해외 접근성도 확인하지 못했습니다."
+    },
+    {
+      "name": "Roblox Cube 3D (v0.1/v0.5) / CubePart",
+      "category": "Text-to-Shape 오픈웨이트 + part-controllable 생성",
+      "what_it_is": "mesh tokenization 기반 text-to-shape 모델입니다. v0.5는 bbox conditioning으로 비율을 제어합니다. CubePart(2026-05)는 입력 메시와 파트 스키마를 받아 파트별 메시 세트를 생성합니다.",
+      "urls": [
+        "https://github.com/Roblox/cube",
+        "https://github.com/Roblox/cube/tree/main",
+        "https://github.com/Roblox/cube/blob/main/LICENSE"
+      ],
+      "confidence": "medium",
+      "how_to_use": "VRAM 16GB 이상(권장 24GB 이상)이 필요하고 Apple Silicon M2~M4에서도 테스트되었습니다. 출력은 .obj이고 텍스처 생성은 아직 준비 중입니다.",
+      "license_or_price": "CUBE3D RESEARCH-ONLY RAIL-MS LICENSE로 상업 사용이 불가합니다. CubePart 웨이트 라이선스는 확인하지 못했습니다.",
+      "status_date": "v0.1 2025-03, v0.5 2025-07, CubePart 2026-05",
+      "strengths": "bbox로 가로세로 비율을 제어하고 파트 스키마 기반으로 생성합니다.",
+      "weaknesses": "연구용 라이선스이고 텍스처가 없습니다."
+    },
+    {
+      "name": "PartCrafter",
+      "category": "Part-aware Image-to-3D 오픈웨이트",
+      "what_it_is": "TripoSG DiT를 파인튜닝해 이미지 한 장에서 여러 파트나 여러 객체를 한 번에 생성하는 모델입니다(NeurIPS 2025). 장면 단위 버전도 있습니다.",
+      "urls": [
+        "https://github.com/wgsxm/PartCrafter"
+      ],
+      "confidence": "high",
+      "how_to_use": "8GB 이상 VRAM이 필요합니다. 파트 수를 직접 정하거나 VLM에게 추천받고, 토큰 수는 객체당 기본 1024, 장면 2048입니다.",
+      "license_or_price": "MIT",
+      "status_date": "완전 오픈 2025-07-13, HF 데모 2025-08-15, 저장소 업데이트 2026-04-16",
+      "strengths": "가구의 다리, 상판, 서랍처럼 분리된 파트 메시를 바로 얻을 수 있습니다. VRAM 요구가 낮습니다.",
+      "weaknesses": "텍스처가 없고 품질이 최신 상용 모델보다 낮습니다."
+    },
+    {
+      "name": "OmniPart",
+      "category": "Part-aware Image-to-3D 오픈웨이트 (2D mask 제어)",
+      "what_it_is": "TRELLIS 기반 모델로, 2D 파트 mask(.exr part ID)를 조건으로 받아 파트가 분리된 3D를 생성합니다.",
+      "urls": [
+        "https://github.com/HKU-MMLab/OmniPart"
+      ],
+      "confidence": "medium",
+      "how_to_use": "이미지와 파트 mask를 입력합니다. mask를 편집해 파트 구조를 의도대로 만들 수 있습니다.",
+      "license_or_price": "MIT",
+      "status_date": "2025-10 공개",
+      "strengths": "파트 경계를 사용자가 2D에서 직접 정할 수 있습니다.",
+      "weaknesses": "VRAM 요구가 명시되어 있지 않고 TRELLIS(1세대) 품질에 머뭅니다."
+    },
+    {
+      "name": "NVIDIA PartPacker",
+      "category": "Part-level Image-to-3D (연구)",
+      "what_it_is": "Dual Volume Packing 방식으로 이미지 한 장에서 파트 단위 3D 객체를 생성하는 연구 모델입니다.",
+      "urls": [
+        "https://github.com/NVlabs/PartPacker"
+      ],
+      "confidence": "medium",
+      "how_to_use": "추론에 약 10GB VRAM(fp16)이 필요하고 GLB를 출력합니다.",
+      "license_or_price": "license.md에 있으나 종류는 확인하지 못했습니다(NVIDIA 연구 라이선스일 가능성이 있음).",
+      "status_date": "2025(arXiv 2506.09980)",
+      "strengths": "파트 분리 생성이 가능합니다.",
+      "weaknesses": "상업 사용 가능 여부가 불명확하고 텍스처가 없습니다."
+    },
+    {
+      "name": "PhysX-Anything",
+      "category": "Articulated / simulation-ready Image-to-3D (연구)",
+      "what_it_is": "Qwen2.5 VLM과 TRELLIS를 바탕으로 PartNet-mobility로 학습한 모델입니다. 이미지 한 장에서 관절(서랍, 문 등)과 물리 속성을 가진 에셋을 생성하고 URDF와 MuJoCo XML로 내보냅니다(CVPR 2026).",
+      "urls": [
+        "https://github.com/ziangcao0312/PhysX-Anything"
+      ],
+      "confidence": "medium",
+      "how_to_use": "RGBA 이미지를 입력하면 URDF, MJCF, PLY가 나옵니다. 가구의 열리는 부위를 정의할 때 참고하세요.",
+      "license_or_price": "S-Lab License로 일반적으로 비상업용입니다.",
+      "status_date": "2025년 말 코드 공개, CVPR 2026",
+      "strengths": "가구 관절 구조를 자동으로 추정합니다.",
+      "weaknesses": "비상업 라이선스이고 시각 품질보다 시뮬레이션 쪽을 지향합니다."
+    },
+    {
+      "name": "SceneGen",
+      "category": "Single-image multi-asset scene 생성 (레이아웃 포함)",
+      "what_it_is": "TRELLIS 기반 모델로, SAM2로 분할한 여러 객체를 feedforward 한 번에 공간 배치까지 포함한 3D 장면(GLB)으로 생성합니다(3DV 2026).",
+      "urls": [
+        "https://github.com/Mengmouxu/SceneGen"
+      ],
+      "confidence": "medium",
+      "how_to_use": "장면 사진을 넣고 객체를 분할하면 배치가 포함된 멀티 에셋 GLB가 나옵니다. 배치 참고용 초안으로 씁니다.",
+      "license_or_price": "MIT",
+      "status_date": "저장소 업데이트 2026-01-12",
+      "strengths": "객체 배치를 사진에서 곧바로 추정합니다.",
+      "weaknesses": "에셋 품질은 TRELLIS(1세대) 수준입니다."
+    },
+    {
+      "name": "Scenario 'GPT-6 Astra 3D' (Scenario MCP)",
+      "category": "상용 멀티뷰 재구성 (named parts + per-part PBR)",
+      "what_it_is": "Scenario 문서에 'Scenario's own GPT-6 Astra 3D'로 소개된 모델입니다. 사진이나 렌더 1~8장으로 객체 하나를 편집 가능한 메시로 재구성하고, named parts와 per-part PBR material을 붙입니다. 소품과 하드서페이스용이며 캐릭터용은 아닙니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+        "https://github.com/scenario-labs/skills/blob/main/skills/scenario-3d/SKILL.md"
+      ],
+      "confidence": "medium",
+      "how_to_use": "Scenario MCP에서 recommend로 모델을 찾고 model_schema_get, model_run(wait=false), jobs_wait, asset_display, asset_download 순서로 진행합니다. 비용과 품질은 buildEffort와 refineSteps로 조절하고, faceBudget으로 export 삼각형 수를 제한합니다(게임용 10k~50k, 기본값은 고디테일).",
+      "license_or_price": "Scenario credit 과금입니다(금액은 확인하지 못함).",
+      "status_date": "2026-09 기준 Scenario skills 문서에 존재",
+      "strengths": "파트 이름과 파트별 PBR이 붙어 있어 가구나 기계 소품 편집에 유리합니다.",
+      "weaknesses": "Scenario 문서 외에는 독립 확인이 없습니다(OpenAI 공식 제품명인지도 확인하지 못함). 캐릭터에는 쓸 수 없습니다."
+    },
+    {
+      "name": "World Labs Marble",
+      "category": "3D 월드 생성 (Gaussian splat 중심, mesh export)",
+      "what_it_is": "텍스트, 이미지(평면·360°), 2~8장 사진, 영상으로 탐색 가능한 3D 월드를 만드는 서비스입니다. Scenario 기준 티어는 1.0 Draft, 1.1, 1.1 Plus이고, 출력은 3D Gaussian splat(.spz)과 triangle 또는 collider mesh export입니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d-worlds/SKILL.md",
+        "https://github.com/worldlabsai",
+        "https://github.com/worldlabsai/worldlabs-api-python",
+        "https://github.com/sandraschi/worldlabs-mcp",
+        "https://github.com/sparkjsdev/spark"
+      ],
+      "confidence": "medium",
+      "how_to_use": "API 키(WLT_API_KEY)와 worldlabs-api-python으로 생성합니다. 커뮤니티 worldlabs-mcp(21 tools, Blender/Unity export)를 쓰거나 Scenario 3D Worlds skill을 씁니다. 같은 seed를 쓰면 Draft에서 상위 티어로 올려도 같은 월드가 나옵니다. images와 video는 동시에 넣을 수 없습니다. 렌더링은 Spark(three.js, SPZ/PLY/SOG)로 합니다.",
+      "license_or_price": "구독이나 credit 방식입니다(공식 페이지가 차단되어 확인하지 못함).",
+      "status_date": "worldlabs-mcp 2026-09-15 업데이트, Spark 2.2.0",
+      "strengths": "환경과 배경을 빠르게 만들 수 있고 collider mesh를 제공합니다.",
+      "weaknesses": "기본이 splat이라 게임용 메시로 쓰려면 변환과 retopo가 필요합니다. 공식 스펙은 확인하지 못했습니다."
+    },
+    {
+      "name": "Tencent HunyuanWorld 1.0 / HY-World 2.0 / WorldMirror",
+      "category": "3D 월드 생성·재구성 (panorama + layered mesh, 3DGS)",
+      "what_it_is": "HunyuanWorld 1.0(2025-07)은 360° panorama와 layered mesh를 내보내고 lite 버전은 RTX 4090에서 돕니다. WorldMirror(1.1)는 영상이나 multi-view를 point cloud, depth, 3DGS로 재구성합니다. HY-World 2.0(2026-04-16)은 텍스트, 이미지, multi-view, 영상을 mesh, 3DGS, point cloud로 만들어 Blender, UE, Isaac로 가져올 수 있게 합니다.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0",
+        "https://github.com/Tencent-Hunyuan/HY-World-2.0",
+        "https://github.com/Tencent-Hunyuan/HY-World-2.0/blob/main/License.txt",
+        "https://github.com/Tencent-Hunyuan/HunyuanWorld-Mirror"
+      ],
+      "confidence": "high",
+      "how_to_use": "로컬 추론을 합니다(HY-World 2.0 구성요소는 WorldMirror 2.0 약 1.2B, HY-Pano-2 약 80B, WorldStereo-2 약 17B).",
+      "license_or_price": "Tencent HY-WORLD 2.0 Community License로 EU, 영국, 대한민국이 제외됩니다.",
+      "status_date": "HY-World 2.0 2026-04-16, WorldMirror ICML 2026",
+      "strengths": "mesh 출력이 가능한 오픈 월드 모델입니다.",
+      "weaknesses": "한국에서 쓸 수 없는 라이선스이고 모델이 매우 큽니다."
+    },
+    {
+      "name": "NVIDIA Lyra 1.0 / 2.0",
+      "category": "생성형 3D 월드 모델 (오픈)",
+      "what_it_is": "영상 diffusion self-distillation으로 이미지나 영상에서 3D/4D 장면을 feed-forward로 생성하는 모델입니다. 2.0은 long-horizon, 3D-consistent 탐색 가능한 월드를 목표로 합니다.",
+      "urls": [
+        "https://github.com/nv-tlabs/lyra",
+        "https://github.com/orgs/nv-tlabs/repositories?q=3d&sort=updated"
+      ],
+      "confidence": "medium",
+      "how_to_use": "GitHub 코드와 GUI(2026-07-20 공개)를 씁니다. 출력 형식은 README에 명확하지 않습니다(3DGS 계열로 추정).",
+      "license_or_price": "코드는 Apache 2.0이고 모델 라이선스는 버전별로 따로 있습니다.",
+      "status_date": "Lyra 1.0 2025-09-23, 2.0 2026-04-15, GUI와 학습 코드 2026-07-20",
+      "strengths": "오픈이고 NVIDIA 3DGS 생태계(3dgrut 등)와 이어집니다.",
+      "weaknesses": "게임용 메시 에셋용이 아닙니다."
+    },
+    {
+      "name": "Google DeepMind Genie 3",
+      "category": "인터랙티브 월드 모델 (메시·splat 아님)",
+      "what_it_is": "텍스트로 실시간 탐색 가능한 환경을 비디오 프레임으로 생성하는 월드 모델입니다(학습 지식 기준). 3D 메시나 splat 파일을 출력하지 않으므로 DCC나 게임엔진 에셋 파이프라인에 직접 넣을 수 없습니다.",
+      "urls": [],
+      "confidence": "low",
+      "how_to_use": "콘셉트, 무드, 레이아웃 탐색용 레퍼런스 영상과 스크린샷을 만드는 데만 씁니다.",
+      "license_or_price": "확인하지 못했습니다.",
+      "status_date": "deepmind.google이 차단되어 2026년 현황을 확인하지 못했습니다.",
+      "strengths": "인터랙티브 콘셉트 탐색이 가능합니다.",
+      "weaknesses": "에셋 출력이 없고 이번 조사에서 1차 출처를 확인하지 못했습니다."
+    },
+    {
+      "name": "Tencent Hunyuan3D-Buffalo 1.0 / Hunyuan3D-WorldClaw (연구 발표)",
+      "category": "차세대 연구 (통합 3D 생성·이해·편집 / agentic 오픈월드)",
+      "what_it_is": "Buffalo 1.0은 3D 생성, 이해, 편집을 하나로 묶은 멀티모달 모델입니다(arXiv 2608.02711, 2026-08-05). WorldClaw는 에이전트 기반 대규모 3D 오픈월드 생성입니다(arXiv 2608.05248, 2026-08-07).",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Buffalo1.0",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw",
+        "https://github.com/orgs/Tencent-Hunyuan/repositories?q=3d"
+      ],
+      "confidence": "medium",
+      "how_to_use": "현재는 논문과 프로젝트 페이지만 있어 동향 파악용으로만 봅니다.",
+      "license_or_price": "코드와 웨이트 공개 여부나 라이선스 모두 명시되어 있지 않습니다.",
+      "status_date": "2026-08",
+      "strengths": "LLM 에이전트와 3D 생성의 결합 방향을 보여 줍니다.",
+      "weaknesses": "지금 당장 쓸 수 없습니다."
+    },
+    {
+      "name": "blender-mcp (ahujasid)의 3D 생성기 통합",
+      "category": "MCP 서버 (Blender + 생성기·에셋 소스)",
+      "what_it_is": "Blender MCP addon(bl_info 1.7)에 Hyper3D Rodin, Hunyuan3D, Tripo, Sketchfab, Poly Haven, Poly Pizza가 통합되어 있습니다. 도구로 generate_hyper3d_model_via_text/images, poll_rodin_job_status, import_generated_asset, generate_hunyuan3d_model, generate_tripo_model 등을 제공합니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py"
+      ],
+      "confidence": "high",
+      "how_to_use": "환경변수는 BLENDERMCP_HYPER3D_API_KEY, BLENDERMCP_HUNYUAN3D_SECRET_ID/SECRET_KEY/API_URL, BLENDERMCP_SKETCHFAB_API_KEY, BLENDERMCP_POLYPIZZA_API_KEY입니다. 서버 프롬프트는 먼저 통합 상태를 확인하고 변경 전후에 get_viewport_screenshot()으로 검증하라고 권합니다. 예시 프롬프트는 'Generate a 3D model of a garden gnome through Hyper3D'입니다.",
+      "license_or_price": "MIT 오픈소스입니다. 생성기 사용료는 따로 듭니다. addon 코드에 Hyper3D 무료 체험 키 'vibecoding'이 있지만 한도는 확인하지 못했습니다. Tripo는 코드상 'premium' 핸들러로 분류되어 있습니다.",
+      "status_date": "2026-09 기준 활발히 개발 중(GitHub Releases는 없음)",
+      "strengths": "생성, import, 배치, 검증을 에이전트 하나로 처리할 수 있습니다.",
+      "weaknesses": "Tripo 통합 조건이 불명확합니다. 생성기 파라미터 노출이 제한적입니다(예: 세부 quality, mesh_mode)."
+    },
+    {
+      "name": "Rodin 연동 도구 모음 (rodin3d-skills, @hyper3d/cli, rodin-api-mcp, ComfyUI-Rodin, RodinBridge UE, Godot plugin)",
+      "category": "MCP / Agent Skills / CLI",
+      "what_it_is": "DeemosTech가 공식으로 관리하는 Rodin 연동 도구들입니다. Claude plugin 형식의 Gen-2.5 skill, npm CLI(BANG 포함), MCP 서버, UE5, Godot, ComfyUI 플러그인, blender-mcp fork가 있습니다.",
+      "urls": [
+        "https://github.com/DeemosTech",
+        "https://github.com/DeemosTech/rodin3d-skills",
+        "https://github.com/DeemosTech/hyper3d-cli",
+        "https://github.com/DeemosTech/blender-mcp-rodin-integration"
+      ],
+      "confidence": "high",
+      "how_to_use": "Claude Code에 rodin3d-skills를 plugin으로 설치하거나, 에이전트가 hyper3d CLI를 --output json으로 호출하게 합니다(스크립팅에 유리).",
+      "license_or_price": "도구는 무료이고 생성은 credit으로 과금됩니다.",
+      "status_date": "hyper3d-cli 2026-09-23, RodinBridge UE 2026-07-17",
+      "strengths": "공식 skill에 티어별 용도와 면 수 매핑이 문서화되어 있습니다.",
+      "weaknesses": "rodin-api-mcp는 2025-04 이후 업데이트가 뜸합니다."
+    },
+    {
+      "name": "TRELLIS/TRELLIS.2용 Blender·MCP 연동 (trellis_blender, trellis_mcp, trellis2_mcp)",
+      "category": "Blender addon / MCP",
+      "what_it_is": "로컬 TRELLIS나 TRELLIS.2 API 서버를 Blender와 MCP 클라이언트(Cursor, Windsurf 등)에 연결하는 커뮤니티 도구입니다.",
+      "urls": [
+        "https://github.com/FishWoWater/trellis_blender",
+        "https://github.com/search?q=trellis+mcp&type=repositories"
+      ],
+      "confidence": "medium",
+      "how_to_use": "trellis_blender 기본값은 sampling steps 12, CFG 7.5(structure와 SLAT), simplify 0.95, texture 1024/2048, bake mode fast|opt입니다. TRELLIS.2 text-to-3D는 z-image-turbo로 이미지를 만든 뒤 image-to-3D로 변환합니다.",
+      "license_or_price": "오픈소스이고 무료입니다.",
+      "status_date": "trellis_blender 2025-12-29, trellis2_mcp 2026-08",
+      "strengths": "완전히 로컬이고 무료이며 한국에서 라이선스 문제가 없는 경로입니다.",
+      "weaknesses": "커뮤니티 유지보수라 텍스처가 흐려지는 문제 보고가 있습니다(TRELLIS.2 이슈 #71)."
+    },
+    {
+      "name": "Hunyuan3D MCP 연동 (dcc-mcp/dcc-ai-hunyuan3d, Hunyuan3D-2.1-mcp 등)",
+      "category": "MCP",
+      "what_it_is": "Tencent Cloud Hunyuan 3D Pro/Rapid(3.0/3.1) 작업을 submit/query하는 DCC-MCP skill과, 로컬 Hunyuan3D 2.1을 감싼 커뮤니티 MCP들입니다.",
+      "urls": [
+        "https://github.com/dcc-mcp/dcc-ai-hunyuan3d",
+        "https://raw.githubusercontent.com/dcc-mcp/dcc-ai-hunyuan3d/main/skill/hunyuan3d/tools.yaml",
+        "https://github.com/search?q=hunyuan3d+mcp&type=repositories"
+      ],
+      "confidence": "medium",
+      "how_to_use": "submit_hunyuan3d_job(prompt 또는 image_url, job_type, model, generate_type, enable_pbr, face_count, result_format STL/USDZ/FBX)으로 제출하고 query_hunyuan3d_job(job_id)로 조회합니다. tccli 인증을 씁니다.",
+      "license_or_price": "MIT(래퍼)입니다. 로컬 웨이트는 한국 제외 라이선스라 쓸 수 없고, 클라우드 약관은 따로 확인해야 합니다.",
+      "status_date": "dcc-ai-hunyuan3d 2026-08-25",
+      "strengths": "Tencent Cloud 기능을 MCP로 바로 쓸 수 있습니다.",
+      "weaknesses": "로컬 사용 시 라이선스 문제가 있습니다."
+    },
+    {
+      "name": "ComfyUI Partner(API) Nodes – 3D",
+      "category": "노드 기반 오케스트레이션 (API 게이트웨이)",
+      "what_it_is": "ComfyUI 본체에 들어 있는 Rodin(Gen-2, Gen-2.5 Image/Text, legacy), Tripo(v3.1, P1, P2, segment, retopology, rig), Meshy(6/7/7.1, texture, rig, animate), Tencent Hunyuan3D(3.0/3.1, UV, TextureEdit, Part, SmartTopology) 노드입니다. 로컬 쪽 comfy_extras에도 hunyuan3d, mesh_postprocess, gaussian_splat, sam3d_body 노드가 있습니다.",
+      "urls": [
+        "https://github.com/comfyanonymous/ComfyUI/tree/master/comfy_api_nodes",
+        "https://github.com/comfyanonymous/ComfyUI/tree/master/comfy_extras"
+      ],
+      "confidence": "high",
+      "how_to_use": "ComfyUI 워크플로로 이미지 생성, 3D 생성, retopo, UV까지 묶은 뒤 ComfyUI MCP 같은 도구로 에이전트가 실행하게 합니다. Rodin 폴리곤 프리셋은 Quad 4K/8K/18K/50K/200K, Triangle 2K/20K/150K/200K/500K/1M입니다.",
+      "license_or_price": "ComfyUI는 GPL이고 API 노드는 Comfy credit이나 각 벤더 과금을 따릅니다.",
+      "status_date": "2026-09 기준 지속 업데이트(Meshy 7.1 2026-09-20, Tripo P2 2026-09-15)",
+      "strengths": "여러 벤더를 한 워크플로에서 A/B 비교할 수 있고 최신 모델이 가장 빨리 반영됩니다.",
+      "weaknesses": "벤더별 파라미터가 조금씩 다르게 매핑됩니다."
+    },
+    {
+      "name": "Scenario MCP + scenario-labs/skills",
+      "category": "멀티벤더 생성 MCP + Agent Skills",
+      "what_it_is": "Meshy, Rodin, Sparc3D/Hitem3D, Hunyuan, Tripo, Trellis, GPT-6 Astra 3D와 월드(Marble, HY World, TripoSplat)를 MCP 하나로 제공하는 서비스입니다. Blender 5.2, Maya 2027, UE 5.8용 DCC 전문가 skill도 들어 있습니다.",
+      "urls": [
+        "https://github.com/scenario-labs/skills",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/README.md",
+        "https://github.com/scenario-labs/skills/tree/main/skills",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-model-comparison/SKILL.md"
+      ],
+      "confidence": "medium",
+      "how_to_use": "OAuth나 API 키로 MCP에 연결하고 npx skills add로 skill을 설치합니다. 모델 ID를 하드코딩하지 말고 매번 recommend와 model_schema_get으로 확인하세요(카탈로그가 바뀌면 deprecated 태그가 붙음). 3D 결과는 asset_display로 직접 보고, 생성 전에 정한 pass/fail 기준으로 채점합니다.",
+      "license_or_price": "Scenario 구독과 credit입니다(금액은 확인하지 못함).",
+      "status_date": "2026-09 기준",
+      "strengths": "벤더 교체가 쉽고 모델 비교 절차가 skill로 정리되어 있습니다.",
+      "weaknesses": "상용 중개 계층이라 비용이 추가됩니다."
+    },
+    {
+      "name": "3DQA / Topoheal AI 3D 에셋 census",
+      "category": "독립 평가 도구·데이터",
+      "what_it_is": "3D Arena 데이터셋(생성기 23종, 에셋 2,307개)을 대상으로 watertight, non-manifold 같은 기하 결함을 자동 검사한 공개 census와 pip 패키지 3dqa입니다.",
+      "urls": [
+        "https://github.com/microsoft/TRELLIS.2/issues/181",
+        "https://github.com/alza123123/3dqa-benchmark",
+        "https://raw.githubusercontent.com/alza123123/3dqa-benchmark/main/REPRODUCE.md"
+      ],
+      "confidence": "medium",
+      "how_to_use": "pip install 3dqa로 설치하고 생성물을 배치로 lint해 수리가 필요한지 판단합니다.",
+      "license_or_price": "오픈(데이터셋 3D Arena는 MIT)",
+      "status_date": "2026-08-01 보고, 2026-08-17 재분석. 생성기별 표는 저자가 철회해 GitHub에서 삭제됨",
+      "strengths": "벤더 마케팅과 무관한 기하 품질 지표를 제공합니다.",
+      "weaknesses": "생성기별 수치는 철회되었고 topoheal.com은 접근하지 못했습니다."
+    },
+    {
+      "name": "기타 상용 서비스 (CSM, Kaedim, Autodesk Wonder 3D/Project Bernini, NVIDIA Edify 3D)",
+      "category": "상용 서비스 (미확인)",
+      "what_it_is": "CSM(Cube), Kaedim(AI와 아티스트 검수를 결합한 게임용 에셋), Autodesk Flow Studio Wonder 3D와 Project Bernini, NVIDIA Edify 3D(Shutterstock/Getty 등)는 조사 대상이었지만 공식 사이트 차단으로 2026년 현황을 확인하지 못했습니다. Kaedim GitHub 조직은 2026-06 업데이트가 있어 여전히 운영 중으로 보입니다.",
+      "urls": [
+        "https://github.com/search?q=kaedim&type=repositories",
+        "https://github.com/CSM-AI"
+      ],
+      "confidence": "low",
+      "how_to_use": "도입 전에 공식 사이트에서 최신 스펙, 가격, API 제공 여부를 직접 확인해야 합니다.",
+      "license_or_price": "확인하지 못했습니다.",
+      "status_date": "확인하지 못했습니다.",
+      "strengths": "Kaedim은 사람이 검수하는 게임용 토폴로지로 알려져 있습니다(학습 지식 기준).",
+      "weaknesses": "이번 조사에서 1차 출처로 확인하지 못했습니다."
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "한국에서는 Tencent Hunyuan 오픈웨이트(2.0/2.1/Omni/Part/HY-World)를 로컬에서 쓰지 말고, MIT·Apache 모델이나 상용 API를 기본으로 삼으세요.",
+      "why": "Hunyuan Community License의 Territory가 'excluding the territory of the European Union, United Kingdom and South Korea'로 정의되어 있습니다. Territory 밖에서 출력물을 쓰거나 배포하는 것도 금지됩니다. 반면 TRELLIS/TRELLIS.2, Pixal3D, Direct3D-S2, PartCrafter, OmniPart, SceneGen은 MIT, Step1X-3D는 Apache-2.0이고, SAM 3D Objects도 상업 사용이 허용됩니다.",
+      "example": "로컬 기본 조합은 Pixal3D(1536) 또는 TRELLIS.2로 형태를 만들고, 파트가 필요하면 PartCrafter를 쓰는 식입니다. 부속 모델 라이선스도 챙겨야 합니다. DINOv3 License, RMBG-2.0(비상업), Qwen-Image 2.1 Research License(비상업), FLUX.2 Klein 9B(비상업)는 상업 프로젝트에서 빼세요. image-to-3dlab처럼 .provenance.json에 사용한 모델의 라이선스를 기록해 두면 좋습니다.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/HY-World-2.0/blob/main/License.txt",
+        "https://raw.githubusercontent.com/Bingeljell/image-to-3dlab/main/docs/info_and_credits.md",
+        "https://github.com/zorrobyte/asset-studio"
+      ]
+    },
+    {
+      "tip": "텍스트에서 바로 3D를 만들지 말고, 이미지 모델로 레퍼런스를 먼저 만든 다음 image-to-3D로 넘기는 2단계로 진행하세요. 이미지 프롬프트는 '단일 오브젝트, 단색 배경, 3/4 view, soft light, 텍스트 없음'으로 자동 재작성하세요.",
+      "why": "image-to-3D 모델은 배경, 여러 객체, 글자에서 matting이 흔들리고 형태가 무너집니다. asset-studio는 모든 프롬프트를 이 조건으로 다시 쓰고, Scenario도 'a single centered subject on a plain background'를 요구합니다.",
+      "example": "프롬프트 예시는 'a mid-century oak lounge chair, single object, centered, plain light-grey background, three-quarter view, soft even studio lighting, no text, no props'입니다. 이미지 모델은 Qwen-Image-2512 Lightning(8 step, 1328², 약 8초, Apache-2.0), FLUX.2 Klein 4B(약 2.5초), Z-Image Turbo(실루엣이 가장 깨끗함) 중에서 고릅니다.",
+      "urls": [
+        "https://github.com/zorrobyte/asset-studio",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "TRELLIS.2와 Pixal3D에는 반드시 배경을 제거한 알파 PNG를 넣으세요. 플랫이나 벡터 스타일 일러스트는 피하고 사실적인 셰이딩이 있는 레퍼런스를 쓰세요.",
+      "why": "TRELLIS.2 이슈 #65에서 배경이 있는 입력은 'severe artifacts and missing geometry (holes)'로 보고되었습니다. image-to-3dlab은 'TRELLIS.2 can get colours badly wrong on flat or vector-style art'라고 기록했습니다.",
+      "example": "레퍼런스 생성, 배경 제거(알파), 크롭, 1024~1536 해상도 image-to-3D 순서로 진행합니다. Pixal3D는 알파가 없는 입력이면 자동으로 배경을 제거합니다.",
+      "urls": [
+        "https://github.com/microsoft/TRELLIS.2/issues/65",
+        "https://raw.githubusercontent.com/Bingeljell/image-to-3dlab/main/docs/info_and_credits.md",
+        "https://github.com/TencentARC/Pixal3D"
+      ]
+    },
+    {
+      "tip": "레퍼런스에 반사나 강한 조명이 있으면 delight 옵션을 켜서 텍스처에 구워진 빛을 빼세요.",
+      "why": "텍스처에 그림자나 하이라이트가 구워지면 엔진 조명에서 이중으로 음영이 생겨 AAA 룩이 깨집니다.",
+      "example": "Rodin은 --texture-delight('for highly reflective reference'), Scenario는 delight: true('strips lighting and shadows baked into the reference image')를 씁니다. Hunyuan3D-2 계열에는 Delight 모델이 따로 있습니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "Multi-view 입력은 모델마다 순서와 장수가 다르므로 매번 스키마를 확인하세요.",
+      "why": "순서가 틀리면 앞뒤가 뒤바뀐 형상이 나옵니다. Scenario 문서는 'the count and the ordering vary per model'이라며 model_schema_get을 먼저 호출하라고 강조합니다.",
+      "example": "Hitem3D와 Sparc3D는 front, back, left, right 4장(장당 20MB 이하), Tripo multiview는 front, left, back, right 2~4장, Rodin은 1~5장, Hunyuan3D-2mv는 front/left/back 키, Scenario Astra 3D는 1~8장입니다. Rodin 이미지는 512~4096px, 16MB 이하여야 합니다.",
+      "urls": [
+        "https://github.com/GeekatplayStudio/comfyui-hitem3d",
+        "https://raw.githubusercontent.com/mordor-forge/trident-mcp/main/docs/MCP_TOOLS.md",
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md"
+      ]
+    },
+    {
+      "tip": "가구나 조형물은 실제 치수를 생성 단계에서 넣으세요(bbox, height, auto-size).",
+      "why": "이미지 한 장으로는 깊이와 비율이 모호해서 의자 좌판 높이나 테이블 깊이 같은 비율이 틀어지고, 장면에 배치할 때 스케일도 맞지 않습니다.",
+      "example": "Rodin은 bbox_condition [Width, Height, Length]와 height(cm)를 지정합니다. Tripo는 auto_size=True, Scenario는 autoSize: true(실제 m 단위, 기본 off)를 씁니다. Hunyuan3D-Omni는 --control_type bbox, Roblox Cube v0.5는 bbox conditioning을 씁니다. 생성 후 Blender MCP에서 height_m 기준으로 스케일을 맞추고 원점을 바닥 중앙에 둡니다(asset-studio 방식).",
+      "urls": [
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_rodin.py",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni",
+        "https://github.com/zorrobyte/asset-studio"
+      ]
+    },
+    {
+      "tip": "고해상도 master를 만든 뒤 decimate, 새 UV, bake, LOD 순서로 내리세요. 예산을 바꿀 때는 재생성하지 말고 최적화 단계만 다시 돌리세요.",
+      "why": "생성기의 원본 메시는 삼각형 1M 안팎에 비정형 토폴로지이고 watertight나 manifold도 보장되지 않습니다. 디테일은 normal과 텍스처 bake로 보존하는 것이 AAA 파이프라인의 정석입니다.",
+      "example": "asset-studio는 master.glb(최대 1M tri, 4096² PBR)를 meshoptimizer로 decimate합니다. 이어서 새 UV를 펴고 color, metallic-roughness, normal을 master에서 bake한 뒤, LOD1 50%, LOD2 25%, convex hull collision을 만듭니다. crate는 954,901에서 7,998 tri(오차 1.4%), 펌프는 997,520에서 19,803 tri(오차 2.3%)였습니다. 예산만 바꿀 때는 retry --from-stage blender로 약 80초면 됩니다.",
+      "urls": [
+        "https://github.com/zorrobyte/asset-studio"
+      ]
+    },
+    {
+      "tip": "리토폴로지는 'voxel remesh 후 decimate' 순서로 하세요. Hunyuan paint나 텍스처 단계 전에 약 500k faces 이하로 줄여 두세요.",
+      "why": "image-to-3dlab은 이 순서가 형상 보존에 중요하다고 명시했습니다('order matters'). Hunyuan3D paint 단계는 약 500,000 faces를 넘으면 멈춘다고 보고되었습니다.",
+      "example": "--faces 40000 --skip-paint처럼 decimation 목표를 지정합니다. 캐릭터나 조형물은 Quadriflow에 Subdivision Surface를 조합합니다(rodin-via-blender).",
+      "urls": [
+        "https://github.com/Bingeljell/image-to-3dlab",
+        "https://raw.githubusercontent.com/Bingeljell/image-to-3dlab/main/docs/info_and_credits.md",
+        "https://github.com/KaelNebula/rodin-via-blender"
+      ]
+    },
+    {
+      "tip": "retopo나 UV 작업 뒤에는 '텍스처만 다시 생성'하는 기능으로 PBR을 새로 입히세요.",
+      "why": "생성기가 만든 UV와 텍스처는 retopo 과정에서 깨집니다. 깨끗한 토폴로지에 맞춰 텍스처를 다시 생성하는 편이 bake보다 품질이 좋은 경우가 있습니다.",
+      "example": "TRELLIS.2 Trellis2TexturingPipeline(mesh, image)에서 export('textured.glb')하는 방식, Meshy meshy_retexture(multi-view retexture, 2k/4k/8k), Tencent3DTextureEdit와 ModelTo3DUV, Tripo texture_model(PBR, 스타일 이미지, 파트 이름 지정)을 쓸 수 있습니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/example_texturing.py",
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_hunyuan3d.py"
+      ]
+    },
+    {
+      "tip": "토폴로지 모드는 용도에 맞게 고르세요. Rodin Gen-2.5는 Raw로 뽑은 뒤 직접 retopo하고, 게임용 저폴리가 바로 필요하면 Tripo P1/P2, Meshy quad, smart-topology를 쓰세요.",
+      "why": "Rodin 공식 skill은 Raw를 'recommended for Gen-2.5', Quad를 'better for legacy tiers'로 설명합니다. Tripo P1은 'low-poly/game-ready topology'용, P2는 quad 메시 P-series입니다.",
+      "example": "Rodin quality와 면 수 매핑은 High 1M/50k, Medium 500k/18k, Low 60k/8k, Extra-low 20k/4k(Raw/Quad)입니다. Tripo는 smart_low_poly 500~20K(quad 500~10K), quad=True면 FBX가 나옵니다. Meshy는 topology='quad', target_polycount 100~300,000입니다. Hunyuan 3.0 LowPoly는 polygon_type=quadrilateral로 지정합니다(3.1에서는 불가).",
+      "urls": [
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md",
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_tripo.py",
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_meshy.py"
+      ]
+    },
+    {
+      "tip": "삼각형 예산의 기준을 정해 두세요. 모바일 소품 3k~8k, 기계 디테일 보존 20k 이상, 일반 게임 에셋 10k~50k입니다.",
+      "why": "예산 없이 기본값을 쓰면 수십만~백만 tri가 나옵니다. Scenario는 'the default keeps fine detail and is not that'(게임용이 아님)이라고 경고합니다.",
+      "example": "asset-studio 스타일 프리셋은 mobile_factory 20k/2048, stylized_generic 30k/2048, realistic 40k/2048, lowpoly 6k/1024입니다. Scenario faceBudget은 10k~50k입니다. LOD가 8k tri 아래로 내려가면 UV 보존 제약 때문에 목표에 못 미칠 수 있습니다.",
+      "urls": [
+        "https://github.com/zorrobyte/asset-studio",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "가구, 기계, 조립형 조형물은 part-aware 생성이나 분리 기능으로 파트를 나누세요.",
+      "why": "한 덩어리 메시는 서랍 열기, 재질 분리, 리깅, 부분 수정이 불가능하고 교차부 형상도 뭉개집니다.",
+      "example": "Rodin은 hyper3d bang --strength 5 --instruction 'separate seat, backrest, four legs'로 나눕니다. 그 밖에 Tripo generate_parts=True나 Smart Segment, Meshy model_type='smart-topology'(t2, 파트 분리, mesh 5 credits), Tencent3DPartNode, 로컬 PartCrafter(파트 수 지정)와 OmniPart(2D mask 지정)가 있습니다. 관절이 필요하면 PhysX-Anything으로 URDF를 뽑습니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md",
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/README.md",
+        "https://github.com/wgsxm/PartCrafter",
+        "https://github.com/ziangcao0312/PhysX-Anything"
+      ]
+    },
+    {
+      "tip": "대상 유형별로 생성기를 고르세요.",
+      "why": "생성기마다 강점이 문서화되어 있습니다. 한 모델로 모든 유형을 처리하면 하드서페이스의 각이나 캐릭터 포즈에서 실패하기 쉽습니다.",
+      "example": "하드서페이스 소품에는 Scenario Astra 3D('props and hard-surface subjects, not characters'), Rodin Gen-2.5 Low('Clean assets, small hardsurface props'), Tripo P1/P2를 씁니다. 스타일라이즈는 legacy Smooth('clear edges and stylized'), 고디테일 조형이나 부조는 Rodin Extreme-High('High-frequency detail reproduction'), TRELLIS.2 1536 cascade, Hitem3D 1536pro가 맞습니다. 캐릭터는 Rodin TAPose와 Meshy pose_mode='A-pose', 두상과 흉상은 Sparc3D Portrait line으로 만듭니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md",
+        "https://github.com/DeemosTech/rodin3d-skills",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-sparc3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "모델 버전을 명시적으로 고정하고, 카탈로그 변경은 스키마 조회로 추적하세요.",
+      "why": "Tripo Python SDK는 기본값이 아직 v2.5-20250123입니다. Meshy 'latest'는 image-to-3D에서 7, text-to-3D에서 6으로 해석되어 endpoint마다 다릅니다. 카탈로그는 수시로 바뀝니다.",
+      "example": "Tripo는 model_version='v3.1-20260211' 또는 'P1-20260311', Meshy는 ai_model='meshy-7'처럼 명시합니다. Scenario에서는 model_schema_get을 먼저 호출하고 deprecated:<replacement_id> 태그를 확인합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "비동기 작업 관리 규칙을 에이전트 프롬프트나 skill에 명시하세요.",
+      "why": "3D 생성은 수십 초에서 30분 이상 걸립니다. 타임아웃이 났다고 다시 실행하면 credit이 이중으로 나가고, 결과 URL은 금방 만료됩니다.",
+      "example": "Rodin 다운로드 링크는 10분 뒤 만료되므로 바로 받게 합니다. Sparc3D와 Hitem3D는 중앙값 17~21분이므로 'never re-run the job' 규칙을 두고 jobs_wait로 기다립니다. blender-mcp는 poll_rodin_job_status 후 import_generated_asset 순서로 호출합니다.",
+      "urls": [
+        "https://github.com/DeemosTech/rodin3d-skills",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-sparc3d/SKILL.md",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py"
+      ]
+    },
+    {
+      "tip": "비용을 줄이려면 형태부터 싸게 확정한 뒤 텍스처를 입히세요.",
+      "why": "텍스처와 8K 옵션이 비용의 대부분을 차지하고, 형태가 틀리면 텍스처 비용이 통째로 낭비됩니다.",
+      "example": "Scenario에서는 texture: false로 bare mesh만 받습니다(DCC에서 직접 텍스처링할 때). Meshy는 mesh 20 credits로 형태를 확정한 뒤 retexture를 돌리고, smart-topology t2는 mesh 5 credits입니다. Rodin은 Gen-2.5 Medium(0.5 credit)으로 탐색하고 최종본만 Extreme-High(1.0)에 HighPack(+1, 4K)을 붙입니다. seed와 textureSeed를 분리하면 형태를 고정한 채 텍스처만 바꿔 볼 수 있습니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/README.md",
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md"
+      ]
+    },
+    {
+      "tip": "import한 뒤에는 에이전트가 반드시 시각 검증과 기하 QA를 하도록 루프를 만드세요.",
+      "why": "생성 메시는 대부분 watertight하지 않고 non-manifold 문제가 있습니다(TRELLIS.2-4B 91.1%, 14.9%). blender-mcp도 변경 전후 get_viewport_screenshot()을 권장합니다.",
+      "example": "Blender MCP에서 viewport 스크린샷을 찍고, Merge by Distance, 노멀 재계산, Apply Transforms, 스케일과 원점을 확인합니다. 3dqa lint로 결함을 점검하고, glTF validator로 오류 0을 확인합니다(asset-studio는 Khronos validator를 통과).",
+      "urls": [
+        "https://github.com/microsoft/TRELLIS.2/issues/181",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://github.com/elithril/blender-kiln",
+        "https://github.com/zorrobyte/asset-studio"
+      ]
+    },
+    {
+      "tip": "glTF로 내보내기 전에 procedural 셰이더는 bake하고 텍스처는 압축하세요.",
+      "why": "Blender procedural 노드는 glTF에서 사라집니다. 생성기가 만든 4K 텍스처는 에셋 하나당 수십 MB가 됩니다.",
+      "example": "blender-kiln 방식은 glTF가 버리는 노드를 감사한 뒤 bake하고 gltf-transform과 gltfpack으로 압축하는 것입니다. image-to-3dlab은 텍스처를 다시 인코딩해 약 32MB를 5MB 미만으로 줄였습니다. TRELLIS.2 GLB는 알파가 텍스처에 남아 있으므로 투명 재질은 DCC에서 blend mode를 직접 켜야 합니다.",
+      "urls": [
+        "https://github.com/elithril/blender-kiln",
+        "https://github.com/Bingeljell/image-to-3dlab",
+        "https://github.com/microsoft/TRELLIS.2"
+      ]
+    },
+    {
+      "tip": "유료 생성 전에 사람 승인 게이트와 사전 채점 기준을 두세요.",
+      "why": "잘못된 레퍼런스로 유료 3D를 반복 생성하는 것이 가장 큰 낭비입니다. Scenario는 'a result is scored, not admired'라며 생성 전에 pass/fail 기준을 정하라고 합니다.",
+      "example": "sketch-to-3d-codex는 스케치를 검사하고 Design Lock을 건 뒤, 마스터 후보 2~4개 중에서 사용자가 고르게 합니다. 이어 개별 view를 승인받은 다음에야 Hyper3D를 호출하고, 필요하면 Blender 작업으로 넘깁니다.",
+      "urls": [
+        "https://github.com/AIWHOS/sketch-to-3d-codex",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-model-comparison/SKILL.md"
+      ]
+    },
+    {
+      "tip": "단순한 하드서페이스 오브젝트는 생성 메시 대신 에이전트가 쓴 procedural 코드 모델링을 고려하세요.",
+      "why": "코드로 만든 모델은 토폴로지가 깨끗하고 diff와 버전 관리가 가능하며 수정하기 쉽습니다. img2threejs는 레퍼런스와 렌더를 단계별로 비교하는 quality gate로 품질을 끌어올립니다.",
+      "example": "img2threejs(16.9k stars)는 Claude Code, Codex, OpenCode에서 blockout, structural, form, material, surface, lighting, interaction, optimization 단계를 거쳐 Three.js factory code를 만듭니다. 검증과 게이팅은 Python 스크립트가 맡고 모델 토큰은 시각 판단에만 씁니다.",
+      "urls": [
+        "https://github.com/img2threejs/img2threejs"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "asset-studio: 로컬 RTX 5090에서 텍스트를 게임용 에셋으로 만드는 파이프라인 (Claude Code MCP 포함)",
+      "what_was_made": "상자, 펌프 같은 게임 소품의 최적화 GLB, LOD, collision, PBR 텍스처, manifest.json",
+      "process": "먼저 프롬프트를 '단일 객체, 단색 배경, 3/4 view, soft-lit, 텍스트 없음'으로 다시 씁니다. 이어 Qwen-Image-2512 Lightning 8(1328², 8 step)으로 레퍼런스를 만들고, Pixal3D/TRELLIS.2(balanced 1024 cascade 또는 quality 1536 cascade, 후보 2개)로 master를 만듭니다(최대 1M tri, 4096² PBR). Blender에서 meshoptimizer로 decimate하고 UV를 새로 편 뒤 color, metal-rough, normal을 bake하고, LOD 50%/25%와 convex hull을 만든 다음 Khronos validator로 검사합니다. MCP 도구(generate, status, artifacts, retry, open_in_blender)로 Claude Code에서 호출합니다.",
+      "urls": [
+        "https://github.com/zorrobyte/asset-studio"
+      ],
+      "who": "zorrobyte (GitHub)",
+      "date": "2026-09 (저장소 최근 업데이트)",
+      "tools": "Qwen-Image-2512 / FLUX.2 Klein 4B / Z-Image Turbo, Pixal3D, TRELLIS.2, MoGe, RMBG-2.0, Blender, meshoptimizer, Docker, MCP",
+      "ai_model": "Claude Code (MCP 클라이언트)",
+      "outcome": "crate는 954,901에서 7,998 tri(오차 1.4%)로 11.1분, 펌프는 997,520에서 19,803 tri(오차 2.3%)로 15.6분이 걸렸습니다. 예산만 바꿔 다시 최적화하면 약 80초입니다. Godot 4.7.2 import를 테스트했습니다."
+    },
+    {
+      "title": "image-to-3dlab: 로컬 image-to-3D 백엔드 5종 비교 실험실",
+      "what_was_made": "Pixal3D, Hunyuan3D-MLX 2종, TRELLIS.2, Stable Fast 3D를 같은 입력으로 돌려 비교하고, retopo, repaint, 압축까지 이어지는 도구 모음",
+      "process": "Qwen-Image 2.1(로컬, M 시리즈에서 약 4.5분)로 이미지를 만든 뒤 백엔드별로 3D를 생성합니다. 이어 voxel remesh 후 decimation(예: --faces 40000 --skip-paint), 필요하면 Hunyuan 2.1 PBR repaint, 텍스처 재압축(약 32MB에서 5MB 미만)을 거칩니다. 모든 결과에 .provenance.json을 붙여 라이선스를 추적합니다.",
+      "urls": [
+        "https://github.com/Bingeljell/image-to-3dlab",
+        "https://raw.githubusercontent.com/Bingeljell/image-to-3dlab/main/docs/info_and_credits.md"
+      ],
+      "who": "Bingeljell (GitHub)",
+      "date": "2026",
+      "tools": "Pixal3D(pixal3d.cpp), Hunyuan3D-MLX, TRELLIS.2(trellis2-apple), Stable Fast 3D, Qwen-Image 2.1",
+      "ai_model": "해당 없음 (로컬 생성 모델 비교)",
+      "outcome": "평가 결과는 다음과 같습니다. Pixal3D는 'Best results… one pass, no repaint needed'로 색 채도 보존이 가장 좋았습니다. TRELLIS.2는 충실도가 가장 높지만 Mac에서 15~35분이 걸리고 플랫 아트에서 색 오류가 났습니다. Hunyuan MLX는 geometry가 가장 깨끗했지만 한국, EU, 영국에서는 라이선스 문제가 있습니다."
+    },
+    {
+      "title": "rodin-via-blender: 4방향 캐릭터 레퍼런스를 FRP 대형 조형물 제작 데이터로 변환",
+      "what_was_made": "쇼핑몰에 설치할 1.1~2.0m 캐릭터 조형물의 OBJ/STL/GLB와 도색 사양서",
+      "process": "front, back, left, right 4장의 레퍼런스를 준비합니다. 캐릭터용 프롬프트와 bbox를 붙여 Hyper3D Rodin(fal.ai 경유)으로 생성한 뒤, Blender MCP로 import해 Quadriflow와 Subdivision으로 표면을 다듬습니다. 데칼은 Shrinkwrap이나 Boolean으로 붙이고, 언더컷과 쉘 두께를 검사한 뒤 제작사에 넘깁니다.",
+      "urls": [
+        "https://github.com/KaelNebula/rodin-via-blender"
+      ],
+      "who": "KaelNebula (GitHub)",
+      "date": "2026-05",
+      "tools": "Hyper3D Rodin, fal.ai, Blender, BlenderMCP, Claude Code skill",
+      "ai_model": "Claude (Claude Code)",
+      "outcome": "'/rodin-via-blender — make a 3D model from these 4 images for a 1.1m mall installation' 한 줄로 제작 패키지를 자동 생성합니다(스타 수가 적은 개인 프로젝트)."
+    },
+    {
+      "title": "sketch-to-3d-codex: 스케치에서 Rodin 3D까지, 사람 승인 게이트를 둔 에이전트 워크플로",
+      "what_was_made": "스케치 기반 캐릭터와 오브젝트 3D 모델(필요하면 Blender 리깅, 출력 검증)",
+      "process": "스케치를 검사하고 Design Lock을 건 뒤, 마스터 후보 2~4개 중 사용자가 하나를 고릅니다. 개별 view를 생성해 사용자 승인을 받으면 Hyper3D Rodin 작업을 실행하고 모델을 받아 Blender로 넘깁니다. 정체성이 중요한 캐릭터는 머리와 몸을 따로 검수한 뒤 조립합니다.",
+      "urls": [
+        "https://github.com/AIWHOS/sketch-to-3d-codex"
+      ],
+      "who": "AIWHOS (GitHub)",
+      "date": "2026-09",
+      "tools": "Hyper3D Rodin, Blender MCP, Codex skill",
+      "ai_model": "OpenAI Codex",
+      "outcome": "승인 fingerprint와 복구 메커니즘을 갖춘 반자동 파이프라인입니다. 같은 작성자가 Rodin MCP로 만든 에셋으로 Godot 보스전(paper-ember-duel)과 수중 탐험 웹게임(hyper3d-sunken-relics)을 공개했습니다."
+    },
+    {
+      "title": "blender-ai-3d-setup: Gemini 이미지, Hitem3D, Blender MCP로 교실 가구 장면 만들기",
+      "what_was_made": "'create classroom furniture' 같은 자연어로 가구를 생성하고 Blender에 자동 배치한 교실 장면",
+      "process": "환경을 점검하고 Claude Desktop과 Blender MCP를 연결합니다. Hitem3D API(이미지를 .glb로)와 Google AI Studio(Gemini로 레퍼런스 이미지 생성)를 설정한 뒤, 샘플 교실 장면을 만들어 테스트합니다. 표준 라이브러리만 쓰는 API 클라이언트로 여러 에셋을 병렬 생성합니다.",
+      "urls": [
+        "https://github.com/aigeboku/blender-ai-3d-setup"
+      ],
+      "who": "aigeboku (GitHub, 일본어 사용자 대상)",
+      "date": "2026-05",
+      "tools": "Blender 4.5 LTS+, Blender MCP, Hitem3D API, Google AI Studio (Gemini)",
+      "ai_model": "Claude (Claude Desktop, Claude Code), Gemini (이미지)",
+      "outcome": "이미지 생성, 3D 변환, Blender 배치까지 자동화했습니다. Hitem3D는 유료이고 Gemini는 무료 티어를 씁니다."
+    },
+    {
+      "title": "blender-kiln: Claude Code skill로 만든 8단계 3D 에셋 파이프라인",
+      "what_was_made": "텍스트 브리프에서 GLB, FBX, USDZ 프로덕션 에셋까지",
+      "process": "CONFIG, BRIEF, SOURCE(Hunyuan3D 2.x 로컬 또는 클라우드, procedural, PolyHaven과 Sketchfab, FLUX 콘셉트), IMPORT(스케일, 원점), CLEANUP(병합, 노멀, transform 적용), TEXTURING(PBR, bake), OPTIMIZE(gltf-transform, gltfpack), EXPORT(8항목 체크리스트) 순서로 진행합니다. 폴리곤 예산은 3단계로 검증합니다.",
+      "urls": [
+        "https://github.com/elithril/blender-kiln"
+      ],
+      "who": "elithril (GitHub)",
+      "date": "2026-08",
+      "tools": "Blender 4.4+, Blender MCP(port 9876), Hunyuan3D 2.x, PolyHaven, Sketchfab, gltf-transform, gltfpack",
+      "ai_model": "Claude (Claude Code)",
+      "outcome": "/kiln setup으로 환경을 자동 감지합니다. glTF에서 사라지는 노드를 감사하는 기능이 있습니다. 단, Hunyuan 로컬 사용은 한국에서 라이선스 문제가 있습니다."
+    },
+    {
+      "title": "Scenario MCP 보물상자 소품 Worked Example",
+      "what_was_made": "텍스트 설명에서 엔진에 import할 수 있는 보물상자 3D 소품",
+      "process": "recommend로 text-to-image 모델을 고르고 'single centered subject on a plain background'로 콘셉트를 만듭니다. 이어 image-to-3D 모델을 recommend하고 model_schema_get, model_run(wait=false), jobs_wait를 거칩니다. asset_display로 미리 보고 asset_download(curl -L)로 받습니다. 옵션으로 delight, autoSize, texture:false, seed와 textureSeed를 씁니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md"
+      ],
+      "who": "Scenario (scenario-labs)",
+      "date": "2026",
+      "tools": "Scenario MCP, 멀티벤더 3D 모델",
+      "ai_model": "MCP 호환 에이전트 (Claude, Cursor, Copilot 등 70+)",
+      "outcome": "벤더와 관계없이 쓸 수 있는 표준 절차로 문서화되어 있고, 흔한 실수(스키마를 보지 않고 실행, 로컬 경로 전달, 모델 ID 하드코딩)도 정리되어 있습니다."
+    },
+    {
+      "title": "img2threejs: 레퍼런스 이미지를 코드 기반 procedural Three.js 모델로 재구성",
+      "what_was_made": "메시 파일 대신 TypeScript factory code로 된, 애니메이션 가능한 Three.js 모델",
+      "process": "에이전트가 디테일 목록을 만든 뒤 blockout, structural, form, material, surface, lighting, interaction, optimization 순서로 단계마다 렌더와 레퍼런스를 비교하며 quality gate를 통과시킵니다. 기계적인 검증은 Python 스크립트가 처리합니다.",
+      "urls": [
+        "https://github.com/img2threejs/img2threejs",
+        "https://github.com/topics/image-to-3d?o=desc&s=stars"
+      ],
+      "who": "img2threejs (GitHub)",
+      "date": "2026-09-23 (최근 업데이트)",
+      "tools": "Three.js, Python 검증 스크립트",
+      "ai_model": "Claude Code / Codex / OpenCode (호스트 비전 사용)",
+      "outcome": "GitHub image-to-3d 토픽에서 스타 1위입니다(16.9k). 생성형 메시 대신 에이전트 코딩으로 가는 대안 흐름을 보여 줍니다."
+    }
+  ],
+  "sources": [
+    {
+      "title": "microsoft/TRELLIS.2 GitHub (README, example.py, example_texturing.py, commits)",
+      "url": "https://github.com/microsoft/TRELLIS.2",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2025-12-16 공개, 2026-07 업데이트",
+      "why_useful": "4B 파라미터, O-Voxel, PBR 속성, H100 속도, 24GB VRAM, to_glb 기본값, 텍스처링 파이프라인, MIT 라이선스"
+    },
+    {
+      "title": "microsoft/TRELLIS.2 Issue #181 – TRELLIS vs TRELLIS.2-4B geometry metrics (3D Arena 2,307 census)",
+      "url": "https://github.com/microsoft/TRELLIS.2/issues/181",
+      "source_type": "GitHub 이슈 (독립 평가)",
+      "date": "2026-08-04",
+      "why_useful": "non-watertight 91.1%, non-manifold 14.9% 등 독립 기하 QA 수치"
+    },
+    {
+      "title": "microsoft/TRELLIS.2 Issue #65 – artifacts without background removal",
+      "url": "https://github.com/microsoft/TRELLIS.2/issues/65",
+      "source_type": "GitHub 이슈",
+      "date": "2025-12-30",
+      "why_useful": "배경 제거가 필수라는 실사용 근거와 Hunyuan3D 2.1과의 비교"
+    },
+    {
+      "title": "TencentARC/Pixal3D",
+      "url": "https://github.com/TencentARC/Pixal3D",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2026-04~2026-09",
+      "why_useful": "SIGGRAPH 2026, TRELLIS.2 backbone, MIT, 단일·multi-view 추론 명령어"
+    },
+    {
+      "title": "Tencent-Hunyuan/Hunyuan3D-2.1 README와 LICENSE",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+      "source_type": "GitHub 라이선스 원문",
+      "date": "2025-06-13",
+      "why_useful": "Territory에서 EU, 영국, 대한민국 제외와 출력물 사용 제한 조항"
+    },
+    {
+      "title": "Tencent-Hunyuan GitHub 3D 저장소 목록",
+      "url": "https://github.com/orgs/Tencent-Hunyuan/repositories?q=3d",
+      "source_type": "GitHub 조직 페이지",
+      "date": "2026-08 기준",
+      "why_useful": "HY-World 2.0, Buffalo1.0, WorldClaw, Omni, Part 등 최신 저장소와 날짜"
+    },
+    {
+      "title": "Tencent-Hunyuan/HY-World-2.0 (README, License.txt)",
+      "url": "https://github.com/Tencent-Hunyuan/HY-World-2.0",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2026-04-16",
+      "why_useful": "mesh, 3DGS, point cloud 출력과 한국 제외 라이선스"
+    },
+    {
+      "title": "DeemosTech/rodin3d-skills SKILL.md (Gen-2.5)",
+      "url": "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md",
+      "source_type": "공식 Agent Skill 문서",
+      "date": "2026",
+      "why_useful": "Gen-2.5 티어 용도, 면 수 매핑, credit, 이미지 제한, bbox, TAPose, HighPack"
+    },
+    {
+      "title": "DeemosTech/hyper3d-cli README",
+      "url": "https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md",
+      "source_type": "공식 CLI 문서",
+      "date": "2026-09-23",
+      "why_useful": "Raw/Quad 폴리곤 범위와 기본값, texture-delight, BANG --strength"
+    },
+    {
+      "title": "ComfyUI comfy_api_nodes (nodes_rodin/tripo/meshy/hunyuan3d.py)와 커밋 이력",
+      "url": "https://github.com/comfyanonymous/ComfyUI/tree/master/comfy_api_nodes",
+      "source_type": "오픈소스 코드 (파트너 API 통합)",
+      "date": "2025-05~2026-09",
+      "why_useful": "Rodin Gen-2.5, Tripo v3.1/P1/P2, Meshy 7/7.1, Hunyuan 3.0/3.1의 파라미터 범위와 출시 시점 교차 확인"
+    },
+    {
+      "title": "VAST-AI-Research/tripo-python-sdk client.py",
+      "url": "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+      "source_type": "공식 SDK 코드",
+      "date": "v0.4.2 2026-07-01",
+      "why_useful": "model_version 문자열(v3.1-20260211, P1-20260311 등)과 기본값"
+    },
+    {
+      "title": "meshy-dev/meshy-mcp-server (README, commits, releases)",
+      "url": "https://github.com/meshy-dev/meshy-mcp-server",
+      "source_type": "공식 MCP 서버",
+      "date": "v0.5.0 2026-08-11, v0.5.2 2026-09-22",
+      "why_useful": "24개 도구, 모델별 credit 표, smart-topology, 설치 명령"
+    },
+    {
+      "title": "mordor-forge/trident-mcp docs/MCP_TOOLS.md",
+      "url": "https://github.com/mordor-forge/trident-mcp/blob/main/docs/MCP_TOOLS.md",
+      "source_type": "커뮤니티 MCP 문서",
+      "date": "2026-07",
+      "why_useful": "Tripo P1과 H3.1의 용도, 시간, credit 실측"
+    },
+    {
+      "title": "scenario-labs/skills (scenario-3d, 3d-worlds, sparc3d, rodin, meshy, model-comparison)",
+      "url": "https://github.com/scenario-labs/skills",
+      "source_type": "상용 MCP 공식 Agent Skills",
+      "date": "2026-09",
+      "why_useful": "GPT-6 Astra 3D, Sparc3D/Hitem3D, Marble 티어와 splat 출력, 레퍼런스 이미지 규칙, 흔한 실수"
+    },
+    {
+      "title": "ahujasid/blender-mcp (README, server.py, addon.py)",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "source_type": "GitHub 오픈소스 MCP",
+      "date": "2026-09 기준",
+      "why_useful": "Rodin, Hunyuan, Tripo 통합 도구 이름, 환경변수, 리전 설정, 검증 가이드"
+    },
+    {
+      "title": "zorrobyte/asset-studio",
+      "url": "https://github.com/zorrobyte/asset-studio",
+      "source_type": "실사용 파이프라인 사례 (GitHub)",
+      "date": "2026-09",
+      "why_useful": "로컬 text-to-image-to-3D-to-Blender 전 과정의 수치, 프리셋, 교훈"
+    },
+    {
+      "title": "Bingeljell/image-to-3dlab (README, info_and_credits.md)",
+      "url": "https://github.com/Bingeljell/image-to-3dlab",
+      "source_type": "커뮤니티 비교 실험 (GitHub)",
+      "date": "2026",
+      "why_useful": "Pixal3D, TRELLIS.2, Hunyuan-MLX, SF3D 정성 비교와 라이선스 정리"
+    },
+    {
+      "title": "facebookresearch/sam-3d-objects (README, LICENSE)",
+      "url": "https://github.com/facebookresearch/sam-3d-objects",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2025-11-19, 2026-06-02",
+      "why_useful": "splat과 mesh 출력, 다중 객체 레이아웃, SAM License 상업 허용"
+    },
+    {
+      "title": "GeekatplayStudio/comfyui-hitem3d",
+      "url": "https://github.com/GeekatplayStudio/comfyui-hitem3d",
+      "source_type": "커뮤니티 통합 코드",
+      "date": "2026-01",
+      "why_useful": "Hitem3D 모델 버전, 해상도(1536pro), face 범위, multi-view 순서"
+    },
+    {
+      "title": "dcc-mcp/dcc-ai-hunyuan3d tools.yaml",
+      "url": "https://raw.githubusercontent.com/dcc-mcp/dcc-ai-hunyuan3d/main/skill/hunyuan3d/tools.yaml",
+      "source_type": "커뮤니티 MCP skill",
+      "date": "2026-08-25",
+      "why_useful": "Tencent Cloud Hunyuan 3D 3.0/3.1 파라미터"
+    },
+    {
+      "title": "stepfun-ai/Step1X-3D",
+      "url": "https://github.com/stepfun-ai/Step1X-3D",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2025-05-13",
+      "why_useful": "Apache-2.0 오픈 대안의 스펙"
+    },
+    {
+      "title": "DreamTechAI/Direct3D-S2",
+      "url": "https://github.com/DreamTechAI/Direct3D-S2",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2025-05-30",
+      "why_useful": "MIT 고해상도 shape 모델의 VRAM"
+    },
+    {
+      "title": "wgsxm/PartCrafter",
+      "url": "https://github.com/wgsxm/PartCrafter",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2025-07-13",
+      "why_useful": "part-aware 생성(MIT, 8GB)"
+    },
+    {
+      "title": "Roblox/cube (README, LICENSE)",
+      "url": "https://github.com/Roblox/cube",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2025-03~2026-05",
+      "why_useful": "bbox conditioning, CubePart, research-only 라이선스"
+    },
+    {
+      "title": "Stability-AI/stable-point-aware-3d LICENSE.md",
+      "url": "https://github.com/Stability-AI/stable-point-aware-3d/blob/main/LICENSE.md",
+      "source_type": "라이선스 원문",
+      "date": "2025",
+      "why_useful": "연매출 100만 달러 기준 Community License"
+    },
+    {
+      "title": "KaelNebula/rodin-via-blender",
+      "url": "https://github.com/KaelNebula/rodin-via-blender",
+      "source_type": "사례 (Claude Code skill)",
+      "date": "2026-05",
+      "why_useful": "Rodin과 Blender MCP로 FRP 조형물을 만드는 실제 흐름"
+    },
+    {
+      "title": "AIWHOS/sketch-to-3d-codex",
+      "url": "https://github.com/AIWHOS/sketch-to-3d-codex",
+      "source_type": "사례 (Codex skill)",
+      "date": "2026-09",
+      "why_useful": "사람 승인 게이트가 있는 스케치-to-Rodin 워크플로"
+    },
+    {
+      "title": "aigeboku/blender-ai-3d-setup",
+      "url": "https://github.com/aigeboku/blender-ai-3d-setup",
+      "source_type": "사례 (Claude Desktop 설정 skill)",
+      "date": "2026-05",
+      "why_useful": "Gemini, Hitem3D, Blender MCP로 가구를 배치한 사례"
+    },
+    {
+      "title": "elithril/blender-kiln",
+      "url": "https://github.com/elithril/blender-kiln",
+      "source_type": "사례 (Claude Code skill)",
+      "date": "2026-08",
+      "why_useful": "8단계 에셋 파이프라인과 glTF 주의사항"
+    },
+    {
+      "title": "img2threejs/img2threejs",
+      "url": "https://github.com/img2threejs/img2threejs",
+      "source_type": "오픈소스 에이전트 워크플로",
+      "date": "2026-09-23",
+      "why_useful": "procedural 코드 모델링과 단계별 quality gate 대안"
+    },
+    {
+      "title": "ziangcao0312/PhysX-Anything",
+      "url": "https://github.com/ziangcao0312/PhysX-Anything",
+      "source_type": "GitHub 연구 저장소",
+      "date": "CVPR 2026",
+      "why_useful": "관절이 있는 가구와 URDF 생성"
+    },
+    {
+      "title": "nv-tlabs/lyra",
+      "url": "https://github.com/nv-tlabs/lyra",
+      "source_type": "GitHub 공식 저장소",
+      "date": "2026-04-15 (2.0)",
+      "why_useful": "NVIDIA 오픈 3D 월드 모델 현황"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "Tencent Hunyuan 3D 2.1 Community License의 Territory는 'worldwide territory, excluding the territory of the European Union, United Kingdom and South Korea'이며, Territory 밖에서 출력물을 쓰거나 배포하는 것도 금지된다.",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE"
+    },
+    {
+      "claim": "Hunyuan3D 2.0, Omni, Part, HY-World 2.0 라이선스도 동일하게 EU, 영국, 대한민국을 제외한다.",
+      "url": "https://github.com/Tencent-Hunyuan/HY-World-2.0/blob/main/License.txt"
+    },
+    {
+      "claim": "TRELLIS.2는 4B 파라미터, MIT 라이선스이며 H100 기준 512³ 약 3초, 1024³ 약 17초, 1536³ 약 60초가 걸리고 24GB 이상 VRAM이 필요하다. PBR 속성은 base color, roughness, metallic, opacity다.",
+      "url": "https://github.com/microsoft/TRELLIS.2"
+    },
+    {
+      "claim": "TRELLIS.2는 2025-12-16 첫 공개, 2026-01-10 학습 코드가 공개되었다.",
+      "url": "https://github.com/microsoft/TRELLIS.2/commits/main"
+    },
+    {
+      "claim": "Pixal3D(TencentARC)는 SIGGRAPH 2026 채택, MIT 라이선스, TRELLIS.2 backbone이며 2026년 9월 multi-view 추론 코드가 공개되었다.",
+      "url": "https://github.com/TencentARC/Pixal3D"
+    },
+    {
+      "claim": "Rodin Gen-2.5 티어는 Extreme-Low/Low/Medium/High/Extreme-High이고 Extreme-High만 1.0 credit, 나머지는 0.5 credit이다. HighPack(4K)은 +1 credit이다.",
+      "url": "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md"
+    },
+    {
+      "claim": "Hyper3D CLI의 quality 범위는 Raw 500~1,000,000(기본 500,000), Quad 1,000~50,000(기본 18,000)이다.",
+      "url": "https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md"
+    },
+    {
+      "claim": "Tripo model_version에 'v3.1-20260211'과 'P1-20260311'이 있으며 SDK 기본값은 여전히 'v2.5-20250123'이다.",
+      "url": "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py"
+    },
+    {
+      "claim": "Tripo P2 노드가 2026-09-15, Meshy 7.1 지원이 2026-09-20에 ComfyUI Partner Nodes에 추가되었다.",
+      "url": "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_tripo.py"
+    },
+    {
+      "claim": "Meshy image-to-3D는 meshy-7/6에서 mesh 20, +texture 30, +8K 35 credits이고, smart-topology meshy-t2는 5/15/20 credits다.",
+      "url": "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/README.md"
+    },
+    {
+      "claim": "Tencent Hunyuan 3D Pro API는 model 3.0/3.1과 face_count 3,000~1,500,000(기본 500,000)을 지원하고, LowPoly는 3.1에서 쓸 수 없다.",
+      "url": "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_hunyuan3d.py"
+    },
+    {
+      "claim": "3D Arena 에셋 기반 census에서 TRELLIS.2-4B 출력의 91.1%가 non-watertight, 14.9%가 non-manifold edge를 가졌다.",
+      "url": "https://github.com/microsoft/TRELLIS.2/issues/181"
+    },
+    {
+      "claim": "Hitem3D API는 hitem3dv1/v1.5/v2.0, 해상도 512/1024/1536/1536pro, face 100,000~2,000,000, 4-view(front/back/left/right)를 지원한다.",
+      "url": "https://github.com/GeekatplayStudio/comfyui-hitem3d"
+    },
+    {
+      "claim": "Scenario의 'GPT-6 Astra 3D'는 1~8장 이미지로 named parts와 per-part PBR을 가진 편집 가능한 메시를 만들며, 하드서페이스 소품용이고 캐릭터용이 아니다.",
+      "url": "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md"
+    },
+    {
+      "claim": "SAM 3D Objects는 Gaussian splat(.ply)과 mesh(.glb)를 출력하며 SAM License로 상업 사용이 허용된다.",
+      "url": "https://github.com/facebookresearch/sam-3d-objects/blob/main/LICENSE"
+    }
+  ],
+  "gaps": [
+    "WebSearch 할당량(세션 200회)이 이미 소진되어 검색을 한 번도 하지 못했습니다. huggingface.co, arxiv.org, 벤더 공식 사이트(meshy.ai, tripo3d.ai, hyper3d.ai, hitem3d.ai, worldlabs.ai, 3d.hunyuan.tencent.com, deepmind.google, autodesk.com, fal.ai, docs.comfy.org), Reddit, 뉴스 사이트가 egress proxy에서 차단되어 GitHub과 PyPI만 1차 출처로 썼습니다.",
+    "3D Arena(Hugging Face) 리더보드의 2026년 9월 기준 ELO 순위를 확인하지 못했습니다. 3DQA census의 생성기별 결함률 표는 저자가 철회해 삭제했고 topoheal.com에는 접근하지 못했습니다.",
+    "Meshy, Tripo, Rodin, Hitem3D, Tencent Cloud, World Labs의 공식 달러 가격과 구독 플랜을 확인하지 못했습니다(credit 수치만 SDK와 MCP 문서로 확인).",
+    "Hunyuan 3D 3.0/3.1의 공식 스펙(해상도, 파라미터 수, 출시일)과 Hunyuan3D Studio의 최신 기능을 공식 출처로 확인하지 못했습니다. ComfyUI와 서드파티 래퍼 코드로 파라미터만 확인했습니다.",
+    "Tencent Cloud Hunyuan 3D API(국제 ap-singapore)를 한국 사용자가 쓸 수 있는지, 서비스 약관에 지역 제한이 있는지 확인하지 못했습니다(오픈웨이트 라이선스와는 별개 문제).",
+    "Pixal3D와 TRELLIS.2의 Hugging Face 웨이트 페이지 라이선스, DINOv3 License가 이들 모델의 상업 사용에 미치는 영향을 원문으로 완전히 검증하지 못했습니다.",
+    "World Labs Marble의 공식 export 형식(SPZ/PLY/GLB), 가격, 최신 버전과 Genie 3 / Project Genie의 2026년 상태를 1차 출처로 확인하지 못했습니다.",
+    "Autodesk Wonder 3D와 Project Bernini, NVIDIA Edify 3D, CSM, Kaedim의 2026년 현황, 가격, API를 확인하지 못했습니다.",
+    "ByteDance Seed3D의 후속 버전('Seed3D 2.0')은 SEO성 서드파티 저장소에서만 보여 실재 여부를 확인하지 못했습니다.",
+    "'GPT-6 Astra 3D'가 OpenAI 공식 기능인지 Scenario 자체 파이프라인의 명칭인지 Scenario 문서 외에 독립 출처가 없습니다.",
+    "Rodin, Tripo, Meshy, Hunyuan 사이의 가구, 하드서페이스, 조형물별 정량 비교(동일 입력 벤치마크)는 찾지 못했습니다. 모델 선택 가이드는 각 벤더 문서의 용도 설명과 커뮤니티 정성 평가에 근거합니다.",
+    "YouTube와 Reddit 실사용 후기, 한국어 커뮤니티 사례는 접근이 차단되어 수집하지 못했습니다."
+  ]
+}

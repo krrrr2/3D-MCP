@@ -1,0 +1,355 @@
+{
+  "verdicts": [
+    {
+      "claim": "BlenderGym(CVPR 2025 Highlight)은 수작업 씬 245개와 5개 과제로 구성되고, 최적 VeriRatio는 0.62–0.73, verifier 정합률은 인간 0.79 vs Claude-3.5-Sonnet 0.66이다.",
+      "verdict": "partially",
+      "correction": "씬 245개, 과제 5개, CVPR 2025 Highlight, 정합률(인간끼리 0.79, Claude-3.5-Sonnet 0.66)은 원문과 일치합니다. 다만 '최적 VeriRatio 0.62–0.73'은 과잉 해석입니다. 프로젝트 페이지는 VeriRatio를 0.33, 0.62, 0.73 세 값으로만 실험했고, 적정 비율(Goldilocks ratio)이 있다는 점과 '총 연산이 많을수록 검증 비중을 높이는 쪽이 더 이득'이라는 점만 밝힙니다. 최적 비율은 총 연산 예산에 따라 달라지고, 0.62–0.73이라는 범위가 결론으로 제시된 적은 없습니다. 같은 항목의 '20개 이상 모델 평가'도 공개 리더보드와 맞지 않습니다. 리더보드에는 VLM 시스템 13개와 Human만 있습니다. 배치 과제에서 Gemini-1.5-flash가 1위인 것은 PL/CD 지표 기준이고, N-CLIP 지표는 GPT-4o가 1위입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/BlenderGym/BlenderGym.github.io/main/index.html",
+        "https://github.com/richard-guyunqi/BlenderGym-Open"
+      ],
+      "note": "BlenderGym-Open README에도 'CVPR 2025 Highlight (top 387 over 13,008)'라고 되어 있습니다. arxiv.org는 차단되어 논문 본문은 확인하지 못했습니다."
+    },
+    {
+      "claim": "VIGA(arXiv 2601.11109)는 Generator/Verifier를 번갈아 쓰는 단일 에이전트로, 다중 시점 렌더 비교와 컨텍스트 메모리를 사용하고 BlenderBench(Level 1–3)를 새로 제안했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Fugtemypt123/VIGA",
+        "https://github.com/Fugtemypt123/VIGA-release"
+      ],
+      "note": "두 저장소 README가 같은 내용입니다: 단일 self-reflective 에이전트의 Generator/Verifier 교대, 계획·코드 diff·렌더 이력 메모리, BlenderBench Level 1–3(HF 데이터셋 DietCoke4671/blenderbench), MIT 라이선스, 스타 약 1.3k. 예제 명령은 --model=gpt-5와 SAM3D 툴을 씁니다."
+    },
+    {
+      "claim": "LL3M은 논문에 쓴 Claude Sonnet 3.7이 retire되어 LL3M 서버를 중단했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md",
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations"
+      ],
+      "note": "README 첫 줄 공지로 확인했습니다. Anthropic 공식 문서 기준으로 claude-3-7-sonnet-20250219는 2025-10-28에 deprecation이 공지되었고 2026-02-19에 retire되었습니다. 추가로 정정할 점이 있습니다. 이 저장소는 로그인이 필요한 client-server 데모의 클라이언트와 Blender 애드온일 뿐이고, 멀티에이전트 파이프라인 코드는 공개되지 않았습니다. 라이선스도 'LL3M Academic and Evaluation License'입니다. 따라서 보고서의 '코드 공개'는 사실과 다르며, 서버가 중단된 지금은 사실상 쓸 수 없습니다."
+    },
+    {
+      "claim": "3DCodeBench는 2026-06-01에 공개되었고 Blender 5.0, 212 카테고리, traceback 재시도 T=3, Claude, Codex, Gemini 코딩 에이전트 하네스, 82,042 trial과 2,767 transcript를 포함한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/README.md"
+      ],
+      "note": "수치는 모두 README와 일치합니다(하네스는 Claude Code/Codex/Gemini CLI/agy, 생성 스크립트 81,605개). 다만 항목에 적힌 라이선스 'Apache-2.0'은 부분적으로만 맞습니다. README는 'Code is released under the MIT License'라고 쓰고, 실제 LICENSE 파일은 Apache 2.0이며, benchmark/categories/의 factory 스크립트는 Infinigen의 BSD-3-Clause를 따릅니다. 문서끼리 서로 어긋나므로 이 점을 명시해야 합니다."
+    },
+    {
+      "claim": "SceneSmith는 ICML 2026 Spotlight이며 객체 3–6배, 충돌 0, 96% 안정, 사용자 205명 연구에서 realism 92%, faithfulness 91% 승률을 보고했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html",
+        "https://github.com/nepfaff/scenesmith",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "note": "프로젝트 페이지에서 수치를 확인했고, ICML 2026 Spotlight는 README 배지와 hzxie 목록으로도 교차 확인했습니다. 승률은 '베이스라인 대비 평균 승률'입니다. 자동 평가기와 인간 라벨의 일치율 99.7%도 페이지에 있습니다. 라이선스는 MIT이고, 기본 에이전트는 GPT-5입니다(README: 'OpenAI API key for GPT-5 agents')."
+    },
+    {
+      "claim": "SceneReVis 비교표 기준 충돌률은 LayoutGPT 40.8%, LayoutVLM 36.8%, Holodeck 12.7%, SceneReVis 4.5%이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html",
+        "https://github.com/Runder-sun/SceneReVis"
+      ],
+      "note": "수치는 일치합니다(침실+거실 평균). 같은 표에 I-Design(경계 이탈 16.7/충돌 16.2/품질 7.8), DiffuScene(37.1/37.7), ReSpace(13.1/41.1)도 있는데 보고서에서 빠졌습니다. 주의할 점이 있습니다. 모두 경쟁 논문(SceneReVis)이 측정한 값입니다. 또 LayoutVLM은 LLM이 좌표를 직접 찍는 방식이 아니라 미분 최적화 방식인데도 36.8%가 나왔으므로, '솔버/최적화를 쓰면 충돌이 줄어든다'는 합의 3의 일반화와 충돌합니다. 보고서가 LayoutVLM을 합의 3에서 '좌표 직접 생성' 예시로 쓰면서 동시에 '미분 최적화'로 같은 결론을 가리킨다고 한 것도 앞뒤가 맞지 않습니다. SceneChain-12K(궤적 11,444개, 렌더 약 80K)와 6개 원자 연산은 README로 확인했습니다."
+    },
+    {
+      "claim": "BlenderLLM은 CADBench-Sim에서 0.748(GPT-4o 0.565)을 기록했고 구문 오류율 3.4%로 Claude-3.5-Sonnet 15.6%, GPT-4-Turbo 18.2%보다 낮으며, Apache-2.0이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/FreedomIntelligence/BlenderLLM",
+        "https://raw.githubusercontent.com/FreedomIntelligence/BlenderLLM/main/README.md"
+      ],
+      "note": "README에서 0.748±0.085 vs 0.565±0.062, 오류율 3.4/15.6/18.2%, Apache-2.0을 확인했습니다. Limitations 3개(기본 모델링만, 텍스트 입력만·멀티모달 없음, 멀티턴 없음)도 일치합니다."
+    },
+    {
+      "claim": "BlenderAlchemy 공식 config의 기본값은 tree_dims '4x8', num_tries 4, visual imagination과 hypothesis reversion 활성이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml",
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial"
+      ],
+      "note": "YAML 원문과 일치합니다. 추가로 edit_style rewrite_code, variants tune_leap, edit_generator_type과 state_evaluator_type 모두 GPT4V, 동시 렌더 8, 동시 평가 요청 4입니다. 출력 폴더 이름(tune_d4_b8)을 보면 깊이 4 × 폭 8이라는 해석이 맞습니다. 다만 이 값은 '예제 config'의 값이지 코드 전역의 기본값은 아닙니다. 'Blender 플러그인 별도 저장소'는 README에서 확인되지 않았습니다."
+    },
+    {
+      "claim": "SGP-Bench에서 GPT-4o는 SVG 64.8%, CAD 72.9%였고 SGP-MNIST에서는 모든 모델이 5.5–13.0%였다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/sgp-bench/sgp-bench.github.io/main/index.html",
+        "https://github.com/dimitrismallis/CAD-Assistant"
+      ],
+      "note": "GPT-4o-2024-08-06 기준 SVG 64.8%(색 87.3%, 추론 50.4%), CAD 72.9%, SGP-MNIST 5.5%(Yi-1.5-34B)–13.0%(GPT-4o), 우연 수준 10%, SIT 72K, ICLR 2025 Spotlight를 모두 확인했습니다. CAD-Assistant가 SGP-Bench 2D/3D(1,700 파일)를 평가셋으로 쓴 것도 교차 확인했습니다."
+    },
+    {
+      "claim": "MeshCoder는 100만 object-code 쌍(41 카테고리)으로 학습했고, 후속 MegaParts(MeshCoder 1.5)는 최대 300파트와 256K 토큰을 지원한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/InternRobotics/MeshCoder",
+        "https://github.com/xdlbw/Awesome-3D-Object-and-Scene-Generation"
+      ],
+      "note": "README와 일치합니다. MegaParts 코드는 아직 '공개 예정'입니다. 저장소 라이선스는 MIT이고, 공개된 데이터는 10만 쌍입니다(2025-11). NeurIPS 2025는 xdlbw 목록(NIPS 2025)으로 교차 확인했습니다."
+    },
+    {
+      "claim": "VLMaterial의 코드와 가중치는 MIT이지만 재질 데이터셋은 CC BY-NC 4.0(비상업)이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/mit-gfx/VLMaterial"
+      ],
+      "note": "README와 일치합니다. 48GB 이상 VRAM 권장은 파인튜닝 기준입니다. 증강에 쓴 LLM이 'GPT-4o-mini'라는 구체적 모델명은 README에 'commercial LLM(OpenAI API)'로만 적혀 있어 확인하지 못했습니다."
+    },
+    {
+      "claim": "SAGE-10k는 10,000개 씬, 50개 방 유형, 565K개 고유 생성 객체로 구성된다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/NVlabs/sage",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "note": "README 원문과 일치합니다. CVPR 2026은 hzxie 목록으로 확인했습니다. 라이선스는 Apache-2.0이고 구성요소는 각자의 라이선스를 따릅니다. MCP 관련 언급은 'MCP client, server 구현이 다른 프로젝트를 참고했다'는 감사 문구 수준입니다."
+    },
+    {
+      "claim": "Code2Worlds(ICML 2026)는 Code4D에서 SGS 41%, Richness 49% 향상을 보고했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/AIGeeksGroup/Code2Worlds",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "note": "README에 '41% SGS gain and 49% higher Richness'라고 되어 있고, ICML 2026은 hzxie 목록으로 교차 확인했습니다. 저자가 직접 보고한 수치입니다."
+    },
+    {
+      "claim": "Blender 5.0에서는 렌더 엔진을 'BLENDER_EEVEE'로 지정하고, Noise 텍스처 출력은 'Factor', Mesh.use_auto_smooth는 제거되었다(3DCodeBench 참조 파일의 주장).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/blender_5_api_reference.txt",
+        "https://raw.githubusercontent.com/blender/blender/v5.0.0/source/blender/draw/engines/eevee/eevee_engine.cc",
+        "https://raw.githubusercontent.com/blender/blender/v5.0.0/source/blender/nodes/shader/nodes/node_shader_tex_noise.cc"
+      ],
+      "note": "Blender 소스로 직접 교차 확인했습니다. v5.0.0에서 idname은 'BLENDER_EEVEE'이고, v4.2.0에서는 'BLENDER_EEVEE_NEXT'였습니다. v5.0.0의 Noise 출력은 add_output(\"Factor\", \"Fac\")로, 표시 이름은 Factor이고 identifier는 여전히 Fac입니다. bgl.cc는 v5.0.0에서 404(제거), v4.4.0에서는 존재합니다. 다만 use_auto_smooth와 Musgrave 노드는 5.0이 아니라 4.1에서 이미 제거되었습니다(v4.0.0 rna_mesh.cc에는 있고 v4.1.0에는 없음). '5.0 변경점'으로 소개하면 오해를 부릅니다."
+    },
+    {
+      "claim": "WorldClaw(Tencent Hunyuan)의 arXiv 2608.05248과 프로젝트 페이지는 2026-08-07에 공개되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "note": "README 뉴스(2026-08-07, 'Paper and project page are released')와 hzxie 목록의 arXiv 번호가 일치합니다. 스타 약 1.3k입니다. 항목에 적힌 'fal.ai 연동 포크'는 포크 목록에서 찾지 못했으므로 확인할 수 없습니다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "LL3M (threedle/ll3m)",
+      "status": "issue",
+      "detail": "README에서 Sonnet 3.7 retire에 따른 서버 중단, 하루 5회 제한, Blender 4.4 애드온은 확인했습니다. 그러나 이 저장소는 로그인이 필요한 client-server 데모의 클라이언트이고 에이전트 파이프라인은 공개되지 않았습니다. 라이선스는 'LL3M Academic and Evaluation License'이므로 '코드 공개'는 틀린 설명입니다. 서버가 중단되어 지금은 실행할 수 없습니다. README에 arXiv 번호는 없어 2508.08228은 확인하지 못했습니다. 에이전트 역할은 README 기준 plan/retrieve/write/debug/refine이고, critic/verifier라는 이름은 논문 표현일 가능성이 있습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md",
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations"
+      ]
+    },
+    {
+      "name": "3DCodeBench",
+      "status": "issue",
+      "detail": "존재하고 2026-06-01에 공개되었으며, 212 카테고리, 82,042 trial, 2,767 transcript, T=3, 에이전트 하네스(Claude Code/Codex/Gemini CLI/agy)를 확인했습니다. 라이선스는 README가 MIT, LICENSE 파일이 Apache 2.0으로 서로 다르고, factory 스크립트는 Infinigen BSD-3입니다. 공개 프롬프트의 내용(critique 우선순위 6개, NEEDS_FIX 형식, '사소한 미감 반복 금지' 문구, 절차적 구성 요구)은 보고서 설명과 일치합니다. 리더보드는 3dcodebench.com/arena에 있습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/README.md",
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/LICENSE",
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/visual_critique_system_prompt_text.txt"
+      ]
+    },
+    {
+      "name": "The Scene Language (zzyunzhi/scene-language)",
+      "status": "issue",
+      "detail": "보고서의 '기본 Claude 3.5 Sonnet, 3.7 선택 가능'은 거꾸로 적혀 있습니다. README는 'We recommend using Claude 3.7 Sonnet which is the default setting'이라고 하고, 예시 결과는 3.5 Sonnet으로 만들었습니다. 두 모델 모두 이미 retire되었습니다(3.5 Sonnet 2025-10-28, 3.7 Sonnet 2026-02-19). 따라서 'Anthropic API 키만 있으면 실행됩니다'는 지금은 틀린 말이고, engine/constants.py에서 모델을 바꿔야 합니다. CVPR 2025는 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/zzyunzhi/scene-language",
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations"
+      ]
+    },
+    {
+      "name": "Infinigen / ProcFunc",
+      "status": "issue",
+      "detail": "Infinigen의 BSD-3-Clause, ProcFunc의 arXiv 2604.26943, bpy==4.2.0/Python 3.11 요구, transpile 명령(uv run procfunc transpile x.blend --node_trees ... --output ...)은 확인했습니다. 그러나 보고서의 'ProcFunc README에는 LLM 언급이 없고 LLM 연계는 이 조사의 해석'은 틀렸습니다. 저장소의 experiments/EXPERIMENTS.md 제목이 'ProcFunc LLM/VLM Experiments'이고, BlenderGym의 material/geometry 편집 과제와 From-Scratch 생성으로 LLM/VLM을 평가합니다(gemini-3.x, gpt-5.x로 교체 가능). 논문 생성기 라이브러리는 infinigen2로 따로 공개되어 있습니다. 2604는 2026-04 제출을 뜻하므로 '2026-05'는 부정확합니다. ProcFunc 저장소의 LICENSE 파일은 404라서 라이선스를 확인할 수 없었습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/procfunc/main/README.md",
+        "https://raw.githubusercontent.com/princeton-vl/procfunc/main/experiments/EXPERIMENTS.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/LICENSE"
+      ]
+    },
+    {
+      "name": "LLaMA-Mesh (nv-tlabs)",
+      "status": "issue",
+      "detail": "존재하고 가중치는 2024-11-18에 공개되었으며, 학습 데이터셋은 아직 미공개입니다. 라이선스를 '자체 LICENSE + LLaMA 라이선스'로만 적은 것은 불충분합니다. LICENSE는 NVIDIA License이고 3.3조에서 '비상업(연구·평가 목적)만 허용'하므로 상업 파이프라인에는 쓸 수 없습니다. Blender 애드온은 huggingface/meshgen(Dylan Ebert 구현)입니다.",
+      "evidence_urls": [
+        "https://github.com/nv-tlabs/LLaMA-Mesh",
+        "https://raw.githubusercontent.com/nv-tlabs/LLaMA-Mesh/main/LICENSE"
+      ]
+    },
+    {
+      "name": "3D-GPT (Chuny1/3DGPT)",
+      "status": "issue",
+      "detail": "3DV 채택과 arXiv 2310.12945는 확인했습니다. 그러나 저장소는 '점진 공개' 상태입니다. 에이전트 구현(LLM/agents에 에이전트 2개)만 공개되었고, 수정된 Infinigen과 파서 개선은 'upcoming'으로 남아 있습니다. LICENSE 표기가 없고 openai==0.27.8(구버전 API)에 묶여 있습니다. '코드 공개'라고만 쓰면 과장입니다.",
+      "evidence_urls": [
+        "https://github.com/Chuny1/3DGPT"
+      ]
+    },
+    {
+      "name": "BlenderGym",
+      "status": "issue",
+      "detail": "CVPR 2025 Highlight, 245 씬, HF 데이터셋(richard-guyunqi/BG_bench_data), 평가 코드 공개를 확인했습니다. '20개 이상 모델 평가'와 달리 리더보드에는 VLM 시스템 13개가 있습니다. 평가에 쓰인 Claude-3.5-Sonnet과 Claude-3-Haiku는 이미 retire되어 원래 조건으로 재현할 수 없습니다. VeriRatio 관련 수정 사항은 verdicts를 참고하세요.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/BlenderGym/BlenderGym.github.io/main/index.html",
+        "https://github.com/richard-guyunqi/BlenderGym-Open"
+      ]
+    },
+    {
+      "name": "La Forge (ScoreIA)",
+      "status": "issue",
+      "detail": "수치는 대체로 맞습니다. Haiku 4.5는 6.5–62.3이고, Opus 5.5와 Fable 5.1은 여러 캠페인에서 100이며, teleport 규칙이 사후에 추가되었습니다. 그러나 중요한 단서가 빠졌습니다. ① 모델 신원은 클라이언트가 스스로 신고한 값이고 검증되지 않습니다(unsigned). ② 심판 코드와 캠페인을 Claude Opus로 작성했다고 README가 스스로 편향 가능성을 밝힙니다. ③ 하네스가 서로 다릅니다(Claude는 Claude Code 서브에이전트, GPT는 Codex CLI). ④ 도구는 Blender가 아니라 Forge 전용 MCP(enter_forge/forge_add/forge_keyframe/seal_forge)이고, 공유 갑옷 부품을 조립하는 과제라 모델링·텍스처링 능력은 측정하지 않습니다. '동적 애니메이션이 어려웠다'는 하위 모델에만 해당합니다. Opus 5.5는 가장 어려운 taille-3에서도 100점이었고 Sonnet 5는 19.5점이었습니다. 데이터 라이선스는 CC BY 4.0입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/drakkB/scoreia-forge-results/main/README.md"
+      ]
+    },
+    {
+      "name": "BlenderAlchemy",
+      "status": "ok",
+      "detail": "ECCV 2024, GPT-4V 최고 성능 언급, Gemini/Claude/Ollama 지원, Infinigen Blender 바이너리 전제, config 값을 확인했습니다. 'Blender 플러그인 별도 저장소'는 README에서 확인되지 않았습니다.",
+      "evidence_urls": [
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial",
+        "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml"
+      ]
+    },
+    {
+      "name": "VIGA",
+      "status": "ok",
+      "detail": "MIT, 스타 약 1.3k, 포크 126, 저자 목록, conda 환경 4개(agent/blender/sam/sam3d), NVIDIA GPU 권장, 예제 명령의 --model=gpt-5를 확인했습니다. 정량 향상률은 README에 없습니다.",
+      "evidence_urls": [
+        "https://github.com/Fugtemypt123/VIGA"
+      ]
+    },
+    {
+      "name": "SceneSmith",
+      "status": "ok",
+      "detail": "MIT, ICML 2026 Spotlight, arXiv 2602.09153, GPT-5 에이전트(OpenAI 키 필수), SAM3D(32GB)/Hunyuan3D-2(24GB), 전체 파이프라인 45GB 이상 권장, HSSD(약 72GB), Objaverse, PartNet-Mobility, 관절 에셋 ArtVIP, +Y forward/Z up, Drake(네이티브)/MuJoCo/USD(실험적)를 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/nepfaff/scenesmith"
+      ]
+    },
+    {
+      "name": "SceneReVis",
+      "status": "ok",
+      "detail": "MIT, SceneReVis-7B 체크포인트(HF runder1/SceneReVis-7B), SceneChain-12K(11,444 궤적, 렌더 약 80K), 6개 원자 연산, voxel 물리 보상 GRPO(VERL 포크)를 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/Runder-sun/SceneReVis"
+      ]
+    },
+    {
+      "name": "SAGE (NVlabs/sage)",
+      "status": "ok",
+      "detail": "Apache-2.0, SAGE-10k 수치, TRELLIS/MatFuse/Qwen/GPT 구성, Isaac Sim 출력을 확인했습니다. CVPR 2026은 hzxie 목록 기준입니다.",
+      "evidence_urls": [
+        "https://github.com/NVlabs/sage"
+      ]
+    },
+    {
+      "name": "Holodeck",
+      "status": "ok",
+      "detail": "gpt-4o-2024-05-13 사용, DFS 솔버 권장(2023-12-28 이전에 받은 코드는 --use_milp False 필요), objathor 에셋 다운로드, CVPR 2024를 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/allenai/Holodeck"
+      ]
+    },
+    {
+      "name": "I-Design",
+      "status": "issue",
+      "detail": "코드 공개, 백트래킹, OpenShape 검색, Blender 배치 스크립트, GPT-V 평가기를 확인했습니다. 다만 README에 Docker 안내가 없고, 기본 설정이 gpt-4, gpt-4-1106-preview, gpt-3.5-turbo-1106(autogen OAI_CONFIG_LIST)라서 구형 모델에 묶여 있습니다. ECCV 2024는 hzxie 목록으로 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/atcelen/IDesign"
+      ]
+    },
+    {
+      "name": "CAD-Assistant / CAD-Recode",
+      "status": "ok",
+      "detail": "CAD-Assistant는 ICCV 2025, FreeCAD 연동, SGP-Bench 1,700 파일, Docker, 'Attribution-NonCommercial' 라이선스를 확인했습니다. CAD-Recode는 ICCV 2025(2025-06 채택), v1.5(2025-03), Qwen2-1.5B + 선형층, HF 데모를 확인했습니다. 저장소에 LICENSE 파일이 없으니(404) 상업적으로 쓰기 전에 확인해야 합니다.",
+      "evidence_urls": [
+        "https://github.com/dimitrismallis/CAD-Assistant",
+        "https://github.com/filaPro/cad-recode"
+      ]
+    },
+    {
+      "name": "Make-it-Real / VLMaterial / MeshCoder",
+      "status": "ok",
+      "detail": "Make-it-Real은 MIT, GPT-4V 재질 주석 라이브러리, 2024-06 추론 코드 공개를 확인했습니다. VLMaterial은 코드·가중치 MIT, 데이터 CC BY-NC 4.0입니다. MeshCoder는 MIT이고 OOD 한계 문구가 README에 있습니다.",
+      "evidence_urls": [
+        "https://github.com/Aleafy/Make_it_Real",
+        "https://github.com/mit-gfx/VLMaterial",
+        "https://github.com/InternRobotics/MeshCoder"
+      ]
+    },
+    {
+      "name": "SceneAssistant / SceneOrchestra / TreeSearchGen",
+      "status": "ok",
+      "detail": "SceneAssistant는 20 스텝 PNG+JSON, Hunyuan3D-2, Z-Image, EEVEE, 기본 gemini-3-flash-preview를 확인했지만 TRELLIS 언급은 README에 없습니다. SceneOrchestra는 ECCV 2026, SFT/DPO, 잘못 생성된 궤적은 기본 3회 재시도를 확인했습니다. discriminator의 순위 능력은 orchestrator로 증류되고 최종 씬은 orchestrator 혼자 만듭니다. TreeSearchGen은 Apache-2.0, 가구 0.3m/소품 0.1m 격자, 기본 mcts이며, 2026 확장판의 arXiv 번호는 2606.06002입니다.",
+      "evidence_urls": [
+        "https://github.com/ROUJINN/SceneAssistant",
+        "https://github.com/yunhe24/sceneorchestra",
+        "https://github.com/dw-dengwei/TreeSearchGen"
+      ]
+    },
+    {
+      "name": "hzxie/Awesome-3D-Scene-Generation ('IJCV 2026 서베이 동반 목록')",
+      "status": "issue",
+      "detail": "목록은 존재하고 인용된 학회 정보(SceneSmith ICML 2026, SAGE CVPR 2026, SceneOrchestra ECCV 2026 등)는 정확합니다. 그러나 README에는 arXiv 2505.05474 배지만 있고 'IJCV 2026' 표기는 없어 해당 학회 표기는 확인할 수 없습니다. SceneCraft라는 같은 이름의 다른 논문(NeurIPS 2024, layout-guided)이 있으니 혼동하지 않도록 주의해야 합니다.",
+      "evidence_urls": [
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://github.com/drakkB/scoreia-forge-results",
+      "reason": "README가 스스로 밝히는 한계가 있습니다. 모델 신원은 자기 신고라 검증되지 않고 카드에 서명도 없습니다. 심판과 캠페인을 Claude Opus로 작성해 편향 가능성이 있습니다. 모델마다 하네스가 다릅니다(Claude Code, Codex CLI, Grok CLI). 도구가 Forge 전용 MCP의 부품 조립이라 Blender 모델링·텍스처 품질을 대표하지 못합니다. 동료심사를 거치지 않은 단일 업체 자료입니다."
+    },
+    {
+      "url": "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+      "reason": "SEO 스팸은 아니고 출처 링크와 미디어 아카이브가 있는 큐레이션입니다. 다만 X/LinkedIn/YouTube 사례를 모은 2차 집계이고, 스스로 'Most cases use GPT-6 Astra'라고 밝힐 만큼 선택 편향이 있습니다. 모델 신원도 작성자 주장에 기대는 경우가 많습니다. 수치는 반드시 1차 출처(각 벤치마크 페이지나 논문)로 재확인해야 합니다. 한편 이 목록에 La Forge 외 최신 모델 3D/CAD 벤치마크가 여러 개 있으므로, 보고서의 '유일한 근거는 La Forge와 사례 모음'이라는 주장은 틀렸습니다."
+    },
+    {
+      "url": "https://github.com/gaoypeng/3dcodebench",
+      "reason": "신뢰할 만한 1차 출처이지만 라이선스 표기가 내부에서 모순됩니다(README는 MIT, LICENSE 파일은 Apache 2.0, factory는 BSD-3). 라이선스를 인용할 때는 LICENSE 파일을 기준으로 삼고 불일치를 명시해야 합니다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Procedura: Agentic 3D Modeling with Procedural Control (arXiv 2608.26238, 2026-08)",
+      "url": "https://arxiv.org/abs/2608.26238",
+      "why_important": "에이전트가 부품을 파라메트릭 프로그램으로 만들고, typed mate(기계적으로 검증 가능한 결합)와 솔버로 조립합니다. mate 게이트가 떠 있거나 파고드는 파트를 측정해 거부하고, 파트별 PBR 재질 할당, material critic, 관절화까지 다룹니다. 가구·오브젝트를 '제대로' 만드는 문제에 가장 직접적인 2026 연구입니다(Gemini 3.7 Flash/GPT-5.6-sol 구성, MechBench-36). 프로젝트 페이지 소스는 raw.githubusercontent.com/spatiaos/spatiaos.github.io로 확인했습니다."
+    },
+    {
+      "name": "최신 모델(Opus 5.5, Fable 5.1, GPT-6 Astra)의 3D/CAD 벤치마크: BenchCAD, Normal CADArena, CadQueryEval, Blueprint-Bench 2",
+      "url": "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics#benchmarks",
+      "why_important": "보고서는 최신 모델 비교 근거가 La Forge뿐이라고 했지만, 연구자 자신이 인용한 목록에 여러 벤치마크가 있습니다. BenchCAD(멀티뷰 → CadQuery, voxel IoU; OpenAI 발표 표에서 Astra 95.9%, Fable 5.1 84.3%), CADArena(Opus 5.5 max 0.750, Astra 0.671, Fable 5.1 0.662), CadQueryEval, Blueprint-Bench 2가 그것입니다. benchcad.com과 normal.ai는 이 세션에서 차단되어 1차 확인은 하지 못했습니다(https://benchcad.com/leaderboard, https://normal.ai/research/cadarena)."
+    },
+    {
+      "name": "ProcFunc LLM/VLM 실험 + infinigen2 생성기 라이브러리",
+      "url": "https://github.com/princeton-vl/procfunc/blob/main/experiments/EXPERIMENTS.md",
+      "why_important": "ProcFunc는 LLM/VLM이 절차적 생성 코드를 편집·생성하도록 설계·평가된 도구입니다(BlenderGym material/geometry 편집, From-Scratch 생성). geometry nodes를 Python으로 변환해 LLM 편집에 쓰는 워크플로의 1차 근거가 됩니다."
+    },
+    {
+      "name": "Anthropic 모델 retire 일정 (재현성 리스크)",
+      "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+      "why_important": "Claude 3.5 Sonnet은 2025-10-28, 3.7 Sonnet은 2026-02-19, 3 Haiku는 2026-04-20에 retire되었습니다. 이 때문에 Scene Language(기본 3.7 Sonnet), Articulate-Anything(claude-3-5-sonnet 옵션), BlenderGym Claude 기준선, LL3M 서버가 원래 설정으로는 동작하지 않습니다. 보고서의 '모델 버전에 묶지 말라'는 교훈을 뒷받침하는 1차 근거입니다."
+    },
+    {
+      "name": "Procedural Scene Programs for Open-Universe Scene Generation: LLM-Free Error Correction via Program Search (SIGGRAPH Asia 2025)",
+      "url": "https://arxiv.org/abs/2510.16147",
+      "why_important": "LLM이 만든 씬 프로그램의 오류를 LLM 없이 프로그램 탐색으로 교정하는 방식입니다. '좌표는 솔버, LLM은 관계'라는 합의 3의 대안이자 보강 근거입니다(xdlbw 목록에 있음)."
+    },
+    {
+      "name": "Global-Local MCTS 확장판 (arXiv 2606.06002) / HOLODECK 2.0 (arXiv 2508.05899) / WorldCraft (arXiv 2502.15601)",
+      "url": "https://github.com/hzxie/Awesome-3D-Scene-Generation",
+      "why_important": "TreeSearchGen의 2026 확장(PRM-guided MCTS, Paint3D 재텍스처링)의 정확한 arXiv 번호가 빠졌습니다. VLM으로 3D 월드를 생성·편집하는 Holodeck 2.0과 LLM 에이전트 기반 사실적 월드 생성인 WorldCraft도 누락되었습니다(hzxie 목록에서는 주석 처리됨)."
+    }
+  ]
+}

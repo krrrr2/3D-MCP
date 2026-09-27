@@ -1,0 +1,383 @@
+{
+  "verdicts": [
+    {
+      "claim": "Unreal Engine 5.8은 2026-06-17 출시되었고, Experimental 'Unreal MCP' 플러그인이 에디터 내장 서버(http://127.0.0.1:8000/mcp)로 포함되어 있다.",
+      "verdict": "partially",
+      "correction": "플러그인이 Experimental이고(엔진 경로 Engine/Plugins/Experimental/ModelContextProtocol), 기본 포트 8000에 URL 경로 /mcp로 localhost에 바인딩된다는 부분은 Epic 공식 GitHub 저장소(unreal-engine-skills-for-claude-code-plugin README)와 per-simmons 문서로 확인했습니다. 출시일 2026-06-17은 인용 출처(byteiota)와 뉴스, Epic 사이트 모두 접근이 차단되어 확인하지 못했습니다. 다만 per-simmons의 첫 UE 5.8 실작업 기록이 2026-06-20, WildCake 저장소 갱신이 2026-06-20이라 6월 중순 출시와는 모순되지 않습니다.",
+      "evidence_urls": [
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/UNREAL-MCP-ENABLE.md",
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/PCG-GUIDE.md"
+      ],
+      "note": "ibrews/ue5-mcp README는 공식 플러그인이 'requires a source build of the engine'이라고 적었습니다. 반면 per-simmons 00-GETTING-STARTED는 'Unreal Engine 5.8 via the Epic Games Launcher'로 작업했습니다. 서로 충돌하므로 리서처가 쓴 '별도 C++ 빌드 불필요'는 per-simmons 쪽 근거에만 기대고 있습니다. ibrews 문구는 프리뷰 시절 정보로 보입니다."
+    },
+    {
+      "claim": "UE 5.8 MCP에서 실제 툴셋을 쓰려면 AllToolsets와 PythonScriptPlugin을 켜야 하며, 콘솔 명령 ModelContextProtocol.StartServer <port>와 GenerateClientConfig ClaudeCode를 쓴다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/UNREAL-MCP-ENABLE.md",
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin"
+      ],
+      "note": "Epic 공식 README에도 'AllToolsets provides the tools; the server exposes none without it', StartServer <port>, GenerateClientConfig ClaudeCode가 적혀 있습니다. PythonScriptPlugin 필수 여부는 per-simmons 문서에만 있습니다. JosephOIbrahim/UnrealEngine_Bridge는 'On UE 5.8, ModelContextProtocol and AllToolsets self-enable'이라고 적어 기본 활성 여부는 환경에 따라 다를 수 있습니다."
+    },
+    {
+      "claim": "UE 5.8 MCP의 execute_tool_script 샌드박스는 `unreal` 모듈을 쓸 수 없고 json, math, datetime, copy, re, time만 import할 수 있다.",
+      "verdict": "partially",
+      "correction": "per-simmons 문서는 소스(programmatic.py의 _ALLOWED_MODULE_NAMES, AST 검사와 import hook)를 근거로 이 제한을 명시합니다. 하지만 이것은 단일 2차 출처입니다. Epic 공식 README는 오히려 'ProgrammaticToolset.execute_tool_script executes arbitrary Python … full access to every toolset API, the project on disk, the asset database'라고 경고합니다. 따라서 'unreal 모듈 직접 import 불가'는 맞을 수 있어도 안전한 샌드박스로 소개하면 오해를 부릅니다. 등록된 툴셋 API를 통해 프로젝트 콘텐츠를 변경하거나 삭제할 수 있는 특권 연산으로 다뤄야 합니다.",
+      "evidence_urls": [
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/programmatic-toolset-capabilities.md",
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin"
+      ]
+    },
+    {
+      "claim": "Epic은 State of Unreal 2026에서 Unreal Engine 6에 Claude와 Gemini를 MCP 플러그인으로 통합한다고 발표했고, Early Access 목표는 2027년 말이다.",
+      "verdict": "unverifiable",
+      "evidence_urls": [],
+      "note": "thenextweb, wccftech, bitsminds, YouTube, unrealengine.com, Wikipedia가 모두 egress 차단이었고 WebSearch 한도도 소진되었습니다. GitHub에서 'Unreal Engine 6' MCP 검색 결과는 0건입니다. 1차 출처(Epic 블로그나 발표 영상)로 확인하기 전까지는 '보도에 따르면'으로 한정해야 합니다. 특히 'EA 2027년 말'은 수치 주장이라 게시 전에 재확인이 필요합니다."
+    },
+    {
+      "claim": "flopperam/unreal-engine-mcp는 현재 Aura 소유이고, CoplayDev MCP for Unity도 Aura가 후원한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/flopperam/unreal-engine-mcp",
+        "https://github.com/CoplayDev/unity-mcp"
+      ],
+      "note": "flopperam README: 'This MCP is now owned by Aura!'. CoplayDev README: 'Proudly sponsored and maintained by Aura'. 다만 요약과 기타 항목의 'Aura가 Godot AI(hi-godot)를 후원' 또는 'godot-ai는 CoplayDev 팀이 만들었다'는 hi-godot README와 조직 페이지에서 확인되지 않았습니다(조직에 공개 멤버가 없음)."
+    },
+    {
+      "claim": "ChiR24/Unreal_mcp는 UE 5.0~5.8을 지원하며 최신 버전은 v0.6.0-beta-b(2026-09-25)이지만, post-process와 Megascans/Fab 도구는 로드맵상 미구현이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ChiR24/Unreal_mcp",
+        "https://github.com/ChiR24/Unreal_mcp/releases.atom",
+        "https://raw.githubusercontent.com/ChiR24/Unreal_mcp/main/docs/Roadmap.md"
+      ],
+      "note": "releases.atom 기준 v0.6.0-beta-b는 2026-09-25T14:15:54Z, v0.6.0-beta-a는 2026-09-18입니다. Roadmap Phase 29.5(PP: exposure, bloom, DOF, color grading), 29.1(RT), 29.4(Lumen reflection), 37.1(Megascans/Fab)이 모두 [ ]입니다. 두 가지를 보완해야 합니다. 첫째, 두 0.6 버전은 npm beta 태그이고 stable은 여전히 0.5.30입니다. 둘째, 라이선스는 MIT로 명시할 수 있습니다."
+    },
+    {
+      "claim": "CoplayDev/unity-mcp는 47개 도구, Unity 2021.3~6.x를 지원하고, v10.2.0이 2026-09-01에 릴리스되었으며 약 14.5k stars이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/CoplayDev/unity-mcp",
+        "https://github.com/CoplayDev/unity-mcp/releases.atom"
+      ],
+      "note": "README에 '47 focused MCP tool entrypoints', 'Unity 2021.3 LTS → 6.x', 14.5k stars가 있고, atom 피드에 v10.2.0 2026-09-01T20:27:55Z가 있습니다. asset-gen 문서에 따르면 3D 모델 외에 fal.ai, OpenRouter(2D 이미지) 프로바이더도 지원합니다."
+    },
+    {
+      "claim": "공식 Unity MCP는 Unity 6(6000.0)+와 com.unity.ai.assistant 패키지가 필요하고 Edit > Project Settings > AI > Unity MCP에서 설정한다.",
+      "verdict": "unverifiable",
+      "evidence_urls": [
+        "https://github.com/needle-mirror/com.unity.ai.assistant"
+      ],
+      "note": "docs.unity3d.com, unity.com, discussions.unity.com, packages.unity.com, docs.unity.cn이 모두 차단되었습니다. 참고로 needle-mirror에 미러된 com.unity.ai.assistant 1.0.0-pre.12(2025-08)의 package.json은 'unity: 6000.2'를 요구합니다. 그래서 '6000.0+'는 의심스럽고, 2.x의 실제 최소 버전은 공식 문서로 재확인해야 합니다."
+    },
+    {
+      "claim": "Unity AI는 2026-05-04 Unity 6 대상 오픈 베타로 출시되었고, Personal은 14일 체험 후 월 $10(1,000 크레딧)이다.",
+      "verdict": "unverifiable",
+      "evidence_urls": [],
+      "note": "pocketgamer.biz와 Unity 공식 포럼 모두 egress 차단입니다. 요금은 변동이 잦으므로 공식 가격 페이지로 확인하기 전까지 게시하지 않는 것을 권합니다."
+    },
+    {
+      "claim": "Roblox는 Studio 내장 MCP 서버를 권장하며 기존 오픈소스 studio-rust-mcp-server는 아카이브되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server"
+      ],
+      "note": "배너: 'archived by the owner on Apr 3, 2026'. README: 'We've shifted ongoing engineering investment to the built-in MCP Server included with Roblox Studio, which we recommend…'. 내장 서버의 설정 절차(Assistant Settings → MCP Servers)는 create.roblox.com이 차단되어 확인하지 못했습니다."
+    },
+    {
+      "claim": "NVIDIA kit-usd-agents의 MCP 서버들(Kit, USD Code, OmniUI, Isaac Sim)은 문서·코드 지식만 제공하고 라이브 씬을 조작하지 않는다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/NVIDIA-Omniverse/kit-usd-agents",
+        "https://github.com/NVIDIA-Omniverse/kit-usd-agents/blob/main/source/mcp/kit_mcp/README.md"
+      ],
+      "note": "USD Code 7개, Kit 12개, OmniUI 10개, Isaac Sim 5개 도구입니다. 모두 API와 문서, 코드 예제를 검색하는 용도이고 실시간 편집은 Chat USD 확장이 담당합니다. Kit MCP는 :9902/mcp, Docker, NVIDIA API 키 필요도 확인했습니다. 라이선스는 Apache-2.0입니다."
+    },
+    {
+      "claim": "RTX Remix Toolkit은 실행 시 MCP 서버를 Streamable HTTP로 http://127.0.0.1:18014/mcp/에 자동으로 띄운다(포트 18019까지 폴백).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/NVIDIAGameWorks/toolkit-remix/blob/main/docs/howto/learning-mcp.md"
+      ],
+      "note": "내용은 맞지만 인용 URL(저장소 루트 README)에는 MCP 언급이 없습니다. 근거 URL을 docs/howto/learning-mcp.md로 바꿔야 합니다. 이 문서에서 REST API를 MCP 도구로 변환하는 방식과 rtx-remix-modding 스킬 번들도 확인했습니다."
+    },
+    {
+      "claim": "PlayCanvas 공식 Editor MCP는 기본 포트 52000을 쓰고, 한 번에 Editor 하나만 연결할 수 있으며, Sketchfab과 Store 검색·임포트를 지원한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/playcanvas/editor-mcp-server"
+      ],
+      "note": "README: 'WebSocket port 52000 by default', 'Only one Editor instance can be connected…', 'PlayCanvas Store search and import, licenses, Sketchfab search and import'. 'The MCP client is built into the Editor — no browser extension needed'도 확인했습니다. 라이선스는 MIT, Node 22.18+입니다."
+    },
+    {
+      "claim": "Godot AI(hi-godot) v4는 Godot 4.7+가 필요하고 editor_screenshot에 cinematic(Camera3D) 모드가 있다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/hi-godot/godot-ai",
+        "https://raw.githubusercontent.com/hi-godot/godot-ai/main/docs/TOOLS.md",
+        "https://github.com/hi-godot/godot-ai/releases.atom"
+      ],
+      "note": "README: 'Godot 4.7+ within the 4.x line for Godot AI v4'. TOOLS.md: cinematic = 'Cinematic Camera3D render'. Vision Routing도 확인했습니다. 최신 릴리스는 4.2.3(2026-09-24T22:31Z), stars 2.6k입니다."
+    },
+    {
+      "claim": "per-simmons 하네스에서 UE 5.8 공식 MCP와 PCG로 49개 타워(147 ISM, 빈 스폰 0)를 만든 최종 상태 기록은 2026-06-21이다.",
+      "verdict": "partially",
+      "correction": "49개(7×7), 147 ISM, 0 empties, 2026-06-21은 PCG-GUIDE의 ITER 5~7에서 확인됩니다. 그러나 Iter 7은 마지막이 아닙니다. 같은 날 ITER 8에서 글래스 타워 14개를 실제 City Sample 레벨(Small_City_LVL)에 배치했고, 이후 Paris, Art-Deco 블록 작업이 이어졌습니다. 또 49개 도시는 'City Sample 위'가 아니라 City Sample 프로젝트 안의 빈 Startup 맵(/Game/Map/Startup/Startup)에 있습니다. 문서 원문: 'Iters 4-7's glass city lives in /Game/Map/Startup/Startup'. 타워도 벽돌이 아니라 글래스 grammar 타워입니다(벽돌은 Iter 2~3).",
+      "evidence_urls": [
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/PCG-GUIDE.md"
+      ]
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "Unreal MCP (Epic 공식, UE 5.8 ModelContextProtocol)",
+      "status": "issue",
+      "detail": "Experimental, 기본 8000//mcp, AllToolsets 필수, list_toolsets/describe_toolset/call_tool의 tool-search 흐름은 Epic 공식 GitHub README로 확인했습니다. 네 가지 문제가 있습니다. (1) 출시일 2026-06-17은 미확인입니다. (2) 툴셋 규모 수치가 출처마다 다릅니다: per-simmons 약 28 toolsets, Epic README '30+ toolsets', PortKit '40 toolsets/414 subtools'(1-star 저장소), UnrealEngine_Bridge 'Epic MCP 830 tools'. 한 수치를 사실처럼 쓰지 말아야 합니다. (3) ibrews README는 'requires a source build'라고 적어 per-simmons의 Launcher 빌드 사용과 충돌합니다. (4) Epic 공식 Claude Code 플러그인 저장소(스킬, SessionStart hook, 에디터 재시작 시 세션을 유지하는 Experimental proxy)가 빠졌습니다. 보안 서술은 Epic README('Localhost is not a trust boundary', origin validation만 있음)로 교체하는 편이 정확합니다.",
+      "evidence_urls": [
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/UNREAL-MCP-ENABLE.md",
+        "https://github.com/JosephOIbrahim/UnrealEngine_Bridge",
+        "https://github.com/MC-Oruc/UE57-MCP-PortKit"
+      ]
+    },
+    {
+      "name": "ChiR24/Unreal_mcp",
+      "status": "ok",
+      "detail": "888 stars, MIT, UE 5.0~5.8, Node 20.19+, 네이티브 HTTP 3000, 브리지 WS 8091, capability token 기본 사용, loopback 전용, 'unreal' 게이트웨이(search/describe/execute/configure)와 23 canonical 모두 확인했습니다. v0.6.0-beta-b는 2026-09-25입니다(atom). 보충할 점은 0.6은 npm beta 태그이고 stable은 0.5.30이라는 것, 로드맵상 PP, RT, Lumen reflection, Megascans/Fab이 미구현이라는 것입니다.",
+      "evidence_urls": [
+        "https://github.com/ChiR24/Unreal_mcp",
+        "https://github.com/ChiR24/Unreal_mcp/releases.atom",
+        "https://raw.githubusercontent.com/ChiR24/Unreal_mcp/main/docs/Roadmap.md"
+      ]
+    },
+    {
+      "name": "flopperam/unreal-engine-mcp",
+      "status": "ok",
+      "detail": "Aura 소유, 1.1k stars, 97 commits, MIT, UE 5.5~5.7, Python 3.12+, 월드빌딩 도구 목록을 확인했습니다. 호스팅판은 agent.flopperam.com/mcp, '50+ tools across 9 domains'이고 FlopAI Unreal 플러그인이 필요합니다(리서처가 이 점을 누락). '64개 중 46개 무료'는 README에 없고 flopperam.com이 차단되어 미확인입니다.",
+      "evidence_urls": [
+        "https://github.com/flopperam/unreal-engine-mcp"
+      ]
+    },
+    {
+      "name": "chongdashu/unreal-mcp",
+      "status": "ok",
+      "detail": "2.1k stars, 345 forks, 33 commits, MIT, EXPERIMENTAL, TCP 55557, UE 5.5+, Python 3.12+를 확인했습니다. 이슈 번호 설명이 조금 부정확합니다. #31은 5.6 호환, #43은 Version mismatch가 맞습니다. 하지만 #48(2026-04-09)은 연결 실패가 아니라 'Replace FindObject with FindObjectSafe to support UE5.5+' 제안이고, 연결 실패 이슈는 #23과 #32입니다. X 데모 게시물 ID를 디코드하면 2025-03-29로, '2025-03'과 일치합니다.",
+      "evidence_urls": [
+        "https://github.com/chongdashu/unreal-mcp",
+        "https://github.com/chongdashu/unreal-mcp/issues"
+      ]
+    },
+    {
+      "name": "runreal/unreal-mcp",
+      "status": "ok",
+      "detail": "115 stars, 24 commits, MIT, Python Remote Execution(플러그인 불필요), UE 5.4+를 확인했습니다. README 도구 목록은 정확히 20개이므로 '20개 이상'보다 '20개'가 정확합니다. 설치 명령은 `npx -y @runreal/unreal-mcp`입니다.",
+      "evidence_urls": [
+        "https://github.com/runreal/unreal-mcp"
+      ]
+    },
+    {
+      "name": "GenOrca/unreal-mcp",
+      "status": "ok",
+      "detail": "144 stars, Apache-2.0, UE 5.6+, '253 actions across 21 domains', 이미지 위 액터 라벨 캡처, execute_python, Python 3.11+와 uv, Fab 배포를 확인했습니다. GitHub topic 페이지에서 2026-07-07 갱신도 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/GenOrca/unreal-mcp",
+        "https://github.com/topics/unreal-mcp"
+      ]
+    },
+    {
+      "name": "CoplayDev/unity-mcp (MCP for Unity)",
+      "status": "ok",
+      "detail": "14.5k stars, MIT, 47 tools, Unity 2021.3 LTS부터 6.x, Python 3.10+, git URL, Aura 후원, v10.2.0(2026-09-01)과 v10.0.0(2026-06-30)을 확인했습니다. generate_model(tripo|meshy, text|image, fbx|glb), Sketchfab import_model, Asset Gen 탭, OS 키체인 저장도 asset-gen 문서로 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/CoplayDev/unity-mcp",
+        "https://github.com/CoplayDev/unity-mcp/blob/main/docs/asset-gen-manual-verification.md",
+        "https://github.com/CoplayDev/unity-mcp/releases.atom"
+      ]
+    },
+    {
+      "name": "IvanMurzak/Unity-MCP",
+      "status": "ok",
+      "detail": "4.3k stars, 3,088 commits, Apache-2.0, 70+ 도구(21/24/18/12의 4개 범주), 런타임 지원, 공백 경로 금지를 확인했습니다. default-mcp-tools.md에서 screenshot-isolated('Render a target GameObject in isolation… optional Composite (2x2)'), assets-material-create, assets-shader-list-all, assets-prefab-*, scene-*도 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/IvanMurzak/Unity-MCP",
+        "https://github.com/IvanMurzak/Unity-MCP/blob/main/docs/default-mcp-tools.md"
+      ]
+    },
+    {
+      "name": "Unity MCP (Unity 공식, com.unity.ai.assistant)",
+      "status": "not_found",
+      "detail": "Unity 도메인이 전부 차단되어 요구 버전, 설정 경로, 요금, 오픈 베타 날짜를 하나도 1차 확인하지 못했습니다. needle-mirror의 구버전(1.0.0-pre.12)은 Unity 6000.2 이상을 요구하므로 '6000.0+'는 재확인이 필요합니다. 'confidence: medium'보다 낮춰 표기하길 권합니다.",
+      "evidence_urls": [
+        "https://github.com/needle-mirror/com.unity.ai.assistant"
+      ]
+    },
+    {
+      "name": "Godot MCP 계열 (Coding-Solo / hi-godot / godot-mcp-pro)",
+      "status": "issue",
+      "detail": "Coding-Solo(5.8k stars, MIT, 13 tools, MeshLibrary export, Node 18+)와 godot-ai(2.6k stars, MIT, 46 tools/120+ ops, 4.7+, cinematic, C#은 text-only, 4.2.3 2026-09-24)는 확인했습니다. 문제는 세 가지입니다. (1) 'godot-ai는 CoplayDev 팀이 만든 서버', 'Aura가 Godot AI 후원'은 README와 hi-godot 조직 페이지에서 확인되지 않습니다(공개 멤버 없음). (2) godot-mcp-pro의 도구 수가 README 제목 162, 상세 목록 187, awesome-mcp-servers 84로 제각각이라 단일 수치로 쓰면 안 됩니다. 라이선스는 Proprietary이고 공개 저장소에는 무료 애드온만 있습니다. (3) 요약의 'Godot MCP Pro(유료 $15)'는 맞습니다(일회성, 평생 업데이트).",
+      "evidence_urls": [
+        "https://github.com/Coding-Solo/godot-mcp",
+        "https://github.com/hi-godot/godot-ai",
+        "https://github.com/hi-godot",
+        "https://github.com/youichi-uda/godot-mcp-pro"
+      ]
+    },
+    {
+      "name": "Roblox (내장 MCP + 커뮤니티)",
+      "status": "ok",
+      "detail": "studio-rust-mcp-server는 2026-04-03 아카이브, 내장 서버 권장, 도구 6종을 확인했습니다. boshyxd/robloxstudio-mcp는 2026-06-06 아카이브도 확인했는데, 원작자가 활발히 유지되는 포크 Chrrxs/robloxstudio-mcp(258 stars)로 옮기라고 권고하는 점을 리서처가 누락했습니다. weppy-roblox-mcp는 AGPL-3.0과 Basic/Pro 구분을 확인했으나 '21개 도구·140개 이상 액션' 수치는 README에서 확인되지 않습니다.",
+      "evidence_urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server",
+        "https://github.com/boshyxd/robloxstudio-mcp",
+        "https://github.com/hope1026/weppy-roblox-mcp"
+      ]
+    },
+    {
+      "name": "Babylon.js 공식 MCP 서버들",
+      "status": "issue",
+      "detail": "packages/tools에 nme, nge, npe, nrge, gui, flow-graph, smart-filters MCP 서버와 mcp-server-core가 있고, NME 흐름(create_material부터 export_material_json까지)과 Scene MCP add_material 연계, 에디터 라이브 세션 브리지를 확인했습니다. 리서처가 미확인이라 한 npm 패키지 @babylonjs/mcp-servers는 실제로 존재합니다(v9.28.0, 2026-09-24 갱신). 배포 바이너리 이름은 babylonjs-nme-mcp-server, babylonjs-nge-mcp-server 등이고, 'babylonjs-node-material'은 저장소 내부 README의 bin 이름입니다. 설치 안내는 npm 패키지 기준으로 고치는 것이 좋습니다.",
+      "evidence_urls": [
+        "https://github.com/BabylonJS/Babylon.js/tree/master/packages/tools",
+        "https://github.com/BabylonJS/Babylon.js/tree/master/packages/tools/nme-mcp-server",
+        "https://registry.npmjs.org/@babylonjs/mcp-servers"
+      ]
+    },
+    {
+      "name": "per-simmons/unreal-agent-harness (핵심 사례)",
+      "status": "issue",
+      "detail": "196 stars이고 Claude와 UE 5.8 공식 MCP 사용, 'real but raw', 직렬화 원칙, Cesium v2.27.0 소스 빌드 문서, Paris(12 variants, 5 tones, 20 trees, 12 lamps, 6 benches, 5 cars), Art-Deco(bronze on slot 1), CH-kit Y축 문제, 조명과 사실감 수치를 모두 확인했습니다. 오류가 두 가지 있습니다. (1) 'SF 실내를 만들었다'는 틀렸습니다. ENVIRONMENTS.md에 'Sci-fi station interior | plan ✅, assembly queued'로 되어 있어 계획만 있고 조립은 대기 상태입니다. 따라서 scifi-interior-plan의 조명 수와 격자 조언은 검증된 교훈이 아니라 계획입니다. (2) know-how의 PCG 레시피(gridExtents 20000, KMeans 5, scale 18/18/8~26/26/40)는 초기 'cube-extrusion' 프록시 단계의 값입니다. 최종 49개 글래스 타워는 grammar 그래프, actor-grid, tier 방식이고, 이후 데모는 gridExtents 29000/31000을 썼습니다. 섞어서 제시하면 오해를 부릅니다. NYC(Cesium)는 'documented' 상태입니다.",
+      "evidence_urls": [
+        "https://github.com/per-simmons/unreal-agent-harness",
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/ENVIRONMENTS.md",
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/PCG-GUIDE.md",
+        "https://github.com/per-simmons/unreal-agent-harness/blob/master/docs/scifi-interior-plan.md"
+      ]
+    },
+    {
+      "name": "ibrews/ue5-mcp (UE5 MCP Field Manual)",
+      "status": "issue",
+      "detail": "PascalCase(AutoPossessAI), _C 접미사, RootComponent 속성, Modify() 없는 변경은 undo에 남지 않음, emissive >1.0(3~10), Niagara Unlit, print()가 돌아오지 않을 때 Note 액터 tags로 우회, '80% vs 99%' 문구를 확인했습니다(v3.3.0 2026-08-08, MIT). 다만 SKILL.md §5.1의 'Lumen GI only considers Movable; Stationary contributes nothing'은 Epic의 Lumen 설명(Stationary 라이트도 Lumen에서 동작)과 충돌할 가능성이 큽니다. Epic 문서에 접근하지 못해 교차 확인은 못 했으므로 know-how에 단정적으로 넣지 말아야 합니다. README의 'requires a source build' 서술도 다른 출처와 충돌합니다.",
+      "evidence_urls": [
+        "https://github.com/ibrews/ue5-mcp/blob/main/SKILL.md",
+        "https://github.com/ibrews/ue5-mcp"
+      ]
+    },
+    {
+      "name": "NVIDIA Omniverse 계열 (RTX Remix, omniverse-mcp, isaac-sim-mcp)",
+      "status": "ok",
+      "detail": "RTX Remix MCP(18014부터 18019까지, Streamable HTTP, REST를 MCP로 변환, rtx-remix-modding 스킬)는 docs/howto/learning-mcp.md로 확인했습니다. serionist/omniverse-mcp는 0 stars, 42 tools/14 categories, Isaac Sim 5.1+, MIT입니다. omni-mcp/isaac-sim-mcp는 192 stars, Isaac Sim 4.2.0+, MIT입니다.",
+      "evidence_urls": [
+        "https://github.com/NVIDIAGameWorks/toolkit-remix/blob/main/docs/howto/learning-mcp.md",
+        "https://github.com/serionist/omniverse-mcp",
+        "https://github.com/omni-mcp/isaac-sim-mcp"
+      ]
+    },
+    {
+      "name": "Unity-Technologies/industry-ai-workflows",
+      "status": "issue",
+      "detail": "공식 실험적 Claude Code 플러그인 마켓(2 stars)이고 uam-mcp, uat-mcp, upa-mcp로 구성됨을 확인했습니다. 두 가지를 바로잡아야 합니다. uat-mcp의 정식 명칭은 'Asset Transformer'(Pixyz SDK 기반)이고 로컬 작업에는 Pixyz 라이선스 좌석이 필요합니다. 라이선스는 오픈소스가 아니라 Unity ToS의 'Experimental / Evaluation Version'(source-available)입니다.",
+      "evidence_urls": [
+        "https://github.com/Unity-Technologies/industry-ai-workflows"
+      ]
+    },
+    {
+      "name": "기타 웹 3D, O3DE, 에셋 (threejs-devtools-mcp, r3f-mcp, o3de-mcp, Quartermaster, PlayCanvas)",
+      "status": "ok",
+      "detail": "threejs-devtools-mcp(109 stars, MIT, 59 tools, :9222, 탭 유지 필요, '(unnamed)' 표시), r3f-mcp(1 star, MIT, npx r3f-mcp-server --port 3333), o3de-mcp(11 stars, 66 tools, 편집 도구 40개, RenderDoc, companion gem, Apache-2.0/MIT), Quartermaster(2 stars, MIT, 스토어 5곳, FTS5+ONNX 임베딩+CLIP, 도구명과 texel density 제공), PlayCanvas(137 stars, MIT, 199 commits)를 모두 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/DmitriyGolub/threejs-devtools-mcp",
+        "https://github.com/r3f-mcp/r3f-mcp",
+        "https://github.com/nickschuetz/o3de-mcp",
+        "https://github.com/Tanshaydar/Quartermaster",
+        "https://github.com/playcanvas/editor-mcp-server"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://byteiota.com/unreal-engine-5-8-ships-mcp-server-ai-agents-can-now-drive-the-editor/",
+      "reason": "UE 5.8 출시일 주장의 유일한 인용 출처인데 접근이 차단되어 확인할 수 없었습니다. 개발 뉴스를 재가공하는 블로그로 보이며, 출시일 같은 핵심 사실은 Epic 공식 릴리스 노트로 대체해야 합니다."
+    },
+    {
+      "url": "https://www.bitsminds.com/news/epic-unreal-engine-6-unified-mcp-claude-gemini-2026",
+      "reason": "AI가 생성한 뉴스 집약 사이트로 의심됩니다. 1차 출처가 아니며 UE6 발표 내용(EA 2027년 말 등)의 근거로 쓰기 부적절합니다(접근도 차단)."
+    },
+    {
+      "url": "https://www.summerengine.com/blog/best-godot-mcp-server",
+      "reason": "자사 제품을 파는 벤더 블로그의 '베스트 목록' 형식이라 편향 가능성이 있습니다. SEO성 비교 글이며 접근이 차단되어 검증하지 못했습니다."
+    },
+    {
+      "url": "https://forums.unrealengine.com/t/strayspark-unreal-mcp-server-200-ai-tools-for-ue5-editor-automation-via-mcp/2707474",
+      "reason": "판매자가 직접 올린 홍보 글('200+ tools')입니다. 도구 수 등 마케팅 수치는 독립적으로 검증되지 않았습니다."
+    },
+    {
+      "url": "https://ludusengine.com/blog/unreal-mcp-plugin-ue5-8-setup",
+      "reason": "경쟁 상용 제품(Ludus AI) 벤더의 블로그라 공식 MCP의 약점을 부각할 동기가 있습니다. 접근이 차단되어 검증하지 못했습니다."
+    },
+    {
+      "url": "https://github.com/MC-Oruc/UE57-MCP-PortKit",
+      "reason": "1 star, 28 commits 규모의 저장소입니다. '40 toolsets / 414 sub-tools'가 리서처 요약에서 공식 MCP 규모처럼 인용되었지만, Epic README(30+ toolsets), per-simmons(약 28), UnrealEngine_Bridge(830 tools)와 서로 맞지 않습니다."
+    },
+    {
+      "url": "https://github.com/punkpeye/awesome-mcp-servers",
+      "reason": "큐레이션 목록의 설명이 원 저장소와 다릅니다(unity-biome-mcp 47 tools 대 저장소 160, godot-mcp-pro 84 대 162/187). 발견용으로만 쓰고 수치는 원 저장소에서 가져와야 합니다."
+    },
+    {
+      "url": "https://github.com/ChiR24/Unreal_mcp/releases",
+      "reason": "HTML 릴리스 페이지에는 연도가 빠져 있어 자동 요약 도구가 2024로 오독했습니다. 날짜는 releases.atom(ISO 타임스탬프)으로 확인해야 합니다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "EpicGames/unreal-engine-skills-for-claude-code-plugin (Epic 공식 Claude Code 플러그인)",
+      "url": "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+      "why_important": "Epic이 직접 배포하는 공식 Claude Code 플러그인입니다(308 stars, MIT, 2026-04~09 활발히 커밋). `/plugin install unreal-engine-skills-for-claude-code@claude-plugins-official`로 설치하고, unreal-mcp 스킬과 SessionStart hook, 에디터 재시작 시 MCP 세션을 유지하는 Experimental proxy(Engine/Plugins/Experimental/ModelContextProtocol/Extras/Proxy)를 제공합니다. 공식 보안 경고도 담고 있습니다(Localhost is not a trust boundary, execute_tool_script는 임의 Python 실행). WildCake Codex 스킬의 원본이기도 해서 UE 5.8 공식 경로의 1차 자료로 필수입니다."
+    },
+    {
+      "name": "Chrrxs/robloxstudio-mcp (boshyxd 서버의 유지보수 포크)",
+      "url": "https://github.com/Chrrxs/robloxstudio-mcp",
+      "why_important": "아카이브된 boshyxd/robloxstudio-mcp 원작자가 공식적으로 옮겨 가라고 권한 포크입니다(258 stars). 런타임 Luau 실행과 브레이크포인트, 플레이테스트 제어, Creator Store 검색·미리보기, 스크린샷과 입력 주입, 읽기 전용 inspector 에디션을 제공합니다."
+    },
+    {
+      "name": "oliver-io/unreal-harness",
+      "url": "https://github.com/oliver-io/unreal-harness",
+      "why_important": "UE 5.7용 자체 TS/C++ MCP입니다. 약 285개 에디터 액션과 20개 이상 스킬을 갖췄고, 실제 플레이 가능한 멀티플레이 게임(HOVERBALL)을 만든 사례가 포함된 하네스입니다."
+    },
+    {
+      "name": "PeterTXPan/dsh-unreal-mcp",
+      "url": "https://github.com/PeterTXPan/dsh-unreal-mcp",
+      "why_important": "UE 5.8 MCP에 DeepSeek을 연동하는 번들입니다(2026-08-30 갱신). Claude 외 모델로 공식 MCP를 구동하는 참고 사례입니다."
+    },
+    {
+      "name": "beckettlab/beckett-godot-mcp",
+      "url": "https://github.com/beckettlab/beckett-godot-mcp",
+      "why_important": "Node나 Python 사이드카 없이 Godot 4 에디터 안의 GDScript 애드온이 Streamable HTTP로 MCP를 직접 서빙하는 방식입니다. 설치가 가장 가볍습니다."
+    },
+    {
+      "name": "buildepicshit/Wick (Godot C# MCP)",
+      "url": "https://github.com/buildepicshit/Wick",
+      "why_important": "Godot용 네이티브 C# MCP로 53개 도구와 Roslyn, MSBuild를 제공합니다. godot-ai의 약점인 'C# 컴파일 오류 보고 불가'를 보완합니다."
+    },
+    {
+      "name": "Erodenn/godot-mcp-runtime, n24q02m/better-godot-mcp, gregario/godot-forge",
+      "url": "https://github.com/Erodenn/godot-mcp-runtime",
+      "why_important": "Godot 런타임 제어(UDP 브리지, 입력 시뮬레이션, 스크린샷), 18개 composite 도구, 테스트·LSP·스크린샷 동반 도구입니다. Godot 선택지가 Coding-Solo, godot-ai, Pro 세 개보다 넓다는 점을 보여 줍니다."
+    },
+    {
+      "name": "taygunsavas/patina-unity-mcp, butterlatte-zhang/unity-ai-bridge",
+      "url": "https://github.com/taygunsavas/patina-unity-mcp",
+      "why_important": "Rust 서버와 C# 브리지로 86개 명령(patina), 파일 기반 IPC로 의존성 없이 62개 도구(unity-ai-bridge)를 제공하는 추가 Unity 선택지입니다."
+    },
+    {
+      "name": "gripforgeai/mcp (리깅 캐릭터에 소품 부착)",
+      "url": "https://github.com/gripforgeai/mcp",
+      "why_important": "리그의 손 본을 찾아 소품을 손 크기에 맞게 스케일하고 주먹을 쥐게 한 뒤, 엔진용 바인드를 돌려주는 MCP입니다. 오브젝트 배치와 부착의 정확도라는 사용자 관심사와 직접 맞닿아 있습니다."
+    },
+    {
+      "name": "ThePecerowski/UEBPCracker",
+      "url": "https://github.com/ThePecerowski/UEBPCracker",
+      "why_important": "UE 5.8용 계약 검증(contract validation) 기반 Blueprint 자동화 플러그인입니다(2026-09 갱신). 공식 MCP 파생 생태계의 최신 사례입니다."
+    }
+  ]
+}

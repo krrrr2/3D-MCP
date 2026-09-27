@@ -58,9 +58,11 @@ def _make_camera(name, ortho_scale=None, lens=35.0):
 def _random_color_material():
     """오브젝트마다 다른 색이 나오는 임시 재질 (Workbench 의 Random 색상과 같은 효과를 Cycles 에서)."""
     mat = bpy.data.materials.new("_REVIEW_random")
-    mat.use_nodes = True
+    if mat.node_tree is None:  # Blender 4.x. (5.0+ 는 기본으로 노드가 있고 use_nodes 는 폐기 예정)
+        mat.use_nodes = True
     nt = mat.node_tree
-    bsdf = nt.nodes.get("Principled BSDF")
+    # 한국어 등 현지화 UI 에서는 노드 "이름"이 번역될 수 있으므로 타입으로 찾는다
+    bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
     info = nt.nodes.new("ShaderNodeObjectInfo")
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     els = ramp.color_ramp.elements
@@ -117,8 +119,9 @@ def render_review_views(out_dir, engine="CYCLES", samples=16, res=768, margin=1.
     prev_world, temp_world = scene.world, None
     if neutral_world:
         temp_world = bpy.data.worlds.new("_REVIEW_world")
-        temp_world.use_nodes = True
-        bg = temp_world.node_tree.nodes.get("Background")
+        if temp_world.node_tree is None:  # Blender 4.x
+            temp_world.use_nodes = True
+        bg = next(n for n in temp_world.node_tree.nodes if n.type == "BACKGROUND")
         bg.inputs["Color"].default_value = (0.7, 0.7, 0.7, 1.0)
         bg.inputs["Strength"].default_value = 1.0
         scene.world = temp_world

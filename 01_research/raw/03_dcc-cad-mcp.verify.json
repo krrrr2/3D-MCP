@@ -1,0 +1,389 @@
+{
+  "verdicts": [
+    {
+      "claim": "Anthropic은 2026-04-28 Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena/Wire, SketchUp, Splice 등 크리에이티브 커넥터 9종을 발표했고, Anthropic이 Blender 프로젝트에 기부했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://claude.com/connectors/blender"
+      ],
+      "note": "원문에서 날짜(2026-04-28)와 커넥터 9개 이름이 모두 일치한다. 기부는 원문 표현으로 'Blender has elected to receive Anthropic's contribution as a one-time donation rather than through the Blender Development Fund'이다. 즉 Development Fund 후원이 아니라 일회성 기부이고 금액은 공개되지 않았다. Blender 커넥터 페이지에는 'Made by Blender Lab'과 애드온 필수가 적혀 있다. 반면 요약에 있는 'Claude 전 플랜에서 사용 가능'은 발표문에 없으므로 확인되지 않은 내용이다."
+    },
+    {
+      "claim": "Autodesk Fusion 커넥터는 Autodesk가 만들었고 2026-05 출시됐다. Fusion이 로컬에서 실행 중이어야 하며 Preferences > General > API > Fusion MCP Server에서 켜야 한다.",
+      "verdict": "partially",
+      "correction": "제작사(Autodesk, Inc.), 로컬 실행 필요, 활성화 경로(Preferences > General > API > Fusion MCP Server), Claude Desktop과 포트 설정은 커넥터 페이지와 일치한다. 날짜는 구분해서 써야 한다. Anthropic은 2026-04-28 발표에서 이미 Autodesk Fusion을 포함했고, 디렉터리 등재 표기가 'Added May 2026'이다. 그러니 '2026-04-28 발표, 디렉터리 등재 2026-05'로 적는 편이 정확하다. 구독이 필요하다는 점은 Anthropic 발표문('designers and engineers with a Fusion subscription')으로 확인된다. 'Fusion Data MCP'는 커넥터 페이지에 언급이 없어 확인하지 못했다.",
+      "evidence_urls": [
+        "https://claude.com/connectors/autodesk-fusion",
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ]
+    },
+    {
+      "claim": "SketchUp 커넥터의 도구는 build_model, get_docs, save_model이고 엔드포인트는 https://api.sketchup.com/mcp/v1/sketchup/mcp이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://claude.com/connectors/sketchup"
+      ],
+      "note": "도구 3개, 엔드포인트, 개발사(Trimble SketchUp), 로그인 필요, 2026-04 등재가 모두 커넥터 페이지와 일치한다."
+    },
+    {
+      "claim": "SketchUp 커넥터 무료 entitlement로는 모델 30개까지 저장할 수 있고 이후 유료다(검색 요약 기반, 원문 미확인).",
+      "verdict": "unverifiable",
+      "evidence_urls": [
+        "https://claude.com/connectors/sketchup"
+      ],
+      "note": "news.trimble.com, help.sketchup.com, engineering.com, prnewswire.com이 모두 egress 프록시에서 차단돼 원문을 읽지 못했다. Claude 커넥터 페이지에는 가격이나 무료 한도가 적혀 있지 않다. 게시할 때는 '보도 기준, 미검증'으로 표시해야 한다."
+    },
+    {
+      "claim": "McNeel 공식 Rhino MCP Platform은 Rhino 8/9를 지원하고 connector.mcpb와 `yak install Rhino-MCP-Platform`, `MCPStart`로 설치한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/mcneel/RhinoAI/rhino-9.x/docs/content/docs/getting-started/connector.md",
+        "https://github.com/mcneel/RhinoAI"
+      ],
+      "note": "원문 기준으로 몇 가지를 보충한다. connector.mcpb는 mcneel/RhinoMCP 저장소 릴리스(connector-v0.1.3)에서 받는다. `yak install`은 Rhino 안이 아니라 Rhino에 동봉된 Yak CLI(macOS는 /Applications/Rhino 8.app/Contents/Resources/bin/yak, Windows는 C:\\Program Files\\Rhino 8\\System\\Yak.exe)로 실행하거나 Package Manager로 설치한다. 설치 후 Rhino를 재시작하고 MCPStart를 실행한다. GH2 결과물이 필요하면 Rhino 9 사용을 권장한다(sketch-to-model 문서). mcneel/RhinoAI는 MIT, 316★, 기본 브랜치 rhino-9.x다."
+    },
+    {
+      "claim": "SideFX는 SIGGRAPH 2026에서 Houdini 22용 APEX Script(리깅) MCP를 sneak peek로 공개했고 SideFX Labs로 제공할 예정이며 아직 코어 기능이 아니다(검색 요약 기반).",
+      "verdict": "unverifiable",
+      "evidence_urls": [
+        "https://github.com/sideeffects"
+      ],
+      "note": "jonpeddie.com, gfxspeak.com, sidefx.com, cgchannel.com, 80.lv가 모두 프록시에서 차단됐고 WebSearch 할당량도 소진돼 1차 출처를 확인하지 못했다. SideFX GitHub 조직(sideeffects)에도 MCP, AI, agent, apex 이름이 들어간 저장소는 없다. 게시할 때는 '보도 요약 기준'임을 분명히 적어야 한다."
+    },
+    {
+      "claim": "fxhoudinimcp는 도구 206개, 23개 카테고리이며 Houdini 20.5부터 22.0.368까지 테스트됐고 v2.21.0이 2026-09-23에 나왔다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/healkeiser/fxhoudinimcp/main/README.md",
+        "https://github.com/healkeiser/fxhoudinimcp/releases",
+        "https://pypi.org/project/fxhoudinimcp/"
+      ],
+      "note": "README에 '206 tools across 23 categories', 리소스 8개·프롬프트 9개·워크플로 가이드 31개, 'integration suite green on 20.5.278 … 21.0.440 and 22.0.368'이 적혀 있다. PyPI 2.21.0 업로드 시각은 2026-09-23T21:41 UTC로 두 번째 출처와도 맞는다. 다만 PyPI summary 메타데이터에는 아직 '179 tools'로 남아 있어 출처마다 수치가 다르다. FXHOUDINIMCP_AUTO_LAYOUT 기본값이 0(꺼짐)이라는 것도 README에서 확인했다. MIT, 254★."
+    },
+    {
+      "claim": "3dsmax-mcp v1.7.3(2026-09-23)에 메시 접촉·관통·작은 틈 검사가 추가됐고, v1.7.0에 Chaos Cosmos 검색·임포트가 추가됐다(Max 2023–2027).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/cl0nazepamm/3dsmax-mcp/releases",
+        "https://github.com/cl0nazepamm/3dsmax-mcp"
+      ],
+      "note": "v1.7.3 릴리스 노트: 'Added mesh contact checks for penetration, crossings, contact and small gaps'와 texture-role 검사. v1.7.0 'Corona'(9월 12일): Corona VFB 미리보기와 'Chaos Cosmos search, download and import for models, materials and HDRIs through Corona and V-Ray'. 인스톨러는 Max 2023–2027용이다. 연도는 Max 2027 지원으로 보아 2026이 맞다. 현재 274★, MIT, 도구 160개, Windows 전용."
+    },
+    {
+      "claim": "Onshape MCP 실험에서 Claude Opus 4.7의 정확도는 사람이 쓴 사양일 때 1.000/0.615, 자율 비전 분해일 때 0.533/0.000이었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ReshefElisha/jarvis-onshape-mcp/main/RESEARCH.md"
+      ],
+      "note": "수치는 원문과 일치한다. 다만 해석에 주의할 점이 있다. (1) 이 수치는 '정확도'가 아니라 6개 층(바디 존재, 부피, bbox, 토폴로지, IoU, Chamfer)을 합친 composite 점수다. (2) 2×2 표의 각 칸은 Model Mania 2025(단순)와 2021(복잡) 부품 하나씩, 즉 n=1 실행이라 통계적 일반화는 어렵다. (3) 2021 자율 실행의 0.000은 151턴 한도에 걸려 export하지 못한 결과다. (4) 원문이 든 주요 실패 원인은 derived outline(파생 윤곽), polarity(돌출·함몰 혼동), 8~12px 치수 텍스트이고, '포켓 깊이' 혼동은 원문 표현이 아니다."
+    },
+    {
+      "claim": "dcc-mcp-zbrush는 ZBrush 2026.1+의 공식 Python SDK(CPython 3.11)가 필요하고 Pre-Alpha v0.2.0이다.",
+      "verdict": "partially",
+      "correction": "README의 'Requires ZBrush 2026.1+ with the official Python SDK (CPython 3.11 embedded)'와 Pre-Alpha 배지는 맞다. 그러나 v0.2.0은 README의 기능 섹션 제목일 뿐이다. 실제 PyPI 최신 패키지는 dcc-mcp-zbrush 0.2.26(2026-08-26)이므로 버전은 '0.2.x(최신 0.2.26)'로 적는 것이 정확하다.",
+      "evidence_urls": [
+        "https://github.com/dcc-mcp/dcc-mcp-zbrush",
+        "https://pypi.org/project/dcc-mcp-zbrush/"
+      ]
+    },
+    {
+      "claim": "SubstancePainterMCP v1.0.0은 도구 79개를 제공하고 Painter 12.1.1에서 실제 테스트됐으며 --enable-remote-scripting(localhost:60041)이 필요하다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/elliezu/SubstancePainterMCP"
+      ],
+      "note": "README에 'Version 1.0.0 provides 79 focused MCP tools … live-validated against Substance 3D Painter 12.1.1', Python API 0.3.5, --enable-remote-scripting, localhost:60041이 적혀 있다. execute_python은 SP_MCP_ALLOW_EXECUTE_PYTHON=1일 때만 노출된다. Adobe와 무관한 독립 프로젝트이며 MIT, 36★다. Ultikynnys 저장소는 이 저장소의 fork(0★)다."
+    },
+    {
+      "claim": "Substance Designer MCP는 SD 15.0.3에서 테스트됐고, 병렬 호출 시 Designer가 멈추므로 한 번에 도구 하나만 호출해야 한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/matthieuhuguet/substance-designer-mcp"
+      ],
+      "note": "README에 'tested on 15.0.3'와 'ONE tool call at a time — never parallel calls'가 있다. 연관 서술 중 일부는 원문과 다르다. SDUsage.sNew()와 알 수 없는 노드 정의는 SD를 영구히 멈추게(hang) 하는 것이고, arrange_nodes()는 크래시가 아니라 모든 연결을 파괴한다('destroys all connections'). 도구 수는 README 본문이 '16 MCP tools'라고 하지만 도구 표에는 23개가 있고, 그중 임의 Python 실행 도구 execute_sd_code도 들어 있다."
+    },
+    {
+      "claim": "Spline MCP(aydinfer)는 Spline에 공개 REST API가 없어 대부분 동작하지 않으며 아카이브됐다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/aydinfer/spline-mcp-server"
+      ],
+      "note": "README 첫 줄이 'This project is archived. Spline.design does not provide a public REST API'다. 약 130개 도구는 존재하지 않는 api.spline.design을 호출해 실패하고, @splinetool/runtime 코드를 생성하는 도구 10개만 동작한다."
+    },
+    {
+      "claim": "Adobe for creativity 커넥터는 Photoshop, Premiere, Express 등 CC 앱의 도구 50개 이상을 쓴다. 데스크톱 Photoshop을 직접 제어하는지는 미확인이다.",
+      "verdict": "partially",
+      "correction": "Anthropic 발표(2026-04-28)의 '50+ tools across Creative Cloud apps including Photoshop, Premiere, Express'는 맞다. 현재 Claude 커넥터 페이지(slug adobe-creativity)를 보면 더 구체적이다. 원격 클라우드 MCP이고 엔드포인트는 https://adobe-creativity.adobe.io/mcp다. 'Show all 67 tools'로 도구가 67개이며, 대상 앱은 Acrobat, Photoshop, Lightroom, Illustrator, Firefly, Premiere, Express, InDesign, Stock이다. Adobe Inc. 제작에 Anthropic 검증을 받았다. 원격 엔드포인트이고 도구 이름이 asset_*, document_*, animate_design 같은 클라우드 API라는 점으로 보아, 로컬 데스크톱 Photoshop의 PSD 레이어나 채널을 직접 조작하는 구조는 아닐 가능성이 높다(추론이며 Adobe 문서 원문은 차단돼 확인하지 못했다).",
+      "evidence_urls": [
+        "https://claude.com/connectors/adobe-creativity",
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ]
+    },
+    {
+      "claim": "neka-nat/freecad-mcp는 약 2.5k★, MIT이며 FEM 해석과 헤드리스 실행을 지원한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/neka-nat/freecad-mcp",
+        "https://pypi.org/project/freecad-mcp/"
+      ],
+      "note": "2.5k★, 307 forks, MIT, 커밋 215개. README에 'run FEM analyses'와 docs/execution.md의 'headless scripts'가 있다. 참고로 GitHub 릴리스 태그는 보이지 않지만 PyPI에는 freecad-mcp 0.1.25(2026-09-24)가 올라와 있어, '릴리스 태그가 없다'는 약점은 PyPI 배포로 어느 정도 보완된다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "Anthropic Claude 크리에이티브 커넥터 (Claude for Creative Work)",
+      "status": "ok",
+      "detail": "발표 날짜, 커넥터 9종, Blender 일회성 기부, Fusion 구독 필요가 원문과 일치한다. 'Claude 전 플랜에서 사용 가능'은 원문에 없어 미검증이다.",
+      "evidence_urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ]
+    },
+    {
+      "name": "Autodesk Fusion MCP Server (공식) + Fusion Data MCP",
+      "status": "ok",
+      "detail": "제작사, 활성화 경로, 식별자 ant.dir.gh.autodesk.fusion-mcp, 로컬 실행은 확인했다. 날짜는 '04-28 발표, 05 디렉터리 등재'로 구분하는 것이 좋다. Fusion Data MCP는 1차 출처로 확인하지 못했다(engineering.com 차단).",
+      "evidence_urls": [
+        "https://claude.com/connectors/autodesk-fusion"
+      ]
+    },
+    {
+      "name": "Trimble SketchUp Connector (공식)",
+      "status": "ok",
+      "detail": "도구 3종, 엔드포인트, 로그인 필요, 2026-04 등재를 확인했다. 무료 30개 모델 한도는 1차 출처를 확인하지 못해(trimble 차단) 미검증으로 표시해야 한다.",
+      "evidence_urls": [
+        "https://claude.com/connectors/sketchup"
+      ]
+    },
+    {
+      "name": "Adobe for creativity 커넥터",
+      "status": "issue",
+      "detail": "현재 도구는 '50+'가 아니라 67개이고 원격 엔드포인트 https://adobe-creativity.adobe.io/mcp를 쓴다. 대상 앱에는 Acrobat, Lightroom, Illustrator, Firefly, InDesign, Stock이 더 있다. 클라우드 MCP이므로 데스크톱 Photoshop 레이어·채널 제어는 기대하지 않는 편이 안전하다. 'Cowork, 모바일 지원'은 커넥터 페이지로 확인하지 못했다.",
+      "evidence_urls": [
+        "https://claude.com/connectors/adobe-creativity"
+      ]
+    },
+    {
+      "name": "McNeel Rhino MCP Platform (mcneel/RhinoAI)",
+      "status": "ok",
+      "detail": "MIT, 316★, 53 forks, 기본 브랜치 rhino-9.x, Rhino 8/9 지원. 설치 절차와 레시피·sketch-to-model·make-this-parametric 인용 프롬프트가 원문과 일치한다. connector.mcpb는 mcneel/RhinoMCP 릴리스(connector-v0.1.3)에서 받는다.",
+      "evidence_urls": [
+        "https://github.com/mcneel/RhinoAI",
+        "https://raw.githubusercontent.com/mcneel/RhinoAI/rhino-9.x/docs/content/docs/advanced/sketch-to-model.md",
+        "https://raw.githubusercontent.com/mcneel/RhinoAI/rhino-9.x/docs/content/docs/try-it-out/recipes.md"
+      ]
+    },
+    {
+      "name": "RhinoMCP (jingcheng-chen/rhinomcp)",
+      "status": "ok",
+      "detail": "0.4.1.1(9/14, #57 패치)과 0.4.0(9/9)을 확인했다. 0.4.0에는 MCP Python SDK 2.x, create_planar_region, get_modeling_guidance(가이드 6종), measure_objects(충돌, bbox gap), section_profile, analyze_objects naked edge 개선이 들어 있다.",
+      "evidence_urls": [
+        "https://github.com/jingcheng-chen/rhinomcp/releases"
+      ]
+    },
+    {
+      "name": "fxhoudinimcp (healkeiser)",
+      "status": "ok",
+      "detail": "README 기준 도구 206개, 23개 카테고리. 20.5~22.0.368에서 테스트됐고 MIT, 254★다. v2.21.0은 PyPI 기준 2026-09-23에 나왔다. PyPI summary는 '179 tools'로 오래된 값이 남아 있다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/healkeiser/fxhoudinimcp/main/README.md",
+        "https://pypi.org/project/fxhoudinimcp/"
+      ]
+    },
+    {
+      "name": "3dsmax-mcp (cl0nazepamm)",
+      "status": "ok",
+      "detail": "274★, MIT, 도구 160개, Windows와 Max 2023–2027 지원. 렌더러는 Corona, V-Ray, Octane이다. v1.7.3 접촉·관통 검사와 v1.7.0 Chaos Cosmos 기능을 확인했다. RailClone은 stable, Forest Pack은 WIP 상태다.",
+      "evidence_urls": [
+        "https://github.com/cl0nazepamm/3dsmax-mcp",
+        "https://github.com/cl0nazepamm/3dsmax-mcp/releases"
+      ]
+    },
+    {
+      "name": "GG_MayaMCP (GimbalGoats)",
+      "status": "ok",
+      "detail": "23★, MIT, 커밋 191개, 타입 도구 71개. Maya 2024+를 지원한다. script.run은 MAYA_MCP_ENABLE_RAW_EXECUTION=true일 때만 켜진다. PyPI maya-mcp 최신은 0.6.1(2026-07-20)이다.",
+      "evidence_urls": [
+        "https://github.com/GimbalGoats/GG_MayaMCP",
+        "https://pypi.org/project/maya-mcp/"
+      ]
+    },
+    {
+      "name": "SubstancePainterMCP (elliezu)",
+      "status": "ok",
+      "detail": "v1.0.0, 도구 79개, Painter 12.1.1 실검증, localhost:60041, MIT, 36★. 원본 저장소이며 Ultikynnys는 fork다.",
+      "evidence_urls": [
+        "https://github.com/elliezu/SubstancePainterMCP"
+      ]
+    },
+    {
+      "name": "Substance Designer MCP (matthieuhuguet)",
+      "status": "issue",
+      "detail": "README의 '16 MCP tools'와 도구 표(23개)가 서로 맞지 않는다. 표에는 임의 Python 실행 도구 execute_sd_code가 포함된다. sNew()는 크래시가 아니라 hang이고, arrange_nodes()는 연결을 파괴하는 문제다. 레시피 79개, 노드 37~44개 그래프, SD 15.0.3, 포트 9881, MIT는 확인했다.",
+      "evidence_urls": [
+        "https://github.com/matthieuhuguet/substance-designer-mcp"
+      ]
+    },
+    {
+      "name": "Onshape MCP (jarvis-onshape-mcp, hedless/onshape-mcp)",
+      "status": "issue",
+      "detail": "환경변수 이름이 서버마다 다르다. jarvis는 ONSHAPE_API_KEY/ONSHAPE_API_SECRET을 OS 키체인에 저장하고, hedless는 ONSHAPE_ACCESS_KEY/ONSHAPE_SECRET_KEY를 쓴다. 두 서버를 묶어 한 가지 변수명으로 안내하면 틀린다. 172★ 약 60개 도구, 145★ 도구 45개·테스트 471개, 5가지 export 포맷은 확인했다.",
+      "evidence_urls": [
+        "https://github.com/ReshefElisha/jarvis-onshape-mcp",
+        "https://github.com/hedless/onshape-mcp"
+      ]
+    },
+    {
+      "name": "dcc-mcp 생태계 (dcc-mcp-core 외)",
+      "status": "issue",
+      "detail": "저장소 91개, core 47★, 'Skill-first, Rust-powered control plane', gateway의 search/describe/load_skill/call 래퍼, showcase가 의도적으로 비어 있다는 점은 확인했다. 보안 서술에는 빠진 것이 있다. dcc-mcp-maya README에 따르면 최신 sidecar는 LAN(http://<lan-ip>:59765/mcp)에도 gateway를 노출하므로, DCC_MCP_GATEWAY_REMOTE_PORT=0으로 꺼야 한다. '대부분 localhost 전용'이라는 일반화는 이 생태계에 그대로 적용되지 않는다. core/cli 0.20.35(2026-09-26), dcc-mcp-maya 0.9.31(2026-09-23)로 활발히 업데이트되고 있다.",
+      "evidence_urls": [
+        "https://github.com/orgs/dcc-mcp/repositories",
+        "https://github.com/dcc-mcp/dcc-mcp-core",
+        "https://github.com/dcc-mcp/dcc-mcp-maya",
+        "https://github.com/dcc-mcp/showcase"
+      ]
+    },
+    {
+      "name": "SideFX Houdini 22 공식 MCP (APEX Script 프리뷰)",
+      "status": "not_found",
+      "detail": "1차 출처(sidefx.com, jonpeddie, gfxspeak, cgchannel)가 모두 차단돼 확인하지 못했다. SideFX GitHub 조직에도 MCP 관련 저장소가 없다. confidence를 medium에서 low로 내리는 것을 권장한다.",
+      "evidence_urls": [
+        "https://github.com/sideeffects"
+      ]
+    },
+    {
+      "name": "AI Forge MCP (HurtzDonutStudios)",
+      "status": "issue",
+      "detail": "README에 가격이 나와 있다. Founder 가격 Solo $35/월(MSRP $79), Duo $65, Studio $149다. 더 큰 문제는 README가 Hunyuan3D를 'Open source under MIT License'라고 적은 것이다. 이는 사실이 아니다. Tencent Hunyuan 3D 2.0/2.1 Community License는 EU, 영국, 한국을 Territory에서 제외하고 해당 지역에서의 사용과 출력물 사용을 허가하지 않는다. 한국 사용자에게는 ForgeHunyuan 경로를 쓰면 라이선스 위반 위험이 있다.",
+      "evidence_urls": [
+        "https://github.com/HurtzDonutStudios/ai-forge-mcp",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE"
+      ]
+    },
+    {
+      "name": "FreeCAD Robust MCP Server (spkane)",
+      "status": "issue",
+      "detail": "238★, MIT, 도구 150개 이상, 11개 카테고리, XML-RPC/JSON-RPC/임베디드(임베디드는 Linux 전용, macOS·Windows에서는 크래시), FreeCAD 0.21+를 확인했다. 그런데 PyPI freecad-robust-mcp 최신은 0.6.1(2026-01-13)이고 PyPI 메타데이터의 저장소 경로는 spkane/freecad-robust-mcp-and-more다. 따라서 status_date '2026-09'는 근거가 약하다. README 설치 방법은 pip, 소스, Docker이고 Addon Manager 설치는 확인하지 못했다.",
+      "evidence_urls": [
+        "https://github.com/spkane/freecad-addon-robust-mcp-server",
+        "https://pypi.org/project/freecad-robust-mcp/"
+      ]
+    },
+    {
+      "name": "KeyShot MCP (truman-t3)",
+      "status": "ok",
+      "detail": "npm keyshot-mcp 0.12.1(2026-09-02), MIT, 도구 19개, KeyShot Studio 2025/14.1과 Windows 11에서 테스트됐고 Node 20+가 필요하다. README에 장면 메타데이터나 미리보기가 모델 제공자에게 전송될 수 있다는 경고가 있다.",
+      "evidence_urls": [
+        "https://github.com/truman-t3/keyshot-mcp",
+        "https://www.npmjs.com/package/keyshot-mcp"
+      ]
+    },
+    {
+      "name": "Pascal Editor (pascalorg/editor)",
+      "status": "ok",
+      "detail": "24.3k★, MIT, pascal-3d와 furniture-fit 스킬 번들, `npx @pascal-app/cli editor`, Node 22.13+. npm @pascal-app/cli 1.0.3(2026-09-24)이다.",
+      "evidence_urls": [
+        "https://github.com/pascalorg/editor",
+        "https://www.npmjs.com/package/@pascal-app/cli"
+      ]
+    },
+    {
+      "name": "PlasticityMCP / Spline MCP / Womp",
+      "status": "ok",
+      "detail": "PlasticityMCP README에 'Phase 0 — recon. Not yet usable', 라이선스 TBD가 적혀 있고, 향후 CAD 명령 실행에는 Plasticity fork가 필요하다고 계획돼 있다. Spline은 아카이브됐다. GitHub에서 'womp mcp'로 검색하면 결제 서비스 Wompi 관련 저장소 2개만 나오고 Womp 3D용은 없다.",
+      "evidence_urls": [
+        "https://github.com/ozymandi/PlasticityMCP",
+        "https://github.com/aydinfer/spline-mcp-server",
+        "https://github.com/search?q=womp+mcp&type=repositories"
+      ]
+    },
+    {
+      "name": "HoudiniMCP (capoomgit) / oculairmedia",
+      "status": "ok",
+      "detail": "capoomgit은 299★, MIT, 포트 9876, OPUS(RapidAPI)는 선택 사항이다. capoom/houdini-mcp는 'This repository is moved' 공지를 걸고 capoomgit으로 안내한다. 마지막 업데이트 2026-06은 확인하지 못했다. oculairmedia는 hrpyc(RPyC, 18811)를 쓰는데 인증 없이 원격 Python 실행을 허용하므로 네트워크 노출에 주의해야 한다.",
+      "evidence_urls": [
+        "https://github.com/capoomgit/houdini-mcp",
+        "https://github.com/capoom/houdini-mcp",
+        "https://github.com/oculairmedia/houdini-mcp"
+      ]
+    },
+    {
+      "name": "build123d-mcp / AgentCAD / OpenSCAD MCP",
+      "status": "ok",
+      "detail": "build123d-mcp는 Apache-2.0, PyPI 0.3.90(2026-09-25)이고 README의 mounting plate 예시 프롬프트가 원문과 일치한다. agentcad는 Apache-2.0, PyPI 0.6.0(2026-09-11), STL/GLB/OBJ export와 diff를 지원한다. OpenSCAD MCP는 MIT이고 scad/stl/csg/3mf export, 렌더 서브프로세스 120초 타임아웃, Docker를 지원한다.",
+      "evidence_urls": [
+        "https://github.com/pzfreo/build123d-mcp",
+        "https://github.com/jdilla1277/agentcad",
+        "https://github.com/jhacksman/OpenSCAD-MCP-Server"
+      ]
+    },
+    {
+      "name": "NVIDIA kit-usd-agents",
+      "status": "ok",
+      "detail": "96★, Apache-2.0. USD Code(7), Kit(12), OmniUI(10), Isaac Sim(5) 도구 구성이 맞다. NVIDIA API 키가 필요하고 기여는 받지 않는다.",
+      "evidence_urls": [
+        "https://github.com/NVIDIA-Omniverse/kit-usd-agents"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://github.com/HurtzDonutStudios/ai-forge-mcp",
+      "reason": "상용 Early Access 제품의 자기 홍보 README다('AAA', '248,000+ lines', 'One prompt in, game-ready asset out'). Hunyuan3D를 'MIT License'라고 적었는데 이는 Tencent Hunyuan 3D Community License와 모순된다(EU, 영국, 한국 제외). 'AI Legends MMO 제작'도 검증되지 않은 자기 주장이라 1차 근거로 쓰면 안 된다."
+    },
+    {
+      "url": "https://github.com/newsbubbles/zbrush-mcp",
+      "reason": "커밋이 1개뿐인 스캐폴드성 저장소다. 'ZBrush 2024+ with Python SDK'라고 주장하지만, dcc-mcp-zbrush README는 공식 Python SDK가 ZBrush 2026.1+를 요구하며 이전 스캐폴드의 HTTP 서버 가정이 틀렸다고 적고 있다. AI가 생성한 미검증 코드일 가능성이 높다."
+    },
+    {
+      "url": "https://www.mindstudio.ai/blog/claude-mcp-adobe-vs-photoshop-premiere-what-it-does",
+      "reason": "MindStudio(경쟁 에이전트 플랫폼)의 마케팅 블로그로 SEO형 제목을 달고 있고 프록시 차단으로 내용을 확인하지 못했다. Adobe 커넥터의 실제 성격(원격 엔드포인트 adobe-creativity.adobe.io, 도구 67개)은 Claude 커넥터 페이지라는 1차 출처로 대체해야 한다."
+    },
+    {
+      "url": "https://pypi.org/project/fxhoudinimcp/",
+      "reason": "PyPI summary에 '179 tools'라는 오래된 수치가 남아 있어 README(206개)와 다르다. 도구 수는 README를 기준으로 인용해야 한다."
+    },
+    {
+      "url": "https://github.com/matthieuhuguet/substance-designer-mcp",
+      "reason": "README 안에서 수치가 어긋난다('16 MCP tools'와 도구 표 23개). '최초의 SD MCP'도 자기 주장이다. 기능 설명은 표를 기준으로 인용해야 한다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Unreal Engine 5.8 내장 실험적 Unreal MCP 서버 + Toolset Registry (Epic 공식)",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/unreal-mcp-in-unreal-editor",
+      "why_important": "게임 엔진 벤더가 공식으로 MCP를 내장한 사례다. dcc-mcp-core README가 'Unreal Engine 5.8 introduced an experimental built-in MCP server and Toolset Registry'라고 명시하고, dcc-mcp-unreal에는 이를 호출하는 브리지 스킬도 있다. 이 스킬 문서에 따르면 NiagaraToolsets 같은 툴셋이 있고, 호출은 게임 스레드에서 직렬화된다. AAA 파이프라인의 최종 단계(엔진 임포트, 배치)와 직결된다. Epic 문서는 차단돼 dcc-mcp 저장소를 통해서만 간접 확인했다."
+    },
+    {
+      "name": "Tencent Hunyuan3D 2.0/2.1 라이선스의 한국 제외 조항",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE",
+      "why_important": "한국어 지식베이스에서 특히 중요하다. 'THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'이므로 AI Forge의 ForgeHunyuan 경로나 Hunyuan 기반 text/image-to-3D를 한국에서 쓰면 라이선스 밖 사용이 된다. 요약에 적힌 Maxon의 Tencent HY 3D 통합을 평가할 때도 확인해야 한다."
+    },
+    {
+      "name": "Adobe for creativity 커넥터의 실제 스펙 (원격 MCP, 도구 67개)",
+      "url": "https://claude.com/connectors/adobe-creativity",
+      "why_important": "연구자는 'Adobe가 데스크톱 Photoshop을 제어하는지 미확인'으로 남겼다. 그러나 1차 출처인 커넥터 페이지에 원격 엔드포인트 https://adobe-creativity.adobe.io/mcp, 도구 67개, 대상 앱 9개(Acrobat, Lightroom, Illustrator, Firefly, InDesign, Stock 포함)가 나와 있다. 이를 반영하면 텍스처 작업용 도구 선택(클라우드 커넥터 대 로컬 adb-mcp/photoshop-mcp)을 더 정확히 안내할 수 있다."
+    },
+    {
+      "name": "Autodesk Platform Services(APS) 공식 MCP 샘플 (aps-aecdm-mcp-dotnet, Revit Automation MCP, AU2026 MCP 워크숍)",
+      "url": "https://github.com/orgs/autodesk-platform-services/repositories?q=mcp",
+      "why_important": "'Autodesk 공식 MCP는 Fusion뿐'이라는 인상을 보완한다. Autodesk 개발자 조직이 AEC Data Model, Revit Automation, MCP Apps 예제와 AU2026 MCP 워크숍(2026-09 업데이트)을 공개하고 있어 건축·인테리어 배치 데이터 쪽 공식 경로가 된다. Maya, 3ds Max용은 여전히 없다."
+    },
+    {
+      "name": "dcc-mcp-maya sidecar의 LAN gateway 기본 노출 (포트 59765)",
+      "url": "https://github.com/dcc-mcp/dcc-mcp-maya",
+      "why_important": "운영·보안 섹션의 '대부분 localhost'라는 일반화에 반하는 중요한 예외다. README에 따르면 최신 sidecar는 LAN에도 gateway를 열기 때문에 DCC_MCP_GATEWAY_REMOTE_PORT=0으로 비활성화해야 한다. 스튜디오 네트워크에서 DCC 원격 조작 위험이 생긴다."
+    },
+    {
+      "name": "McNeel RhinoAI 레시피 'Random scatter … No overlaps' 및 get_viewport_image 비교 단계",
+      "url": "https://raw.githubusercontent.com/mcneel/RhinoAI/rhino-9.x/docs/content/docs/try-it-out/recipes.md",
+      "why_important": "'배치' 노하우의 공식 예시다. 5×5m 영역에 구 200개를 겹치지 않게 산포하는 프롬프트가 있고, sketch-to-model 문서는 get_viewport_image로 스케치 각도에 맞춰 비교하라고 한다. 연구자가 쓴 배치·검증 루프를 공식 문서 근거로 보강할 수 있다."
+    },
+    {
+      "name": "mcneel/RhinoMCP (커넥터 .mcpb 릴리스 저장소)",
+      "url": "https://github.com/mcneel/RhinoMCP/releases",
+      "why_important": "공식 connector.mcpb(connector-v0.1.3)는 RhinoAI가 아니라 이 저장소 릴리스에서 배포된다. 설치 안내 링크를 여기로 정확히 걸어야 사용자가 헤매지 않는다."
+    }
+  ]
+}

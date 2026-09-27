@@ -1,0 +1,430 @@
+{
+  "verdicts": [
+    {
+      "claim": "SAGE(NVlabs)의 server/layout.py는 FastMCP로 generate_room_layout, get_current_layout 등 레이아웃 툴을 노출하는 MCP 서버다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py",
+        "https://github.com/NVlabs/sage/tree/main/server"
+      ],
+      "note": "직접 확인함. layout.py 32행 `from mcp.server.fastmcp import FastMCP`, 118행 `mcp = FastMCP(...)`. @mcp.tool로 등록된 툴은 generate_room_layout, get_current_layout, clear_layout, get_room_details, list_rooms, get_layout_from_json이다. 연구자 목록에 없는 place_objects_in_room, move_one_object_with_condition_in_room, get_room_information, get_layout_save_dir, robot_task_feasibility_correction_for_room, parse_robot_policy_requirements_for_scene_generation도 등록돼 있다. 배치 자체의 핵심은 place_objects_in_room과 move_one_object_with_condition_in_room이므로 KB에 함께 적는 것이 좋다. server/ README에도 'MCP Scene Generation pipeline'의 서버 구현이라고 적혀 있다."
+    },
+    {
+      "claim": "SAGE 배치 플래너는 DFS solver grid_size=20, bbox 3.5 cm 패딩, on-top 후보 150개 샘플링 + physics critic을 쓰고, 프롬프트에 '가구 점유율 30-40%, 60-90 cm 동선, 문 회전반경 약 90 cm' 규칙이 있으며, claude-sonnet-4-20250514 호출 코드가 있다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ],
+      "note": "코드에서 모두 확인했다. grid_size=20(1045행), max_duration=max(300, n*60)(1046행), sample_count=150 후 filter_placements_by_physics_critic(1159~1172행), 프롬프트 문자열의 30-40%, 90cm, 60-90cm(579~582행), model=\"claude-sonnet-4-20250514\"(860, 2640행)이 있다. 다만 정밀화할 점이 세 가지 있다. (1) 패딩은 `width*100 + 3.5`, 즉 가로·세로 전체 치수에 3.5 cm를 더하는 방식이라 한쪽 기준으로는 약 1.75 cm다. (2) Claude 호출은 call_vlm(vlm_type=\"openai\")을 거치므로 OpenAI 호환 엔드포인트를 경유한다. (3) '90 cm 회전반경'은 프롬프트 텍스트일 뿐이다. 실제 solver의 문 차단 영역은 문 폭×문 폭 정사각형이고(개구부는 깊이 50 cm), 창문은 벽 두께 정도의 얇은 띠만 막는다(get_door_window_placements)."
+    },
+    {
+      "claim": "SceneSmith 가구 에이전트 설정: model gpt-5.2, max_critique_rounds 3, early_finish_min_score 9, 롤백 임계(단일 항목 2점, 총합 1점), top 1024² + 측면 4×512² 렌더, snap step/margin 0.01 m, natural noise σ 0.03 m / 1°.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/stateful_planner_agent.yaml"
+      ],
+      "note": "수치는 전부 yaml과 일치한다. 추가로 reasoning_effort는 planner low, designer/critic high이고 vision_detail은 high다. 설정에 floor_penetration_tolerance_m 0.05(가구가 바닥에 5 cm까지 박히는 것 허용)도 있다. 주의할 점: '롤백'은 자동이 아니다. planner 프롬프트는 임계를 넘으면 reset_scene_to_checkpoint() 호출을 '강하게 고려하라(Strongly consider)'고 지시할 뿐이다. 또 롤백 조건은 '하락폭 ≥ 임계'다."
+    },
+    {
+      "claim": "SceneSmith는 ICML 2026 Spotlight, MIT 라이선스, arXiv 2602.09153이며, 전체 파이프라인에 45GB 이상의 GPU 메모리를 권장한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/README.md",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/LICENSE"
+      ],
+      "note": "MIT(LICENSE 파일), arXiv 2602.09153, '>=45GB 권장, L40S에서 테스트'는 README에서 확인했다. 'ICML 2026 Spotlight'는 GitHub 저장소 설명(About)에 있지만 README 본문의 bibtex는 @misc arXiv다. arXiv 페이지는 이번 세션에서 차단돼 교차 확인하지 못했다. 2026-09 기준 604 stars, 커밋 7개."
+    },
+    {
+      "claim": "SceneSmith 디자이너 프롬프트의 클리어런스: 커피테이블–소파 0.3-0.5 m, 주동선 0.7-1 m, 무관한 객체 간 최소 0.20 m, 카운터 뒤 0.5-0.7 m.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml"
+      ],
+      "note": "226, 250, 488~489, 506/515행에서 확인했다. 0.20 m는 일반 배치 규칙이 아니라 '충돌 해소 전략 1단계: 넉넉한 간격부터 시도'라는 맥락에서 나온 world_bounds 간 간격이다. 참고로 Infinigen home.py는 커피테이블–소파 거리를 hinge(0.45, 0.6)으로 두고 있어 SceneSmith 값(0.3-0.5 m)과 다르다. KB에 두 값을 병기하기를 권한다."
+    },
+    {
+      "claim": "LayoutVLM의 gradient solver는 Adam lr 0.01, ExponentialLR gamma 0.96, 400 iterations, overlap loss IoU×1000, 기존 제약 ×100을 쓰고, 100 iteration마다 경계 안으로 투영한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/grad_solver.py"
+      ],
+      "note": "183행 optimize(iterations=400, learning_rate=0.01), 355~356행 Adam과 ExponentialLR(gamma=0.96), 125행 iou*1000, 137행 100*constraint, 432~436행 i%100==0일 때 project_back_to_polygon을 확인했다. 대안 solver로 trust-constr와 dual_annealing도 코드에 있다."
+    },
+    {
+      "claim": "LayoutVLM 규약: 0° 회전은 +x를 바라보고 반시계 방향이 +, 방 중심이 원점, 객체당 위치 제약과 방향 제약을 최소 1개씩.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/prompts/layoutvlm/base_prompt.py"
+      ],
+      "note": "286, 294~295행과 193행('counterclockwise rotation ... in degrees')에서 확인했다. 기본 모델은 layoutvlm.py 기준 gpt-4o이고, 보조로 gpt-4o-mini를 쓴다."
+    },
+    {
+      "claim": "Holodeck 제약 정의: near는 50-150 cm, far는 150 cm 이상. 앵커는 global 제약만, 큰 것부터, 뒤의 객체는 앞의 것에만 의존.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/floor_objects.py"
+      ],
+      "note": "prompts.py 76~77행과 103~108행에서 확인했다. floor_objects.py의 가중치(global 1.0, relative/direction/alignment 0.5, distance 1.8)와 회전 [0, 90, 180, 270], 기본 use_milp=False도 확인했다. SAGE planner 프롬프트(703~704행)에도 같은 near/far 정의가 들어 있다(두 번째 출처)."
+    },
+    {
+      "claim": "Infinigen home.py 제약: 소파–TV장 distance hinge(2,3), 사이드테이블은 벽에서 0.3 m 이내, 조명 간 min_distance_internal >= 1 m, focus_score < 0.5.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py"
+      ],
+      "note": "1147행 hinge(2,3), 817행 sidetable distance hinge(0,0.3).minimize(weight=10), 755행 lights >= 1, 1134행 focus_score < 0.5를 확인했다. 성격이 다른 두 종류가 섞여 있다. 사이드테이블 0.3 m와 소파–TV 2-3 m는 soft score term(최소화 비용)이고, 조명 1 m와 focus_score<0.5는 hard constraint다. 러그끼리 최소 1 m, 벽 장식은 바닥에서 0.6 m 초과라는 조건도 있다."
+    },
+    {
+      "claim": "Infinigen 최신 릴리스는 v2.0.0a2(procfunc 기반 전면 재작성, 알파). Indoors(constraint language + solver)는 v1.4.0에서 도입됐다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md"
+      ],
+      "note": "CHANGELOG 기준 v2.0.0a2가 최상단, v2.0.0a1은 'Complete rewrite on top of procfunc', v1.4.0은 'Infinigen Indoors ... constraint language and solver'다. 실무상 중요한 함정이 있다. main 브랜치에는 infinigen_examples/generate_indoors.py와 constraints/home.py가 더 이상 없다(raw 요청 404). 그런데 main의 HelloRoom.md는 여전히 v1 명령을 안내한다. 따라서 v1 Indoors 제약 solver를 쓰려면 v1.16.0 태그(v1 마지막)를 checkout해야 한다. Infinigen2.md는 2.0을 'simple indoor room arrangements'만 있는 preview라고 명시한다."
+    },
+    {
+      "claim": "SceneWeaver는 NeurIPS 2025, BSD-3-Clause이고 bpy==3.6.0을 쓰며, Infinigen Blender 서버에 --socket으로 붙는 대화형 모드가 있다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Scene-Weaver/SceneWeaver/main/README.md",
+        "https://raw.githubusercontent.com/Scene-Weaver/SceneWeaver/main/LICENSE"
+      ],
+      "note": "README bibtex의 NeurIPS 2025, `pip install bpy==3.6.0`, 두 터미널을 쓰는 socket 모드(infinigen.launch_blender ... / main.py --socket), AzureOpenAI 기본을 확인했다. LICENSE는 BSD-3(Princeton 저작권, Infinigen에서 파생)이다."
+    },
+    {
+      "claim": "SceneEval은 WACV 2026 oral이며, 지표 10종(Collision, Navigability, Out of Bounds, Opening Clearance + VLM 기반 6종)과 SceneEval-500을 제공한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/3dlg-hcvc/SceneEval/main/README.md"
+      ],
+      "note": "README 7행 'WACV 2026 (Oral)'. 비VLM 4종과 VLM 6종(Object Count/Attribute/Obj-Obj Relationship/Obj-Architecture Relationship/Support/Accessibility)을 확인했고, VLM 기본값은 GPT-4o다. Opening Clearance는 v1.1(2025-10-27)에 추가됐다. LICENSE는 MIT다."
+    },
+    {
+      "claim": "HSM은 3DV 2026이며 씬당 약 $0.80, 약 10분이 걸리고 HSSD(약 72GB)를 쓴다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/3dlg-hcvc/hsm/main/README.md"
+      ],
+      "note": "README 8행 3DV 2026, 159~160행 USD $0.80과 약 10분, 90행 약 72GB를 확인했다. HSSD는 Hugging Face에서 라이선스 동의가 필요하다(HSSD 라이선스 원문은 이번 세션에서 HF 차단으로 확인하지 못함). SceneSmith README에도 HSSD 약 72GB가 나온다(두 번째 출처)."
+    },
+    {
+      "claim": "blender-mcp는 2026-09-16 issue #366에서 mcp-for-blender로 개명을 공지했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/366",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md"
+      ],
+      "note": "issue #366 'blender-mcp is now mcp-for-blender'(ahujasid, 2026-09-16)을 확인했다. README는 PyPI 패키지명이 mcp-for-blender로 바뀌었고 기존 `uvx blender-mcp`도 계속 동작한다고 적고 있다. README 링크는 github.com/ahujasid/mcp-for-blender를 가리키므로 KB URL을 새 경로로 갱신하는 것이 좋다. 29.4k stars, MIT."
+    },
+    {
+      "claim": "BVHTree.FromObject(object, depsgraph, *, deform=True, cage=False, epsilon=0.0)와 overlap(other_tree)는 겹치는 인덱스 쌍 리스트를 반환한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc"
+      ],
+      "note": "docstring과 일치한다. overlap은 'list of unique index pairs'(list[tuple[int,int]])를 반환한다. Scene.ray_cast(depsgraph, origin, direction, distance)가 월드 공간 evaluated geometry를 대상으로 한다는 점과 rigidbody.bake_to_keyframes(frame_start, frame_end, step)도 소스에서 확인했다."
+    },
+    {
+      "claim": "(추가 검증) SAGE는 CVPR 2026 논문이다.",
+      "verdict": "partially",
+      "correction": "arXiv 2602.10116은 README에서 확인되지만, SAGE 저장소와 README에는 학회 표기가 없다(bibtex는 @article arXiv). CVPR 2026 표기는 2차 큐레이션 목록(Awesome-3D-Scene-Generation)에만 있다. 'arXiv 2602.10116(큐레이션 목록상 CVPR 2026)'으로 적을 것.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/NVlabs/sage/main/README.md",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "note": "NVIDIA 프로젝트 페이지와 arXiv는 egress 차단으로 확인하지 못했다. 저장소는 커밋 1개, 416 stars다."
+    },
+    {
+      "claim": "(추가 검증) blend-ai는 175개 툴을 가진 Blender MCP 서버다.",
+      "verdict": "partially",
+      "correction": "현재 README 본문은 '186 tools across 27 modules'다. 175는 저장소 About 설명에 남은 옛 수치다. Blender 4.2+(Extension 형식, 5.1에서 테스트), stdio 전송, AGPL-3.0-or-later는 맞다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/HoldMyBeer-gg/blend-ai/main/README.md",
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ]
+    },
+    {
+      "claim": "(추가 검증) Vibe3DScene = LangGraph + MCP 툴(langchain-mcp-adapters) + Blender-MCP이며, 지원 LLM 목록이 README에 불명확하다.",
+      "verdict": "partially",
+      "correction": "Vibe3DScene은 저장소 안에 자체 MCP 서버(mcp_server/)와 자체 Blender addon(addon/)을 두고 있다. ahujasid의 Blender-MCP는 Acknowledgements에 이름만 있고 런타임 의존성이 아니다. 별도 문서에서 'blender-mcp + cc 방식과의 차이'를 설명한다. LLM은 configuration.md의 VLM_PROVIDER로 openai, anthropic, gemini, qwen을 지원한다. penetration 검사 기본 임계는 SCENE_AGENT_PENETRATION_THRESHOLD_M=0.02 m다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/README.md",
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/docs/differ_from_blendermcp+cc.md",
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/docs/reference/configuration.md"
+      ]
+    },
+    {
+      "claim": "(추가 검증) MesaTask 라이선스는 Apache다.",
+      "verdict": "partially",
+      "correction": "저장소의 LICENSE 파일(main)은 MIT(Copyright 2025 Intern Robotics)다. README 본문에는 'Apache License'라는 문구가 있어 서로 모순된다. 'LICENSE 파일 기준 MIT(README 표기와 불일치)'로 적을 것.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/InternRobotics/MesaTask/main/LICENSE",
+        "https://github.com/InternRobotics/MesaTask"
+      ]
+    },
+    {
+      "claim": "(추가 검증) Infinigen은 외부 에셋(Objaverse 등)을 끼워 넣으려면 코드 작업이 필요하다.",
+      "verdict": "partially",
+      "correction": "v1.8.0부터 'Implement tools for importing external assets into Indoors'가 들어갔다. 공식 가이드 StaticAssets.md는 Objaverse 에셋(.glb/.obj/.usd 등)을 placement 시스템에 통합하는 절차를 제공한다. 간단한 Python factory 정의는 필요하지만 '문서화된 공식 경로'가 있다고 적는 것이 정확하다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/docs/StaticAssets.md"
+      ]
+    },
+    {
+      "claim": "(추가 검증) GardenDesigner(CVPR 2026)는 '강남 정원' 미학 원칙을 에이전트 체인으로 인코딩한다.",
+      "verdict": "partially",
+      "correction": "원제는 'Encoding Aesthetic Principles into Jiangnan Garden Construction via a Chain of Agents'다. Jiangnan(江南)은 중국 장강 이남 지역의 고전 원림(쑤저우 정원 등)을 뜻한다. 한국어 '강남'은 서울 강남으로 오독될 수 있으므로 '중국 장난(江南) 고전 원림'으로 표기할 것.",
+      "evidence_urls": [
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ]
+    },
+    {
+      "claim": "(추가 검증) Holodeck issue #94(2026-05)는 데이터 다운로드 불가를 보여준다.",
+      "verdict": "partially",
+      "correction": "#94(2026-05-08)는 한 사용자가 `objathor.dataset.download_assets` 실행 중 '네트워크 문제로 멈춘다'며 대체 URL을 요청한 이슈다. 데이터 호스팅 자체가 중단됐다는 증거는 아니다. 메인테이너 답변이 없다는 점은 맞다. #92(2025-09-03, 정면 정렬 의문, 무응답)와 LayoutVLM #9(2025-07-13, 스케일·회전 정규화, 무응답)는 확인됐다.",
+      "evidence_urls": [
+        "https://github.com/allenai/Holodeck/issues/94",
+        "https://github.com/allenai/Holodeck/issues/92",
+        "https://github.com/sunfanyunn/LayoutVLM/issues/9"
+      ]
+    },
+    {
+      "claim": "(추가 검증) SAGE는 문·창 회전 영역을 사전에 차단 영역으로 계산한다(문 회전반경 약 90 cm).",
+      "verdict": "partially",
+      "correction": "solver 초기 상태(get_door_window_placements)에서 문은 '문 폭×문 폭' 정사각형(개구부는 깊이 50 cm)으로 막힌다. 창문은 벽 두께 정도의 얇은 띠만 장애물로 들어가며, 창 앞 여유 공간은 계산하지 않는다. '약 90 cm'는 LLM 프롬프트 문구일 뿐 solver 수치가 아니다(80 cm 스윙 코드는 주석 처리됨).",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/objects/object_placement_planner.py"
+      ]
+    },
+    {
+      "claim": "(추가 검증) 업계 통용 수치: TV 시청거리 SMPTE 30°≈1.6×대각선, THX 36-40°≈1.2×대각선(65인치 ≈ 2.0-2.6 m), 주방 작업 삼각형 각 변 1.2-2.7 m·합 7.9 m 이하, 소파–커피테이블 35-50 cm, 러그 벽 여백 30-45 cm 등.",
+      "verdict": "unverifiable",
+      "evidence_urls": [],
+      "note": "이번 세션도 WebSearch 한도가 소진됐고 NKBA, THX, SMPTE 원문에 접근할 수 없었다. 16:9 화면 가로=0.8716×대각선으로 계산하면 30° → 1.63×, 40° → 1.20×, 36° → 1.34×이고, 65인치 × 1.2~1.6 = 1.98~2.64 m다. 산술은 맞지만 출처는 미확인이다. 연구자 스스로도 '보조 기준'으로 표시했으므로 그 라벨을 유지할 것."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "SAGE (NVlabs/sage) - MCP 레이아웃 서버",
+      "status": "ok",
+      "detail": "저장소 존재(Apache-2.0 LICENSE, 416 stars, 커밋 1개의 단일 코드 공개). FastMCP 서버와 제약 DFS 배치 수치는 코드로 검증했다. 보정할 점: (1) 학회 표기는 저장소에 없고 큐레이션 목록에만 CVPR 2026으로 있음. (2) 패딩은 전체 치수 +3.5 cm. (3) 창 앞 여유는 solver가 계산하지 않음. (4) 실제 배치 툴은 place_objects_in_room과 move_one_object_with_condition_in_room이며 연구자 목록에서 빠짐. 커밋 1개짜리 코드 덤프라 유지보수 신호는 약하다.",
+      "evidence_urls": [
+        "https://github.com/NVlabs/sage",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/server/layout.py",
+        "https://raw.githubusercontent.com/NVlabs/sage/main/LICENSE"
+      ]
+    },
+    {
+      "name": "SceneSmith (nepfaff/scenesmith)",
+      "status": "ok",
+      "detail": "MIT, 604 stars, 커밋 7개. 저장소 About에 ICML 2026 Spotlight 표기가 있다. 설정 수치, 프롬프트 클리어런스, 툴 시그니처(generate_assets의 [w,d,h], add_furniture_to_scene_tool(x,y,yaw°, z=0))가 모두 일치한다. 연구자가 빠뜨린 점: check_reachability 툴, 가구 바닥 관통 허용 5 cm, planner가 첫 단계에서 natural/perfect 배치 스타일을 고르는 절차. 롤백은 자동이 아니라 planner 판단이다.",
+      "evidence_urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/furniture_agent/base_furniture_agent.yaml",
+        "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/furniture_agents/tools/furniture_tools.py"
+      ]
+    },
+    {
+      "name": "Holodeck (allenai/Holodeck)",
+      "status": "ok",
+      "detail": "Apache-2.0. README 기준 모델은 gpt-4o-2024-05-13, Unity 2020.3.25f1, DFS 권장. 실행 명령은 README에 `python holodeck/main.py`로 적혀 있지만 실제 패키지 디렉터리는 ai2holodeck/라서 경로 혼동 가능성이 있다. 이슈 #92와 #94는 무응답이고, #94는 사용자 네트워크 문제 보고라서 '데이터 다운로드 불가'는 과장이다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/README.md",
+        "https://github.com/allenai/Holodeck/issues/94"
+      ]
+    },
+    {
+      "name": "LayoutVLM (sunfanyunn/LayoutVLM)",
+      "status": "ok",
+      "detail": "176 stars, 커밋 7개, LICENSE 파일 없음(raw 404, 라이선스 미표기가 맞음). CVPR 2025. Rotated_IoU CUDA 확장 빌드가 필요하다. 기본 gpt-4o와 보조 gpt-4o-mini를 코드에서 확인했다. README에는 평가·파인튜닝 코드 TODO 문구가 없어서 issues #16/#17 인용은 이번에 별도로 확인하지 못했다.",
+      "evidence_urls": [
+        "https://github.com/sunfanyunn/LayoutVLM",
+        "https://raw.githubusercontent.com/sunfanyunn/LayoutVLM/main/src/layoutvlm/layoutvlm.py"
+      ]
+    },
+    {
+      "name": "Infinigen Indoors (princeton-vl/infinigen)",
+      "status": "issue",
+      "detail": "BSD-3와 v2.0.0a2 알파는 맞다. 그러나 main 브랜치에서 v1 Indoors 코드(infinigen_examples/generate_indoors.py, constraints/home.py)가 제거됐다(404). main의 HelloRoom.md는 여전히 v1 명령을 안내하므로 사용자가 main을 clone하면 실패한다. 반드시 v1.16.0 태그를 checkout하라고 명시해야 한다. 외부 에셋 임포트는 v1.8.0부터 공식 가이드(StaticAssets.md)가 있다. v1.16.0에는 shapely 기반 사용자 지정 floor plan 기능이 있다. 내보내기 제약(전체 씬은 USDC만, 머티리얼은 Albedo/Roughness/Normal/Metallic만)은 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/docs/StaticAssets.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/ExportingToExternalFileFormats.md"
+      ]
+    },
+    {
+      "name": "mcp-for-blender (구 ahujasid/blender-mcp)",
+      "status": "ok",
+      "detail": "MIT, 29.4k stars, 2026-09-16에 개명(issue #366). README의 '복잡한 작업은 작은 단계로', 'Poly Haven 다운로드 시 메인 스레드 멈춤', 'execute_blender_code는 임의 코드 실행이므로 작업 저장 필수'를 확인했다. 2026년 타임아웃 이슈(#243 Win11/Blender 5.1, #279 약 5분 지연, #299 Blender 5.2 LTS handler 등록 실패)도 확인했다. 연구자가 빠뜨린 점: (1) Hunyuan3D, Tripo, Rodin을 자체 API 키 없이 쓰는 'Premium' 유료 경로. (2) 텔레메트리. 콘텐츠 수집은 opt-in이지만 최소 익명 사용 기록은 기본으로 켜져 있어 DISABLE_TELEMETRY=true로 꺼야 한다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md",
+        "https://github.com/ahujasid/blender-mcp/issues/366",
+        "https://github.com/ahujasid/blender-mcp/issues?q=is%3Aissue%20timeout"
+      ]
+    },
+    {
+      "name": "blend-ai (HoldMyBeer-gg/blend-ai)",
+      "status": "issue",
+      "detail": "툴 수가 틀렸다. 현재 README 기준 186개/27 모듈이다(175는 About의 옛 수치). AGPL-3.0-or-later, Blender 4.2+ Extension(4.0/4.1 미지원), 5.1 테스트, stdio + TCP 소켓 구조, 148 stars, 커밋 157개. Transforms 모듈에 snap, Physics 모듈에 rigid body와 bake가 있는 것을 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/HoldMyBeer-gg/blend-ai/main/README.md",
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ]
+    },
+    {
+      "name": "Vibe3DScene (3DSceneAgent/Vibe3DScene)",
+      "status": "issue",
+      "detail": "Apache-2.0, 93 stars, 커밋 87개. 아키텍처 설명을 고쳐야 한다. Blender-MCP를 쓰는 것이 아니라 자체 MCP 서버와 자체 addon을 쓰며, Blender-MCP는 감사 목록에만 있다. LLM은 VLM_PROVIDER(openai/anthropic/gemini/qwen)로 선택한다. 3D 생성기(Rodin/Tripo/TRELLIS2/Hunyuan)는 동시에 하나만 켤 수 있다. penetration 기본 임계는 0.02 m다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/README.md",
+        "https://raw.githubusercontent.com/3DSceneAgent/Vibe3DScene/main/docs/integrations/mcp-server-and-tools.md"
+      ]
+    },
+    {
+      "name": "SceneEval (3dlg-hcvc/SceneEval)",
+      "status": "ok",
+      "detail": "MIT(LICENSE.txt), WACV 2026 Oral, 지표 10종과 SceneEval-500을 확인했다. Holodeck 변환 스크립트(2025-11)와 LayoutVLM/HSM 지원(v1.1)도 있다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/3dlg-hcvc/SceneEval/main/README.md"
+      ]
+    },
+    {
+      "name": "SceneWeaver / HSM / SMC",
+      "status": "ok",
+      "detail": "SceneWeaver는 BSD-3, NeurIPS 2025, bpy 3.6.0. HSM은 MIT, 3DV 2026, $0.80에 약 10분. SMC는 MIT, 3DV 2025 Oral, Blender 3.6 LTS에서 custom property 'semantics'를 쓴다. 모두 README와 LICENSE에서 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Scene-Weaver/SceneWeaver/main/README.md",
+        "https://raw.githubusercontent.com/3dlg-hcvc/hsm/main/README.md",
+        "https://raw.githubusercontent.com/3dlg-hcvc/smc/main/README.md"
+      ]
+    },
+    {
+      "name": "LLM 파인튜닝형 레이아웃(ReSpace/DirectLayout/OptiScene/MesaTask/NaLA) 라이선스·가중치",
+      "status": "issue",
+      "detail": "ReSpace와 DirectLayout은 LICENSE가 없어 '미표기'가 맞다. OptiScene은 README에 MIT가 적혀 있고 가중치는 'coming soon'이다. NaLA는 MIT이고 체크포인트는 '9월 예정'으로 아직 미공개다. MesaTask는 LICENSE 파일이 MIT이고 README는 Apache라 모순되며, 연구자는 Apache로 적었다. ReSpace 모델은 respace-sg-llm-1.5b(+Llama-3.1-8B)다. ReSpace README의 2026-09 업데이트는 Alibaba가 3D-FUTURE 호스팅을 내렸을 가능성과 Kaggle 미러를 안내한다(3D-FRONT 계열 도구 전체에 영향).",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/GradientSpaces/respace/main/README.md",
+        "https://raw.githubusercontent.com/PolySummit/OptiScene/main/README.md",
+        "https://raw.githubusercontent.com/adamcwan/NaLA-code/main/README.md",
+        "https://raw.githubusercontent.com/InternRobotics/MesaTask/main/LICENSE"
+      ]
+    },
+    {
+      "name": "SceneReVis / Code-as-Room / R³L / SceneAssistant",
+      "status": "ok",
+      "detail": "SceneReVis는 MIT, Blender 4.0.2, GRPO, SceneChain-12K(11,444 궤적, 약 8만 장)이고 3D-FUTURE(승인 필요)가 필요하다. Code-as-Room은 Apache-2.0, 13단계(Stage 0-12, 8-9는 옵션), Blender 3.6+/4.x. R³L은 MIT, ICML 2026, Holodeck과 LayoutVLM 기반. SceneAssistant는 라이선스 없음, 커밋 3개, 47 stars이며, 기본 Gemini 3 Flash Preview를 'zhizengzeng' 제3자 API 중계 플랫폼으로 호출한다. 이 중계 의존은 보안·재현성 측면에서 주의가 필요한데 연구자가 적지 않았다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Runder-sun/SceneReVis/main/README.md",
+        "https://raw.githubusercontent.com/YxuanAr/Code-as-Room/main/README.md",
+        "https://raw.githubusercontent.com/Neal2020GitHub/R3L/main/README.md",
+        "https://github.com/ROUJINN/SceneAssistant"
+      ]
+    },
+    {
+      "name": "blender-skills (arjun988/blender-skills) set-dressing",
+      "status": "ok",
+      "detail": "MIT, 94 skills, v1.3.0, 229 stars를 확인했고 SKILL.md 내용(밀도 구역, 비트당 소품 3–7개, 1–2개 마모 단서, MUST NOT 목록)도 일치한다. 다만 SKILL.md가 약 2 KB 분량의 일반론이라 근거나 검증 데이터가 없다. KB에서는 '아트 디렉션 체크리스트' 수준으로만 인용할 것.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/set-dressing/SKILL.md",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/README.md"
+      ]
+    },
+    {
+      "name": "Blender API / Geometry Nodes / glTF 규약",
+      "status": "ok",
+      "detail": "BVHTree 시그니처, Scene.ray_cast, rigidbody.bake_to_keyframes를 확인했다. Distribute Points on Faces의 기본값은 Distance Min 0(min 0), Density Max 10, Density 10, Density Factor 1(0–1), 출력 Points/Normal/Rotation이다. glTF는 +Y up, 정면 +Z, 왼쪽 +X, m, radian이다. know_how의 facing 공식 yaw=atan2(dx,-dy)(정면 -Y 에셋)를 수학적으로 검증한 결과 맞다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/python/mathutils/mathutils_bvhtree.cc",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/geometry/nodes/node_geo_distribute_points_on_faces.cc",
+        "https://raw.githubusercontent.com/KhronosGroup/glTF/main/specification/2.0/Specification.adoc"
+      ]
+    },
+    {
+      "name": "BlenderGym (richard-guyunqi/BlenderGym-Open)",
+      "status": "ok",
+      "detail": "CVPR 2025 Highlight, --task placement 지원, LICENSE 없음(미표기가 맞음)을 확인했다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/richard-guyunqi/BlenderGym-Open/main/README.md"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://github.com/hzxie/Awesome-3D-Scene-Generation",
+      "reason": "2차 큐레이션 목록이다. SAGE의 'CVPR 2026' 같은 학회 표기가 이 목록에만 있고 원 저장소나 README에는 없다. 연구 흐름을 찾는 포인터로는 유용하지만, 학회와 수상 표기는 1차 출처(논문, 학회 페이지, 저장소)로 확인하기 전까지 '목록상 표기'로 한정할 것."
+    },
+    {
+      "url": "https://github.com/InternRobotics/MesaTask",
+      "reason": "README 본문('Apache License')과 LICENSE 파일(MIT)이 서로 모순된다. 라이선스는 LICENSE 파일을 우선으로 삼을 것."
+    },
+    {
+      "url": "https://github.com/HoldMyBeer-gg/blend-ai",
+      "reason": "저장소 About('175 tools')과 README('186 tools across 27 modules')가 서로 달라 자기 모순이다. 툴 수는 버전마다 바뀌므로 KB에는 버전과 날짜를 함께 적을 것."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/set-dressing/SKILL.md",
+      "reason": "개인 프로젝트의 짧은 스킬 문서(약 2 KB)로, 수치 근거나 검증 없이 일반론만 담고 있다. SEO 스팸은 아니지만 '규칙'의 권위 있는 출처로 쓰기에는 부적절하다."
+    },
+    {
+      "url": "https://github.com/ROUJINN/SceneAssistant",
+      "reason": "라이선스가 없고 커밋은 3개다. 기본 VLM 호출이 'zhizengzeng' 제3자 API 중계 플랫폼을 거쳐 재현성과 데이터 보안이 불확실하다. 정량 결과도 미확인이다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md",
+      "reason": "main(v2.0 알파) 브랜치에 있지만 v1 전용 명령(infinigen_examples.generate_indoors)을 안내한다. 그런데 해당 모듈은 main에서 제거됐다(404). 문서와 코드가 불일치하므로 v1.16.0 태그의 문서를 인용할 것."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "VIGA: Vision-as-Inverse-Graphics Agent (Fugtemypt123/VIGA)",
+      "url": "https://github.com/Fugtemypt123/VIGA",
+      "why_important": "MIT, arXiv 2601.11109. Generator(씬 프로그램 작성·실행)와 Verifier(다시점 렌더 비교)가 번갈아 도는 analysis-by-synthesis Blender 코드 에이전트다. BlenderBench 벤치마크도 함께 공개했다. '레퍼런스 이미지 → Blender 씬 재현' 루프의 대표 공개 구현이며, Vibe3DScene도 감사 목록에 올렸다."
+    },
+    {
+      "name": "MCP for Unity (CoplayDev/unity-mcp)",
+      "url": "https://github.com/CoplayDev/unity-mcp",
+      "why_important": "사용자의 목표는 AAA급 그래픽인데 조사가 Blender에만 치우쳐 있다. MIT 라이선스의 Unity 에디터 MCP로, 씬과 에셋 제어 툴이 있어 Unity 레벨 배치 워크플로의 기본 선택지다. 같은 팀의 Godot AI도 README에서 소개한다."
+    },
+    {
+      "name": "Unreal Engine MCP (chongdashu/unreal-mcp, flopperam/unreal-engine-mcp)",
+      "url": "https://github.com/flopperam/unreal-engine-mcp",
+      "why_important": "AAA 파이프라인의 핵심 엔진인 Unreal의 MCP다. flopperam 쪽 hosted 'Flop MCP'는 scene_query, scene_compose, 공간 필터, PCG, landscape, PIE 런타임 검증 툴을 제공해 레벨 배치와 검증에 직접 관련된다. 로컬 Python 서버는 set_actor_transform 등 기본 툴만 있다. hosted 서버는 별도 서비스라 비용과 약관을 확인해야 한다."
+    },
+    {
+      "name": "Infinigen StaticAssets 가이드 (외부 에셋을 Indoors 배치 시스템에 통합)",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/docs/StaticAssets.md",
+      "why_important": "Objaverse 등 외부 에셋을 Infinigen의 제약 solver 배치에 넣는 공식 절차다. 연구자는 '코드 작업 필요'로만 적었다. v1.16.0의 shapely 기반 사용자 지정 floor plan 기능과 함께, 'Blender 네이티브 제약 배치 + 내 에셋' 조합의 실무 경로다."
+    },
+    {
+      "name": "InstructScene (ICLR 2024 spotlight)",
+      "url": "https://github.com/chenguolin/InstructScene",
+      "why_important": "semantic graph prior 기반의 지시문 → 씬 생성 방법이다. SceneEval이 공식 지원하는 베이스라인이며, scene graph를 먼저 만들고 레이아웃을 뒤에 푸는 2단계 구조의 대표 예다."
+    },
+    {
+      "name": "3D-FUTURE/3D-FRONT 호스팅 변화(2026-09)",
+      "url": "https://raw.githubusercontent.com/GradientSpaces/respace/main/README.md",
+      "why_important": "ReSpace README의 2026년 9월 업데이트에 따르면 Alibaba Tianchi가 3D-FUTURE를 내렸을 가능성이 있고 Kaggle 미러가 안내돼 있다. ATISS, DiffuScene, PhyScene, LayoutGPT, ReSpace, SceneReVis 등 3D-FRONT 계열 도구의 재현성과 데이터 라이선스에 직접 영향을 준다."
+    },
+    {
+      "name": "mcp-for-blender 텔레메트리와 Premium 유료 경로",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md",
+      "why_important": "최소 익명 사용 기록은 기본으로 켜져 있어 DISABLE_TELEMETRY=true로 꺼야 한다. 콘텐츠(프롬프트, 스크린샷, 씬)는 opt-in이고 AI 학습에 쓰일 수 있다고 명시돼 있다. Hunyuan3D, Tripo, Rodin 생성은 'Premium' 경로로 제공된다. 상용 프로젝트에서는 데이터 정책과 비용 측면에서 반드시 알려야 할 정보다."
+    },
+    {
+      "name": "Infinigen의 커피테이블–소파 거리 규칙 hinge(0.45, 0.6)",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/v1.16.0/infinigen_examples/constraints/home.py",
+      "why_important": "SceneSmith 프롬프트의 0.3–0.5 m와 다른 값이다. 오픈소스 시스템들 사이에서도 수치가 다르므로 KB의 '수치 규칙' 표에 출처별로 병기해야 한다. 같은 파일의 러그 간 최소 1 m, 벽 장식 바닥 높이 > 0.6 m, 천장등 밀도 hinge(0.08, 0.15)/m²도 빠져 있다."
+    },
+    {
+      "name": "SceneSmith check_reachability와 배치 스타일 선택(natural/perfect)",
+      "url": "https://raw.githubusercontent.com/nepfaff/scenesmith/main/scenesmith/prompts/data/furniture_agent/designer_agent.yaml",
+      "why_important": "큰 가구를 놓은 뒤 check_reachability로 통로 차단을 검사하라는 지시가 있다. planner는 첫 단계에서 프롬프트 키워드('lived-in' 또는 'showroom')로 노이즈 프로파일을 고른다. 동선 검증과 '자연 노이즈' 적용 조건을 실무 레시피에 넣을 때 필요한 정보다."
+    }
+  ]
+}

@@ -1,0 +1,1194 @@
+{
+  "topic": "3D 제작용 LLM/VLM 에이전트 학술 연구(2023–2026): 실무자를 위한 주석 참고문헌 — Claude/GPT + Blender MCP에 적용할 교훈 중심",
+  "summary_ko": [
+    "[조사 방법과 제약] 이 세션은 WebSearch 한도(200회)가 이미 소진된 상태였습니다. arxiv.org, openreview, github.io 프로젝트 페이지, HuggingFace, CVF/PMLR는 egress proxy가 차단해 열 수 없었습니다. 그래서 GitHub 공식 저장소 README, 프로젝트 페이지 소스(raw.githubusercontent.com), GitHub Search API, awesome 목록(특히 hzxie/Awesome-3D-Scene-Generation, IJCV 2026)으로 48개 연구/벤치마크를 확인했습니다. README에 없는 논문 수치는 기억에 의존했고, 그런 항목은 confidence를 낮췄습니다.",
+    "[합의 1: 폐루프가 표준] 2024–2026년 거의 모든 성공 사례가 '코드 작성 → Blender 실행 → 렌더/스크린샷 → VLM 비평 → 코드 수정' 루프를 씁니다. SceneCraft, BlenderAlchemy, LL3M, VIGA, CADCodeVerify, Articulate-Anything, SceneReVis, SceneSmith, Code2Worlds가 모두 그렇습니다. 원샷 생성은 기준선(baseline)으로만 쓰입니다.",
+    "[합의 2: 검증에 더 많은 연산] BlenderGym(CVPR 2025 Highlight)에서는 전체 연산 중 검증에 쓰는 비율(VeriRatio)이 0.62–0.73일 때 가장 좋았습니다. 추론 연산을 늘린 오픈소스 verifier가 폐쇄 모델을 넘기도 했습니다. 다만 VLM verifier와 인간의 판정 일치율은 Claude-3.5-Sonnet 0.66, 인간끼리 0.79로 아직 차이가 있습니다.",
+    "[합의 3: 좌표는 솔버, LLM은 관계/제약] LLM이 좌표를 직접 찍으면 충돌이 많이 납니다. SceneReVis 프로젝트 페이지의 비교표 기준 충돌률은 LayoutGPT 40.8%, LayoutVLM 36.8%, 제약 솔버를 쓰는 Holodeck 12.7%, 멀티턴 RL로 학습한 SceneReVis 4.5%였습니다. Holodeck(DFS 솔버), I-Design(백트래킹), LayoutVLM(미분 최적화), Infinigen Indoors(제약 언어+솔버)가 같은 결론을 가리킵니다.",
+    "[합의 4: 만들기보다 검색] Holodeck(Objaverse), I-Design(OpenShape), SceneSmith(HSSD/Objaverse/PartNet-Mobility), Make-it-Real(재질 라이브러리), LL3M(BlenderRAG API 문서)은 에셋·재질·API 문서를 검색해 붙입니다. 복잡한 유기 형상이나 조각은 처음부터 코드로 모델링하지 않고 생성 모델(TRELLIS, Hunyuan3D, SAM3D)이나 라이브러리에서 가져온 뒤 코드로 배치·재질·조명을 맡기는 쪽이 주류입니다.",
+    "[합의 5: 파라메트릭 코드, 함수 라이브러리, 파트 분해] 3D-GPT(Infinigen 함수 파라미터 추론), SceneCraft(재사용 spatial skill library), Scene Language(loop/transform primitive), MeshCoder(파트별 코드, 100만 쌍), SceneMotifCoder(배열 motif 프로그램), CADEvolve(파라메트릭 생성기 진화)는 모두 '고수준 함수와 파트 단위 코드'가 정확도와 편집성을 함께 올린다는 결과를 보여줍니다.",
+    "[합의 6: 계층·단계 생성과 물리 검증] SceneSmith(ICML 2026 Spotlight)는 평면도 → 가구 → 벽 부착물 → 천장 → 소품의 5단계로 나누고 단계마다 designer/critic/orchestrator 에이전트를 둡니다. 결과는 기존 대비 객체 수 3–6배, 객체 간 충돌 0, 물리 시뮬레이션 후 96% 안정, 205명 사용자 연구에서 realism 승률 92%였습니다. 에셋 방향 정규화(+Y forward, Z up)와 물리 시뮬레이션 검증이 핵심입니다.",
+    "[합의 7: LLM은 코드만 보고 결과를 상상하지 못함] SGP-Bench(ICLR 2025 Spotlight)에서 GPT-4o는 렌더 없이 SVG 프로그램 의미를 맞힌 비율이 64.8%(추론 문항 50.4%)였고, SGP-MNIST에서는 모든 모델이 5.5–13.0%로 우연 수준이었습니다. 결과를 판단할 때는 반드시 렌더 이미지를 보여줘야 합니다.",
+    "[안 되는 것] BlenderGym에서는 최신 VLM도 인간이 쉽게 하는 편집 과제에서 크게 뒤졌습니다(blend shape 과제 PL 인간 0.934 vs GPT-4o 9.140). 소형 특화 모델 BlenderLLM은 구문 오류율을 3.4%로 낮췄지만 스스로 '기본 모델링만 가능'하다고 밝힙니다. 메시 토큰을 직접 생성하는 방식(LLaMA-Mesh, MeshLLM)은 저폴리에 머물러 AAA 에셋에는 맞지 않습니다. 사소한 미감을 두고 끝없이 반복하는 것도 비효율적이어서, 3DCodeBench의 critique 프롬프트는 큰 구조 문제만 지적하라고 명시합니다.",
+    "[2026 흐름] 시뮬레이션 준비 씬 대량 생성(SceneSmith, SAGE-10k: 10,000씬·565K 객체), 멀티턴 RL로 학습한 배치 모델(SceneReVis-7B, GRPO + 물리 보상), 효율화를 위한 전체 툴 호출 궤적 일괄 예측(SceneOrchestra, ECCV 2026), 코딩 에이전트 벤치마크(3DCodeBench: Blender 5.0, Claude Code/Codex/Gemini CLI 하네스, 212 카테고리), 4D/물리(Code2Worlds, ICML 2026), 오픈월드(Tencent WorldClaw, 2026-08)가 나왔습니다.",
+    "[Blender MCP 실무 레시피] ① 참조 이미지나 컨셉 이미지를 먼저 확보합니다. ② 객체 목록과 관계를 JSON으로 계획합니다. ③ 파라메트릭 함수로 파트별 모델링을 하거나 에셋을 검색·생성합니다. ④ 좌표는 스크립트 솔버로 계산하고 충돌·경계·물리 안정성을 검사합니다. ⑤ 4개 시점에서 렌더합니다. ⑥ 체크리스트 형식으로 비평합니다(누락 부품, 떠 있는 지오메트리, 비율, 정렬). ⑦ 후보를 여러 개 만들어 비교한 뒤 채택하거나 되돌립니다. ⑧ 계획, 코드 diff, 렌더 이력을 로그로 남깁니다.",
+    "[주의] 확인한 학술 연구의 대부분은 GPT-4o/GPT-4V/Claude 3.5–3.7/GPT-5 세대 모델로 실험했습니다. GPT-6 Astra, Claude Fable 5.1, Opus 5.5를 직접 평가한 동료심사 논문은 찾지 못했습니다. 유일한 근거는 비학술 MCP 벤치마크(ScoreIA 'La Forge')와 사례 모음입니다. LL3M은 논문에 쓴 Claude Sonnet 3.7이 retire되자 서버를 중단했으므로, 특정 모델 버전에 워크플로를 묶지 않는 것이 좋습니다."
+  ],
+  "items": [
+    {
+      "name": "SceneCraft (ICML 2024)",
+      "category": "Blender 코드 에이전트 / 씬 배치",
+      "what_it_is": "텍스트를 관계형 scene graph로 바꾼 뒤 Blender Python 코드로 수백 개 에셋을 배치하는 LLM 에이전트입니다. 두 개의 루프로 동작합니다. inner loop에서는 GPT-4V가 렌더를 보고 공간 제약 함수를 고칩니다. outer loop에서는 반복되는 수정 패턴을 재사용 가능한 spatial skill library로 쌓습니다(library learning). LLM 파라미터 튜닝은 하지 않습니다.",
+      "how_to_use": "Blender MCP에서 곧바로 좌표를 쓰게 하지 말고, 먼저 객체 간 관계(on, next_to, facing, against_wall)를 scene graph/JSON으로 쓰게 합니다. 자주 쓰는 배치 함수(place_on_surface, align_to_wall 등)는 .py 라이브러리로 저장해 다음 씬에서 import하게 합니다. 반복할 때마다 스크린샷을 보여주고 제약 위반을 지적하게 합니다.",
+      "strengths": "논문에 따르면 BlenderGPT 계열 baseline보다 CLIP 점수, 제약 준수, 인간 평가에서 앞섭니다(정확한 수치는 이번 조사에서 원문을 열지 못해 미확인). 라이브러리 학습으로 파인튜닝 없이 개선됩니다.",
+      "weaknesses": "공식 코드 저장소는 찾지 못했습니다. 기존 에셋 배치가 중심이고, 개별 오브젝트 모델링 품질을 다루지는 않습니다.",
+      "license_or_price": "공식 코드 미확인",
+      "status_date": "arXiv 2403.01248 (2024-03), ICML 2024",
+      "urls": [
+        "https://arxiv.org/abs/2403.01248",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "3D-GPT (3DV 2025)",
+      "category": "절차적 모델링 에이전트",
+      "what_it_is": "task dispatch, conceptualization, modeling의 세 에이전트가 계층적으로 협업해 Infinigen 절차적 생성 함수의 파라미터를 추론하고 Python 호출을 작성합니다. 함수 문서(LLM/documents)를 컨텍스트로 제공하는 것이 핵심입니다.",
+      "how_to_use": "지오메트리를 직접 짜게 하기보다, 잘 문서화된 절차적 생성기(Infinigen, Geometry Nodes 자산, ProcFunc 함수)를 MCP 툴이나 함수로 노출하고 LLM은 파라미터만 채우게 합니다. 함수별 docstring, 파라미터 범위, 예시를 시스템 프롬프트에 넣습니다.",
+      "strengths": "지형, 식물, 날씨 같은 대규모 자연 씬을 적은 토큰으로 제어합니다. 코드가 공개되어 있습니다(OpenAI API + Infinigen).",
+      "weaknesses": "Infinigen이 지원하는 카테고리로 한정되고 정량 평가가 제한적입니다.",
+      "license_or_price": "코드 공개(GitHub)",
+      "status_date": "arXiv 2310.12945 (2023-10), 3DV 2025",
+      "urls": [
+        "https://github.com/Chuny1/3DGPT",
+        "https://arxiv.org/pdf/2310.12945.pdf"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderAlchemy (ECCV 2024)",
+      "category": "Blender 편집 에이전트 (재질, 조명, blend shape)",
+      "what_it_is": "VLM이 편집 가능한 Blender 스크립트(재질 노드, blend shape, 조명, geometry nodes)를 반복 수정합니다. edit generator가 후보 코드 편집을 여러 개 내고 state evaluator(VLM)가 렌더를 비교해 고르는 트리 탐색을 합니다. 텍스트 목표는 T2I로 만든 '상상 이미지'(visual imagination)로 시각화해 기준으로 삼고, 개선이 없으면 이전 가설로 되돌립니다(hypothesis reversion).",
+      "how_to_use": "공식 config(wood_to_marble.yaml)의 값은 tree_dims '4x8'(깊이 4 × 폭 8), edit_style 'rewrite_code', num_tries 4, enable_visual_imagination True, enable_hypothesis_reversion True, 동시 렌더 8입니다. 실무에서는 재질 노드 트리 하나처럼 편집 대상을 좁히고, 후보 편집 3–8개를 렌더해 비교하게 하며, 나빠지면 .blend 스냅샷으로 되돌립니다.",
+      "strengths": "README에 따르면 GPT-4V가 가장 좋았고 Gemini, Claude, Ollama 로컬 모델도 지원합니다. 나무 → 대리석 재질, 표정 blend shape, 조명 편집을 시연합니다.",
+      "weaknesses": "렌더 비용이 큽니다. 무에서 모델링하는 것이 아니라 기존 씬을 편집하는 방식이고, Infinigen Blender 바이너리를 전제로 합니다.",
+      "license_or_price": "코드 공개(GitHub), Blender 플러그인 별도 저장소",
+      "status_date": "arXiv 2404.17672 (2024-04), ECCV 2024",
+      "urls": [
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial",
+        "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml",
+        "https://arxiv.org/abs/2404.17672"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderGym (CVPR 2025 Highlight)",
+      "category": "벤치마크: VLM의 Blender 그래픽 편집",
+      "what_it_is": "VLM 시스템이 Blender 코드로 그래픽을 편집하는 능력을 재는 최초의 벤치마크입니다. 수작업 씬 245개와 다섯 과제(procedural geometry, lighting, material, blend shape, object placement)로 구성되며, generator VLM과 verifier VLM 구조로 평가합니다.",
+      "how_to_use": "연산 예산의 약 60–70%를 검증에 씁니다. 예를 들어 후보 편집 3개를 생성하고 렌더한 뒤, verifier에게 목표 이미지와 순서를 바꿔 가며 2–3회 비교 판정을 시켜 다수결로 채택합니다. 오픈 모델을 verifier로 쓸 때는 판정 횟수를 늘립니다.",
+      "strengths": "최적 VeriRatio(검증 연산/전체)는 0.62–0.73이었습니다. verifier 추론을 스케일링한 오픈 모델이 폐쇄 모델 verifier를 넘었습니다. 과제별로는 GPT-4o가 대부분 1위였고 배치 과제만 Gemini-1.5-flash가 1위였습니다. 20개 이상 모델을 평가했고 HF 데이터셋이 공개되어 있습니다.",
+      "weaknesses": "최신 VLM도 인간에게 쉬운 과제에서 고전합니다(blend shape PL 인간 0.934 vs GPT-4o 9.140). verifier와 인간의 정합률은 Claude-3.5-Sonnet 0.66, 인간 0.79입니다. 평가 모델이 2025년 초 세대입니다.",
+      "license_or_price": "코드와 데이터 공개",
+      "status_date": "arXiv 2504.01786 (2025-04), CVPR 2025 Highlight",
+      "urls": [
+        "https://github.com/richard-guyunqi/BlenderGym-Open",
+        "https://raw.githubusercontent.com/BlenderGym/BlenderGym.github.io/main/index.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderLLM (2024)",
+      "category": "Blender 코드 생성 특화 LLM",
+      "what_it_is": "Qwen2.5-Coder-7B-Instruct를 BlendNet(지시-스크립트 12K쌍: 수작업 2K + GPT-4o 생성 10K)으로 미세조정하고 self-improvement를 더해 Blender CAD 스크립트를 생성하는 모델입니다.",
+      "how_to_use": "로컬/오프라인에서 단순 형상 초안을 만들거나 구문 오류가 적은 코드 생성기로 씁니다. AAA 품질이 목표라면 프런티어 모델과 렌더 피드백 루프가 더 현실적입니다. 도메인 특화 파인튜닝은 '실행 가능률'을 올리는 데 효과적이라는 근거로 볼 수 있습니다.",
+      "strengths": "CADBench-Sim 평균 0.748(GPT-4o 0.565)을 기록했습니다. 구문 오류율은 3.4%로 GPT-4-Turbo 18.2%, Claude-3.5-Sonnet 15.6%보다 낮습니다.",
+      "weaknesses": "README가 한계를 직접 밝힙니다: 기본 모델링만 가능, 멀티모달 입력 없음, 멀티턴 반복 수정 없음.",
+      "license_or_price": "Apache-2.0, HF에 가중치 공개",
+      "status_date": "arXiv 2412.14203 (2024-12-17)",
+      "urls": [
+        "https://github.com/FreedomIntelligence/BlenderLLM"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "LL3M: Large Language 3D Modelers (2025, UChicago 3DL)",
+      "category": "멀티에이전트 Blender 에셋 생성",
+      "what_it_is": "planner, retrieval, coder, critic, verifier 역할의 LLM 에이전트가 협업해 해석 가능한 Blender Python으로 3D 에셋을 만듭니다. BlenderRAG(Blender API 문서 검색)로 BMesh, geometry modifier, shader node 같은 고급 기능을 씁니다. 에이전트의 자동 self-critique와 사용자 주도 반복 정제를 지원합니다.",
+      "how_to_use": "① Blender 버전에 맞는 API 문서 검색(RAG, Context7 MCP 등)을 모델 앞에 붙입니다. ② '계획 → 문서 검색 → 코드 → 실행 → 다중 시점 비평 → 수정' 순서를 고정합니다. ③ 결과 코드를 사람이 읽고 고칠 수 있게 유지해 공동 창작을 가능하게 합니다.",
+      "strengths": "여러 형상 카테고리, 재질 편집, 사용자 피드백 반영을 시연합니다. Blender 4.4 애드온이 있습니다. 정량 수치는 원문을 열지 못해 확인하지 못했습니다.",
+      "weaknesses": "README 공지에 따르면 논문에 쓴 Claude Sonnet 3.7이 retire되어 LL3M 서버가 중단되었습니다(모델 버전 의존 리스크). 같은 프롬프트에도 결과가 들쭉날쭉하고, 계정당 하루 5회 제한이 있었습니다.",
+      "license_or_price": "코드 공개(서버 기반 서비스는 중단)",
+      "status_date": "2025-08 공개(arXiv 2508.08228로 기억하나 미확인)",
+      "urls": [
+        "https://github.com/threedle/ll3m",
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "VIGA: Vision-as-Inverse-Graphics Agent (2026)",
+      "category": "이미지 → Blender 씬 역그래픽스 에이전트",
+      "what_it_is": "하나의 self-reflective 에이전트가 두 역할을 번갈아 맡습니다. Generator는 계획, 코드 실행, 에셋 검색, 씬 질의 툴로 씬 프로그램을 쓰고, Verifier는 다중 시점 렌더를 비교해 불일치를 지적합니다. 계획, 코드 diff, 렌더 이력을 담는 진화형 컨텍스트 메모리를 쓰며 파인튜닝은 필요 없습니다. 새 벤치마크 BlenderBench(Level 1–3 다단계 편집)를 제안했습니다.",
+      "how_to_use": "Blender MCP로 사진을 3D로 재현할 때 쓸 수 있습니다. 참조 이미지와 같은 카메라로 렌더해 나란히 비교하게 하고, 매 반복의 계획, 변경 코드, 스크린샷 경로를 로그 파일에 누적해 다음 턴 컨텍스트로 넣습니다.",
+      "strengths": "BlenderGym, SlideBench, BlenderBench로 평가했습니다. MIT 라이선스이며 GitHub 스타 약 1.3k입니다. SAM3D 등 에셋 생성 툴과 연동됩니다.",
+      "weaknesses": "원샷 대비 향상률(%) 같은 원문 수치는 README에 없어 확인하지 못했습니다. 여러 conda 환경과 NVIDIA GPU가 필요하고, GPT-5 등 폐쇄 API를 씁니다.",
+      "license_or_price": "MIT",
+      "status_date": "arXiv 2601.11109 (2026-01)",
+      "urls": [
+        "https://github.com/Fugtemypt123/VIGA",
+        "https://github.com/Fugtemypt123/VIGA-release",
+        "https://arxiv.org/abs/2601.11109"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "3DCodeBench (2026-06)",
+      "category": "벤치마크: 에이전트 절차적 3D 모델링(Blender 5.0)",
+      "what_it_is": "프런티어 모델이 Blender 5.0 Python으로 특정 3D 객체를 절차적으로 만드는 능력을 평가합니다. 212 카테고리(의자, 식물, 해양생물, 주방 하드웨어 등)에 Infinigen 기반 레퍼런스 factory가 있습니다. 설정은 네 가지입니다: text → 3D, image → 3D, multi-turn(Blender traceback 피드백, T=3), coding agent(Claude, Codex, Gemini, Agy CLI 하네스).",
+      "how_to_use": "prompts/ 폴더의 text_to_3d_system_prompt, visual_critique_system_prompt, blender_5_api_reference.txt를 Claude/GPT 시스템 프롬프트나 CLAUDE.md로 재사용할 수 있습니다. 공개된 에이전트 transcript 2,767개로 실제 에이전트의 작업 방식을 분석할 수 있습니다.",
+      "strengths": "82,042 trial과 2,767 에이전트 transcript를 공개합니다. 평가 지표는 실행 가능성, SigLIP-2/DINOv3 이미지 유사도, Chamfer/Uni3D, LLM-judge입니다. Apache-2.0입니다.",
+      "weaknesses": "모델별 리더보드 수치는 3dcodebench.com이 차단되어 확인하지 못했습니다. 단일 객체만 다루고 씬·재질 품질은 범위 밖입니다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "arXiv 2606.01057, 2026-06-01 공개",
+      "urls": [
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/tasks/README.md",
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/blender_5_api_reference.txt",
+        "https://arxiv.org/abs/2606.01057"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "MeshCoder (NeurIPS 2025)",
+      "category": "메시 → 파트별 Blender 코드",
+      "what_it_is": "포인트클라우드를 파트 단위로 분할된 편집 가능한 Blender Python 스크립트로 바꿉니다. 복잡한 형상용 고수준 API를 설계하고, 100만 개 object-code 쌍(41 카테고리)으로 멀티모달 LLM을 학습했습니다.",
+      "how_to_use": "생성형 3D(TRELLIS, Hunyuan3D)로 얻은 메시를 파트별 코드로 역변환해 편집 가능하게 만드는 단계로 씁니다. 프런티어 모델에게 '파트별 함수 + 고수준 API'로 모델링하라고 지시하는 설계 근거이기도 합니다.",
+      "strengths": "기존 방법보다 재구성 품질이 높고, 코드 수정으로 형상과 토폴로지를 편집할 수 있습니다. 가중치, 코드, 10만 샘플 데이터가 공개되어 있습니다. 후속작 MegaParts(MeshCoder 1.5)는 최대 300파트, 256K 토큰까지 다룹니다.",
+      "weaknesses": "분포 밖 입력(TRELLIS 생성물 등)에서 성능이 떨어집니다.",
+      "license_or_price": "코드와 가중치 공개(HF)",
+      "status_date": "arXiv 2508.14879 (2025-08), NeurIPS 2025",
+      "urls": [
+        "https://github.com/InternRobotics/MeshCoder",
+        "https://github.com/xdlbw/Awesome-3D-Object-and-Scene-Generation"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "LLaMA-Mesh (2024, NVIDIA 등)",
+      "category": "LLM 직접 메시 생성",
+      "what_it_is": "OBJ 텍스트(정점 좌표와 면)를 그대로 토큰으로 써서 LLaMA-3.1-8B를 SFT로 학습합니다. 어휘 확장 없이 텍스트와 메시를 하나의 모델에서 다룹니다.",
+      "how_to_use": "대화형으로 간단한 소품이나 블록아웃 메시를 만들 때 씁니다. AAA 에셋에는 코드/절차적 모델링이나 3D 생성 모델 + 리토폴로지 경로가 낫습니다.",
+      "strengths": "README에 따르면 전용 모델 수준의 메시 품질을 내면서 텍스트 능력을 유지합니다. Blender 애드온과 데모가 있습니다.",
+      "weaknesses": "컨텍스트 길이 때문에 저폴리 메시에 한정됩니다(좌표 양자화, 면 수 제한; 정확한 수치는 미확인). 학습 데이터셋은 공개 예정 상태입니다.",
+      "license_or_price": "자체 LICENSE + LLaMA 라이선스",
+      "status_date": "arXiv 2411.09595, 가중치 2024-11-18 공개",
+      "urls": [
+        "https://github.com/nv-tlabs/LLaMA-Mesh",
+        "https://arxiv.org/html/2411.09595v1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "MeshLLM (ICCV 2025)",
+      "category": "LLM 메시 이해·생성",
+      "what_it_is": "메시를 primitive-mesh로 분해한 뒤 local mesh assembly로 점진적으로 이해하고 생성합니다. 150만 개 이상의 샘플로 LLaMA 계열을 LoRA 학습했습니다.",
+      "how_to_use": "큰 메시는 부분 단위로 나눠야 LLM이 다룰 수 있다는 근거로 봅니다. 프런티어 모델에게도 객체를 파트로 쪼개 하나씩 만들고 조립하게 합니다.",
+      "strengths": "LLaMA-Factory 기반 학습 코드와 데이터 전처리 저장소가 공개되어 있습니다.",
+      "weaknesses": "여전히 저해상도이며 AAA 용도로는 부적합합니다. LLaMA-Mesh 대비 수치는 README에 없습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "ICCV 2025 (코드 2025-10)",
+      "urls": [
+        "https://github.com/Fangkang515/MeshLLM"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "L3GO: Chain-of-3D-Thoughts (NAACL 2025 Demo)",
+      "category": "부품 단위 조립 에이전트",
+      "what_it_is": "언어 에이전트가 Blender 기반 환경(SimpleBlenv)에서 부품을 하나씩 추가하면서 위치·충돌 피드백을 받아 '다리 5개 의자' 같은 비관습적 객체를 구성합니다.",
+      "how_to_use": "Blender MCP에서 부품 하나를 추가할 때마다 bbox·접촉 정보를 조회하고 문제가 있으면 고친 뒤 다음 부품으로 넘어가는 절차를 강제합니다.",
+      "strengths": "기억 기준으로는 GPT-4 기반 에이전트가 일반 프롬프트나 text-to-3D 모델보다 비관습 객체를 더 정확히 만들었다고 보고합니다(원문 미확인).",
+      "weaknesses": "공식 저장소가 비어 있고 세부 수치를 확인하지 못했습니다.",
+      "license_or_price": "코드 미공개(빈 저장소)",
+      "status_date": "2024 arXiv, NAACL 2025 System Demonstration",
+      "urls": [
+        "https://github.com/runopti/L3GO"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "VLMaterial (ICLR 2025 Spotlight, MIT)",
+      "category": "절차적 재질 생성",
+      "what_it_is": "입력 이미지를 Blender shader node graph를 만드는 Python 프로그램으로 바꿉니다. LLaVA-NeXT(LLaMA-3 8B)를 LoRA로 미세조정했고, GPT-4o-mini로 프로그램 구조를 바꿔 쓰는 증강과 노드 파라미터 공간 증강을 함께 썼습니다.",
+      "how_to_use": "재질은 텍스처를 그리게 하기보다 절차적 노드 그래프 코드로 생성하게 합니다(해상도 무관, 편집 가능). 프런티어 모델에게 참조 사진을 보여주고 노드 코드를 쓰게 한 뒤 렌더를 비교하며 파라미터를 조정합니다.",
+      "strengths": "코드와 가중치가 MIT로 공개되어 있습니다.",
+      "weaknesses": "48GB 이상 VRAM을 권장합니다. 재질 데이터셋은 CC BY-NC 4.0(비상업)입니다.",
+      "license_or_price": "코드와 가중치 MIT, 데이터 CC BY-NC 4.0",
+      "status_date": "ICLR 2025 Spotlight (저장소 2025-02)",
+      "urls": [
+        "https://github.com/mit-gfx/VLMaterial"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Make-it-Real (NeurIPS 2024)",
+      "category": "VLM 기반 PBR 재질 할당",
+      "what_it_is": "GPT-4V가 3D 객체의 부위별 재질을 인식하고 설명한 뒤, 설명이 달린 수천 개 재질 라이브러리에서 매칭해 albedo, roughness, metallic, normal SVBRDF 맵을 생성합니다.",
+      "how_to_use": "VLM에게 부위별로 어떤 재질인지 라벨링하게 하고, Poly Haven, ambientCG, MatSynth 같은 PBR 라이브러리에서 고르게 합니다. 텍스처를 직접 생성하는 것보다 안정적입니다.",
+      "strengths": "GPT-4V가 재질을 효과적으로 인식한다는 것을 보였습니다. MIT 라이선스이고 Blender 렌더를 연동합니다.",
+      "weaknesses": "정량 결과를 README에서 확인하지 못했습니다. 라이브러리에 있는 재질로 한정됩니다.",
+      "license_or_price": "MIT",
+      "status_date": "NeurIPS 2024",
+      "urls": [
+        "https://github.com/Aleafy/Make_it_Real"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "LayoutGPT (NeurIPS 2023)",
+      "category": "레이아웃: LLM 직접 좌표",
+      "what_it_is": "CSS와 비슷한 구조화 레이아웃 형식에 k개의 유사 예시를 넣는 in-context learning으로 2D 이미지와 3D 실내(3D-FRONT 침실 등) 가구 배치를 생성합니다.",
+      "how_to_use": "좌표를 직접 생성할 때는 비슷한 방 예시(few-shot)를 넣고 후처리 충돌·경계 검사를 반드시 붙입니다.",
+      "strengths": "초기 기준선으로 GPT-4와 Llama-2를 지원합니다.",
+      "weaknesses": "SceneReVis 비교표 기준 충돌률 40.8%, 경계 이탈 24.7%로 가장 나빴습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "NeurIPS 2023",
+      "urls": [
+        "https://github.com/weixi-feng/LayoutGPT",
+        "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Holodeck (CVPR 2024, AI2)",
+      "category": "레이아웃: LLM 제약 + 솔버 + 에셋 검색",
+      "what_it_is": "GPT-4(현재 코드 기본값 gpt-4o-2024-05-13)가 방 구조, 재질, 문창, 객체 목록, 공간 관계 제약을 생성합니다. DFS 제약 솔버(2023-12 이전에는 MILP)가 좌표를 계산하고, Objaverse에서 에셋을 검색해 AI2-THOR/Unity 환경을 만듭니다.",
+      "how_to_use": "LLM에게는 '벽에 붙임, 가까이, 마주봄, 중앙 정렬' 같은 관계만 출력하게 하고 좌표는 솔버 스크립트가 계산하게 합니다. AAA 룩이 필요하면 Objaverse 에셋을 고품질 에셋으로 교체합니다.",
+      "strengths": "SceneReVis 비교표 기준 충돌률 12.7%, 경계 이탈 12.7%로 좌표 직접 생성 방식보다 크게 낮습니다. 코드가 공개되어 있습니다.",
+      "weaknesses": "Unity/AI2-THOR에 종속되고 Objaverse 에셋 품질 편차가 큽니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "CVPR 2024",
+      "urls": [
+        "https://github.com/allenai/Holodeck"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "I-Design (ECCV 2024)",
+      "category": "레이아웃: 역할 분담 멀티에이전트",
+      "what_it_is": "Interior Designer, Architect, Engineer LLM 에이전트가 대화로 scene graph를 만들고, 백트래킹 알고리즘으로 배치를 해소합니다. OpenShape로 Objaverse를 검색하고 Blender에서 배치·렌더한 뒤 GPT-4V가 설계 목표 대비 채점합니다.",
+      "how_to_use": "역할 분담 프롬프트(디자이너: 스타일, 건축가: 동선·치수, 엔지니어: 충돌·좌표)를 쓰고 평가도 VLM으로 자동화합니다.",
+      "strengths": "Docker를 지원하고 추론부터 평가까지 코드가 공개되어 있습니다.",
+      "weaknesses": "GPT-4 계열 API, MinkowskiEngine 등 의존성이 무겁습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2404.02838, ECCV 2024(hzxie 목록 기준)",
+      "urls": [
+        "https://github.com/atcelen/IDesign",
+        "https://arxiv.org/abs/2404.02838"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Chat2Layout (IEEE TVCG 2025)",
+      "category": "레이아웃: 대화형 MLLM",
+      "what_it_is": "MLLM 기반 대화형 가구 배치입니다. vision-question 패러다임, 학습 없는 visual-text prompting, O2O-Search(정보량이 큰 최소 예시 선택)를 쓰고, 실행 결과의 시각 피드백으로 반복 갱신합니다.",
+      "how_to_use": "배치 결과 이미지를 다시 보여주며 회전, 스케일, 재배치를 대화로 지시하고, 예시는 가장 비슷한 소수만 골라 넣습니다.",
+      "strengths": "오픈셋 가구의 배치, 편집, 회전, 스케일, 재배열을 지원합니다.",
+      "weaknesses": "코드 공개 여부를 확인하지 못했습니다(프로젝트 페이지 저장소만 확인).",
+      "license_or_price": "미확인",
+      "status_date": "arXiv 2407.21333, TVCG 2025",
+      "urls": [
+        "https://raw.githubusercontent.com/CassieJuice/chat2layout/main/index.html",
+        "https://arxiv.org/abs/2407.21333"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "LayoutVLM (CVPR 2025, Stanford)",
+      "category": "레이아웃: VLM + 미분 최적화",
+      "what_it_is": "VLM이 초기 수치 포즈와 공간 관계를 함께 생성하면, 이를 미분 가능한 목적함수(rotated IoU 손실 등)로 바꿔 최적화해 layout.json을 냅니다. 입력은 바닥 경계, 벽 높이, 에셋 GLB와 bbox입니다.",
+      "how_to_use": "에셋마다 bbox와 정면 방향을 정규화해 제공하고, VLM 출력은 '초기값 + 관계'로 받아 최적화로 마무리합니다.",
+      "strengths": "코드가 공개되어 있고 Holodeck/Objaverse 전처리와 호환됩니다.",
+      "weaknesses": "SceneReVis 비교표(경쟁 논문의 측정)에서 충돌률 36.8%였습니다. 조건에 따라 다를 수 있습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2412.02193, CVPR 2025",
+      "urls": [
+        "https://github.com/sunfanyunn/LayoutVLM",
+        "https://arxiv.org/abs/2412.02193"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Global-Local Tree Search in VLMs (CVPR 2025) + 2026 확장",
+      "category": "레이아웃: 계층 트리 탐색",
+      "what_it_is": "실내 씬 생성을 계획 문제로 봅니다. 방 → 영역 → 바닥 객체 → 지지 객체 순의 계층 트리 탐색(기본 MCTS, DFS 선택)을 하고, VLM 공간 추론을 돕기 위해 이모지 그리드 표현을 씁니다(가구 격자 0.3m, 소품 격자 0.1m). 2026 확장판은 PRM-guided MCTS, Paint3D 텍스처 정제, 3DTindo-Bench를 추가했습니다.",
+      "how_to_use": "VLM에게 원시 좌표 대신 top-down 격자 지도(라벨이나 이모지 오버레이)를 보여주고 칸 단위로 위치를 고르게 하면 공간 추론 오류가 줄어듭니다.",
+      "strengths": "코드가 공개되어 있고 Blender 3.3 이상 렌더와 Holodeck 에셋 DB를 씁니다.",
+      "weaknesses": "정량 수치는 README에서 확인하지 못했습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2503.18476, CVPR 2025, 2026 arXiv 확장",
+      "urls": [
+        "https://github.com/dw-dengwei/TreeSearchGen",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "DirectLayout (NeurIPS 2025)",
+      "category": "레이아웃: CoT 수치 생성",
+      "what_it_is": "CoT 공간 추론으로 텍스트에서 수치 레이아웃을 직접 생성합니다. CoT-grounded generative layout reward를 쓰고, 추론 중에 에셋과 레이아웃을 반복 정렬합니다.",
+      "how_to_use": "추론 모델에게 치수와 간격(통로 폭, 가구 간 거리)을 먼저 계산하게 하고, 실제 에셋 bbox를 받은 뒤 레이아웃을 다시 정렬하게 합니다.",
+      "strengths": "README는 학습 모델을 공개할 수 없지만 최신 LLM으로 비슷한 결과를 낼 수 있다고 밝힙니다. 추론 파이프라인은 공개되어 있습니다.",
+      "weaknesses": "전용 학습 모델이 공개되지 않았습니다.",
+      "license_or_price": "추론 코드 공개",
+      "status_date": "arXiv 2506.05341, NeurIPS 2025",
+      "urls": [
+        "https://github.com/rxjfighting/DirectLayout"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneMotifCoder (3DV 2025 Oral)",
+      "category": "소품 배열 프로그램 학습",
+      "what_it_is": "쌓인 접시 같은 몇 개의 배치 예시에서 반복 공간 패턴(motif)을 추출해 meta-program으로 일반화합니다. LLM이 이를 인스턴스화하고, 기하 최적화로 물리적 타당성을 보장합니다. HSSD 에셋 검색을 씁니다.",
+      "how_to_use": "책장, 식기, 진열대처럼 반복되는 소품 배열은 예시 기반 함수(stack, row, grid, scatter_on_surface)로 만들어 재사용합니다.",
+      "strengths": "MIT 라이선스이고 Blender로 학습 예시를 만드는 가이드를 제공합니다.",
+      "weaknesses": "HSSD(약 72GB)가 필요합니다.",
+      "license_or_price": "MIT",
+      "status_date": "3DV 2025 Oral",
+      "urls": [
+        "https://github.com/3dlg-hcvc/smc"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "The Scene Language (CVPR 2025 Highlight)",
+      "category": "씬 표현: 프로그램 + 단어 + 임베딩",
+      "what_it_is": "씬을 프로그램(계층·반복 구조), 단어(의미), 임베딩(외형)으로 표현합니다. LLM(기본 Claude 3.5 Sonnet, 3.7 선택 가능)이 transform_shape, loop, concat_shapes 같은 primitive로 Python 프로그램을 쓰고, Mitsuba나 Minecraft 렌더러로 출력합니다.",
+      "how_to_use": "대칭, 반복, 계층(체스판, 기둥 열, 도시 블록)은 loop와 함수로 표현하게 해 정확도를 올립니다. Claude 계열에서 잘 동작하는 설계 예시입니다.",
+      "strengths": "코드가 공개되어 있고 Anthropic API 키만 있으면 실행됩니다.",
+      "weaknesses": "primitive 기반이라 AAA 디테일은 별도 에셋이나 모델링이 필요합니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2410.16770, CVPR 2025 Highlight",
+      "urls": [
+        "https://github.com/zzyunzhi/scene-language",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Infinigen / Infinigen Indoors / ProcFunc (Princeton)",
+      "category": "절차적 생성 인프라(에이전트의 툴)",
+      "what_it_is": "Blender 기반 완전 절차적 자연·실내 생성기입니다(CVPR 2023, CVPR 2024). Indoors는 제약 정의(infinigen_examples/constraints/semantics.py 등)와 솔버로 가구를 배치합니다. 2025년에는 관절 시뮬레이션 에셋이, 2026년에는 ProcFunc(geometry nodes ↔ Python 트랜스파일러와 함수형 API)가 나왔습니다.",
+      "how_to_use": "3D-GPT, BlenderGym, BlenderAlchemy, 3DCodeBench, Code2Worlds, SceneWeaver가 모두 Infinigen 위에서 동작합니다. ProcFunc의 `procfunc transpile x.blend --node_trees <tree>`로 기존 geometry nodes 에셋을 LLM이 편집할 수 있는 Python 코드로 바꿀 수 있습니다(bpy==4.2.0, Python 3.11 필요).",
+      "strengths": "BSD-3 라이선스로 상용이 가능하고 사진 수준의 절차적 에셋을 제공합니다.",
+      "weaknesses": "설치가 무겁고, ProcFunc README에는 LLM 사용에 대한 언급이 없습니다(LLM 연계는 이 조사의 해석입니다).",
+      "license_or_price": "BSD-3-Clause",
+      "status_date": "ProcFunc 2026-05(arXiv 2604.26943로 표기됨)",
+      "urls": [
+        "https://github.com/princeton-vl/infinigen",
+        "https://github.com/princeton-vl/procfunc",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/docs/HelloRoom.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneWeaver (NeurIPS 2025)",
+      "category": "씬 합성: 반성형 툴 선택 에이전트",
+      "what_it_is": "reason-act-reflect 에이전트가 확장 가능한 tool card 중에서 골라 반복 정제합니다. 툴에는 데이터 기반 초기화(PhyScene, DiffuScene, ATISS), LLM 배치, 2D 가이던스, Infinigen 규칙, Objaverse·3D-FUTURE·MetaScenes 검색, 수정 도구(레이아웃, 회전, 크기, 관계, 삭제)가 있습니다. 물리 타당성, 시각 현실감, 의미 정합을 자기평가합니다.",
+      "how_to_use": "여러 생성 방법(에셋 검색 MCP, 생성형 3D MCP, 절차적 생성기)을 tool card처럼 설명과 함께 등록하고, 에이전트가 상황별로 고르게 합니다. 평가 기준 세 가지를 매 턴 점수로 받게 합니다.",
+      "strengths": "여러 패러다임을 통합하고 중간 결과와 지표를 단계별로 기록합니다.",
+      "weaknesses": "Blender 3.6과 Azure OpenAI에 의존합니다. 반복 루프가 느리다는 점을 SceneOrchestra가 지적했습니다. 정량 표는 이번 조사에서 확인하지 못했습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2509.20414, NeurIPS 2025",
+      "urls": [
+        "https://github.com/Scene-Weaver/SceneWeaver",
+        "https://raw.githubusercontent.com/Scene-Weaver/Scene-Weaver.github.io/main/index.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Scenethesis (ICLR 2026)",
+      "category": "씬 합성: 언어 + 비전 에이전트",
+      "what_it_is": "네 모듈로 구성됩니다. LLM이 객체 범주와 공간 계층 초안을 쓰고, 비전 모듈이 가이던스 이미지를 생성해 scene graph와 5DoF 포즈를 추출하고 에셋을 검색합니다. 최적화 모듈이 포즈 정렬과 충돌·안정성을 보정하고, judge 모듈이 공간 일관성을 검증해 재시도합니다.",
+      "how_to_use": "텍스트만으로 배치하지 말고 먼저 컨셉 이미지를 생성하게 한 뒤, 그 이미지에서 객체 위치와 관계를 추출해 배치 기준으로 씁니다.",
+      "strengths": "실내와 실외 모두에서 관계가 풍부하고 충돌이 적은 씬을 보였습니다(정성적).",
+      "weaknesses": "프로젝트 페이지에 정량 결과가 없고 코드도 공개되지 않았습니다.",
+      "license_or_price": "코드 미공개",
+      "status_date": "arXiv 2505.02836, ICLR 2026",
+      "urls": [
+        "https://raw.githubusercontent.com/scenethesis/Scenethesis/main/index.html",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneSmith (ICML 2026 Spotlight, MIT/TRI)",
+      "category": "씬 합성: 계층 에이전트 + 시뮬레이션 준비",
+      "what_it_is": "designer, critic, orchestrator VLM 에이전트가 5단계(평면도 → 가구 → 벽 부착물 → 천장 → 소품)로 씬을 만듭니다. 에셋은 SAM3D(32GB GPU)나 Hunyuan3D-2로 생성하거나 HSSD, Objaverse, PartNet-Mobility에서 검색합니다. 관절, 질량, 관성을 추정하고 +Y forward/Z up으로 방향을 정규화하며 Drake, MuJoCo, USD로 출력합니다. 기본 모델은 GPT-5이고 Gemini로 바꿀 수 있습니다.",
+      "how_to_use": "단계마다 designer와 critic을 분리하고, 에셋 방향과 스케일을 정규화하며, 마지막에 물리 시뮬레이션을 돌려 안정성을 검사합니다. 단계별 체크포인트에서 분기하거나 재개할 수 있습니다.",
+      "strengths": "기존 대비 객체 수 3–6배, 객체 간 충돌 0, 시뮬레이션 후 96% 안정, 사용자 205명 연구에서 realism 92%·prompt faithfulness 91% 승률, 자동 평가와 인간 라벨 99.7% 일치를 보고합니다.",
+      "weaknesses": "GPU 24–45GB 이상이 필요하고 로봇 시뮬레이션용이라 렌더 미감 최적화는 별도로 해야 합니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2602.09153, ICML 2026 Spotlight",
+      "urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SAGE (CVPR 2026, NVIDIA 등)",
+      "category": "씬 합성: 대규모 에이전트형 시뮬레이션 환경",
+      "what_it_is": "embodied 과제를 입력으로 받아 의도를 파악하고, LLM(GPT)과 VLM(Qwen), TRELLIS 에셋 생성, MatFuse 재질 생성, 레이아웃 솔버를 조합해 Isaac Sim용 USD 환경을 대량 생성합니다. 백엔드 서버와 클라이언트로 나뉜 구조이며 MCP client/server 구현에서 영감을 받았다고 밝힙니다.",
+      "how_to_use": "에셋 생성, 재질 생성, 레이아웃 솔버를 각각 별도 서버(MCP 툴)로 두고 에이전트가 호출하는 아키텍처의 참고 사례입니다.",
+      "strengths": "SAGE-10k 데이터셋(10,000씬, 50개 방 유형, 565K개 고유 생성 객체)을 공개했습니다.",
+      "weaknesses": "비평(critic) 세부와 정량 품질 지표는 README에 없습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2602.10116, CVPR 2026",
+      "urls": [
+        "https://github.com/NVlabs/sage"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneReVis (2026)",
+      "category": "배치: 멀티턴 RL 자기반성",
+      "what_it_is": "'Render → Evaluate → Revise' 진단-행동 루프입니다. 구조화된 툴 호출(add, move, rotate, scale, replace, remove)만 쓰고, SceneChain-12K(멀티턴 궤적 11,444개, 렌더 약 80K)로 SFT한 뒤 voxel 기반 물리 보상 GRPO로 7B 모델을 학습했습니다.",
+      "how_to_use": "Blender MCP 편집을 이 6개 원자 연산으로 제한하고, 매 턴 렌더 이미지와 충돌·경계 검사 결과를 모델에 돌려줍니다.",
+      "strengths": "경계 이탈 2.0%, 충돌 4.5%, 품질 8.8/10을 보고합니다. 비교 대상은 Holodeck 12.7%/12.7%/7.8, LayoutVLM 12.9%/36.8%/7.7, LayoutGPT 24.7%/40.8%/7.5입니다. 7B 체크포인트가 공개되어 있습니다.",
+      "weaknesses": "저자 자체 평가이고 3D-FUTURE/Objaverse 에셋에 의존합니다.",
+      "license_or_price": "체크포인트와 코드 공개",
+      "status_date": "arXiv 2602.09432 (2026-02)",
+      "urls": [
+        "https://github.com/Runder-sun/SceneReVis",
+        "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "SceneOrchestra (ECCV 2026)",
+      "category": "씬 합성: 전체 툴 호출 궤적 예측",
+      "what_it_is": "SceneWeaver식 execute-review-reflect 반복 대신 전체 툴 호출 시퀀스를 한 번에 예측합니다. SFT와 DPO로 학습한 orchestrator와 후보를 순위 매기는 discriminator를 쓰고, 검증 후 일괄 실행합니다(기본 재시도 3회).",
+      "how_to_use": "비용과 시간이 문제라면 '전체 계획 먼저 → 체크포인트에서만 렌더 검증' 하이브리드로 API 호출 수를 줄입니다.",
+      "strengths": "반복 루프의 오버헤드를 없앱니다.",
+      "weaknesses": "정량 효율 수치는 README에서 확인하지 못했습니다. 저장소가 신생입니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2604.19907, ECCV 2026",
+      "urls": [
+        "https://github.com/yunhe24/sceneorchestra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneAssistant (2026)",
+      "category": "씬 합성: 시각 피드백 에이전트",
+      "what_it_is": "LLM 에이전트가 action API를 호출해 오픈 보캐뷸러리 씬을 구성합니다. 객체별로 Hunyuan3D-2나 TRELLIS로 생성하고, Z-Image로 이미지를 만들며, Blender EEVEE로 렌더합니다. 약 20 스텝 동안 매 스텝 미리보기 이미지와 JSON 상태를 냅니다.",
+      "how_to_use": "매 스텝 '미리보기 이미지 + JSON 씬 상태'를 함께 모델에 주는 패턴을 그대로 Blender MCP에 적용합니다.",
+      "strengths": "코드가 공개되어 있고 Gemini/OpenAI를 지원합니다.",
+      "weaknesses": "수치 결과는 README에 없습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2603.12238 (2026-03)",
+      "urls": [
+        "https://github.com/ROUJINN/SceneAssistant",
+        "https://arxiv.org/abs/2603.12238"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneCode (2026)",
+      "category": "씬 합성: 실행 가능한 월드 프로그램",
+      "what_it_is": "planner-designer-critic 루프로 레이아웃을 만들고, 객체 요청을 5가지 코드 생성 전략으로 보냅니다. 각 객체는 파트별 Blender Python 프로그램(관절 메타데이터 포함)으로 만들어 실행 기반으로 정제한 뒤 시뮬레이션 에셋(SDF)으로 컴파일합니다.",
+      "how_to_use": "가구를 메시 한 덩어리가 아니라 파트별 코드와 관절로 만들면 서랍, 문, 높이 수정이 쉬워집니다. 평면도 → 가구 → 벽/천장 → 조작 객체 단계를 따릅니다.",
+      "strengths": "Blender 4.4, OpenAI, Flux(선택)를 쓰고 체크포인트 재개를 지원합니다. 로봇 조작 다운스트림으로도 평가했습니다.",
+      "weaknesses": "정량 수치를 확인하지 못했습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2605.19587 (2026-05)",
+      "urls": [
+        "https://github.com/wangpuyi/SceneCode"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Code2Worlds (ICML 2026)",
+      "category": "4D/물리: 코딩 LLM 월드 생성",
+      "what_it_is": "검색 증강 객체 생성과 환경 레이아웃 오케스트레이션을 분리한 dual-stream 구조입니다. Post-Process Agent가 동역학 코드를 쓰고, VLM-Motion Critic이 결과를 보고 시뮬레이션 코드를 자기반성으로 고칩니다. 렌더는 Infinigen으로 합니다.",
+      "how_to_use": "애니메이션이나 물리도 '코드 생성 → 시뮬레이션 → 영상/프레임 비평 → 수정' 루프로 처리합니다.",
+      "strengths": "Code4D 벤치마크에서 SGS 41% 향상, Richness 49% 향상을 보고합니다.",
+      "weaknesses": "Infinigen 설치가 필요합니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2602.11757, ICML 2026",
+      "urls": [
+        "https://github.com/AIGeeksGroup/Code2Worlds"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "WorldClaw (Tencent Hunyuan, 2026-08)",
+      "category": "오픈월드 에이전트 생성",
+      "what_it_is": "레이아웃 계획, Hunyuan3D 에셋 생성, 배치, 지형, 검증 단계로 대규모 3D 오픈월드를 에이전트가 생성합니다.",
+      "how_to_use": "오픈월드나 레벨 규모 작업에서 '계획 → 에셋 생성 → 배치 → 검증' 파이프라인을 설계할 때 참고합니다.",
+      "strengths": "GitHub 스타 1.3k 이상이고 fal.ai 연동 포크가 있습니다.",
+      "weaknesses": "2026-09 기준 README에 설치, 라이선스, 결과 정보가 없습니다.",
+      "license_or_price": "미확인",
+      "status_date": "arXiv 2608.05248, 2026-08-07 공개",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "GPT4Motion (CVPR 2024 PBDL Workshop, Best Paper Runner-Up)",
+      "category": "물리 시뮬레이션 + 영상",
+      "what_it_is": "GPT-4가 Blender 물리 시뮬레이션(강체, 천, 유체) 스크립트를 쓰고, 렌더한 엣지·깊이 맵 시퀀스를 ControlNet 두 개와 Stable Diffusion에 넣어 시간적으로 일관된 영상을 만듭니다.",
+      "how_to_use": "물리적 움직임은 LLM이 상상하게 하지 말고 Blender 시뮬레이션에 맡깁니다. LLM은 시뮬레이션 설정(질량, 마찰, 바람, 유체 도메인)만 코드로 작성합니다.",
+      "strengths": "학습이 필요 없습니다. 코드는 2024-04-16에 공개되었습니다.",
+      "weaknesses": "기본 물리 시나리오 세 가지에 한정되고 SD 기반이라 3D 에셋 품질과는 별개입니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2311.12631",
+      "urls": [
+        "https://github.com/jiaxilv/GPT4Motion",
+        "https://arxiv.org/abs/2311.12631"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Articulate-Anything (ICLR 2025)",
+      "category": "관절 객체(서랍, 문) 코드 생성",
+      "what_it_is": "VLM actor-critic 구조입니다. 텍스트, 이미지, 비디오를 입력으로 URDF 코드를 생성하고, 렌더와 시뮬레이션 결과를 critic VLM이 보고 수정합니다.",
+      "how_to_use": "가구의 문, 서랍, 경첩 같은 관절도 '코드 생성 → 움직임 렌더 → 비평' 루프로 검증합니다.",
+      "strengths": "기억 기준으로 PartNet-Mobility에서 기존(Real2Code 등)보다 성공률이 크게 올랐다고 보고합니다(원문 수치 미확인).",
+      "weaknesses": "README에 정량 수치가 없습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2410.13882, ICLR 2025",
+      "urls": [
+        "https://github.com/vlongle/articulate-anything"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CAD-Recode (ICCV 2025)",
+      "category": "CAD 코드: 점군 → CadQuery",
+      "what_it_is": "포인트클라우드를 CadQuery Python 코드로 역설계합니다. Qwen2-1.5B에 선형 투영층을 더하고, 절차적으로 생성한 100만 개 CAD 시퀀스로 학습했습니다. v1.5가 2025-03에 나왔습니다.",
+      "how_to_use": "치수 정확도가 중요한 물체(가구 하드웨어, 기계 부품, 제품)는 CadQuery나 build123d 같은 코드 CAD로 만든 뒤 STL/GLB로 Blender에 가져옵니다. 생성된 코드는 일반 LLM이 읽고 편집할 수 있습니다.",
+      "strengths": "DeepCAD, Fusion360 Gallery, CC3D에서 SOTA(Chamfer, IoU, invalid ratio)를 기록했고 HF 데모가 있습니다.",
+      "weaknesses": "구성요소별 라이선스를 따로 확인해야 합니다.",
+      "license_or_price": "구성요소별 라이선스 확인 필요",
+      "status_date": "arXiv 2412.14042, ICCV 2025 (2025-06 채택)",
+      "urls": [
+        "https://github.com/filaPro/cad-recode",
+        "https://arxiv.org/abs/2412.14042"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "cadrille (2025)",
+      "category": "CAD 코드: 멀티모달 + 온라인 RL",
+      "what_it_is": "점군, 이미지, 텍스트를 입력으로 받아 CadQuery 코드를 냅니다. SFT 후 온라인 피드백 RL로 개선했습니다.",
+      "how_to_use": "실행과 기하 검증 결과를 보상으로 쓰는 RL이 코드 CAD 품질을 크게 올린다는 근거로 봅니다. 실무에서는 실행 → 비교 → 재시도 루프에 해당합니다.",
+      "strengths": "2025-05 기준 DeepCAD, Fusion360, CC3D에서 SOTA를 기록했고 SFT와 RL 가중치가 모두 공개되어 있습니다.",
+      "weaknesses": "RL 학습 코드는 공개되지 않았습니다.",
+      "license_or_price": "가중치 공개",
+      "status_date": "arXiv 2505.22914",
+      "urls": [
+        "https://github.com/col14m/cadrille"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Text2CAD (NeurIPS 2024 Spotlight)",
+      "category": "CAD: 텍스트 → 파라메트릭 시퀀스",
+      "what_it_is": "초보부터 전문가 수준까지의 텍스트 프롬프트를 파라메트릭 CAD 시퀀스로 바꿉니다. DeepCAD 기반 CAD 모델 약 17만 개와 텍스트 주석 약 66만 개를 씁니다.",
+      "how_to_use": "프롬프트에 치수, 스케치 평면, 돌출 방향과 깊이를 전문가 수준으로 구체적으로 적을수록 결과가 정확해집니다.",
+      "strengths": "데이터(HF), 체크포인트, Gradio 데모가 있습니다.",
+      "weaknesses": "학습 코드는 공개되지 않았습니다.",
+      "license_or_price": "데이터와 추론 코드 공개",
+      "status_date": "NeurIPS 2024 Spotlight",
+      "urls": [
+        "https://github.com/SadilKhan/Text2CAD"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CADCodeVerify / CADPrompt (ICLR 2025)",
+      "category": "CAD 코드: VLM 자기검증 질문",
+      "what_it_is": "VLM이 렌더된 CAD 객체에 대해 검증 질문을 스스로 만들고 답한 뒤, 불일치를 코드 수정 피드백으로 씁니다. 벤치마크 CADPrompt는 객체 200개(STL/OBJ, 설명, 전문가 작성 Python 코드)로 구성됩니다.",
+      "how_to_use": "critique 프롬프트에서 모델이 '다리가 4개인가?', '좌판 높이가 폭의 약 절반으로 보이는가?' 같은 예/아니오 체크리스트를 먼저 만들고 이미지로 답하게 한 다음 수정하게 합니다.",
+      "strengths": "기억 기준으로 GPT-4에서 point cloud distance 약 7.3% 감소, 성공률 약 5% 향상을 보고합니다(원문 미확인).",
+      "weaknesses": "README에 수치가 없습니다.",
+      "license_or_price": "코드와 데이터 공개",
+      "status_date": "ICLR 2025",
+      "urls": [
+        "https://github.com/Kamel773/CAD_Code_Generation",
+        "https://openreview.net/pdf?id=BLWaTeucYX"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CAD-Assistant (ICCV 2025)",
+      "category": "CAD: 툴 증강 VLLM 에이전트(FreeCAD)",
+      "what_it_is": "툴 증강 VLLM 플래너가 FreeCAD Python API 코드를 생성해 실행합니다. 스케치 렌더 툴과 3D solid 인식기를 쓰고, 텍스트, 스케치, 3D 스캔을 입력으로 받습니다. SGP-Bench 2D/3D(파일 1,700개)로 평가했습니다.",
+      "how_to_use": "CAD 앱 MCP에서도 '코드 실행 + 렌더 + 형상 질의' 툴 세트를 갖추면 범용 CAD 과제를 풀 수 있습니다. 툴과 명령을 설정 파일로 추가하는 구조를 참고합니다.",
+      "strengths": "Docker를 지원하고 툴을 쉽게 확장할 수 있습니다.",
+      "weaknesses": "라이선스가 비상업(Attribution-NonCommercial)입니다.",
+      "license_or_price": "Attribution-NonCommercial",
+      "status_date": "arXiv 2412.13810, ICCV 2025",
+      "urls": [
+        "https://github.com/dimitrismallis/CAD-Assistant",
+        "https://arxiv.org/abs/2412.13810"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CADFusion (ICML 2025, Microsoft)",
+      "category": "CAD: 시각 피드백 선호 학습",
+      "what_it_is": "텍스트 → CAD LLM을 순차 학습과 시각 피드백 단계로 번갈아 학습합니다. 시각 피드백 단계에서는 렌더된 CAD에서 만든 선호 데이터로 DPO를 합니다. v1.0은 5라운드, v1.1은 9라운드입니다.",
+      "how_to_use": "렌더 기반 시각 평가가 코드 품질 개선의 핵심 신호라는 근거로 봅니다. 여러 후보를 렌더하고 VLM 선호로 고르는 방식을 추론 단계에 적용합니다.",
+      "strengths": "출력은 .step, .stl, .obj이고 GPT-4o VLM 점수로 평가합니다.",
+      "weaknesses": "파인튜닝 모델이라 프런티어 모델과는 직접 비교가 어렵습니다.",
+      "license_or_price": "코드와 가중치 공개",
+      "status_date": "ICML 2025",
+      "urls": [
+        "https://github.com/microsoft/CADFusion"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CAD-Coder (2025) / Text-to-CadQuery (2025)",
+      "category": "CAD: 이미지·텍스트 → CadQuery",
+      "what_it_is": "CAD-Coder는 이미지를 CadQuery로 바꾸는 오픈 VLM입니다(GenCAD-Code 이미지-스크립트 163K쌍, H100 4장으로 약 10시간 학습). Text-to-CadQuery는 Text2CAD 데이터를 Gemini 2.0 Flash로 CadQuery 주석화해 오픈 LLM 6종을 미세조정했습니다.",
+      "how_to_use": "CadQuery가 LLM 친화적인 CAD 표현으로 자리 잡았음을 보여줍니다. Blender 밖에서 정밀 부품을 만들 때는 CadQuery 코드를 쓰게 하고 렌더로 검증합니다.",
+      "strengths": "데이터와 모델이 공개되어 있습니다.",
+      "weaknesses": "README에 비교 수치가 없습니다.",
+      "license_or_price": "공개",
+      "status_date": "CAD-Coder arXiv 2505.14646; Text-to-CadQuery arXiv 2505.06507",
+      "urls": [
+        "https://github.com/anniedoris/CAD-Coder",
+        "https://github.com/Text-to-CadQuery/Text-to-CadQuery",
+        "https://arxiv.org/abs/2505.06507"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CADEvolve (2026)",
+      "category": "CAD: 파라메트릭 생성기 진화",
+      "what_it_is": "수작업 CadQuery 시드 스크립트 46개에서 출발해 VLM이 이끄는 프로그램 편집과 기하 검증으로 약 8,000개의 복잡한 파트 생성기를 진화시키고, 약 130만 개 CadQuery 스크립트와 다중 시점 렌더 데이터셋을 만들었습니다.",
+      "how_to_use": "가구나 소품용 파라메트릭 함수 라이브러리를 LLM으로 점진적으로 늘릴 때 참고합니다. 기존 함수를 변형하고 실행·렌더로 검증한 뒤 통과한 것만 라이브러리에 편입합니다.",
+      "strengths": "전체 CadQuery 연산 집합을 커버합니다.",
+      "weaknesses": "정량 결과를 확인하지 못했습니다.",
+      "license_or_price": "데이터와 모델 공개(HF)",
+      "status_date": "arXiv 2602.16317",
+      "urls": [
+        "https://github.com/zhemdi/CADEvolve",
+        "https://arxiv.org/abs/2602.16317"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SGP-Bench: Can LLMs Understand Symbolic Graphics Programs? (ICLR 2025 Spotlight)",
+      "category": "한계 분석: 코드만 보고 시각 추론",
+      "what_it_is": "LLM이 렌더를 보지 않고 SVG나 CAD 프로그램이 어떤 모습인지 '상상'할 수 있는지 평가하고, Symbolic Instruction Tuning(SIT, 72K)을 제안했습니다.",
+      "how_to_use": "모델이 코드만 보고 '잘 됐다'고 판단하게 두지 말고, 매 수정 후 반드시 렌더나 스크린샷을 보여주는 근거로 씁니다.",
+      "strengths": "SVG에서 GPT-4o는 64.8%(색 87.3%, 추론 50.4%), CAD에서는 72.9%였습니다. SGP-MNIST에서는 모든 모델이 5.5–13.0%로 거의 우연 수준이었습니다.",
+      "weaknesses": "2024–2025 모델 기준입니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "ICLR 2025 Spotlight",
+      "urls": [
+        "https://github.com/sgp-bench/sgp-bench",
+        "https://raw.githubusercontent.com/sgp-bench/sgp-bench.github.io/main/index.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "VoxelCodeBench (Meta, 2026)",
+      "category": "벤치마크: 복셀 3D 코드 생성",
+      "what_it_is": "LLM이 Python 코드로 복셀 3D 장면을 만드는 능력을 평가합니다. 생성 코드를 Unreal Engine에서 자동 실행하고 다중 카메라 스크린샷으로 평가하며, Claude(Bedrock), Gemini, OpenAI를 지원합니다.",
+      "how_to_use": "게임 엔진에서도 '코드 실행 → 다중 카메라 캡처 → 평가' 자동화를 구성하는 참고 사례입니다.",
+      "strengths": "분산 평가를 지원합니다.",
+      "weaknesses": "모델별 결과를 확인하지 못했습니다.",
+      "license_or_price": "코드 공개",
+      "status_date": "arXiv 2604.02580",
+      "urls": [
+        "https://github.com/facebookresearch/VoxelCodeBench",
+        "https://arxiv.org/abs/2604.02580"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "3D-Generalist (3DV 2026)",
+      "category": "VLA 정책으로 3D 월드 제작",
+      "what_it_is": "레이아웃, 재질, 조명, 에셋 편집을 액션으로 내는 VLM 정책을 학습하고 self-improvement로 개선한다는 연구입니다(LayoutVLM 저자진). 세부 내용은 기억에 의존했습니다.",
+      "how_to_use": "씬 품질 개선을 '액션 시퀀스 정책'으로 보는 관점을 참고합니다.",
+      "strengths": "3DV 2026에 채택되었습니다(hzxie 목록 기준).",
+      "weaknesses": "공식 저장소가 비어 있어 세부를 확인하지 못했습니다.",
+      "license_or_price": "코드 미공개",
+      "status_date": "arXiv 2507.06484, 3DV 2026",
+      "urls": [
+        "https://github.com/sunfanyunn/3D-Generalist",
+        "https://github.com/hzxie/Awesome-3D-Scene-Generation"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "La Forge (ScoreIA, 2026-09, 비학술 MCP 벤치마크)",
+      "category": "비학술 벤치마크: MCP만으로 3D 조립·애니메이션",
+      "what_it_is": "AI 모델이 MCP 툴만으로 공유 갑옷 부품을 조립해 3D 기사를 만들고, 걷기, 회전, 짚 표적 베기를 특정 프레임에 맞춰 애니메이션합니다. LLM judge 없이 bbox, 관절각, 검 궤적, 접촉점으로 프로그램이 채점합니다.",
+      "how_to_use": "최신 모델(Claude Opus/Fable/Sonnet/Haiku, GPT-6 Astra/Sol, Grok 4.7, DeepSeek)을 MCP 기반 3D 작업에서 비교한 드문 자료입니다. 결과는 참고용으로만 씁니다.",
+      "strengths": "README에 따르면 Opus와 Fable이 여러 과제에서 100점이었고, 정적 조립은 잘했지만 동적 애니메이션은 어려웠으며, Haiku는 6.5–62.3점으로 저조했습니다.",
+      "weaknesses": "동료심사를 거치지 않았고 채점 규칙이 사후 수정되었습니다(teleport 규칙).",
+      "license_or_price": "결과 JSON/CSV 공개",
+      "status_date": "2026-09-24 결과 공개",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results"
+      ],
+      "confidence": "low"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "모든 수정 뒤에 렌더 → 비평 → 수정 루프를 강제하고, 비평은 다중 시점에서 체크리스트로 받는다",
+      "why": "SGP-Bench에서 LLM은 코드만 보고 결과를 제대로 상상하지 못했습니다(SGP-MNIST 우연 수준). VIGA, LL3M, SceneCraft, CADCodeVerify, SceneReVis 등 성공한 시스템은 모두 다중 시점 시각 피드백을 씁니다.",
+      "example": "Blender MCP 루프 예시: ① 코드 실행 ② 정면, 측면, 상단, 3/4 뷰를 EEVEE 512px로 렌더(또는 뷰포트 스크린샷) ③ 비평 프롬프트: '설명/참조 이미지와 렌더를 비교해 누락 부품, 떠 있는 지오메트리, 비율 오류, 정렬 오류, 형태 오류만 100단어 이하 bullet로 적어라. 큰 구조 문제가 없으면 NEEDS_FIX: NO, 있으면 NEEDS_FIX: YES와 수정된 전체 코드' (3DCodeBench visual_critique 프롬프트 형식)",
+      "urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/visual_critique_system_prompt_text.txt",
+        "https://raw.githubusercontent.com/sgp-bench/sgp-bench.github.io/main/index.html",
+        "https://github.com/Fugtemypt123/VIGA"
+      ]
+    },
+    {
+      "tip": "연산의 60–70%를 생성이 아닌 검증에 쓴다: 후보 여러 개를 만들고 비교 판정으로 고른다",
+      "why": "BlenderGym에서 VeriRatio 0.62–0.73일 때 최적이었고, 검증 추론을 스케일링하면 오픈 모델이 폐쇄 모델을 넘었습니다. VLM verifier와 인간의 정합률(0.66 vs 0.79)이 낮으므로 판정을 여러 번 해서 노이즈를 줄여야 합니다.",
+      "example": "재질 편집 후보 3개 생성 → 각각 렌더 → verifier에게 목표 이미지와 후보 두 개를 좌우를 바꿔 두 번 보여주고 pairwise 비교 → 토너먼트로 최종 채택",
+      "urls": [
+        "https://raw.githubusercontent.com/BlenderGym/BlenderGym.github.io/main/index.html"
+      ]
+    },
+    {
+      "tip": "트리 탐색과 되돌리기: 매 편집 전 스냅샷을 저장하고 나빠지면 복귀한다",
+      "why": "BlenderAlchemy는 edit generator가 후보를 여러 개 내고 state evaluator가 고르는 트리 탐색에 hypothesis reversion을 기본으로 켭니다. 한 줄 수정이 다른 부분을 망가뜨리는 일을 막습니다.",
+      "example": "BlenderAlchemy 기본값 tree_dims '4x8'(깊이 4 × 폭 8), num_tries 4. MCP에서는 편집 전 bpy.ops.wm.save_as_mainfile(filepath='v{n}.blend', copy=True)로 저장하고, 평가가 떨어지면 해당 파일로 되돌립니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml"
+      ]
+    },
+    {
+      "tip": "배치에서 LLM은 관계와 제약만 쓰고, 좌표는 솔버나 스크립트가 계산한다",
+      "why": "좌표를 직접 생성하면 충돌이 많습니다(LayoutGPT 40.8%, LayoutVLM 36.8%). 제약 솔버(Holodeck 12.7%)나 물리 보상 RL(SceneReVis 4.5%)은 크게 낮습니다. Infinigen Indoors, I-Design(백트래킹), LayoutVLM(미분 최적화)도 같은 원리입니다.",
+      "example": "모델 출력 예: {\"objects\":[{\"id\":\"sofa\",\"bbox\":[2.1,0.9,0.8]},{\"id\":\"coffee_table\",\"bbox\":[1.2,0.6,0.45]}],\"relations\":[[\"sofa\",\"against_wall\",\"north\"],[\"coffee_table\",\"in_front_of\",\"sofa\",0.45],[\"tv_stand\",\"face_to\",\"sofa\"]]} → Python 솔버가 격자 탐색이나 DFS로 좌표 계산 → bbox 충돌과 방 경계 검사 → 위반 목록을 모델에 반환",
+      "urls": [
+        "https://github.com/allenai/Holodeck",
+        "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html",
+        "https://github.com/sunfanyunn/LayoutVLM"
+      ]
+    },
+    {
+      "tip": "씬은 계층 단계로 만든다: 평면도 → 대형 가구 → 벽 부착물 → 천장 → 소품",
+      "why": "SceneSmith의 5단계 구성(단계마다 designer/critic/orchestrator)은 기존보다 객체가 3–6배 많으면서 충돌 0, 96% 안정이었습니다. SceneCode와 Global-Local Tree Search(방 → 영역 → 바닥 객체 → 지지 객체)도 같은 구조입니다.",
+      "example": "각 단계가 끝날 때마다 top-down과 eye-level 렌더로 critic을 돌리고, 통과해야 다음 단계로 넘어갑니다. 소품 단계는 지지면(테이블 상판, 선반) 목록을 먼저 추출한 뒤 그 위에만 배치합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html",
+        "https://github.com/wangpuyi/SceneCode",
+        "https://github.com/dw-dengwei/TreeSearchGen"
+      ]
+    },
+    {
+      "tip": "VLM에게 원시 좌표 대신 top-down 격자 지도를 보여준다",
+      "why": "Global-Local Tree Search(CVPR 2025)는 VLM의 공간 추론을 위해 이모지 그리드 표현을 쓰고, 가구는 0.3m, 소품은 0.1m 격자로 해상도를 나눴습니다.",
+      "example": "정사영 top-down 카메라로 렌더하고 0.3m 격자선과 객체 라벨을 오버레이합니다. 프롬프트: '의자는 C7 셀, 러그는 D4–F8 영역처럼 셀 단위로 지정하라'",
+      "urls": [
+        "https://github.com/dw-dengwei/TreeSearchGen"
+      ]
+    },
+    {
+      "tip": "파라메트릭 함수를 먼저 쓰게 하고, 파트 단위로 이름 붙여 모델링한다",
+      "why": "3D-GPT, Scene Language, MeshCoder, SceneCraft 라이브러리 학습, CADEvolve 모두 고수준 함수와 파트 분해로 정확도와 편집성을 함께 얻었습니다. 3DCodeBench 시스템 프롬프트도 파라메트릭 루프, bmesh, modifier, array/mirror를 쓰는 절차적 구성을 요구합니다.",
+      "example": "'먼저 치수 표(좌판 높이 0.45m, 폭 0.5m, 다리 두께 0.035m)를 쓰고, def make_chair(seat_h=0.45, seat_w=0.5, leg_th=0.035, back_h=0.4)를 작성한 뒤 호출하라. 파트 이름은 Seat, Backrest, Leg_FL/FR/BL/BR로 하고, 파트마다 bbox를 print해서 접촉과 부유 여부를 스스로 검사하라.'",
+      "urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/text_to_3d_system_prompt.txt",
+        "https://github.com/InternRobotics/MeshCoder",
+        "https://github.com/zzyunzhi/scene-language"
+      ]
+    },
+    {
+      "tip": "Blender 버전별 API 문서를 검색해 주고, 알려진 함정 목록을 시스템 프롬프트에 넣는다",
+      "why": "LL3M은 BlenderRAG로 고급 API 사용과 정확도를 확보했습니다. 3DCodeBench는 LLM이 자주 틀리는 Blender 5.0 API 목록을 별도 파일로 제공합니다.",
+      "example": "3DCodeBench blender_5_api_reference 요지: 렌더 엔진은 'BLENDER_EEVEE'(EEVEE_NEXT 아님), Noise 텍스처 출력은 'Fac'이 아니라 'Factor', Musgrave 노드는 제거되어 Noise 사용, Mesh.use_auto_smooth 제거로 shade_auto_smooth 사용, 프리미티브 추가 시 location=(0,0,0)을 명시(3D 커서 위치 영향), GeoNodes 입력은 인덱스가 아니라 이름으로 접근, CaptureAttribute는 capture_items.new() 필요, bgl 대신 gpu",
+      "urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/blender_5_api_reference.txt",
+        "https://github.com/threedle/ll3m"
+      ]
+    },
+    {
+      "tip": "실행 오류는 traceback 전체를 돌려주고 3회 안팎으로 재시도한다",
+      "why": "3DCodeBench의 multi-turn 설정은 이전 코드와 Blender traceback을 주는 stateless 재시도 T=3을 표준으로 씁니다. BlenderLLM 비교에서도 범용 모델의 구문 오류율이 15–18%였습니다.",
+      "example": "MCP 코드 실행 툴이 예외를 삼키지 않고 traceback과 마지막 20줄 로그를 반환하도록 설정합니다. 3회 실패하면 '기능을 줄인 최소 버전부터 다시'로 전략을 바꿉니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/tasks/README.md",
+        "https://github.com/FreedomIntelligence/BlenderLLM"
+      ]
+    },
+    {
+      "tip": "복잡한 유기체, 조각, 고디테일 소품은 코드로 처음부터 만들지 말고 검색하거나 생성한다",
+      "why": "Holodeck, I-Design, SceneSmith, SAGE, SceneAssistant는 에셋 검색(Objaverse, HSSD)이나 생성(TRELLIS, Hunyuan3D, SAM3D)을 쓰고, LLM은 선택, 배치, 검증을 맡습니다. LLM이 메시를 직접 생성하는 방식(LLaMA-Mesh)은 저폴리에 머뭅니다.",
+      "example": "조각상: 생성형 3D MCP로 메시 생성 → 리메시/디시메이트 → 코드로 스케일(실제 치수), 원점(바닥 중앙), 방향(+Y forward, Z up) 정규화 → 배치 → 재질",
+      "urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://github.com/NVlabs/sage",
+        "https://github.com/ROUJINN/SceneAssistant"
+      ]
+    },
+    {
+      "tip": "재질은 부위별 라벨링 후 PBR 라이브러리에서 매칭하거나 절차적 노드 코드로 만든다",
+      "why": "Make-it-Real은 GPT-4V의 부위별 재질 인식과 라이브러리 검색으로 SVBRDF를 만들었습니다. VLMaterial과 BlenderAlchemy는 shader node 프로그램을 생성하고 편집해 해상도와 무관하게 편집 가능한 재질을 얻었습니다.",
+      "example": "'각 파트(Seat, Leg...)에 대해 재질 종류, 색, 거칠기 범위를 JSON으로 적어라' → 라이브러리(Poly Haven, ambientCG)에서 검색해 할당. 또는 'Principled BSDF + Noise/Voronoi로 대리석 노드 트리를 코드로 작성하고 참조 사진과 렌더를 비교해 Roughness와 색을 조정하라'",
+      "urls": [
+        "https://github.com/Aleafy/Make_it_Real",
+        "https://github.com/mit-gfx/VLMaterial",
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial"
+      ]
+    },
+    {
+      "tip": "목표를 먼저 이미지로 만든다(visual imagination / guidance image)",
+      "why": "BlenderAlchemy는 텍스트 목표를 T2I로 그린 '상상 이미지'를 평가 기준으로 썼고, Scenethesis는 가이던스 이미지에서 scene graph와 5DoF 포즈를 추출했습니다. 추상적인 텍스트보다 이미지가 VLM 비평의 기준으로 안정적입니다.",
+      "example": "'북유럽풍 거실' → 이미지 모델로 컨셉 이미지 2–3장 생성 → 하나를 선택 → 객체 목록과 대략적 배치를 이미지에서 추출 → 이후 비평 때마다 이 이미지를 참조로 첨부",
+      "urls": [
+        "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml",
+        "https://raw.githubusercontent.com/scenethesis/Scenethesis/main/index.html"
+      ]
+    },
+    {
+      "tip": "물리 시뮬레이션으로 안정성과 접촉을 검증한다",
+      "why": "SceneSmith는 시뮬레이션 후 96% 안정을, SceneReVis는 voxel 물리 보상을, GPT4Motion과 Code2Worlds는 동역학을 LLM 상상이 아닌 시뮬레이터에 맡겼습니다.",
+      "example": "배치 후 모든 소품에 rigid body(active)를, 가구와 바닥에 passive를 걸고 60프레임 시뮬레이션 → 위치 변화가 2cm 이상이거나 회전이 5° 이상인 객체를 '불안정' 목록으로 모델에 반환 → 수정 후 시뮬레이션 결과는 적용하지 않고 원위치로 복원",
+      "urls": [
+        "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html",
+        "https://github.com/AIGeeksGroup/Code2Worlds",
+        "https://github.com/jiaxilv/GPT4Motion"
+      ]
+    },
+    {
+      "tip": "편집 툴을 소수의 원자 연산으로 제한하고, 매 턴 이미지와 JSON 상태를 함께 준다",
+      "why": "SceneReVis는 add, move, rotate, scale, replace, remove 여섯 연산으로 멀티턴 편집을 학습했고, SceneAssistant는 매 스텝 미리보기 이미지와 JSON 씬 상태를 함께 기록합니다. 상태가 구조화되어 있을수록 모델의 오판이 줄어듭니다.",
+      "example": "MCP 툴: scene_state() → [{id, type, location, rotation, dimensions, parent}] JSON; move(id, dx, dy, dz); rotate(id, yaw_deg) 등. 매 턴 'state JSON + 4뷰 이미지 + 충돌 목록'을 함께 전달",
+      "urls": [
+        "https://github.com/Runder-sun/SceneReVis",
+        "https://github.com/ROUJINN/SceneAssistant"
+      ]
+    },
+    {
+      "tip": "작업 메모리(계획, 코드 diff, 렌더 이력)를 파일로 유지한다",
+      "why": "VIGA는 계획, 코드 diff, 렌더 이력을 담은 진화형 컨텍스트 메모리로 파인튜닝 없이 자기교정합니다. 긴 세션에서 이전 결정을 잊고 같은 실수를 반복하는 일을 막습니다.",
+      "example": "progress.md에 '반복 n: 목표, 변경 요약, 코드 diff 경로, 렌더 경로, 남은 문제'를 누적하고, 매 턴 시작 때 최근 3회분을 읽게 합니다.",
+      "urls": [
+        "https://github.com/Fugtemypt123/VIGA"
+      ]
+    },
+    {
+      "tip": "비평은 큰 구조 문제만 지적하게 하고 사소한 미감에서는 멈춘다",
+      "why": "3DCodeBench critique 프롬프트는 '사소한 미감에 대한 과도한 반복을 피하고 큰 구조 문제만 지적하라'고 명시합니다. VLM verifier는 인간과 정합률이 낮아 미세 조정 단계에서 오히려 품질을 떨어뜨릴 수 있습니다.",
+      "example": "종료 조건: NEEDS_FIX: NO가 2회 연속이거나 최대 5회 반복. 미세한 룩 개발(조명, 컬러 그레이딩)은 사람이 하거나 별도 단계로 분리",
+      "urls": [
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/visual_critique_system_prompt_text.txt"
+      ]
+    },
+    {
+      "tip": "생성기를 툴 카드로 등록하고 에이전트가 고르게 하되, 비용이 크면 궤적을 먼저 전부 계획한다",
+      "why": "SceneWeaver는 초기화, 검색, 절차적 생성, 수정 도구를 tool card로 두고 reason-act-reflect로 골랐습니다. SceneOrchestra는 이 반복이 느리다고 보고 전체 툴 호출 궤적을 한 번에 예측해 효율을 높였습니다.",
+      "example": "MCP 서버별로 '언제 쓰는가, 입력, 출력, 한계'를 1–3줄 tool card로 CLAUDE.md에 정리합니다. 계획 단계에서 전체 호출 순서를 먼저 쓰게 하고, 렌더 검증은 단계 경계에서만 합니다.",
+      "urls": [
+        "https://github.com/Scene-Weaver/SceneWeaver",
+        "https://github.com/yunhe24/sceneorchestra"
+      ]
+    },
+    {
+      "tip": "사람이 읽고 고칠 수 있는 코드를 결과물로 남기고, 특정 모델 버전에 묶이지 않게 한다",
+      "why": "LL3M과 Scene Language는 해석 가능한 코드 덕분에 사용자 주도 수정과 공동 창작이 가능했습니다. 그러나 LL3M은 Claude Sonnet 3.7이 retire되자 서비스를 중단했습니다.",
+      "example": "최종 .py를 버전 관리하고, 프롬프트와 툴 정의는 모델과 무관하게 작성합니다. 새 모델(Opus 5.5, GPT-6 Astra 등)이 나오면 같은 태스크 세트로 회귀 테스트를 돌립니다(3DCodeBench 카테고리 일부 활용).",
+      "urls": [
+        "https://github.com/threedle/ll3m",
+        "https://github.com/zzyunzhi/scene-language",
+        "https://github.com/gaoypeng/3dcodebench"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "BlenderAlchemy: 나무 재질을 '광택 있는 대리석 화강암'으로 바꾸는 VLM 트리 탐색",
+      "what_was_made": "기존 Blender 씬의 재질 노드 스크립트를 텍스트 목표('Marbled Granite: Enhanced with white and gray streaks and a glossy finish')에 맞게 편집",
+      "process": "config: task type material, edit_style rewrite_code, tree_dims 4x8, num_tries 4, visual imagination과 hypothesis reversion 활성, 동시 렌더 8. GPT-4V가 후보 편집을 생성하고 평가해 깊이마다 최선을 선택하고, 개선이 없으면 이전 상태로 되돌립니다. 출력은 instanceX/tune_d{depth}_b{breadth}/에 렌더와 스크립트로 저장됩니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml",
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial"
+      ],
+      "who": "Ian Huang, Guandao Yang, Leonidas Guibas (Stanford)",
+      "date": "2024-04 (ECCV 2024)",
+      "ai_model": "GPT-4V (Gemini, Claude, Ollama 선택 가능)",
+      "tools": "Blender(Infinigen 번들), Python",
+      "outcome": "텍스트 목표에 맞는 재질 편집을 자동화했습니다. 렌더 비용은 크지만 사람 개입이 거의 없습니다."
+    },
+    {
+      "title": "SceneSmith: 텍스트 한 줄에서 시뮬레이션 준비된 실내 씬 생성",
+      "what_was_made": "평면도, 가구, 벽·천장 부착물, 소품까지 갖추고 관절과 질량을 추정한 실내 씬(Drake/MuJoCo/USD)",
+      "process": "5단계 파이프라인에서 단계마다 designer, critic, orchestrator VLM 에이전트가 협업합니다. 에셋은 SAM3D나 Hunyuan3D-2로 생성하거나 HSSD, Objaverse, PartNet-Mobility에서 검색하고, +Y forward/Z up으로 정규화한 뒤 지지면 기반으로 배치하고 물리 검증을 합니다. 기본 모델은 GPT-5입니다.",
+      "urls": [
+        "https://github.com/nepfaff/scenesmith",
+        "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html"
+      ],
+      "who": "Nicholas Pfaff, Thomas Cohn, Sergey Zakharov, Rick Cory, Russ Tedrake (MIT/TRI)",
+      "date": "2026-02 arXiv, ICML 2026 Spotlight",
+      "ai_model": "GPT-5 (Gemini 대체 가능), SAM3D, Hunyuan3D-2, CLIP",
+      "tools": "Drake, MuJoCo, USD 출력",
+      "outcome": "기존 대비 객체 수 3–6배, 충돌 0, 96% 안정, 사용자 205명 연구에서 realism 승률 92%, prompt faithfulness 승률 91%"
+    },
+    {
+      "title": "VIGA: 이미지에서 Blender 씬을 역설계하는 analysis-by-synthesis",
+      "what_was_made": "입력 이미지나 목표를 Blender Python 씬 프로그램으로 재현(정적·동적 씬, BlenderGym/BlenderBench 과제)",
+      "process": "Generator가 계획, 코드 실행, 에셋 검색(SAM3D), 씬 질의 툴로 코드를 쓰고, Verifier가 다중 시점 렌더를 목표와 비교해 불일치를 지적합니다. 계획, 코드 diff, 렌더 이력을 메모리에 누적하며 write → run → render → compare → revise를 반복합니다.",
+      "urls": [
+        "https://github.com/Fugtemypt123/VIGA",
+        "https://arxiv.org/abs/2601.11109"
+      ],
+      "who": "Shaofeng Yin, Jiaxin Ge, Zora Zhiruo Wang, Xiuyu Li, Michael J. Black, Trevor Darrell, Angjoo Kanazawa, Haiwen Feng",
+      "date": "2026-01",
+      "ai_model": "GPT-5 등(모델 교체 가능)",
+      "tools": "Blender, SAM, SAM3D",
+      "outcome": "파인튜닝 없이 BlenderGym, BlenderBench, SlideBench를 수행하는 범용 에이전트를 공개했습니다(MIT, 스타 약 1.3k). 원문 수치는 미확인입니다."
+    },
+    {
+      "title": "LL3M: 멀티에이전트가 Blender 코드로 3D 에셋 제작",
+      "what_was_made": "텍스트 프롬프트에서 편집 가능한 Blender Python 에셋(BMesh, modifier, shader node 사용)",
+      "process": "planner가 분해하고, retrieval이 BlenderRAG로 API 문서를 찾고, coder가 코드를 쓴 뒤, critic과 verifier가 자동 정제합니다. 이후 사용자가 추가 지시로 반복 정제합니다. Blender 4.4 애드온 형태로 배포되었습니다.",
+      "urls": [
+        "https://github.com/threedle/ll3m"
+      ],
+      "who": "University of Chicago 3DL(threedle)",
+      "date": "2025-08",
+      "ai_model": "Claude Sonnet 3.7(논문), 이후 retire로 서버 중단",
+      "tools": "Blender 4.4, BlenderRAG",
+      "outcome": "사람이 읽을 수 있는 코드로 공동 창작이 가능함을 보였습니다. 반면 특정 모델 버전 의존 때문에 서비스가 종료된 사례이기도 합니다."
+    },
+    {
+      "title": "3DCodeBench: Claude Code, Codex, Gemini CLI가 Blender 5.0으로 212개 객체 모델링",
+      "what_was_made": "212 카테고리 객체의 절차적 Blender 5.0 스크립트(에이전트 transcript 2,767개 공개)",
+      "process": "네 가지 설정(text → 3D, image → 3D, traceback 피드백 T=3, 실제 코딩 에이전트 CLI 하네스). 에이전트마다 scratch 디렉터리에 프롬프트와 레퍼런스를 주입하고 자유롭게 반복하게 합니다. 평가는 실행 가능성, SigLIP-2/DINOv3, Chamfer/Uni3D, LLM-judge로 합니다.",
+      "urls": [
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/tasks/README.md"
+      ],
+      "who": "Yipeng Gao, Lei Shu, Genzhi Ye, Xi Xiong, Ameesh Makadia, Meiqi Guo, Laurent Itti, Jindong Chen",
+      "date": "2026-06-01",
+      "ai_model": "Anthropic, OpenAI, Google 프런티어 모델과 각 사의 코딩 에이전트",
+      "tools": "Blender 5.0, Infinigen factory",
+      "outcome": "공개 로그(82,042 trial)로 실제 에이전트의 작업 방식과 실패 패턴을 분석할 수 있습니다. 모델별 점수는 이번 조사에서 확인하지 못했습니다."
+    },
+    {
+      "title": "SceneReVis: 멀티턴 편집 궤적으로 배치 오류를 줄인 7B 모델",
+      "what_was_made": "침실, 거실 등 실내 레이아웃(충돌과 경계 이탈 최소화)",
+      "process": "SceneChain-12K(11,444 궤적, 렌더 약 80K)로 SFT한 뒤 voxel 물리 보상 GRPO로 학습합니다. 추론 시 add, move, rotate, scale, replace, remove 툴 호출과 렌더·평가를 반복합니다.",
+      "urls": [
+        "https://github.com/Runder-sun/SceneReVis",
+        "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html"
+      ],
+      "who": "SceneReVis 저자진",
+      "date": "2026-02",
+      "ai_model": "SceneReVis-7B(자체 학습)",
+      "tools": "3D-FUTURE, Objaverse 에셋, 렌더러, 물리 검사",
+      "outcome": "경계 이탈 2.0%, 충돌 4.5%, 품질 8.8/10(Holodeck 12.7%/12.7%/7.8 대비)"
+    },
+    {
+      "title": "La Forge(ScoreIA): MCP만으로 3D 기사 조립·애니메이션 모델 비교(비학술)",
+      "what_was_made": "공유 갑옷 부품으로 조립한 3D 기사와 걷기, 회전, 베기 애니메이션",
+      "process": "모델이 MCP 툴만 사용하고, bbox, 관절각, 검 궤적, 접촉점을 프로그램 심판이 100점 만점으로 채점합니다(LLM judge 없음). 문제가 발견되면 재채점하고 teleport 규칙(프레임당 몸통 0.6m 초과 이동)을 추가했습니다.",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results"
+      ],
+      "who": "ScoreIA (drakkB)",
+      "date": "2026-09-24",
+      "ai_model": "Claude Opus/Fable/Sonnet/Haiku, GPT-6 Astra/Sol, Grok 4.7, DeepSeek Flash",
+      "tools": "MCP 기반 3D 툴(세부 미확인)",
+      "outcome": "Opus와 Fable이 여러 과제에서 최고점이었고, 정적 조립보다 동적 애니메이션이 어려웠으며, Haiku는 저조했습니다. 비학술 자료이므로 참고용입니다."
+    }
+  ],
+  "sources": [
+    {
+      "title": "hzxie/Awesome-3D-Scene-Generation (IJCV 2026 서베이 동반 목록)",
+      "url": "https://github.com/hzxie/Awesome-3D-Scene-Generation",
+      "source_type": "curated list (GitHub)",
+      "date": "2026-09-18 push",
+      "why_useful": "LLM/에이전트 기반 씬 생성 논문 2024–2026(SceneSmith, SAGE, SceneOrchestra, NaLA, WorldClaw 등)의 arXiv 링크와 학회 정보를 제공합니다."
+    },
+    {
+      "title": "xdlbw/Awesome-3D-Object-and-Scene-Generation (CSUR 2026)",
+      "url": "https://github.com/xdlbw/Awesome-3D-Object-and-Scene-Generation",
+      "source_type": "curated list (GitHub)",
+      "date": "2026-08",
+      "why_useful": "MeshCoder(NeurIPS 2025), Articulate-Anything, 절차적 관절 에셋 등 객체 수준 코드 생성 연구를 확인할 수 있습니다."
+    },
+    {
+      "title": "BlenderGym 프로젝트 페이지 소스",
+      "url": "https://raw.githubusercontent.com/BlenderGym/BlenderGym.github.io/main/index.html",
+      "source_type": "project page (primary)",
+      "date": "2025",
+      "why_useful": "245 씬, 5 과제, VeriRatio 0.62–0.73, 인간-VLM 정합률, 과제별 리더보드"
+    },
+    {
+      "title": "VIGA GitHub",
+      "url": "https://github.com/Fugtemypt123/VIGA",
+      "source_type": "GitHub README (primary)",
+      "date": "2026",
+      "why_useful": "Generator/Verifier 교대 구조, 메모리, BlenderBench, 설치 방법"
+    },
+    {
+      "title": "3DCodeBench GitHub + prompts",
+      "url": "https://github.com/gaoypeng/3dcodebench",
+      "source_type": "GitHub README (primary)",
+      "date": "2026-06-01",
+      "why_useful": "Blender 5.0 코딩 에이전트 벤치마크, 재사용 가능한 시스템/비평 프롬프트, Blender 5.0 API 함정 목록"
+    },
+    {
+      "title": "3DCodeBench Blender 5.0 API reference",
+      "url": "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/blender_5_api_reference.txt",
+      "source_type": "prompt/resource file",
+      "date": "2026-06",
+      "why_useful": "LLM이 자주 틀리는 Blender 5.0 API 변경 사항을 CLAUDE.md에 바로 넣을 수 있습니다."
+    },
+    {
+      "title": "BlenderAlchemy 공식 config",
+      "url": "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml",
+      "source_type": "code/config (primary)",
+      "date": "2024",
+      "why_useful": "트리 탐색 하이퍼파라미터(4x8), visual imagination, hypothesis reversion 설정의 실제 값"
+    },
+    {
+      "title": "SceneSmith 프로젝트 페이지 소스",
+      "url": "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html",
+      "source_type": "project page (primary)",
+      "date": "2026",
+      "why_useful": "계층 에이전트 구조와 정량 결과(3–6배 객체, 96% 안정, 사용자 205명 연구)"
+    },
+    {
+      "title": "SceneReVis 프로젝트 페이지 소스",
+      "url": "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html",
+      "source_type": "project page (primary)",
+      "date": "2026-02",
+      "why_useful": "LayoutGPT, LayoutVLM, Holodeck, SceneReVis의 충돌률과 경계 이탈률 비교표"
+    },
+    {
+      "title": "SGP-Bench 프로젝트 페이지 소스",
+      "url": "https://raw.githubusercontent.com/sgp-bench/sgp-bench.github.io/main/index.html",
+      "source_type": "project page (primary)",
+      "date": "2025",
+      "why_useful": "LLM이 코드만으로 시각 결과를 추론하는 능력의 한계 수치"
+    },
+    {
+      "title": "BlenderLLM GitHub",
+      "url": "https://github.com/FreedomIntelligence/BlenderLLM",
+      "source_type": "GitHub README (primary)",
+      "date": "2024-12",
+      "why_useful": "특화 모델의 구문 오류율 비교(Claude-3.5-Sonnet 15.6% 등)와 한계 명시"
+    },
+    {
+      "title": "LL3M GitHub",
+      "url": "https://github.com/threedle/ll3m",
+      "source_type": "GitHub README (primary)",
+      "date": "2025-08",
+      "why_useful": "멀티에이전트와 BlenderRAG 구조, 모델 retire로 인한 서비스 중단 공지"
+    },
+    {
+      "title": "Holodeck GitHub",
+      "url": "https://github.com/allenai/Holodeck",
+      "source_type": "GitHub README (primary)",
+      "date": "2023–2024",
+      "why_useful": "LLM 제약 + DFS 솔버 + Objaverse 검색 구조, MILP에서 DFS로의 변경 이력"
+    },
+    {
+      "title": "NVlabs/sage GitHub",
+      "url": "https://github.com/NVlabs/sage",
+      "source_type": "GitHub README (primary)",
+      "date": "2026",
+      "why_useful": "MCP식 client/server 백엔드 구조, SAGE-10k 규모"
+    },
+    {
+      "title": "Scene-Weaver/SceneWeaver GitHub",
+      "url": "https://github.com/Scene-Weaver/SceneWeaver",
+      "source_type": "GitHub README (primary)",
+      "date": "2025",
+      "why_useful": "tool card 기반 reason-act-reflect 에이전트와 사용 가능한 툴 목록"
+    },
+    {
+      "title": "MeshCoder GitHub",
+      "url": "https://github.com/InternRobotics/MeshCoder",
+      "source_type": "GitHub README (primary)",
+      "date": "2025-08",
+      "why_useful": "파트별 Blender 코드 역변환, 100만 쌍 데이터, MegaParts 후속"
+    },
+    {
+      "title": "Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+      "url": "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+      "source_type": "curated list of case posts (GitHub)",
+      "date": "2026-09-26",
+      "why_useful": "GPT-6 Astra, Claude Opus 5.5, Fable 5.1 기반 Blender/UE 제작 사례 링크 모음(사례 조사 담당 참고용, 비검증)"
+    },
+    {
+      "title": "ScoreIA La Forge results",
+      "url": "https://github.com/drakkB/scoreia-forge-results",
+      "source_type": "non-academic benchmark results",
+      "date": "2026-09-24",
+      "why_useful": "최신 모델을 MCP 3D 작업에서 비교한 드문 자료(신뢰도 낮음)"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "BlenderGym(CVPR 2025 Highlight)은 수작업 씬 245개와 5개 과제로 구성되고, 최적 VeriRatio는 0.62–0.73, verifier 정합률은 인간 0.79 vs Claude-3.5-Sonnet 0.66이다.",
+      "url": "https://raw.githubusercontent.com/BlenderGym/BlenderGym.github.io/main/index.html"
+    },
+    {
+      "claim": "VIGA(arXiv 2601.11109)는 Generator/Verifier를 번갈아 쓰는 단일 에이전트로, 다중 시점 렌더 비교와 컨텍스트 메모리를 사용하고 BlenderBench(Level 1–3)를 새로 제안했다.",
+      "url": "https://github.com/Fugtemypt123/VIGA"
+    },
+    {
+      "claim": "LL3M은 논문에 쓴 Claude Sonnet 3.7이 retire되어 LL3M 서버를 중단했다.",
+      "url": "https://github.com/threedle/ll3m"
+    },
+    {
+      "claim": "3DCodeBench는 2026-06-01에 공개되었고 Blender 5.0, 212 카테고리, traceback 재시도 T=3, Claude, Codex, Gemini 코딩 에이전트 하네스, 82,042 trial과 2,767 transcript를 포함한다.",
+      "url": "https://github.com/gaoypeng/3dcodebench"
+    },
+    {
+      "claim": "SceneSmith는 ICML 2026 Spotlight이며 객체 3–6배, 충돌 0, 96% 안정, 사용자 205명 연구에서 realism 92%, faithfulness 91% 승률을 보고했다.",
+      "url": "https://raw.githubusercontent.com/scenesmith/scenesmith.github.io/main/index.html"
+    },
+    {
+      "claim": "SceneReVis 비교표 기준 충돌률은 LayoutGPT 40.8%, LayoutVLM 36.8%, Holodeck 12.7%, SceneReVis 4.5%이다.",
+      "url": "https://raw.githubusercontent.com/SceneReVis/SceneReVis.github.io/main/index.html"
+    },
+    {
+      "claim": "BlenderLLM은 CADBench-Sim에서 0.748(GPT-4o 0.565)을 기록했고 구문 오류율 3.4%로 Claude-3.5-Sonnet 15.6%, GPT-4-Turbo 18.2%보다 낮으며, Apache-2.0이다.",
+      "url": "https://github.com/FreedomIntelligence/BlenderLLM"
+    },
+    {
+      "claim": "BlenderAlchemy 공식 config의 기본값은 tree_dims '4x8', num_tries 4, visual imagination과 hypothesis reversion 활성이다.",
+      "url": "https://raw.githubusercontent.com/ianhuang0630/BlenderAlchemyOfficial/main/configs/wood_to_marble.yaml"
+    },
+    {
+      "claim": "SGP-Bench에서 GPT-4o는 SVG 64.8%, CAD 72.9%였고 SGP-MNIST에서는 모든 모델이 5.5–13.0%였다.",
+      "url": "https://raw.githubusercontent.com/sgp-bench/sgp-bench.github.io/main/index.html"
+    },
+    {
+      "claim": "MeshCoder는 100만 object-code 쌍(41 카테고리)으로 학습했고, 후속 MegaParts(MeshCoder 1.5)는 최대 300파트와 256K 토큰을 지원한다.",
+      "url": "https://github.com/InternRobotics/MeshCoder"
+    },
+    {
+      "claim": "VLMaterial의 코드와 가중치는 MIT이지만 재질 데이터셋은 CC BY-NC 4.0(비상업)이다.",
+      "url": "https://github.com/mit-gfx/VLMaterial"
+    },
+    {
+      "claim": "SAGE-10k는 10,000개 씬, 50개 방 유형, 565K개 고유 생성 객체로 구성된다.",
+      "url": "https://github.com/NVlabs/sage"
+    },
+    {
+      "claim": "Code2Worlds(ICML 2026)는 Code4D에서 SGS 41%, Richness 49% 향상을 보고했다.",
+      "url": "https://github.com/AIGeeksGroup/Code2Worlds"
+    },
+    {
+      "claim": "Blender 5.0에서는 렌더 엔진을 'BLENDER_EEVEE'로 지정하고, Noise 텍스처 출력은 'Factor', Mesh.use_auto_smooth는 제거되었다(3DCodeBench 참조 파일의 주장).",
+      "url": "https://raw.githubusercontent.com/gaoypeng/3dcodebench/main/prompts/blender_5_api_reference.txt"
+    },
+    {
+      "claim": "WorldClaw(Tencent Hunyuan)의 arXiv 2608.05248과 프로젝트 페이지는 2026-08-07에 공개되었다.",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw"
+    }
+  ],
+  "gaps": [
+    "WebSearch 한도가 이미 소진되어(200/200) 검색을 한 번도 할 수 없었습니다. arxiv.org, openreview.net, *.github.io, huggingface.co, CVF/PMLR, semanticscholar, openalex는 egress proxy에 차단되었습니다. 모든 확인은 GitHub 페이지, raw.githubusercontent.com, GitHub Search API로만 했습니다.",
+    "논문 본문에만 있는 수치를 확인하지 못했습니다: VIGA의 원샷 대비 향상률, SceneCraft의 CLIP/제약 점수, LL3M 정량 평가와 arXiv 번호(2508.08228로 기억), CAD-Recode의 Chamfer/IoU 수치, CADCodeVerify 향상률(기억상 약 7.3%/5%), Articulate-Anything 성공률, Holodeck, I-Design, LayoutVLM 원 논문 수치, SceneWeaver 정량 표, VLMaterial 지표.",
+    "3DCodeBench 리더보드(Claude, GPT, Gemini 모델별 점수와 코딩 에이전트 간 비교)는 3dcodebench.com이 차단되어 확인하지 못했습니다. 공개 HF 로그 분석이 필요합니다.",
+    "3D-Premise(LLM의 Blender 파라메트릭 형상 생성 한계 분석)와 FirePlace(Google, 기하 제약 + MLLM 상식 기반 배치)는 공식 저장소나 원문 URL을 확인하지 못해 항목에서 뺐습니다.",
+    "2026 후속 연구 중 HOG-Layout(CVPR 2026), NaLA(ECCV 2026), R³L(ICML 2026), ReSpace(ICLR 2026), OptiScene, MesaTask, SpatialGrammar, Code-as-Room, 'Agentic 3D Scene Generation with Spatially Contextualized VLMs'는 awesome 목록의 제목과 arXiv 번호만 확인했고 방법과 결과는 확인하지 못했습니다.",
+    "GPT-6 Astra, Claude Fable 5.1, Opus 5.5, Sonnet 5를 평가한 동료심사 논문은 찾지 못했습니다. 최신 모델 비교는 비학술 La Forge(ScoreIA)와 SNS 사례 모음뿐입니다.",
+    "Blender MCP(툴 호출)와 직접 코드 실행 방식을 비교한 학술 연구는 찾지 못했습니다. SAGE가 MCP 구현에서 영감을 받았다는 언급 정도만 있습니다.",
+    "한국어 학술 자료(국내 학회, KCI)와 한국어 커뮤니티 자료는 검색 불가로 조사하지 못했습니다.",
+    "ExuberantWitness/awesome-code-as-agent의 papers.json에는 ID 불일치(Genesis 항목에 다른 arXiv ID)가 있어 신뢰하지 않았습니다. 이 목록에서만 나온 3DCodeBench, VoxelCodeBench, CADEvolve 등은 각 GitHub 저장소로 별도 확인했습니다.",
+    "ProcFunc의 arXiv 번호(2604.26943)는 요약 도구의 출력만 확인했습니다. README의 LLM 활용 언급은 없으므로 LLM 연계는 이 조사의 해석입니다."
+  ]
+}

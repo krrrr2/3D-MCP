@@ -1,0 +1,1612 @@
+{
+  "topic": "AI 텍스처링 및 PBR 머티리얼: AI + MCP로 사실적이고 아름다운 텍스처/머티리얼 만들기 (2026-09 기준)",
+  "summary_ko": [
+    "[조사 환경 참고] 이번 세션은 WebSearch 한도가 이미 소진된 상태였고, egress proxy가 github.com / raw.githubusercontent.com 외 대부분 도메인(docs.blender.org, polyhaven.com, ambientcg.com, adobe.com, meshy.ai, arxiv, huggingface, youtube, reddit 등)을 막았습니다. 그래서 GitHub의 README, 소스코드, 이슈, PR, 라이선스 파일 같은 1차 자료로 사실을 확인했습니다. Adobe Substance의 Firefly 기능, Polycam, UVPackmaster, Fab/Megascans 공식 문서는 직접 확인하지 못했습니다.",
+    "PBR 기본값 규칙은 AI에게 명시적으로 줘야 합니다. Metallic은 0 또는 1로만 쓰고 중간값 0.2~0.8은 오류로 봅니다. 금속 Base Color는 밝게(linear 0.5 이상, 예: Aluminum 0.916, Chromium 0.654, Copper 0.932/0.623/0.522) 잡습니다. 비금속 albedo에는 조명이나 그림자를 넣지 않고, 값은 숯 0.02에서 콘크리트 0.51 정도(linear)의 범위를 씁니다. Roughness가 딱 0인 경우는 거의 없으니 0.01~0.05 이상으로 둡니다. 컬러 텍스처만 sRGB, 나머지(roughness, metal, normal, height, AO)는 Non-Color입니다. 근거는 physicallybased.info(CC0) 데이터와 cc-blender-skill입니다.",
+    "blender-mcp(현재 PyPI 이름 mcp-for-blender, GitHub 29.4k stars)에는 search_polyhaven_assets / download_polyhaven_asset / set_texture 도구가 있습니다. albedo만 sRGB로, 나머지는 Non-Color로 자동 설정하고 nor_gl을 Normal Map 노드에 연결합니다. 다만 2026-09-21에 병합된 PR #367(Poly Haven 창업자 Greg Zaal 작성) 전까지는 normal/displacement 맵을 받아 놓고도 연결하지 않아 텍스처가 평평하게 보였습니다. Mapping 노드도 TEXTURE 모드여서 타일링이 뒤집혀 있었습니다(2m 텍스처가 4m 면에서 1.993회가 아니라 0.509회 반복). 반드시 최신 버전을 쓰세요.",
+    "AI 텍스처 생성에서 가장 흔한 실패는 세 가지입니다. (1) albedo에 조명과 하이라이트가 구워짐, (2) 여러 뷰 사이의 불일치와 이음새, (3) 이미지 모델이 normal/roughness 맵을 환각으로 만들어 냄. 대응책은 이렇습니다. Meshy는 remove_lighting(기본 true)과 enable_pbr(기본 false이므로 명시적으로 true)을 씁니다. Hunyuan3D-Paint 2.1과 MaterialMVP는 조명 불변(illumination-invariant) albedo와 metallic-roughness를 생성합니다. StableGen은 Sequential 모드에 IPAdapter를 쓰고, Marigold IID나 StableDelight로 PBR을 분해합니다.",
+    "라이선스 경고(한국 사용자에게 중요): Tencent Hunyuan3D 2.1 Community License는 적용 지역(Territory)에서 EU, UK, 한국을 명시적으로 제외합니다. Ubisoft CHORD(image→PBR, SIGGRAPH Asia 2025)는 연구용(Research-Only, Copyleft)이고, VLMaterial 데이터셋은 CC BY-NC입니다. 반면 TRELLIS.2(MIT, PBR 텍스처링 모드 있음), MV-Adapter(Apache-2.0), Material Anything(MIT), Poly Haven/ambientCG/PBRify 모델(CC0)은 상업적으로 쓰기에 상대적으로 안전합니다.",
+    "절차적 셰이더 레시피는 Infinigen(BSD-3) 소스가 좋은 참고서입니다. 예를 들어 대리석은 Noise로 왜곡한 좌표에 Voronoi DISTANCE_TO_EDGE(Scale 3)를 걸고 ColorRamp 0→0.03으로 맥(vein)을 만들며, Roughness 0.1, Specular IOR Level 0.6을 씁니다. 브러시드 메탈은 Mapping Scale (0.2,0.2,5)×(1,1,20)으로 늘린 Noise를 roughness 0.2~0.3에 매핑하고 Metallic 1을 씁니다. 소파 패브릭은 Brick Texture Scale 약 277, Sheen Weight 1.0, Roughness 0.86입니다. 단, Blender 4.1+에서는 Musgrave 노드가 제거되었으니 Noise Texture의 fBM 등 타입으로 바꿔야 합니다.",
+    "웨더링(엣지 마모, 캐비티 먼지)을 Pointiness/Bevel/AO 마스크로 만들면 Cycles에서만 동작합니다. Blender GPU(EEVEE) 셰이더 소스를 보면 pointiness가 상수 0.5, bevel은 입력 노멀을 그대로 통과시킵니다. EEVEE, 게임엔진, glTF가 목표라면 Cycles로 마스크나 최종 결과를 텍스처로 베이크해야 합니다.",
+    "glTF 내보내기 제약: metallic은 B, roughness는 G 채널에 같은 이미지로 팩킹합니다. AO는 'glTF Material Output'이라는 이름의 커스텀 노드 그룹에 Occlusion 입력을 만들어야 나갑니다. Displacement/SSS/절차 노드는 빠집니다. blender-kiln 측정에서는 Poly Haven american_walnut_veneer의 7개 맵 중 3개만 GLB에 남았습니다.",
+    "베이크 자동화: bpy.ops.object.bake의 기본값은 margin 16, 512x512, normal_space TANGENT입니다. 각 머티리얼에 '활성 + 선택된 Image Texture 노드'가 없으면 'No active and selected image texture node found in material' 오류가 납니다. 조명 없는 albedo는 type='DIFFUSE', pass_filter={'COLOR'}로 굽습니다. metallic은 전용 베이크 타입이 없으니 Emission에 연결한 뒤 EMIT으로 굽는 방법을 씁니다.",
+    "UV: Blender 내장 Smart UV Project는 angle_limit 66°, island_margin 0.02 정도를 쓰고, Unwrap 메서드 MINIMUM_STRETCH(SLIM), Pack Islands shape_method CONCAVE(정확 형상)가 있습니다. AI 생성 메시에는 PartUV(SIGGRAPH Asia 2025)가 파트 경계에 맞춘 적은 차트 수와 낮은 왜곡을 제공하고 UVPackMaster 팩킹 옵션이 있습니다. 텍셀 밀도 목표는 콘솔/PC 10.24~20.48 px/cm이며 Texel Density Checker 2026.1.1로 확인할 수 있습니다.",
+    "텍스처링 전용 MCP 생태계: Substance 3D Painter MCP(elliezu, 79개 도구, remote scripting 포트 60041, fill layer/smart material/bake/export), Substance Designer MCP(matthieuhuguet, 16개 도구, 79개 레시피), Material Maker MCP(MaterialPilot, 143개 도구, 0.1.0 preview), Meshy MCP(공식, meshy_retexture), dcc-mcp 조직의 Poly Haven/ambientCG 어댑터. BlenderKit과 Megascans에는 공식 MCP가 없습니다(dcc-mcp-epic은 Fab만 지원하고 Megascans 미지원).",
+    "가장 신뢰할 수 있는 작업 순서: ① 라이브러리 스캔 텍스처(Poly Haven/ambientCG CC0) 우선, ② 없으면 절차적 셰이더(검증된 레시피), ③ 형상 고유 디테일이 필요할 때만 AI 메시 텍스처링(PBR 켜고 de-light) 후 베이크. 매 단계 get_viewport_screenshot으로 전후를 VLM 검증합니다. NVIDIA usd-content-agents의 Material Agent도 VLM이 렌더 뷰를 보고 '라이브러리에서 고르는' 방식이 기본입니다."
+  ],
+  "items": [
+    {
+      "name": "blender-mcp (mcp-for-blender) Poly Haven 통합",
+      "category": "MCP-텍스처 소스(Blender)",
+      "what_it_is": "Blender MCP의 대표 구현입니다. get_polyhaven_categories, search_polyhaven_assets, get_polyhaven_asset_preview, download_polyhaven_asset, set_texture로 Poly Haven의 CC0 텍스처, HDRI, 모델 약 2,400개를 검색하고 적용합니다. 텍스처는 Diffuse→base_color(sRGB), Rough→roughness, Metal→metallic, Displacement→displacement, nor_gl(없으면 nor_dx)→Normal Map 노드로 Principled BSDF를 자동 구성합니다. AO/arm/spec/Bump는 받지 않습니다. describe_node_type, bpy_api_lookup, get_viewport_screenshot 도구도 제공합니다.",
+      "how_to_use": "1) uvx mcp-for-blender install-addon으로 설치하고 사이드바에서 Poly Haven 토글을 켭니다. 2) 에이전트에게 'get_polyhaven_status → search_polyhaven_assets(asset_type=textures, 키워드) → 프리뷰 확인 → download_polyhaven_asset(해상도 1k/2k) → set_texture(object) → get_viewport_screenshot' 순서를 지시합니다. 3) 노드를 손으로 짜지 말고 set_texture를 먼저 쓰게 합니다. 4) 카메라에 가까운 히어로 에셋만 4k를 씁니다.",
+      "license_or_price": "애드온 무료(오픈소스). Poly Haven 에셋은 CC0이며 API 무료. 단 live API 이용 시 'Powered by Poly Haven' 크레딧 요청",
+      "status_date": "2026-09-21 PR #367로 Poly Haven 통합 대폭 수정(Blender 5.2.1에서 E2E 테스트)",
+      "strengths": "API 키, 계정, 레이트리밋 없음. 컬러스페이스 자동 설정. 실측 스케일 메타데이터(polyhaven_scale_mm) 저장. 모델은 .blend 원본으로 import해 머티리얼 노드그룹을 보존. 수정 후 다운로드 대역폭 49% 감소",
+      "weaknesses": "다운로드가 메인 스레드에서 실행되어 Blender가 멈춤(해상도 한 단계마다 용량 약 4배). 2026-09-21 이전 버전은 normal/displacement 미연결, Mapping TEXTURE 모드 버그. 860개 텍스처 중 114개는 매핑 테이블에 없는 맵을 참조. 텔레메트리(프롬프트, 코드, 스크린샷 수집)가 있으니 disable_telemetry로 끌 수 있음",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://github.com/ahujasid/blender-mcp/pull/367"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "blender-mcp texture_mesh_hunyuan3d (기존 메시 텍스처링, 개발 중)",
+      "category": "MCP-AI 텍스처 생성",
+      "what_it_is": "기존 메시를 GLB로 내보내 base64로 로컬 Hunyuan3D-2 서버의 /generate(texture=True)에 보내고, 텍스처가 입혀진 결과를 원래 위치에 import하는 기능입니다. 원본은 숨깁니다. 형상을 다시 만들지 않고 'make this chair weathered oak' 같은 요청을 처리하는 것이 목적입니다.",
+      "how_to_use": "texture_mesh_hunyuan3d(object_name, text_prompt?, input_image_url?). LOCAL_API 모드 전용이며, 클라우드 Official API는 메시 입력을 받지 않습니다.",
+      "license_or_price": "Hunyuan3D 라이선스 적용(한국 제외 조항 주의)",
+      "status_date": "2026-09-02 오픈, 진행 중(issue/PR #343)",
+      "strengths": "MCP 안에서 '형상 유지 + AI 재텍스처링'을 한 번에 처리",
+      "weaknesses": "아직 병합 전. 로컬 GPU 서버 필요. Hunyuan3D-2 페인트 모델은 2.1 PBR 모델이 아님",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/343"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Poly Haven Public API",
+      "category": "텍스처 소스/API",
+      "what_it_is": "api.polyhaven.com. CC0 HDRI, 텍스처, 모델의 메타데이터와 파일 URL을 제공하며, 텍스처마다 nor_gl/nor_dx/arm/rough_ao 같은 맵 변형과 1k~8k 해상도, 실측 크기를 가집니다.",
+      "how_to_use": "blender-mcp나 dcc-mcp의 dcc-asset-polyhaven 어댑터로 접근합니다. 직접 쓸 때는 버전이 들어간 User-Agent를 붙입니다.",
+      "license_or_price": "API 무료(개인, 상업). 에셋 CC0. live API 사용 시 'Powered by Poly Haven' 크레딧 요구. 저장소 코드는 AGPL-3.0",
+      "status_date": "2026-09 활동 중",
+      "strengths": "완전 무료. 스캔 기반이라 PBR 값이 정확",
+      "weaknesses": "카탈로그 규모가 제한적(약 860 텍스처)",
+      "urls": [
+        "https://github.com/Poly-Haven/Public-API",
+        "https://github.com/ahujasid/blender-mcp/pull/367"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "dcc-mcp 에셋 어댑터 (dcc-asset-polyhaven / dcc-asset-ambientcg / dcc-mcp-epic)",
+      "category": "MCP-텍스처 소스(멀티 DCC)",
+      "what_it_is": "dcc-mcp 조직이 만든 스킬 기반 MCP 생태계입니다. ambientCG 어댑터는 search_ambientcg_assets, list_ambientcg_downloads, download_ambientcg_asset 도구를 제공합니다. Maya, Houdini, Blender, Unreal, Substance Painter/Designer, Photoshop 어댑터와 Poly Haven, Kenney, Sketchfab 제공자가 있습니다. dcc-mcp-epic은 Fab만 지원합니다(Megascans 미지원, 로그인/구매 자동화 금지).",
+      "how_to_use": "dcc-mcp-cli load-skill로 어댑터를 불러와 JSON 파라미터로 호출합니다. ambientCG(CC0)는 Poly Haven에 없는 재질(포장재, 타일 등)을 보완합니다.",
+      "license_or_price": "MIT(어댑터). ambientCG 에셋은 CC0",
+      "status_date": "2026-07~09 업데이트, 스타 수 매우 적음(0~1)",
+      "strengths": "한 프로토콜로 여러 DCC와 여러 에셋 소스를 연결",
+      "weaknesses": "초기 단계라 커뮤니티 검증이 거의 없음. Fab/Megascans는 사실상 MCP 경로가 없음",
+      "urls": [
+        "https://github.com/dcc-mcp",
+        "https://github.com/dcc-mcp/dcc-asset-ambientcg",
+        "https://github.com/dcc-mcp/dcc-mcp-epic"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "BlenderKit",
+      "category": "텍스처/머티리얼 라이브러리",
+      "what_it_is": "Blender 애드온 기반 에셋 라이브러리입니다. 무료로 모델 10,000개 이상, 머티리얼 10,000개, HDRI 1,000개 이상을 제공하고, Full Plan은 모델 27,000개 이상입니다. 전용 MCP는 확인되지 않았습니다(GitHub 검색 0건).",
+      "how_to_use": "사람이 UI에서 머티리얼을 드래그앤드롭합니다. MCP 에이전트는 execute_blender_code로 애드온 오퍼레이터를 부를 수는 있지만 공식 지원 경로는 아닙니다.",
+      "license_or_price": "무료 + 유료 구독(Full Plan)",
+      "status_date": "2026 활동 중",
+      "strengths": "절차적 Blender 머티리얼이 많음",
+      "weaknesses": "MCP 공식 연동 없음. 절차 노드라 glTF 내보내기 전에 베이크 필요",
+      "urls": [
+        "https://github.com/BlenderKit/BlenderKit"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Meshy MCP Server (공식) - meshy_retexture / texture 옵션",
+      "category": "MCP-AI 텍스처 생성(클라우드)",
+      "what_it_is": "Meshy 공식 MCP(24개 도구)입니다. meshy_retexture는 text_style_prompt(최대 600자), image_style_url, multiview_image_urls(1~4장, meshy-7/latest 필요) 중 정확히 하나를 스타일 입력으로 받습니다. 주요 파라미터: enable_pbr(기본 false), enable_original_uv(기본 true), remove_lighting(기본 true, albedo의 하이라이트와 그림자 제거, meshy-6/latest), texture_resolution 2k/4k/8k, ai_model meshy-5/6/7/latest(=Meshy 7). text-to-3D refine과 image-to-3D에도 texture_prompt, texture_image_url, enable_pbr, remove_lighting이 있습니다.",
+      "how_to_use": "npx add-mcp @meshy-ai/meshy-mcp-server --env MESHY_API_KEY=... 로 설치합니다. 기존 메시 재텍스처링은 enable_pbr=true, enable_original_uv=true(기존 UV 유지), remove_lighting=true, texture_resolution='4k'로 호출합니다. 서버 지침상 크레딧을 쓰는 호출은 비용을 먼저 제시하고 사용자 확인을 받아야 하며, 출력 포맷(target_formats)은 생성 시점에 정해야 합니다.",
+      "license_or_price": "크레딧제(예: Meshy 7 image-to-3D 20+텍스처 10=30 크레딧, 8K 텍스처는 15 크레딧)",
+      "status_date": "2026-09 활발히 업데이트(스타 49)",
+      "strengths": "de-lighting과 PBR, 기존 UV 유지를 API 플래그로 제어. 멀티뷰 사진으로 텍스처 구동 가능",
+      "weaknesses": "enable_pbr가 기본 꺼져 있어 명시하지 않으면 albedo만 나옴. 클라우드 전송. 결과 맵의 물리적 정확성은 별도 검증 필요",
+      "urls": [
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/schemas/postprocessing.ts",
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/schemas/generation.ts",
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/instructions.ts"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Tripo API texture_model (재텍스처링)",
+      "category": "AI 텍스처 생성(클라우드 API)",
+      "what_it_is": "Tripo Python SDK의 texture_model이 기존 모델 태스크에 텍스처를 다시 생성합니다. 파라미터: texture(기본 True), pbr(기본 True), texture_quality 'standard'/'detailed', texture_alignment 'original_image'/'geometry', texture_seed, bake(기본 True), text_prompt, image_prompt, style_image, part_names(부위별 텍스처링).",
+      "how_to_use": "형상에 맞춘 디테일이 중요하면 texture_alignment='geometry', 참조 이미지 충실도가 중요하면 'original_image'를 씁니다. 품질이 필요하면 texture_quality='detailed'로 합니다. blender-mcp에는 generate_tripo_model(Premium) 도구가 있습니다.",
+      "license_or_price": "유료 API(크레딧)",
+      "status_date": "공식 tripo-mcp 저장소는 2025-04 이후 업데이트 없음",
+      "strengths": "part_names로 부위별 텍스처링, PBR 기본 켜짐",
+      "weaknesses": "공식 MCP가 오래됨. 세부 과금은 확인하지 못함",
+      "urls": [
+        "https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Hunyuan3D 2.1 / Hunyuan3D-Paint v2-1 (PBR 텍스처)",
+      "category": "AI 텍스처 생성(오픈 웨이트)",
+      "what_it_is": "Tencent의 오픈소스 3D 생성 모델입니다(2025-06-13 공개). Paint 2.1은 MaterialMVP 계열로 조명 불변 albedo와 metallic-roughness를 멀티뷰 PBR 확산으로 생성합니다. 파이프라인은 Hunyuan3DPaintPipeline(Hunyuan3DPaintConfig(max_num_view=6, resolution=512))입니다.",
+      "how_to_use": "mesh_textured = paint_pipeline(mesh_path, image_path=...). VRAM은 텍스처만 21GB, 형상+텍스처 29GB가 필요합니다. ComfyUI 래퍼(kijai)나 3DGenStudio 같은 오케스트레이터로도 쓸 수 있습니다.",
+      "license_or_price": "Tencent Hunyuan 3D 2.1 Community License. 적용 지역에서 EU, UK, 한국 제외. MAU 100만 초과 시 별도 라이선스",
+      "status_date": "2.1: 2025-06-13, 2.5: 2025-06-23(README 기준)",
+      "strengths": "오픈 모델 중 드물게 PBR(metal/rough)을 생성. 조명 제거 성능",
+      "weaknesses": "한국에서는 라이선스가 적용되지 않음(법적으로 사용 불가). VRAM 요구가 큼",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+        "https://github.com/ZebinHe/MaterialMVP"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "TRELLIS.2 (shape-conditioned PBR texturing)",
+      "category": "AI 텍스처 생성(오픈 웨이트)",
+      "what_it_is": "Microsoft의 4B 파라미터 3D 생성 모델입니다. Base Color, Roughness, Metallic, Opacity를 생성하고, 기존 형상에 PBR을 입히는 texturing 모드(example_texturing.py, app_texturing.py)가 있습니다.",
+      "how_to_use": "GLB 내보내기 시 texture_size 4096, decimation_target 1000000 예시가 있습니다. GLB가 OPAQUE로 나가므로 알파를 쓰려면 DCC에서 alpha를 opacity에 직접 연결해야 합니다. StableGen v0.3.0+에서 Blender 안에서 호출할 수 있습니다.",
+      "license_or_price": "MIT",
+      "status_date": "2025 말~2026 활동(정확한 공개일은 README에서 확인하지 못함)",
+      "strengths": "상업 친화 라이선스. 투명도까지 지원하는 PBR",
+      "weaknesses": "VRAM 24GB 이상(A100/H100에서 테스트)",
+      "urls": [
+        "https://github.com/microsoft/TRELLIS.2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "StableGen (Blender 애드온)",
+      "category": "AI 텍스처 생성(Blender 로컬)",
+      "what_it_is": "ComfyUI 백엔드로 SDXL, FLUX.1-dev, FLUX.2 Klein(실험적), Qwen-Image-Edit를 써서 Blender 안의 메시에 멀티뷰 투영 텍스처를 입히는 애드온입니다. 모드는 Sequential(인페인팅으로 일관성), Separate, Grid, Refine/Restyle, Local Edit, UV Inpaint이고, 카메라 배치 전략이 7종입니다. Bake Textures로 UV 텍스처화하며, v0.3.0부터 Marigold IID나 StableDelight로 albedo/roughness/metallic/normal/height/AO/emission PBR 분해를 지원합니다.",
+      "how_to_use": "ComfyUI를 설치하고 installer.py로 모델을 받습니다(7~33GB). Blender에서 카메라를 추가하고 프롬프트를 입력한 뒤 프리셋(Default/Characters/Quick Draft 등)을 골라 Generate합니다. 일관성이 필요하면 Sequential에 IPAdapter를 쓰고, ControlNet(depth/normal/canny) 강도로 형상 충실도와 디테일을 조절합니다. 마지막에 Bake Textures와 PBR 분해를 거쳐 내보냅니다.",
+      "license_or_price": "GPL-3.0(애드온). 모델별 라이선스 별도",
+      "status_date": "v0.3.1 2026-06-12, 2026-09 이슈 활동",
+      "strengths": "Blender 안에서 형상에 맞춘 AI 텍스처와 베이크를 끝까지 처리. 8GB VRAM부터 가능",
+      "weaknesses": "Blender 5.0은 미지원(4.2~4.5, 5.1+). PBR 분해는 메인 생성 후 후처리로만 가능(issue #116). MCP 도구로 노출되지 않음",
+      "urls": [
+        "https://github.com/sakalond/StableGen",
+        "https://github.com/sakalond/StableGen/releases",
+        "https://github.com/sakalond/StableGen/issues/116"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "MV-Adapter (+ ComfyUI-MVAdapter)",
+      "category": "AI 텍스처 생성(연구/오픈)",
+      "what_it_is": "ICCV 2025 논문입니다. 형상 조건부 멀티뷰(기본 6뷰, 768px) 생성으로 텍스트나 이미지에서 주어진 메시에 텍스처를 입힙니다(scripts.texture_t2tex / texture_i2tex).",
+      "how_to_use": "SDXL 버전 image-to-multiview는 약 14GB, --variant sd21은 10GB 미만입니다. ComfyUI 노드에서 LoRA 스타일도 적용할 수 있습니다.",
+      "license_or_price": "Apache-2.0(코드). 베이스 모델 라이선스 별도",
+      "status_date": "ICCV 2025 채택(2025-06-26 공지)",
+      "strengths": "형상 정렬이 좋고 ComfyUI 통합",
+      "weaknesses": "PBR 미지원(diffuse만)",
+      "urls": [
+        "https://github.com/huanngzh/MV-Adapter"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Material Anything",
+      "category": "AI PBR 생성(연구/오픈)",
+      "what_it_is": "CVPR 2025 Highlight 논문입니다. 텍스처 없는 메시, albedo만 있는 메시, 생성 모델, 스캔 모델에 albedo/roughness/metallic/bump를 생성하며, confidence mask로 조명 조건을 전환하고 UV 공간 refiner로 다듬습니다.",
+      "how_to_use": "AI 생성 메시나 스캔 메시를 PBR로 업그레이드할 때 씁니다. Blender 3.2.2 렌더를 권장합니다.",
+      "license_or_price": "MIT",
+      "status_date": "arXiv 2024-11, CVPR 2025",
+      "strengths": "기존 텍스처(조명이 구워진 것 포함)를 PBR로 변환",
+      "weaknesses": "연구 코드라 설치가 까다로움(PyTorch3D)",
+      "urls": [
+        "https://github.com/3DTopia/MaterialAnything"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "연구 계보: TEXTure/Text2Tex → SyncMVD → Paint3D → TEXGen → RomanTex / MaterialMVP",
+      "category": "연구(텍스처 합성)",
+      "what_it_is": "Text2Tex(ICCV 2023): depth-aware 인페인팅과 next-best-view. 백팩 예시가 약 500초 + 정제 약 360초, 12GB GPU. SyncMVD: 디노이징 단계마다 뷰 간 공유로 이음새를 제거(SD1.5 + depth/normal ControlNet, 메시 약 4만 면 이하, 깨끗한 UV 필요). Paint3D(CVPR 2024): 조명 없는 2K UV 텍스처와 UV 인페인팅/UVHD. TEXGen(SIGGRAPH Asia 2024 TOG, 최우수 논문 가작): UV 도메인 feed-forward albedo, 테스트 24GB. RomanTex(ICCV 2025): 3D-aware RoPE와 분리형 멀티어텐션. MaterialMVP(ICCV 2025 Highlight): 조명 불변 멀티뷰 PBR, Hunyuan3D-Paint-v2-1의 기반.",
+      "how_to_use": "실무에서는 이 기법들이 상용 도구와 Hunyuan/StableGen에 흡수되었으므로 원리 이해용으로 참고합니다. 이음새는 뷰 동기화, 가려진 곳은 UV 인페인팅, 조명은 de-lighting 학습으로 해결한다는 흐름입니다.",
+      "license_or_price": "각 저장소별 상이",
+      "status_date": "2023~2025",
+      "strengths": "실패 원인(이음새, 가림, 구워진 조명)과 해결책이 명확히 정리됨",
+      "weaknesses": "대부분 연구 코드이며 유지보수가 중단됨",
+      "urls": [
+        "https://github.com/daveredrum/Text2Tex",
+        "https://github.com/LIU-Yuxin/SyncMVD",
+        "https://github.com/OpenTexture/Paint3D",
+        "https://github.com/CVMI-Lab/TEXGen",
+        "https://github.com/oakshy/RomanTex",
+        "https://github.com/ZebinHe/MaterialMVP"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Ubisoft La Forge CHORD (+ ComfyUI-Chord)",
+      "category": "이미지→PBR",
+      "what_it_is": "SIGGRAPH Asia 2025 논문 'Chain of Rendering Decomposition'입니다. 생성된 텍스처 이미지에서 Base color, Normal, Height, Roughness, Metalness를 추정하며, chord_v1.safetensors ComfyUI 노드와 chord_image_to_material.json 워크플로를 제공합니다.",
+      "how_to_use": "타일링 텍스처 이미지(예: FLUX로 생성)를 CHORD 노드에 넣어 PBR 세트를 얻습니다. 연구와 프로토타입 용도로만 씁니다.",
+      "license_or_price": "Ubisoft Machine Learning License (Research-Only - Copyleft). 상업 사용 불가",
+      "status_date": "2025 SIGGRAPH Asia, arXiv 2509.09952",
+      "strengths": "AI 이미지→PBR 분해의 최신 품질",
+      "weaknesses": "상업 프로젝트에 쓸 수 없음. HF 로그인 필요",
+      "urls": [
+        "https://github.com/ubisoft/ubisoft-laforge-chord",
+        "https://github.com/ubisoft/ComfyUI-Chord"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Marigold IID (Appearance / Lighting v1.1)",
+      "category": "이미지→PBR(intrinsic decomposition)",
+      "what_it_is": "Appearance 모델은 Albedo, Roughness, Metallicity를, Lighting 모델은 Albedo, diffuse Shading, non-diffuse Residual을 예측합니다(2025-05-15). diffusers 0.28+에 통합되어 있으며 StableGen의 PBR 분해 백엔드입니다.",
+      "how_to_use": "AI가 생성한 텍스처나 사진에서 조명 성분을 떼어 albedo를 얻고 roughness/metal 초안을 만듭니다.",
+      "license_or_price": "코드 Apache-2.0, 가중치 RAIL++-M",
+      "status_date": "2025-05",
+      "strengths": "de-lighting과 PBR 분해를 한 번에",
+      "weaknesses": "이미지 공간 추정이라 UV 이음새와 뷰 일관성은 별도 처리 필요",
+      "urls": [
+        "https://github.com/prs-eth/Marigold"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "StableDelight",
+      "category": "이미지 de-lighting",
+      "what_it_is": "텍스처나 사진의 스페큘러 반사를 제거하는 확산 기반 모델입니다(StableNormal 계열). 3D 텍스처에도 적용할 수 있습니다(mvs-texturing으로 재바인딩).",
+      "how_to_use": "AI 멀티뷰 결과나 스캔 사진에서 하이라이트를 제거한 뒤 투영하거나 베이크합니다. StableGen의 PBR 분해 옵션 백엔드이기도 합니다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2024~",
+      "strengths": "albedo 오염의 가장 흔한 원인(하이라이트)을 제거",
+      "weaknesses": "그림자(AO 성분) 제거는 제한적",
+      "urls": [
+        "https://github.com/Stable-X/StableDelight"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "PBRify_Remix + ComfyUI-RTX-Remix (NVIDIA)",
+      "category": "이미지→PBR / 업스케일",
+      "what_it_is": "ambientCG CC0 데이터로만 학습한 '윤리적' 모델 세트입니다. 텍스처 업스케일(DXT1 압축, 노이즈, 디더링 복원)과 normal/roughness/height 생성을 제공합니다(height는 기본 꺼짐). NVIDIA 공식 ComfyUI-RTX-Remix 노드(ComfyUI 0.3.48+)로 RTX Remix Toolkit과 REST 연동합니다.",
+      "how_to_use": "chaiNNer .chn 체인이나 ComfyUI의 integration_pbrify.json / restapi_pbrify(_lowVRAM).json 워크플로를 씁니다. 구형 게임 텍스처 리마스터나 저해상도 AI 텍스처 보강에 활용합니다.",
+      "license_or_price": "모델 CC0",
+      "status_date": "PBRify 2026-02 업데이트, RTX-Remix 노드는 WIP/베타",
+      "strengths": "학습 데이터 출처가 깨끗함(CC0)",
+      "weaknesses": "RTX Remix 쪽에 공식 MCP는 확인되지 않음",
+      "urls": [
+        "https://github.com/Kim2091/PBRify_Remix",
+        "https://github.com/NVIDIAGameWorks/ComfyUI-RTX-Remix",
+        "https://github.com/NVIDIAGameWorks/toolkit-remix"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "DeepBump / Materialize",
+      "category": "이미지→노멀/하이트 (경량)",
+      "what_it_is": "DeepBump: color→normal, normal→height, normal→curvature ML 변환. Blender 애드온(Shader Editor 탭)과 CLI가 있습니다. Materialize: 단일 이미지에서 height/normal/metallic/smoothness/edge/AO를 만드는 Unity 기반 도구입니다.",
+      "how_to_use": "타일링 albedo만 있을 때 normal/height 초안을 만듭니다. curvature 출력은 엣지 마모 마스크로 활용합니다.",
+      "license_or_price": "둘 다 GPL(DeepBump GPL, Materialize GPL-3.0)",
+      "status_date": "Materialize는 유지보수가 사실상 중단된 것으로 보임",
+      "strengths": "가볍고 로컬에서 동작",
+      "weaknesses": "물리적 정확도는 CHORD나 Marigold보다 낮음",
+      "urls": [
+        "https://github.com/HugoTini/DeepBump",
+        "https://github.com/BoundingBoxSoftware/Materialize"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "ComfyUI-seamless-tiling",
+      "category": "타일링 텍스처 생성",
+      "what_it_is": "컨볼루션 레이어에 circular padding을 적용해 이음매 없는 텍스처를 생성하는 노드입니다(X/Y 독립 타일링). 'Make Circular VAE'(효율적)와 'Circular VAE Decode', 검증용 'Offset Image'를 제공합니다.",
+      "how_to_use": "모델 로더와 샘플러 사이에 Seamless Tile 노드를 넣고 Make Circular VAE로 디코드합니다. Offset Image로 50% 오프셋해서 이음새를 검사합니다. 이후 CHORD, Marigold, DeepBump로 PBR을 분해합니다.",
+      "license_or_price": "GPL-3.0",
+      "status_date": "활동 중(지원 모델 명시 없음)",
+      "strengths": "간단한 방법으로 타일링 보장",
+      "weaknesses": "FLUX 등 DiT 계열 지원 여부를 확인하지 못함",
+      "urls": [
+        "https://github.com/spinagon/ComfyUI-seamless-tiling"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Dream Textures (Blender)",
+      "category": "AI 텍스처 생성(Blender, 구형)",
+      "what_it_is": "Blender 안에서 Stable Diffusion으로 Seamless 텍스처 생성과 depth-to-image 투영을 하는 애드온입니다(8.2k stars).",
+      "how_to_use": "간단한 타일링 텍스처나 투영용으로 씁니다. 신규 프로젝트에는 StableGen을 권장합니다.",
+      "license_or_price": "오픈소스",
+      "status_date": "최신 v0.4.1이 2024-08-26으로 사실상 정체",
+      "strengths": "설치가 쉽고 Seamless 옵션",
+      "weaknesses": "2024년 이후 업데이트 없음, 구형 SD 모델",
+      "urls": [
+        "https://github.com/carson-katri/dream-textures/releases"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Substance 3D Painter MCP (elliezu/SubstancePainterMCP 외)",
+      "category": "DCC MCP(텍스처링)",
+      "what_it_is": "Painter를 --enable-remote-scripting으로 실행해 포트 60041로 제어합니다. 79개 도구: create_fill_layer, set_fill_channels, insert_smart_material, apply_smart_mask, set_procedural_input, set_baking_mesh_inputs, apply_baking_preset, start_batch_bake, export_textures, start_mesh_reload(Auto UV) 등. 원자적 롤백을 지원하고 임의 Python은 기본 비활성입니다. parodyband/painter-mcp는 painter_status→painter_observe(텍스처/창 이미지)→painter_run(배치+검증)의 관찰 중심 흐름을 씁니다.",
+      "how_to_use": "AI 메시를 import → 메시 맵 베이크(AO, curvature, thickness) → smart material 적용 → smart mask(엣지 마모, 먼지) → export_textures 순서로 진행합니다. 매 단계 observe 이미지로 VLM이 검증합니다.",
+      "license_or_price": "MCP는 오픈소스. Substance 3D Painter는 Adobe 유료",
+      "status_date": "elliezu Painter 12.1.1에서 테스트, 2026-07 업데이트(스타 36). parodyband는 Painter 12.1.4 대상",
+      "strengths": "AAA 업계 표준 툴의 스마트 머티리얼과 베이크를 AI로 자동화. 웨더링 품질이 가장 높음",
+      "weaknesses": "커뮤니티 프로젝트라 성숙도가 낮음. Adobe 공식 MCP는 확인되지 않음",
+      "urls": [
+        "https://github.com/elliezu/SubstancePainterMCP",
+        "https://github.com/parodyband/painter-mcp"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Substance 3D Designer MCP (matthieuhuguet/substance-designer-mcp)",
+      "category": "DCC MCP(절차적 머티리얼)",
+      "what_it_is": "Designer 내부 플러그인과 FastMCP 브리지(localhost:9881)로 16개 도구(create_graph, create_node, connect_nodes, set_parameter, build_material_graph, build_heightmap_graph, apply_recipe 등)와 79개 레시피(화강암, 강철, 나무, 콘크리트 등)를 제공합니다.",
+      "how_to_use": "예시 프롬프트: 'Build a weathered steel material with surface oxidation', 'Make a cracked concrete material'. 도구 호출은 반드시 순차적으로 합니다(병렬 금지).",
+      "license_or_price": "MIT, Designer는 유료",
+      "status_date": "Designer 15.0.3에서 테스트, 2026-05 업데이트(스타 43)",
+      "strengths": "편집 가능한 .sbs 그래프를 산출(평면 이미지가 아님)",
+      "weaknesses": "일부 SD 15.x API가 앱을 멈춤. 잘못된 포트 ID는 크래시",
+      "urls": [
+        "https://github.com/matthieuhuguet/substance-designer-mcp"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "MaterialPilot (Material Maker MCP) / Material Maker",
+      "category": "DCC MCP(절차적 머티리얼, 오픈소스)",
+      "what_it_is": "Material Maker 1.7과 Godot 4.7용 로컬 MCP 브리지입니다. 143개 도구와 392개 노드 디스크립터 카탈로그를 제공하고, dry-run 패치, 스냅샷 기반 원자적 적용과 롤백을 지원합니다. albedo/roughness/metallic/normal/height/AO/emission 채널을 다루고 Blender 프로파일로 PNG/EXR을 내보냅니다(SHA-256 검증). Material Maker 자체는 Godot 기반 MIT 절차 텍스처 도구입니다.",
+      "how_to_use": "저장소의 'Abandoned Industrial Floor' 예제대로 카탈로그 조회 → 스냅샷 → 패치 dry-run → 적용 → 2048x2048 Blender용 내보내기 순서로 진행합니다.",
+      "license_or_price": "Material Maker MIT, 무료",
+      "status_date": "MaterialPilot 0.1.0 implementation preview(2026-09, 스타 5)",
+      "strengths": "완전 무료이면서 편집 가능한 절차 그래프를 AI가 조작",
+      "weaknesses": "매우 초기 단계, 검증 사례 적음",
+      "urls": [
+        "https://github.com/SS-360/materialpilot",
+        "https://github.com/RodZill4/material-maker"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Scenario Blender plugin (로컬 MCP 포함)",
+      "category": "MCP-AI 텍스처 생성(상용)",
+      "what_it_is": "Blender 5.0+ 뷰포트에서 AI 이미지, 3D, 선택 메시용 PBR 맵 생성을 제공하는 플러그인입니다. 로컬 MCP 서버(scenario-blender, http://127.0.0.1:9876/mcp)를 포함하며, 임의 Python 실행은 별도 opt-in입니다.",
+      "how_to_use": "Scenario API 키/시크릿을 설정하고 'Allow Online Access'를 켭니다. 생성 전에 CU(Creative Units) 비용 추정을 확인합니다.",
+      "license_or_price": "Scenario 유료 CU 과금",
+      "status_date": "2026-09 활발한 커밋",
+      "strengths": "상용 서비스의 PBR 생성을 MCP로 에이전트에 노출",
+      "weaknesses": "포트 9876이 blender-mcp 기본 포트와 겹칠 수 있음(추정). 모델 세부는 확인하지 못함",
+      "urls": [
+        "https://github.com/scenario-labs/blender-plugin"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "BlenderAlchemy (ECCV 2024)",
+      "category": "LLM/VLM 절차 셰이더 편집",
+      "what_it_is": "VLM(GPT-4V, Gemini, Claude)이 Blender 머티리얼 노드 스크립트의 편집 후보를 생성하고, VLM state evaluator가 렌더를 비교해 트리 서치(breadth/depth)로 목표에 수렴하는 시스템입니다. 텍스트→이미지 'visual imagination'으로 추상적인 목표를 시각화합니다. 예: 나무 재질을 marbled granite로 변환.",
+      "how_to_use": "MCP 에이전트에서도 같은 패턴을 쓸 수 있습니다. 셰이더 후보 3~4개를 생성하고 렌더한 뒤, VLM이 레퍼런스 이미지와 비교해 선택하고 반복합니다.",
+      "license_or_price": "오픈소스(연구)",
+      "status_date": "2024-12 이후 정체",
+      "strengths": "'한 번에 생성'보다 '생성 + 시각 평가 루프'가 품질이 높다는 근거",
+      "weaknesses": "API 비용과 렌더 시간",
+      "urls": [
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "VLMaterial (ICLR 2025 Spotlight)",
+      "category": "LLM/VLM 절차 셰이더 생성",
+      "what_it_is": "입력 이미지에서 Blender 셰이더 노드 그래프를 Python 프로그램으로 생성하도록 LLaVA-NeXT(LLaMA-3 8B)를 파인튜닝한 모델입니다. Infinigen 포크로 렌더하고 MCMC로 파라미터를 정제합니다.",
+      "how_to_use": "레퍼런스 사진을 절차 머티리얼로 역설계하는 연구 참고용입니다. 학습에는 48GB 이상 GPU가 필요합니다.",
+      "license_or_price": "코드 MIT, 데이터셋 CC BY-NC 4.0",
+      "status_date": "2025",
+      "strengths": "이미지→편집 가능한 노드 그래프",
+      "weaknesses": "데이터 비상업 조건, 범용 LLM 대비 접근성 낮음",
+      "urls": [
+        "https://github.com/mit-gfx/VLMaterial"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Infinigen 절차 머티리얼 라이브러리",
+      "category": "절차 셰이더 레시피 소스",
+      "what_it_is": "Princeton VL의 절차 생성기로, src/infinigen/assets/materials 아래에 ceramic, fabric(velvet, leather, sofa_fabric 등), metal(brushed, galvanized, hammered 등), wood(14종), tiles, wear_tear(edge_wear, scratches), table_marble 등 Blender 노드를 Python으로 기술한 레시피가 있습니다. node_transpiler로 노드를 코드로 변환할 수 있습니다.",
+      "how_to_use": "LLM에게 '해당 파일의 노드 구성과 수치를 참고해 bpy로 재현하라'고 지시하면 환각보다 훨씬 안정적입니다. Musgrave 사용 부분은 Blender 4.1+ Noise(fBM) 타입으로 변환해야 합니다.",
+      "license_or_price": "BSD-3-Clause(일부 CC-0 코드 포함)",
+      "status_date": "2026 활동",
+      "strengths": "수치가 구체적인 검증된 레시피",
+      "weaknesses": "연구용 랜덤화로 metallic 0.37 같은 비물리 값이 섞여 있음(게임용이라면 수정 필요)",
+      "urls": [
+        "https://github.com/princeton-vl/infinigen",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/table_marble.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wear_tear/edge_wear.py"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Physically Based (physicallybased.info) API",
+      "category": "PBR 레퍼런스 데이터",
+      "what_it_is": "CG 아티스트용 물리 기반 값 데이터베이스입니다. materials.json(재질별 linear sRGB 색, metalness, roughness, IOR/complex IOR), lightsources, cameras를 담고 있고 API는 https://api.physicallybased.info/v2 입니다.",
+      "how_to_use": "에이전트 프롬프트나 MCP 도구 결과로 넣어 Base Color 값을 근거 있게 설정합니다. 예: Concrete 0.51 / rough 0.5, Charcoal 0.02 / rough 1.0, Asphalt(Fresh) 0.043, Brick (0.262,0.095,0.061), Egg Shell(White) 0.61, Aluminum (0.916,0.923,0.924) metal 1, Copper (0.932,0.623,0.522), Brass (0.91,0.778,0.423), Chromium (0.654,0.685,0.701).",
+      "license_or_price": "CC0",
+      "status_date": "v2 API(2026)",
+      "strengths": "LLM이 색 값을 추측하지 않게 해 줌",
+      "weaknesses": "재질 수가 제한적이고 텍스처가 아니라 대표값",
+      "urls": [
+        "https://github.com/AntonPalmqvist/physically-based-api",
+        "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/deploy/v2/materials.json"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "cc-blender-skill (Claude Code 스킬: blender-materials)",
+      "category": "에이전트 스킬/레시피",
+      "what_it_is": "Blender 5.x용 Claude Code 스킬 10종 중 blender-materials입니다. 'Metallic is a switch, not a slider', 금속 base color는 0.5 sRGB 이상, roughness 최소 0.01~0.05 같은 규칙과 레시피를 담고 있습니다. 예: Brushed Steel (0.56,0.57,0.58)/M1/R0.25, Polished Gold (1.022,0.782,0.344)/R0.05, Chrome R0.02, Frosted Glass Transmission 1/IOR 1.5/R0.3, 녹색 유리병 Volume Absorption (0.10,0.45,0.18) Density 80에 transmission bounces 16 이상, Lacquered Plastic Coat 0.8/Coat Rough 0.05, Skin SSS Weight 1/Radius (1,0.2,0.1), Velvet Sheen 0.5, Wood는 Wave(Scale 5, Distortion 4)+Noise(Scale 8)→ColorRamp (0.15,0.07,0.03)~(0.6,0.35,0.18).",
+      "how_to_use": "Claude Code 플러그인으로 설치하거나, SKILL.md를 blender-mcp 세션의 시스템/프로젝트 지침으로 넣습니다.",
+      "license_or_price": "오픈소스",
+      "status_date": "2026-05(스타 70)",
+      "strengths": "LLM이 바로 쓸 수 있는 수치형 레시피",
+      "weaknesses": "웨더링이나 베이크 레시피는 적음",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/SKILL.md",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/references/overview.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "blender-kiln (Claude Code 플러그인: 텍스트 브리프→GLB)",
+      "category": "에이전트 파이프라인",
+      "what_it_is": "CONFIG→BRIEF→SOURCE→IMPORT→CLEANUP→TEXTURING→OPTIMIZE→EXPORT 8단계와 31개 규칙을 갖춘 파이프라인입니다. 텍스처링 전략 4종(Poly Haven 기하 분석 존별 적용, 절차 머티리얼, 절차→베이크, 수동 보조)을 쓰며, glTF 내보내기 전에 머티리얼 감사(다운로드한 맵과 실제로 채워진 슬롯을 비교)를 합니다.",
+      "how_to_use": "/plugin marketplace add elithril/blender-kiln 후 /kiln을 실행합니다. 면 노멀로 존을 분류합니다(|n.z|>0.7 수평, <0.3 수직, 높이 비율로 좌판/다리/등받이). 존별로 search_polyhaven_assets를 호출합니다.",
+      "license_or_price": "오픈소스",
+      "status_date": "2026-08(스타 13)",
+      "strengths": "실측 수치(갤러리: 에셋 15개, 21,879 tris, 1456KB→132.7KB로 91% 감소)와 실패 기록",
+      "weaknesses": "소규모 프로젝트",
+      "urls": [
+        "https://github.com/elithril/blender-kiln",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/uv-materials.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "NVIDIA usd-content-agents (Material Agent / Texture Agent)",
+      "category": "에이전트 파이프라인(USD)",
+      "what_it_is": "Material Agent(Beta)는 렌더 뷰를 VLM(NIM/OpenAI/Anthropic/Gemini)이 분석해 MDL, UsdPreviewSurface, OpenPBR 라이브러리(materials.yaml)에서 재질을 골라 할당합니다. 10단계로 검증, 인스턴스 조화, 비교 렌더까지 합니다. Texture Agent(Research Preview)는 UV 준비 검사(uv_report.json) 후 albedo/roughness/metalness/normal을 생성하고 적용합니다.",
+      "how_to_use": "'생성보다 선택' 패턴의 레퍼런스입니다. 가구와 소품의 부위별 재질을 VLM이 라이브러리에서 고르게 하고, 없을 때만 생성합니다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2026(스타 212). Linux/WSL2 전용",
+      "strengths": "대형 벤더의 검증된 에이전트 설계(기술 문서는 VLM 판단을 보조만 하고 덮어쓰지 못함)",
+      "weaknesses": "MCP 미지원 언급 없음, Omniverse 렌더 백엔드 필요",
+      "urls": [
+        "https://github.com/NVIDIA-Omniverse/usd-content-agents",
+        "https://raw.githubusercontent.com/NVIDIA-Omniverse/usd-content-agents/main/apps/material_agent/README.md",
+        "https://raw.githubusercontent.com/NVIDIA-Omniverse/usd-content-agents/main/apps/texture_agent/README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "PartUV (SIGGRAPH Asia 2025)",
+      "category": "UV 자동화(AI 메시)",
+      "what_it_is": "PartField 계층 파트 분해를 이용해 파트 경계에 맞춘 이음새로 UV를 펼칩니다. xatlas 등 기존 방법 대비 '더 적은 차트, 더 낮은 왜곡'을 주장하며, 팩킹은 Blender 내장이나 UVPackMaster(--pack_method uvpackmaster)로 합니다.",
+      "how_to_use": "python demo/partuv_demo.py --mesh_path mesh.glb --save_visuals. 입력은 자기교차와 non-manifold가 없는 메시를 권장합니다. 커뮤니티 Blender 애드온과 Windows 포트도 있습니다.",
+      "license_or_price": "저장소 LICENSE 참조",
+      "status_date": "2026-07 업데이트(스타 255)",
+      "strengths": "AI 생성 메시(Smart UV로는 조각이 수백 개 나오는 경우)에 특히 유효",
+      "weaknesses": "Python 3.11 + PyTorch 2.7.1 환경 필요",
+      "urls": [
+        "https://github.com/EricWang12/PartUV"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender 내장 UV/베이크 오퍼레이터 (소스 확인)",
+      "category": "UV/베이크",
+      "what_it_is": "UV_OT_unwrap 메서드: ANGLE_BASED, CONFORMAL, MINIMUM_STRETCH(SLIM). UV_OT_pack_islands shape_method: CONCAVE(정확), CONVEX, AABB, margin 기본 0.001, 회전 ANY/CARDINAL/축정렬. OBJECT_OT_bake 기본값: 512x512, margin 16, margin_type EXTEND, normal_space TANGENT, target IMAGE_TEXTURES, use_selected_to_active/cage_extrusion/max_ray_distance 지원.",
+      "how_to_use": "스크립트 예: bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02) → bpy.ops.uv.pack_islands(shape_method='CONCAVE', margin=0.005) → 베이크. 주의: bpy.ops의 angle_limit은 라디안 단위입니다.",
+      "license_or_price": "GPL(Blender)",
+      "status_date": "Blender main 2026-09",
+      "strengths": "추가 비용 없이 자동화 가능",
+      "weaknesses": "Smart UV는 하드서페이스 외에서 조각이 많음",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/uvedit/uvedit_unwrap_ops.cc",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/object/object_bake_api.cc"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Texel Density Checker",
+      "category": "UV/텍셀 밀도",
+      "what_it_is": "텍셀 밀도(px/cm)를 측정, 설정, 전송하고 vertex color로 시각화하는 Blender 애드온입니다.",
+      "how_to_use": "AI나 스크립트로 UV를 편 뒤, 오브젝트 전체의 텍셀 밀도를 목표값(예: 10.24 px/cm)으로 통일합니다.",
+      "license_or_price": "무료",
+      "status_date": "v2026.1.1, Blender 4.2+ Extensions",
+      "strengths": "씬 전체 텍스처 선명도의 일관성 확보",
+      "weaknesses": "Python 오퍼레이터 이름은 문서에서 확인하지 못함",
+      "urls": [
+        "https://github.com/mrven/Blender-Texel-Density-Checker"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Trimmer (트림 시트 애드온)",
+      "category": "트림 시트/모듈러 텍스처",
+      "what_it_is": "레퍼런스 plane을 트림 영역으로 나눠 등록한 뒤, 선택한 면을 트림에 Fit(비율 유지 + 회전)하거나 Fill(늘려 채움)하고 미러링하는 애드온입니다.",
+      "how_to_use": "AI가 만든 모듈러 건축과 가구 몰딩에 트림 시트 하나로 높은 텍셀 밀도를 확보합니다.",
+      "license_or_price": "오픈소스",
+      "status_date": "v0.2.4, Blender 4.2+",
+      "strengths": "AAA 환경 아트의 표준 기법을 Blender에서",
+      "weaknesses": "MCP 통합은 없음(execute_blender_code로 호출 필요)",
+      "urls": [
+        "https://github.com/LaXHeXLuX/Trimmer"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "glTF-Blender-IO 머티리얼 내보내기 규칙",
+      "category": "내보내기/호환",
+      "what_it_is": "공식 exporter 문서 기준: metallic은 B, roughness는 G 채널에 같은 이미지. AO는 'glTF Material Output' 커스텀 노드 그룹의 Occlusion 입력으로. Normal Map 노드는 Tangent Space만 지원. Emission은 Image→Emission. 이미지는 PNG/JPEG(그 외는 자동 변환).",
+      "how_to_use": "게임이나 웹 내보내기 전에 절차 노드를 베이크하고 ORM(R=AO, G=Rough, B=Metal)으로 팩킹합니다. AO는 커스텀 그룹으로 연결합니다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2026",
+      "strengths": "공식 규칙",
+      "weaknesses": "Displacement, SSS, 절차 노드는 전달되지 않음",
+      "urls": [
+        "https://raw.githubusercontent.com/KhronosGroup/glTF-Blender-IO/main/docs/blender_docs/scene_gltf2.rst"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Adobe Substance 3D Sampler(Image to Material) / Painter·Sampler Firefly text-to-texture",
+      "category": "상용 AI 머티리얼(미검증)",
+      "what_it_is": "Sampler의 AI 'Image to Material'(사진→PBR)과 Firefly 기반 텍스트→타일링 텍스처 기능이 알려져 있습니다. 이번 조사에서는 adobe.com이 차단되어 버전과 날짜를 직접 확인하지 못했습니다.",
+      "how_to_use": "Sampler에서 사진이나 AI 이미지를 PBR로 만들고 .sbsar로 내보낸 뒤 Painter MCP로 적용하는 흐름을 가정할 수 있습니다(검증 필요).",
+      "license_or_price": "Adobe 구독",
+      "status_date": "미확인",
+      "strengths": "업계 표준 툴체인",
+      "weaknesses": "공식 MCP 없음, 이번 조사에서 1차 출처 확인 실패",
+      "urls": [],
+      "confidence": "low"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "PBR 값 규칙을 시스템 프롬프트나 스킬에 수치로 박아 넣으세요. Metallic은 0/1만(전환부 마스크에서만 중간값), 금속 Base Color는 linear 0.5 이상(sRGB 약 180~255), 비금속 albedo는 linear 0.02(숯)~0.8대(눈) 범위이고 대부분 0.05~0.6이며 조명과 그림자가 없어야 합니다. Roughness는 0.01~0.05 이상, 비금속 반사율은 Specular IOR Level 0.5(=IOR 1.5, 약 4%)가 기본입니다.",
+      "why": "LLM은 '반짝이는 금속 = metallic 0.7' 같은 비물리 값을 자주 씁니다. 중간 metallic은 에너지 보존이 안 되는 렌더를 만들고, 어두운 금속이나 조명이 구워진 albedo는 AAA 느낌을 가장 먼저 망칩니다.",
+      "example": "프롬프트 예: '모든 머티리얼은 Principled BSDF 하나만. Metallic ∈ {0,1}. Base Color는 physicallybased.info 값 사용(Concrete 0.51, Aluminum 0.916, Copper (0.932,0.623,0.522)). Roughness는 절대 0 금지, 최소 0.02. 완료 후 각 머티리얼의 Base Color/Metallic/Roughness 표를 출력하고 규칙 위반 여부를 스스로 점검하라.'",
+      "urls": [
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/SKILL.md",
+        "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/deploy/v2/materials.json",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/shader/nodes/node_shader_bsdf_principled.cc"
+      ]
+    },
+    {
+      "tip": "컬러스페이스: Base Color와 Emission 이미지만 sRGB이고, roughness/metallic/normal/height/AO/ORM은 모두 Non-Color입니다. Blender 4.0 이후 'Linear'는 'Linear Rec.709'로 이름이 바뀌었으니 코드에서 후보를 순서대로 시도하세요.",
+      "why": "normal이나 roughness를 sRGB로 읽으면 감마가 걸려 노멀이 휘고 roughness가 전체적으로 밝아집니다(너무 매트해짐). blender-mcp도 'Only the albedo is colour data; every other map is values' 규칙으로 구현되어 있습니다.",
+      "example": "img.colorspace_settings.name = 'Non-Color'  # rough/metal/normal/height. blender-mcp는 'Non-Color' → 'Linear Rec.709' → 'Linear' 순서로 시도합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/uv-materials.md"
+      ]
+    },
+    {
+      "tip": "노멀맵은 Image(Non-Color) → Normal Map 노드(Tangent Space) → Principled Normal로 연결합니다. Blender와 glTF는 OpenGL(nor_gl, Y+) 규약이고, DirectX(nor_dx, Y-) 맵을 쓸 때는 G 채널을 반전해야 합니다.",
+      "why": "Poly Haven은 nor_gl과 nor_dx를 모두 제공합니다. 잘못 고르면 요철이 뒤집혀 보입니다(음각↔양각). glTF는 Tangent Space만 지원합니다.",
+      "example": "blender-mcp 매핑: 'nor_gl': normal 우선, nor_dx는 nor_gl이 없을 때만 사용.",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://raw.githubusercontent.com/KhronosGroup/glTF-Blender-IO/main/docs/blender_docs/scene_gltf2.rst"
+      ]
+    },
+    {
+      "tip": "blender-mcp로 Poly Haven 텍스처를 쓸 때는 (1) 2026-09-21 이후 버전(PR #367 반영)인지 확인하고, (2) 노드를 손으로 짜지 말고 set_texture를 쓰고, (3) 해상도는 1k/2k로 받고 히어로 에셋만 4k를 쓰고, (4) 실측 크기(polyhaven_scale_mm)로 Mapping Scale = 표면 크기 / 텍스처 실측 크기를 맞추세요.",
+      "why": "구버전은 normal/displacement를 다운로드만 하고 연결하지 않아 평평하게 보였고, Mapping 노드가 TEXTURE 모드라 스케일 계산이 역전되었습니다. 수동 노드 구성은 'gets the colorspaces wrong more often than not'(blender-kiln)이라고 기록되어 있습니다. 다운로드는 메인 스레드라 고해상도일수록 Blender가 오래 멈춥니다.",
+      "example": "'search_polyhaven_assets(query=\"oak floor\", asset_type=\"textures\") → get_polyhaven_asset_preview로 후보 3개 비교 → download_polyhaven_asset(resolution=\"2k\") → set_texture(object_name=\"Floor\") → 바닥 6m / 텍스처 2m이면 Mapping Scale 3 → get_viewport_screenshot로 반복 패턴과 스케일 확인'",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp/pull/367",
+        "https://github.com/ahujasid/blender-mcp/issues/361",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md"
+      ]
+    },
+    {
+      "tip": "머티리얼을 갱신하는 스크립트는 항상 node_tree.nodes.clear() 후 Output 1개와 Principled 1개를 새로 만들고 is_active_output=True로 지정하세요(idempotent 리셋).",
+      "why": "같은 머티리얼에 스크립트를 반복 실행하면 Material Output과 Principled가 중복되어, 뷰포트는 맞는데 렌더는 회색이 되는 비결정적 셰이딩이 생깁니다(blender-mcp issue #190).",
+      "example": "def reset(mat): mat.use_nodes=True; nt=mat.node_tree; nt.nodes.clear(); out=nt.nodes.new('ShaderNodeOutputMaterial'); out.is_active_output=True; p=nt.nodes.new('ShaderNodeBsdfPrincipled'); nt.links.new(p.outputs['BSDF'], out.inputs['Surface'])",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/190"
+      ]
+    },
+    {
+      "tip": "Principled BSDF 소켓 이름은 Blender 4.0+ 규격(Specular IOR Level, Subsurface Weight, Transmission Weight, Coat Weight, Sheen Weight, Emission Color 등)을 쓰고, 추측하지 말고 blender-mcp의 describe_node_type / bpy_api_lookup으로 먼저 조회하게 하세요. Blender 4.1+에서는 Musgrave Texture가 제거되었으니 Noise Texture(fBM/Multifractal 타입)를 씁니다.",
+      "why": "LLM의 학습 데이터에는 3.x 시절 이름('Specular', 'Clearcoat', 'Transmission', 'Emission')과 ShaderNodeTexMusgrave가 많아 KeyError나 크래시가 흔합니다. 최신 main에는 Diffuse Roughness, Thin Wall, Thin Film 입력까지 추가되어 있습니다.",
+      "example": "지침 예: '노드를 만들기 전 describe_node_type(\"ShaderNodeBsdfPrincipled\")로 소켓 이름을 확인하고 inputs[\"이름\"]으로만 접근하라. 인덱스 접근 금지.'",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/shader/nodes/node_shader_bsdf_principled.cc",
+        "https://github.com/search?q=Musgrave+removed+4.1+noise+texture&type=issues"
+      ]
+    },
+    {
+      "tip": "대리석 레시피(Infinigen table_marble): Texture Coordinate → Noise(4D, Scale 약 3~4, Detail 15)로 좌표를 왜곡 → Voronoi(4D, feature DISTANCE_TO_EDGE, Scale 3)의 거리 → ColorRamp(0.0 흰색 → 0.03 검정)로 가는 맥(vein)을 만듭니다. 바탕 패턴은 ColorRamp 0.3~0.9로 합니다. Principled는 Roughness 0.1, Specular IOR Level 0.6, 변위 스케일 0.02입니다.",
+      "why": "LLM이 만드는 '노이즈 하나 대리석'은 구름처럼 보이지만, Voronoi 엣지 거리와 매우 좁은 램프 임계값을 쓰면 실제 대리석처럼 가늘고 날카로운 맥이 나옵니다.",
+      "example": "프롬프트: 'Infinigen table_marble.py 구성을 따라 Noise로 왜곡한 Voronoi DISTANCE_TO_EDGE 맥을 만들고, 램프 폭은 0.03 이하로 하라. 광택 대리석 Roughness 0.1, 맥 부분은 roughness +0.05.'",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/table_marble.py"
+      ]
+    },
+    {
+      "tip": "나무 레시피: 좌표를 결 방향으로 강하게 늘리고(Infinigen wood: Mapping Scale (5,100,100) 후 (0.15,1,0.15)), 연륜과 결은 Wave(Bands/Rings, Scale 약 5, Distortion 약 4) + Noise(Scale 약 8)를 ColorRamp로 어두운 목재 (0.15,0.07,0.03) ~ 밝은 목재 (0.6,0.35,0.18) 사이에 매핑합니다. Roughness는 0.3~0.6 사이에서 결 마스크로 ±0.1 변동, 마감재가 있으면 Coat Weight 0.3~1.0을 줍니다.",
+      "why": "등방성 노이즈는 나무가 아니라 얼룩처럼 보입니다. 결 방향 스트레치와 코트층이 '가구다운' 느낌의 핵심입니다.",
+      "example": "cc-blender-skill Wood: Wave Scale 5.0, Distortion 4.0; Noise Scale 8.0; ColorRamp 두 색. Infinigen: roughness uniform(0,0.4), coat clip(uniform(0,1.4),0,1).",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wood/wood.py",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/SKILL.md"
+      ]
+    },
+    {
+      "tip": "브러시드 메탈과 패브릭 레시피: 브러시드 메탈은 Mapping Scale (0.2,0.2,5)과 (1,1,20)으로 한 축을 늘린 Noise(Detail 15, Roughness 0.4~0.6) 두 개를 DARKEN으로 섞고, Map Range(0.4~0.6 → 0.2~0.3)로 roughness에 연결합니다. Metallic 1, Specular IOR Level 0입니다. 소파 패브릭은 Brick Texture(Scale 약 277, Mortar 0.01, Row Height 0.1)를 bump(강도 0.005~0.01)로 쓰고, Sheen Weight 1.0, Roughness 약 0.86입니다.",
+      "why": "금속은 roughness의 방향성 변동이, 패브릭은 미세 직조와 sheen이 사실감을 결정합니다. 단색 roughness는 CG처럼 보입니다.",
+      "example": "Infinigen brushed_metal.py / sofa_fabric.py 수치 그대로 bpy로 재현하도록 지시합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/metal/brushed_metal.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/fabric/sofa_fabric.py"
+      ]
+    },
+    {
+      "tip": "웨더링 마스크는 렌더러별로 다르게 만드세요. Cycles에서는 Geometry.Pointiness, Bevel 노드, AO 노드를 실시간 마스크로 쓸 수 있지만, EEVEE와 게임엔진에서는 동작하지 않으므로 Cycles로 마스크(곡률, AO)나 최종 base color/roughness를 텍스처로 베이크해야 합니다.",
+      "why": "Blender GPU 셰이더 소스에서 pointiness는 상수 0.5, node_bevel은 result = N(통과)입니다. EEVEE 뷰포트 스크린샷으로 검증하는 에이전트는 '마모가 안 보인다'며 값을 과도하게 올리는 실수를 합니다.",
+      "example": "엣지 마모(Cycles, 일반적인 실무 값): Bevel(Radius 0.005~0.02, samples 8~20)와 Geometry Normal의 차이 길이, 또는 Pointiness → ColorRamp(0.50→0.56, 조밀한 메시 전용) × Noise(Scale 30~60, Detail 8~15) → ColorRamp(Constant, 0.45~0.55) → 페인트(Metallic 0, R 0.45)와 맨 금속(Metallic 1, Base 0.56~0.6, R 0.25~0.35)을 Mix. Infinigen edge_wear.py도 Bevel 노드(samples 20) 기반입니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/gpu/shaders/material/gpu_shader_material_geometry.bsl.hh",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/gpu/shaders/material/gpu_shader_material_bevel.bsl.hh",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wear_tear/edge_wear.py"
+      ]
+    },
+    {
+      "tip": "캐비티 먼지, 위쪽 먼지, 개체별 색 변화, 긁힘은 '레이어'로 쌓으세요. 먼지는 AO 반전 × 그런지, 먼지층은 월드 노멀 Z, 색 변화는 Object Info Random, 긁힘은 한 축으로 늘린 노이즈나 Voronoi로 만듭니다.",
+      "why": "AAA 소품은 단일 재질이 아니라 '베이스 + 변화 + 마모 + 오염' 4단 구성이 표준입니다. 같은 의자 10개가 완전히 같은 색이면 즉시 CG처럼 보입니다.",
+      "example": "(일반 실무 값) 캐비티 먼지: AO(Distance 0.1~0.5m, Only Local) → ColorRamp 반전 × Noise(Scale 5~10) → Base Color에 어두운 갈색 (0.08,0.06,0.04)을 Multiply 0.3~0.6, roughness +0.15~0.3. 위쪽 먼지: Normal → Separate XYZ.Z → Map Range(0.6~0.95→0~1) × noise → 밝은 회색, roughness 0.85. 색 변화: Object Info.Random → HSV(Hue 0.48~0.52, Value 0.85~1.15). 긁힘(Infinigen scratches): Mapping Scale (25,1,1)로 늘린 Noise(Detail 15, Distortion 22.8) → ColorRamp 0.41 → 변위(얕게).",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wear_tear/scratches.py"
+      ]
+    },
+    {
+      "tip": "절차 머티리얼을 게임이나 glTF로 보낼 때는 반드시 베이크하세요. 각 머티리얼에 대상 Image Texture 노드를 만들어 활성화하고, albedo는 type='DIFFUSE' + pass_filter={'COLOR'}로 조명 없이 굽습니다. ROUGHNESS와 NORMAL(TANGENT)은 Non-Color 이미지에 굽고, metallic은 Emission에 임시 연결해 EMIT으로 굽습니다. margin은 2K에 16px, 4K에 16~32px입니다.",
+      "why": "glTF는 절차 노드를 내보내지 않습니다('GLTF drops procedural nodes'). 활성 이미지 노드가 없으면 'No active and selected image texture node found in material' 오류로 실패합니다. DIFFUSE를 기본 pass_filter로 구우면 조명이 albedo에 섞입니다.",
+      "example": "sc.render.engine='CYCLES'; img=bpy.data.images.new('T_BaseColor',2048,2048); for s in obj.material_slots: nt=s.material.node_tree; n=nt.nodes.new('ShaderNodeTexImage'); n.image=img; nt.nodes.active=n\nbpy.ops.object.bake(type='DIFFUSE', pass_filter={'COLOR'}, margin=16, use_clear=True); img.filepath_raw='//T_BaseColor.png'; img.file_format='PNG'; img.save()",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/object/object_bake_api.cc",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md"
+      ]
+    },
+    {
+      "tip": "glTF와 게임엔진 대상이면 ORM 팩킹(R=AO, G=Roughness, B=Metallic)을 쓰고, AO는 'glTF Material Output' 노드 그룹의 Occlusion 입력으로 연결하세요. 내보낸 뒤에는 '다운로드하거나 만든 맵 목록'과 'GLB에 실제로 채워진 슬롯'을 비교하는 감사를 자동화합니다.",
+      "why": "blender-kiln 측정에서 Poly Haven american_walnut_veneer는 7개 맵 중 3개(baseColor, metallicRoughness, normal)만 GLB에 남았습니다. AO, displacement, SSS는 조용히 사라지므로, 변위 디테일은 normal로 베이크해야 합니다.",
+      "example": "Unreal에서는 ORM 텍스처를 sRGB 해제(Masks 압축)로 import합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/KhronosGroup/glTF-Blender-IO/main/docs/blender_docs/scene_gltf2.rst",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/uv-materials.md"
+      ]
+    },
+    {
+      "tip": "UV 자동화 순서: 하드서페이스와 가구는 Smart UV Project(angle_limit 66°, island_margin 0.02, correct_aspect, scale_to_bounds) → Pack Islands(shape_method CONCAVE) 순으로 하고, 유기체나 AI 생성 메시는 Unwrap MINIMUM_STRETCH(SLIM)나 PartUV를 씁니다. 목표 UV 사용률은 85% 이상, 여백은 2K에 4~8px, 4K에 8~16px입니다.",
+      "why": "AI 생성 메시(삼각형 수프)에 Smart UV를 쓰면 섬이 수백 개 생기고, 이음새와 밉맵 번짐이 AI 텍스처나 베이크 품질을 망칩니다. PartUV는 파트 경계에 이음새를 둬 차트 수와 왜곡을 줄입니다.",
+      "example": "bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02, correct_aspect=True, scale_to_bounds=True); 또는 python demo/partuv_demo.py --mesh_path chair.glb --pack_method uvpackmaster",
+      "urls": [
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/uv-materials.md",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/uvedit/uvedit_unwrap_ops.cc",
+        "https://github.com/EricWang12/PartUV"
+      ]
+    },
+    {
+      "tip": "텍셀 밀도를 씬 전체에서 통일하세요. 모바일/웹 5.12~10.24 px/cm(1K~2K), 콘솔/PC 10.24~20.48 px/cm(2K~4K), 시네마틱 20.48 px/cm 이상입니다. 해상도 가이드: Console/PC BaseColor와 Normal 2048~4096, ORM 1024~2048.",
+      "why": "AI가 에셋마다 제각각 4K를 쓰면 가까운 소품은 흐리고 먼 벽은 과해상도가 됩니다. 선명도가 들쭉날쭉한 것이 'AI 티'의 대표 원인입니다.",
+      "example": "Texel Density Checker로 선택 오브젝트 전체를 10.24 px/cm로 Set한 뒤 베이크합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/uv-materials.md",
+        "https://github.com/mrven/Blender-Texel-Density-Checker"
+      ]
+    },
+    {
+      "tip": "UV가 엉망인 생성 메시에 타일링 스캔 텍스처를 입힐 때는 Image Texture 노드의 projection을 BOX(트라이플래너)로, blend를 0.15~0.3으로 하고 Texture Coordinate의 Object 출력을 쓰세요. 최종 납품 전에는 깨끗한 UV로 베이크합니다.",
+      "why": "UV 없이도 늘어짐 없는 매핑이 즉시 가능해 빠른 룩뎁에 유리합니다. 다만 BOX 투영은 셰이더 기능이라 glTF로 전달되지 않으므로 베이크가 필요합니다.",
+      "example": "(일반 실무 설정) tex.projection='BOX'; tex.projection_blend=0.2; links.new(texcoord.outputs['Object'], mapping.inputs['Vector'])",
+      "urls": []
+    },
+    {
+      "tip": "AI 메시 텍스처링(Meshy/Tripo/Hunyuan)에서는 'PBR 켜기 + 조명 제거 + 기존 UV 유지'를 명시하고, 텍스처 프롬프트에는 재질, 마감, 색, 마모 위치, '그림자나 하이라이트 없음'을 쓰세요. 스타일 입력은 하나만 줍니다(Meshy는 text/image/multiview가 상호 배타).",
+      "why": "Meshy enable_pbr 기본값은 false이고 remove_lighting 기본값은 true입니다. 조명이 구워진 albedo는 새 라이팅에서 이중 그림자를 만듭니다.",
+      "example": "meshy_retexture(model=..., text_style_prompt='Scandinavian dining chair in solid white oak, natural matte oil finish, fine straight grain, slightly darker end grain, subtle wear on armrest edges, no baked shadows or highlights, uniform albedo', enable_pbr=true, enable_original_uv=true, remove_lighting=true, texture_resolution='4k', ai_model='latest'). Tripo: texture_model(pbr=True, texture_quality='detailed', texture_alignment='geometry', part_names=['seat','legs']).",
+      "urls": [
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/schemas/postprocessing.ts",
+        "https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md"
+      ]
+    },
+    {
+      "tip": "로컬 멀티뷰 AI 텍스처링(StableGen)은 Sequential 모드 + IPAdapter로 뷰 간 일관성을 확보하고, 카메라 배치를 Greedy Occlusion Coverage나 Normal-Weighted K-means로 가림 영역을 줄인 뒤, 남은 영역은 UV Inpaint로 채웁니다. 마지막에 Bake Textures와 PBR 분해(Marigold IID / StableDelight)를 거칩니다.",
+      "why": "Separate 모드는 뷰마다 색과 디테일이 달라 이음새와 얼룩이 생기고, 가려진 면(다리 안쪽, 좌판 아래)은 빈칸으로 남습니다. ControlNet 강도가 너무 높으면 형상은 맞지만 디테일이 뭉개지고, 너무 낮으면 형상에서 어긋납니다.",
+      "example": "8GB VRAM부터 가능, 'Auto Rescale Resolution' 활성화, 'Discard-Over Angle'로 비스듬한 투영을 버립니다.",
+      "urls": [
+        "https://github.com/sakalond/StableGen",
+        "https://github.com/sakalond/StableGen/releases"
+      ]
+    },
+    {
+      "tip": "이미지 생성 모델(예: Nano Banana, GPT-image, FLUX)에게 normal/roughness/metallic 맵을 '그려 달라'고 하지 마세요. albedo(타일링)만 생성하고, 데이터 맵은 CHORD(연구용), Marigold IID, PBRify, DeepBump 같은 전용 추정기나 height 베이크로 만드세요.",
+      "why": "이미지 모델은 노멀맵처럼 '보이는' 보라색 이미지를 만들 뿐, albedo와 기하적으로 일치하는 데이터를 보장하지 않습니다. Unreal_MCP_Persona 프로젝트는 Nano Banana로 BaseColor/Normal/Roughness/Metallic 4장을 각각 프롬프트로 만드는 방식을 썼는데, 이는 검증하기 어려운 구조입니다.",
+      "example": "FLUX + ComfyUI-seamless-tiling으로 albedo 생성 → Offset Image로 이음새 확인 → Marigold Appearance로 roughness/metal 추정 → DeepBump로 normal/height 생성.",
+      "urls": [
+        "https://github.com/KINGWONWOO/Unreal_MCP_Persona",
+        "https://github.com/ubisoft/ubisoft-laforge-chord",
+        "https://github.com/prs-eth/Marigold",
+        "https://github.com/HugoTini/DeepBump",
+        "https://github.com/spinagon/ComfyUI-seamless-tiling"
+      ]
+    },
+    {
+      "tip": "에이전트 루프에 '시각 검증'을 강제하세요. 변경 전후로 get_viewport_screenshot을 찍고, 중립 HDRI와 회색 배경에서 머티리얼 볼이나 턴테이블을 렌더한 뒤, VLM이 레퍼런스와 비교해 수정합니다. 후보 여러 개를 만들어 VLM이 고르는 방식(BlenderAlchemy식 트리 서치)이 한 번에 생성하는 것보다 안정적입니다.",
+      "why": "blender-mcp의 asset_creation_strategy도 'get_viewport_screenshot() BEFORE/AFTER'를 명시합니다. BlenderAlchemy는 편집 생성기와 VLM 평가기의 반복으로 재질 목표에 수렴함을 보였습니다. 단 EEVEE 스크린샷에서는 pointiness/bevel 효과가 안 보이므로 Cycles 렌더로 확인해야 합니다.",
+      "example": "'나무 셰이더 후보 3개를 서로 다른 Wave/Noise 파라미터로 만들고, 각각 Cycles 64spp로 45도 조명 렌더 → 레퍼런스 사진과 비교해 결 스케일, 색 대비, 광택이 가장 가까운 것을 고르고 차이를 설명한 뒤 한 번 더 개선하라.'",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial"
+      ]
+    },
+    {
+      "tip": "'생성보다 선택' 원칙: 가구와 소품은 먼저 부위를 분류(면 노멀, 높이 비율, 또는 VLM 렌더 분석)하고, 부위별로 검증된 라이브러리 머티리얼(Poly Haven, ambientCG, 사내 라이브러리)을 검색해 할당합니다. 없을 때만 생성하세요.",
+      "why": "스캔 기반 CC0 머티리얼은 PBR 값이 정확하고 타일링 품질이 보장됩니다. NVIDIA Material Agent도 VLM이 렌더 뷰를 보고 materials.yaml 라이브러리에서 골라 할당하며, 텍스트 스펙은 시각 판단을 뒤집지 못하게 설계되어 있습니다.",
+      "example": "blender-kiln 분류: abs(n.z)>0.7이면서 상단 절반 → 좌판/상판(wood), abs(n.z)<0.3이면서 하단 1/4 → 다리(metal 또는 wood), 수직이면서 상단 → 등받이(fabric).",
+      "urls": [
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md",
+        "https://raw.githubusercontent.com/NVIDIA-Omniverse/usd-content-agents/main/apps/material_agent/README.md"
+      ]
+    },
+    {
+      "tip": "AAA급 웨더링이 필요하면 Blender 셰이더보다 Substance 3D Painter MCP를 쓰는 편이 품질 대비 효율이 좋습니다. 메시 맵 베이크(AO, curvature, thickness) → smart material → smart mask(엣지, 캐비티) → export 순서로 진행하고, 매 단계 observe 이미지로 검증합니다.",
+      "why": "스마트 머티리얼과 마스크는 곡률과 AO 기반 마모를 업계 표준 품질로 재현합니다. MCP들은 원자적 롤백과 확인 절차를 두어 에이전트 실수를 복구할 수 있습니다.",
+      "example": "Painter 실행: \"Adobe Substance 3D Painter.exe\" --enable-remote-scripting(포트 60041). 흐름: painter_status → painter_observe → painter_run(create_fill_layer + set_fill_channels + 검증).",
+      "urls": [
+        "https://github.com/elliezu/SubstancePainterMCP",
+        "https://github.com/parodyband/painter-mcp"
+      ]
+    },
+    {
+      "tip": "라이선스를 먼저 확인하세요(한국 사용자 특히). Hunyuan3D 2.1은 한국, EU, UK에서 라이선스가 적용되지 않습니다. CHORD는 Research-Only이고, VLMaterial 데이터는 CC BY-NC입니다. 상업 작업에는 TRELLIS.2(MIT), MV-Adapter(Apache-2.0, 단 SDXL 가중치 라이선스는 별도), Material Anything(MIT), Poly Haven/ambientCG/PBRify(CC0)를 우선 검토하세요.",
+      "why": "텍스처는 최종 에셋에 그대로 남기 때문에 모델 라이선스 위반이 곧 결과물 리스크가 됩니다.",
+      "example": "Hunyuan LICENSE 원문: 'THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'.",
+      "urls": [
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE",
+        "https://github.com/ubisoft/ubisoft-laforge-chord",
+        "https://github.com/mit-gfx/VLMaterial",
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://raw.githubusercontent.com/huanngzh/MV-Adapter/main/LICENSE"
+      ]
+    },
+    {
+      "tip": "로컬 GPU 예산을 기준으로 도구를 고르세요. StableGen 8GB 이상, MV-Adapter SD2.1 10GB 미만 / SDXL i2mv 약 14GB, Hunyuan3D-2 형상+텍스처 16GB, Hunyuan3D-Paint 2.1 텍스처 21GB(형상+텍스처 29GB), TRELLIS.2 24GB 이상, TEXGen 추론 24GB입니다.",
+      "why": "VRAM이 부족하면 해상도를 낮추게 되고, 결과가 흐릿해져 AAA 품질과 멀어집니다. 부족하면 클라우드 API(Meshy, Tripo)나 원격 ComfyUI를 씁니다.",
+      "example": "RTX 4090 24GB: TRELLIS.2와 Hunyuan Paint는 경계선. 12~16GB: StableGen(SDXL) + Marigold 조합.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://github.com/huanngzh/MV-Adapter",
+        "https://github.com/sakalond/StableGen",
+        "https://github.com/CVMI-Lab/TEXGen"
+      ]
+    },
+    {
+      "tip": "트림 시트와 데칼로 텍셀 밀도를 확보하세요. 모듈러 건축, 몰딩, 가구 테두리는 트림 시트 하나(수평 스트립)에 UV 섬을 Fit/Fill로 정렬하고, 라벨, 얼룩, 균열은 알파 데칼 plane으로 얹습니다.",
+      "why": "유일 UV로 모든 면을 칠하면 텍셀 밀도가 떨어집니다. 트림 시트는 AAA 환경 아트의 표준으로, 적은 메모리로 높은 선명도를 줍니다.",
+      "example": "Trimmer(Blender 4.2+, v0.2.4)로 트림을 등록하고 면을 선택해 Fit합니다. MCP에서는 execute_blender_code로 오퍼레이터를 호출합니다.",
+      "urls": [
+        "https://github.com/LaXHeXLuX/Trimmer"
+      ]
+    },
+    {
+      "tip": "blender-mcp 사용 시 텔레메트리와 보안을 점검하세요. 프롬프트, 코드, 스크린샷, 씬 데이터가 수집될 수 있으니 disable_telemetry 도구로 끌 수 있습니다. 과거에 Poly Haven include_path 경로 조작으로 임의 파일을 쓰는 취약점(#257)이 있었으므로 최신 버전을 유지하세요.",
+      "why": "사내 IP나 미공개 에셋을 다룰 때 중요합니다.",
+      "example": "세션 시작 지침: 'get_addon_status로 버전 확인 → disable_telemetry 호출'.",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "blender-mcp Poly Haven 텍스처가 '평평하고 스케일이 틀렸던' 문제와 수정 (실패 → 개선 사례)",
+      "what_was_made": "Blender MCP 에이전트가 Poly Haven 텍스처로 입힌 머티리얼",
+      "process": "Poly Haven 운영자 Greg Zaal이 issue #361에서 6개 버그를 보고했습니다. 맵 이름 매칭이 'normal'을 찾는데 API는 'nor_gl'/'nor_dx'라서 normal과 displacement가 다운로드만 되고 연결되지 않았고, 모든 맵을 받아 1k 텍스처 하나에 7.4MB(필요량은 1.9MB)를 썼으며, 검색 결과를 relevance가 아니라 slug 순으로 20개에서 잘랐고, HDRI를 패킹하지 않았습니다. PR #367에서 Poly Haven 자체 머티리얼 구조를 참조하는 단일 테이블로 바꾸고, Mapping 노드를 TEXTURE에서 POINT로 바꾸고, 필요한 맵만 받게 하고, .blend 원본 import와 248개 테스트를 추가했습니다(Blender 5.2.1 E2E).",
+      "outcome": "수정 전에는 요철이 없는 평면 텍스처에 타일링이 역전되어 2m 텍스처가 4m 면에서 1.993회가 아니라 0.509회 반복되었습니다. 수정 후 다운로드가 49% 감소했습니다(860개 1k 텍스처 기준 4150MB→2100MB). 교훈: 도구가 '성공'을 반환해도 노드 연결을 스크린샷이나 렌더로 검증해야 합니다.",
+      "tools": "blender-mcp(mcp-for-blender), Poly Haven API, Blender 5.2.1",
+      "who": "Greg Zaal (gregzaal, Poly Haven)",
+      "date": "2026-09-14 보고, 2026-09-21 병합",
+      "ai_model": "MCP 클라이언트(모델 무관)",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/361",
+        "https://github.com/ahujasid/blender-mcp/pull/367"
+      ]
+    },
+    {
+      "title": "중복 Principled/Output 노드로 렌더가 회색으로 나온 사례 (실패 사례)",
+      "what_was_made": "스크립트로 반복 갱신한 Blender 머티리얼",
+      "process": "PolyHaven 머티리얼 생성과 set_texture가 기존 노드를 지우지 않고 매번 새 노드를 추가해, Material Output과 Principled BSDF가 여러 개 생겼습니다.",
+      "outcome": "뷰포트에서는 맞아 보였지만 렌더는 기본 회색이 되는 비결정적 셰이딩이 발생했습니다. nodes.clear()로 Output 1개와 Principled 1개를 보장하는 _reset_material_nodes_principled 헬퍼로 수정되었습니다. 교훈: 에이전트가 만드는 머티리얼 코드는 idempotent해야 합니다.",
+      "tools": "blender-mcp",
+      "who": "psiQAQ (보고자)",
+      "date": "2026-08-09 종료",
+      "ai_model": "-",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/190"
+      ]
+    },
+    {
+      "title": "blender-kiln: Poly Haven 월넛 베니어 7개 맵 중 3개만 GLB에 남음 + 15개 에셋 파이프라인",
+      "what_was_made": "텍스트 브리프에서 GLB 소품 15개(3개 테마 세트)",
+      "process": "Claude Code + blender-mcp로 CONFIG→BRIEF→SOURCE(Poly Haven, Sketchfab, Hunyuan3D)→CLEANUP→TEXTURING(면 노멀 기반 존 분류 후 존별 Poly Haven 텍스처)→OPTIMIZE(gltf-transform dedup→weld→Draco)→EXPORT. glTF 내보내기 전에 '다운로드한 맵과 채워진 슬롯'을 비교하는 감사를 했습니다.",
+      "outcome": "american_walnut_veneer는 7개 맵 중 baseColor, metallicRoughness, normal 3개만 남았고 AO와 Displacement는 누락되었습니다. 전체 21,879 tris, 1456.2KB→132.7KB(91% 감소). 교훈: 절차 노드, SSS, displacement는 base color나 normal로 베이크해야 하고, 수동 노드 구성보다 set_texture가 안전합니다.",
+      "tools": "Claude Code, blender-mcp, Poly Haven, Hunyuan3D, gltf-transform, gltfpack",
+      "who": "elithril",
+      "date": "2026-08",
+      "ai_model": "Claude (Claude Code)",
+      "urls": [
+        "https://github.com/elithril/blender-kiln",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md"
+      ]
+    },
+    {
+      "title": "Unreal_MCP_Persona: Blender 노드 셰이더가 Unreal로 안 넘어가 텍스처 기반 PBR로 전환 (교훈 사례)",
+      "what_was_made": "Claude MCP(Blender 모델링) + Nano Banana MCP(PBR 텍스처) + Unreal 브리지 게임 에셋 파이프라인",
+      "process": "Nano Banana로 '4096x4096 PBR stone wall texture' 같은 프롬프트에서 BaseColor, Normal, Roughness, Metallic 4장을 생성해 Unreal Content/Textures에 자동 저장했습니다.",
+      "outcome": "Blender 노드 기반 셰이더가 Unreal로 전달되지 않아 텍스처 기반 PBR로 전환했습니다. 이미지 모델이 데이터 맵까지 '그리는' 방식은 물리적 일관성을 검증하기 어려우므로(분석), albedo만 생성하고 데이터 맵은 추정기나 베이크로 만드는 것을 권장합니다.",
+      "tools": "Claude MCP, Nano Banana MCP, unreal-blender-mcp, UE5",
+      "who": "KINGWONWOO (GitHub, 한국 개발자로 추정)",
+      "date": "2026-02",
+      "ai_model": "Claude, Gemini 이미지 모델(Nano Banana)",
+      "urls": [
+        "https://github.com/KINGWONWOO/Unreal_MCP_Persona"
+      ]
+    },
+    {
+      "title": "MaterialPilot 'Abandoned Industrial Floor': AI가 편집 가능한 절차 그래프를 조작",
+      "what_was_made": "Material Maker 1.7 절차 머티리얼(버려진 공장 바닥)과 2048x2048 Blender용 PBR 맵",
+      "process": "카탈로그(392개 노드 디스크립터) 조회 → 이름 붙은 스냅샷 → 패치 dry-run → 의미 단계별 그래프 정리 → 결정적 검증 → .ptex 저장 → 2048 내보내기 → 프리뷰 → SHA-256 산출물 검증.",
+      "outcome": "평면 이미지가 아닌 '아티스트가 계속 편집할 수 있는' 머티리얼을 산출했습니다. 저장소에 따르면 Codex와 GPT-5.6으로 공동 개발되었습니다. 스타 5개인 0.1.0 preview라 품질은 독립적으로 확인하지 못했습니다.",
+      "tools": "MaterialPilot MCP, Material Maker 1.7, Godot 4.7",
+      "who": "SS-360",
+      "date": "2026-09",
+      "ai_model": "GPT-5.6 / Codex (개발 도구로 명시)",
+      "urls": [
+        "https://github.com/SS-360/materialpilot"
+      ]
+    },
+    {
+      "title": "NVIDIA Material Agent: VLM이 렌더를 보고 라이브러리 재질을 고르는 10단계 파이프라인",
+      "what_was_made": "USD 에셋의 부위별 물리 기반 재질 할당(MDL, UsdPreviewSurface, OpenPBR)",
+      "process": "USD 최적화 → 프리뷰 렌더 → 레퍼런스 이미지 → 부위별 렌더 데이터셋 → 기술 문서에서 재질 정보 추출 → VLM 예측 → 이름 검증과 수리 → 반복 인스턴스 조화 → 적용 → 최종 비교 렌더. Texture Agent는 UV 준비 검사(uv_report.json) 후 albedo/roughness/metal/normal을 생성합니다.",
+      "outcome": "Material Agent는 Beta입니다. '시각 증거가 권위, 기술 문서는 보조'라는 설계 원칙과 라이브러리 선택 방식이 가구와 소품 재질을 정확하게 만드는 레퍼런스가 됩니다.",
+      "tools": "usd-content-agents, OVRTX/Warp 렌더, NIM/OpenAI/Anthropic/Gemini VLM",
+      "who": "NVIDIA Omniverse",
+      "date": "2026",
+      "ai_model": "NIM, OpenAI, Anthropic, Gemini VLM 선택",
+      "urls": [
+        "https://github.com/NVIDIA-Omniverse/usd-content-agents",
+        "https://raw.githubusercontent.com/NVIDIA-Omniverse/usd-content-agents/main/apps/material_agent/README.md"
+      ]
+    },
+    {
+      "title": "PBRify_Remix: CC0 데이터로만 학습한 PBR 생성으로 구형 게임 텍스처 리마스터",
+      "what_was_made": "RTX Remix 모드용 업스케일 텍스처와 normal/roughness(/height) 맵",
+      "process": "ambientCG CC0 텍스처로만 학습한 모델을 chaiNNer 체인이나 NVIDIA 공식 ComfyUI-RTX-Remix 노드(REST/Integration 워크플로)로 배치 처리했습니다.",
+      "outcome": "DXT1 압축, 디더링, 헤일로 같은 저품질 원본을 복원하면서 PBR 맵을 추가했습니다. 학습 데이터 출처를 명확히 해 '윤리적 AI 텍스처'의 사례가 되었습니다.",
+      "tools": "PBRify_Remix, chaiNNer, ComfyUI 0.3.48+, RTX Remix Toolkit",
+      "who": "Kim2091, NVIDIA",
+      "date": "2025~2026-02",
+      "ai_model": "자체 학습 이미지-이미지 모델",
+      "urls": [
+        "https://github.com/Kim2091/PBRify_Remix",
+        "https://github.com/NVIDIAGameWorks/ComfyUI-RTX-Remix"
+      ]
+    },
+    {
+      "title": "BlenderAlchemy: 나무 재질을 '마블 화강암'으로, VLM 편집 + 평가 트리 서치",
+      "what_was_made": "Blender 머티리얼 노드 프로그램 편집(재질 변환), 조명, 블렌드셰이프 편집",
+      "process": "VLM 편집 생성기가 Blender 스크립트 수정 후보를 제안하고, VLM 상태 평가기가 렌더를 비교해 breadth와 depth로 트리 서치를 했습니다. 텍스트→이미지 모델로 목표를 '상상한' 이미지를 시각적 기준으로 썼습니다.",
+      "outcome": "한 번에 코드를 생성하는 것보다 시각 평가 반복이 목표 재질에 더 잘 수렴함을 보였습니다(ECCV 2024). MCP 에이전트에 '후보 N개 → 렌더 → VLM 선택' 루프를 넣는 근거가 됩니다.",
+      "tools": "Blender, GPT-4V/Gemini/Claude, text-to-image",
+      "who": "Ian Huang 외",
+      "date": "2024 (ECCV)",
+      "ai_model": "GPT-4V(기본), Gemini, Claude 설정 가능",
+      "urls": [
+        "https://github.com/ianhuang0630/BlenderAlchemyOfficial"
+      ]
+    },
+    {
+      "title": "StableGen: Blender 안에서 TRELLIS.2 생성 → 멀티뷰 재텍스처링 → PBR 분해 → 베이크",
+      "what_was_made": "텍스트나 이미지에서 텍스처가 입혀진 메시, 기존 모델의 AI 재텍스처링, 3D 프린트용 다색 출력",
+      "process": "v0.3.0(2026-03-05)에서 TRELLIS.2 생성과 PBR 분해(albedo, roughness, metallic, normal, height, AO, emission)를 추가했고, v0.3.1(2026-06-12)에서 폴더 배치 처리와 Kubelka-Munk 다색 프린트를 추가했습니다. Sequential + IPAdapter, 7종 카메라 전략, UV Inpaint를 거쳐 Bake Textures로 마무리합니다.",
+      "outcome": "오픈소스 로컬 도구만으로 '형상 인식 AI 텍스처 → PBR → UV 베이크' 전 과정이 가능해졌습니다. 다만 PBR 분해를 독립 버튼으로 실행할 수 없다는 사용성 요청이 있습니다(#116, 2026-09-20).",
+      "tools": "StableGen, ComfyUI, SDXL/FLUX/Qwen-Image-Edit, TRELLIS.2, Marigold IID/StableDelight",
+      "who": "sakalond 및 사용자 커뮤니티",
+      "date": "2025-10~2026-09",
+      "ai_model": "SDXL, FLUX.1-dev, FLUX.2 Klein, Qwen-Image-Edit, TRELLIS.2",
+      "urls": [
+        "https://github.com/sakalond/StableGen/releases",
+        "https://github.com/sakalond/StableGen/issues/116"
+      ]
+    },
+    {
+      "title": "Infinigen 절차 머티리얼: 사실감은 좋지만 비물리 metallic 값을 쓴 사례 (주의 사례)",
+      "what_was_made": "연구용 절차 실내 씬의 대리석, 나무, 브러시드 메탈, 패브릭, 엣지 마모, 긁힘 셰이더",
+      "process": "Python으로 Blender 노드를 기술하고 파라미터를 랜덤화했습니다(예: 나무 roughness uniform(0,0.4), 긁힘 scale log_uniform(5,80)).",
+      "outcome": "레시피 수치는 매우 구체적이라 LLM의 참고서로 훌륭합니다. 하지만 edge_wear는 마모 금속층에 Metallic 0.3745, 긁힘 광택층에 0.3855 같은 중간값을 써서, 게임 PBR 규칙(0/1)에서는 벗어납니다. 레시피를 가져올 때 Metallic을 0/1 마스크로 재구성해야 합니다.",
+      "tools": "Blender, Infinigen",
+      "who": "Princeton VL",
+      "date": "2023~2026",
+      "ai_model": "-",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wear_tear/edge_wear.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wood/wood.py"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "ahujasid/blender-mcp (mcp-for-blender) README",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "Poly Haven, Sketchfab, Poly Pizza, Hunyuan, Rodin 통합, 해상도 권장, 메인 스레드 프리즈 경고"
+    },
+    {
+      "title": "blender-mcp addon.py (Poly Haven 맵 테이블, 컬러스페이스 로직)",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+      "source_type": "소스코드",
+      "date": "2026-09",
+      "why_useful": "POLYHAVEN_TEXTURE_MAPS, 스킵 맵, sRGB/Non-Color 규칙"
+    },
+    {
+      "title": "blender-mcp server.py (MCP 도구 목록, asset_creation_strategy)",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+      "source_type": "소스코드",
+      "date": "2026-09",
+      "why_useful": "describe_node_type, bpy_api_lookup, get_viewport_screenshot, 텔레메트리 도구 확인"
+    },
+    {
+      "title": "Issue #361 Poly Haven integration is buggy",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/361",
+      "source_type": "GitHub issue",
+      "date": "2026-09-14",
+      "why_useful": "normal/displacement 미연결 등 실제 실패 원인"
+    },
+    {
+      "title": "PR #367 Fix the Poly Haven integration",
+      "url": "https://github.com/ahujasid/blender-mcp/pull/367",
+      "source_type": "GitHub PR",
+      "date": "2026-09-21",
+      "why_useful": "Mapping POINT 수정, 실측 스케일, 49% 대역폭 감소, Blender 5.2.1 테스트"
+    },
+    {
+      "title": "Issue #190 duplicated Material Output / Principled BSDF",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/190",
+      "source_type": "GitHub issue",
+      "date": "2026-08-09",
+      "why_useful": "idempotent 머티리얼 리셋 패턴"
+    },
+    {
+      "title": "Issue/PR #343 texture an existing mesh with local Hunyuan3D-2",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/343",
+      "source_type": "GitHub PR",
+      "date": "2026-09-02",
+      "why_useful": "MCP에서 기존 메시 재텍스처링 설계"
+    },
+    {
+      "title": "Tencent-Hunyuan/Hunyuan3D-2.1",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+      "source_type": "GitHub README",
+      "date": "2025-06-13",
+      "why_useful": "Paint 2.1 PBR, VRAM 21GB/29GB, 코드 예시"
+    },
+    {
+      "title": "Hunyuan3D 2.1 LICENSE",
+      "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE",
+      "source_type": "라이선스",
+      "date": "2025",
+      "why_useful": "EU/UK/한국 제외 조항"
+    },
+    {
+      "title": "Tencent-Hunyuan/Hunyuan3D-2",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+      "source_type": "GitHub README",
+      "date": "2025",
+      "why_useful": "Paint v2-0/Turbo, 2.5 발표일, blender_addon, api_server"
+    },
+    {
+      "title": "ZebinHe/MaterialMVP",
+      "url": "https://github.com/ZebinHe/MaterialMVP",
+      "source_type": "GitHub README(ICCV 2025)",
+      "date": "2025-07",
+      "why_useful": "조명 불변 albedo + MR 생성, Paint-v2-1과의 관계"
+    },
+    {
+      "title": "sakalond/StableGen",
+      "url": "https://github.com/sakalond/StableGen",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "모드, 카메라 전략, PBR 분해, 요구사항"
+    },
+    {
+      "title": "StableGen Releases",
+      "url": "https://github.com/sakalond/StableGen/releases",
+      "source_type": "GitHub releases",
+      "date": "2026-06-12",
+      "why_useful": "버전별 기능과 날짜"
+    },
+    {
+      "title": "ubisoft/ubisoft-laforge-chord",
+      "url": "https://github.com/ubisoft/ubisoft-laforge-chord",
+      "source_type": "GitHub README",
+      "date": "2025",
+      "why_useful": "image→PBR, 연구 전용 라이선스"
+    },
+    {
+      "title": "ubisoft/ComfyUI-Chord",
+      "url": "https://github.com/ubisoft/ComfyUI-Chord",
+      "source_type": "GitHub README",
+      "date": "2025",
+      "why_useful": "ComfyUI 워크플로"
+    },
+    {
+      "title": "meshy-dev/meshy-mcp-server",
+      "url": "https://github.com/meshy-dev/meshy-mcp-server",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "공식 Meshy MCP 도구, 크레딧"
+    },
+    {
+      "title": "Meshy MCP postprocessing.ts (retexture 스키마)",
+      "url": "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/schemas/postprocessing.ts",
+      "source_type": "소스코드",
+      "date": "2026-09",
+      "why_useful": "enable_pbr, remove_lighting, enable_original_uv 기본값"
+    },
+    {
+      "title": "Meshy MCP generation.ts",
+      "url": "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/schemas/generation.ts",
+      "source_type": "소스코드",
+      "date": "2026-09",
+      "why_useful": "texture_prompt, texture_resolution"
+    },
+    {
+      "title": "Meshy MCP instructions.ts",
+      "url": "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/instructions.ts",
+      "source_type": "소스코드",
+      "date": "2026-09",
+      "why_useful": "비용 확인, 스타일 입력 상호 배타 규칙"
+    },
+    {
+      "title": "Tripo Python SDK API.md",
+      "url": "https://github.com/VAST-AI-Research/tripo-python-sdk/blob/master/docs/API.md",
+      "source_type": "API 문서",
+      "date": "2025~2026",
+      "why_useful": "texture_model 파라미터"
+    },
+    {
+      "title": "microsoft/TRELLIS.2",
+      "url": "https://github.com/microsoft/TRELLIS.2",
+      "source_type": "GitHub README",
+      "date": "2025~2026",
+      "why_useful": "PBR 속성, texturing 모드, MIT, 24GB"
+    },
+    {
+      "title": "huanngzh/MV-Adapter",
+      "url": "https://github.com/huanngzh/MV-Adapter",
+      "source_type": "GitHub README",
+      "date": "2025-06",
+      "why_useful": "형상 조건 멀티뷰 텍스처링"
+    },
+    {
+      "title": "MV-Adapter LICENSE",
+      "url": "https://raw.githubusercontent.com/huanngzh/MV-Adapter/main/LICENSE",
+      "source_type": "라이선스",
+      "date": "-",
+      "why_useful": "Apache-2.0 확인"
+    },
+    {
+      "title": "3DTopia/MaterialAnything",
+      "url": "https://github.com/3DTopia/MaterialAnything",
+      "source_type": "GitHub README",
+      "date": "2024-11 / CVPR 2025",
+      "why_useful": "임의 3D 오브젝트용 PBR 생성"
+    },
+    {
+      "title": "OpenTexture/Paint3D",
+      "url": "https://github.com/OpenTexture/Paint3D",
+      "source_type": "GitHub README",
+      "date": "CVPR 2024",
+      "why_useful": "조명 없는 2K UV 텍스처"
+    },
+    {
+      "title": "LIU-Yuxin/SyncMVD",
+      "url": "https://github.com/LIU-Yuxin/SyncMVD",
+      "source_type": "GitHub README",
+      "date": "2023~2024",
+      "why_useful": "동기화 멀티뷰 확산과 제약"
+    },
+    {
+      "title": "daveredrum/Text2Tex",
+      "url": "https://github.com/daveredrum/Text2Tex",
+      "source_type": "GitHub README",
+      "date": "ICCV 2023",
+      "why_useful": "런타임과 VRAM"
+    },
+    {
+      "title": "CVMI-Lab/TEXGen",
+      "url": "https://github.com/CVMI-Lab/TEXGen",
+      "source_type": "GitHub README",
+      "date": "SIGGRAPH Asia 2024",
+      "why_useful": "UV 도메인 feed-forward"
+    },
+    {
+      "title": "oakshy/RomanTex",
+      "url": "https://github.com/oakshy/RomanTex",
+      "source_type": "GitHub README",
+      "date": "ICCV 2025",
+      "why_useful": "3D-aware RoPE 텍스처 합성"
+    },
+    {
+      "title": "ianhuang0630/BlenderAlchemyOfficial",
+      "url": "https://github.com/ianhuang0630/BlenderAlchemyOfficial",
+      "source_type": "GitHub README",
+      "date": "ECCV 2024",
+      "why_useful": "VLM 머티리얼 편집 루프"
+    },
+    {
+      "title": "mit-gfx/VLMaterial",
+      "url": "https://github.com/mit-gfx/VLMaterial",
+      "source_type": "GitHub README",
+      "date": "ICLR 2025",
+      "why_useful": "이미지→Blender 노드 프로그램"
+    },
+    {
+      "title": "elliezu/SubstancePainterMCP",
+      "url": "https://github.com/elliezu/SubstancePainterMCP",
+      "source_type": "GitHub README",
+      "date": "2026-07",
+      "why_useful": "Painter MCP 79개 도구"
+    },
+    {
+      "title": "parodyband/painter-mcp",
+      "url": "https://github.com/parodyband/painter-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "관찰 중심 에이전트 워크플로"
+    },
+    {
+      "title": "matthieuhuguet/substance-designer-mcp",
+      "url": "https://github.com/matthieuhuguet/substance-designer-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-05",
+      "why_useful": "Designer MCP와 레시피"
+    },
+    {
+      "title": "SS-360/materialpilot",
+      "url": "https://github.com/SS-360/materialpilot",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "Material Maker MCP"
+    },
+    {
+      "title": "RodZill4/material-maker",
+      "url": "https://github.com/RodZill4/material-maker",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "오픈소스 절차 텍스처 도구"
+    },
+    {
+      "title": "scenario-labs/blender-plugin",
+      "url": "https://github.com/scenario-labs/blender-plugin",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "상용 PBR 생성 + 로컬 MCP"
+    },
+    {
+      "title": "Kim2091/PBRify_Remix",
+      "url": "https://github.com/Kim2091/PBRify_Remix",
+      "source_type": "GitHub README",
+      "date": "2026-02",
+      "why_useful": "CC0 학습 PBR 생성 모델"
+    },
+    {
+      "title": "NVIDIAGameWorks/ComfyUI-RTX-Remix",
+      "url": "https://github.com/NVIDIAGameWorks/ComfyUI-RTX-Remix",
+      "source_type": "GitHub README",
+      "date": "2025~2026",
+      "why_useful": "RTX Remix와 ComfyUI PBR 워크플로"
+    },
+    {
+      "title": "NVIDIAGameWorks/toolkit-remix",
+      "url": "https://github.com/NVIDIAGameWorks/toolkit-remix",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "Generative AI 텍스처 리마스터, .mcp.json 존재"
+    },
+    {
+      "title": "prs-eth/Marigold",
+      "url": "https://github.com/prs-eth/Marigold",
+      "source_type": "GitHub README",
+      "date": "2025-05",
+      "why_useful": "IID Appearance/Lighting 모델"
+    },
+    {
+      "title": "Stable-X/StableDelight",
+      "url": "https://github.com/Stable-X/StableDelight",
+      "source_type": "GitHub README",
+      "date": "2024~",
+      "why_useful": "스페큘러 제거"
+    },
+    {
+      "title": "HugoTini/DeepBump",
+      "url": "https://github.com/HugoTini/DeepBump",
+      "source_type": "GitHub README",
+      "date": "-",
+      "why_useful": "color→normal→height/curvature"
+    },
+    {
+      "title": "BoundingBoxSoftware/Materialize",
+      "url": "https://github.com/BoundingBoxSoftware/Materialize",
+      "source_type": "GitHub README",
+      "date": "-",
+      "why_useful": "이미지→맵 변환 도구"
+    },
+    {
+      "title": "spinagon/ComfyUI-seamless-tiling",
+      "url": "https://github.com/spinagon/ComfyUI-seamless-tiling",
+      "source_type": "GitHub README",
+      "date": "-",
+      "why_useful": "타일링 생성 기법"
+    },
+    {
+      "title": "carson-katri/dream-textures releases",
+      "url": "https://github.com/carson-katri/dream-textures/releases",
+      "source_type": "GitHub releases",
+      "date": "2024-08-26",
+      "why_useful": "유지보수 정체 확인"
+    },
+    {
+      "title": "AntonPalmqvist/physically-based-api",
+      "url": "https://github.com/AntonPalmqvist/physically-based-api",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "CC0 PBR 값 DB"
+    },
+    {
+      "title": "physically-based-api materials.json",
+      "url": "https://raw.githubusercontent.com/AntonPalmqvist/physically-based-api/main/deploy/v2/materials.json",
+      "source_type": "데이터",
+      "date": "2026",
+      "why_useful": "재질별 linear 색과 IOR 수치"
+    },
+    {
+      "title": "RobLe3/cc-blender-skill",
+      "url": "https://github.com/RobLe3/cc-blender-skill",
+      "source_type": "GitHub README",
+      "date": "2026-05",
+      "why_useful": "Claude Code Blender 스킬 구성"
+    },
+    {
+      "title": "cc-blender-skill blender-materials SKILL.md",
+      "url": "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/SKILL.md",
+      "source_type": "스킬 문서",
+      "date": "2026",
+      "why_useful": "수치형 머티리얼 레시피"
+    },
+    {
+      "title": "cc-blender-skill materials overview.md",
+      "url": "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-materials/references/overview.md",
+      "source_type": "스킬 문서",
+      "date": "2026",
+      "why_useful": "흔한 실패와 절차 노드 체인"
+    },
+    {
+      "title": "elithril/blender-kiln",
+      "url": "https://github.com/elithril/blender-kiln",
+      "source_type": "GitHub README",
+      "date": "2026-08",
+      "why_useful": "8단계 파이프라인과 실측"
+    },
+    {
+      "title": "blender-kiln texturing-strategy.md",
+      "url": "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md",
+      "source_type": "스킬 문서",
+      "date": "2026",
+      "why_useful": "glTF 누락 맵 실측, 존 분류, 베이크 절차"
+    },
+    {
+      "title": "blender-kiln uv-materials.md",
+      "url": "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/uv-materials.md",
+      "source_type": "스킬 문서",
+      "date": "2026",
+      "why_useful": "Smart UV 값, 텍셀 밀도 표, ORM"
+    },
+    {
+      "title": "glTF-Blender-IO scene_gltf2.rst",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Blender-IO/main/docs/blender_docs/scene_gltf2.rst",
+      "source_type": "공식 문서",
+      "date": "2026",
+      "why_useful": "ORM 채널, Occlusion 그룹, Tangent 노멀"
+    },
+    {
+      "title": "Blender source: node_shader_bsdf_principled.cc",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/nodes/shader/nodes/node_shader_bsdf_principled.cc",
+      "source_type": "소스코드",
+      "date": "2026-09 main",
+      "why_useful": "현재 Principled 소켓 이름과 기본값"
+    },
+    {
+      "title": "Blender source: object_bake_api.cc",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/object/object_bake_api.cc",
+      "source_type": "소스코드",
+      "date": "2026-09 main",
+      "why_useful": "bake 오퍼레이터 파라미터 기본값과 오류 메시지"
+    },
+    {
+      "title": "Blender source: uvedit_unwrap_ops.cc",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/uvedit/uvedit_unwrap_ops.cc",
+      "source_type": "소스코드",
+      "date": "2026-09 main",
+      "why_useful": "MINIMUM_STRETCH, pack shape_method"
+    },
+    {
+      "title": "Blender GPU shader: geometry (pointiness=0.5)",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/gpu/shaders/material/gpu_shader_material_geometry.bsl.hh",
+      "source_type": "소스코드",
+      "date": "2026-09 main",
+      "why_useful": "EEVEE에서 Pointiness 미지원 증명"
+    },
+    {
+      "title": "Blender GPU shader: bevel (pass-through)",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/gpu/shaders/material/gpu_shader_material_bevel.bsl.hh",
+      "source_type": "소스코드",
+      "date": "2026-09 main",
+      "why_useful": "EEVEE에서 Bevel 미지원 증명"
+    },
+    {
+      "title": "Infinigen table_marble.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/table_marble.py",
+      "source_type": "소스코드",
+      "date": "2026",
+      "why_useful": "대리석 노드 수치"
+    },
+    {
+      "title": "Infinigen wood.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wood/wood.py",
+      "source_type": "소스코드",
+      "date": "2026",
+      "why_useful": "나무 결 좌표 스트레치 수치"
+    },
+    {
+      "title": "Infinigen brushed_metal.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/metal/brushed_metal.py",
+      "source_type": "소스코드",
+      "date": "2026",
+      "why_useful": "브러시드 메탈 roughness 변동"
+    },
+    {
+      "title": "Infinigen sofa_fabric.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/fabric/sofa_fabric.py",
+      "source_type": "소스코드",
+      "date": "2026",
+      "why_useful": "패브릭 직조와 sheen 값"
+    },
+    {
+      "title": "Infinigen edge_wear.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wear_tear/edge_wear.py",
+      "source_type": "소스코드",
+      "date": "2026",
+      "why_useful": "Bevel 기반 엣지 마모"
+    },
+    {
+      "title": "Infinigen scratches.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/src/infinigen/assets/materials/wear_tear/scratches.py",
+      "source_type": "소스코드",
+      "date": "2026",
+      "why_useful": "긁힘 절차 수치"
+    },
+    {
+      "title": "princeton-vl/infinigen",
+      "url": "https://github.com/princeton-vl/infinigen",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "라이선스(BSD-3), node_transpiler"
+    },
+    {
+      "title": "EricWang12/PartUV",
+      "url": "https://github.com/EricWang12/PartUV",
+      "source_type": "GitHub README",
+      "date": "SIGGRAPH Asia 2025",
+      "why_useful": "AI 메시용 파트 기반 UV"
+    },
+    {
+      "title": "mrven/Blender-Texel-Density-Checker",
+      "url": "https://github.com/mrven/Blender-Texel-Density-Checker",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "텍셀 밀도 도구"
+    },
+    {
+      "title": "LaXHeXLuX/Trimmer",
+      "url": "https://github.com/LaXHeXLuX/Trimmer",
+      "source_type": "GitHub README",
+      "date": "2025",
+      "why_useful": "트림 시트 워크플로"
+    },
+    {
+      "title": "NVIDIA-Omniverse/usd-content-agents",
+      "url": "https://github.com/NVIDIA-Omniverse/usd-content-agents",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "Material/Texture Agent 개요"
+    },
+    {
+      "title": "Material Agent README",
+      "url": "https://raw.githubusercontent.com/NVIDIA-Omniverse/usd-content-agents/main/apps/material_agent/README.md",
+      "source_type": "문서",
+      "date": "2026",
+      "why_useful": "VLM 라이브러리 선택 10단계"
+    },
+    {
+      "title": "Texture Agent README",
+      "url": "https://raw.githubusercontent.com/NVIDIA-Omniverse/usd-content-agents/main/apps/texture_agent/README.md",
+      "source_type": "문서",
+      "date": "2026",
+      "why_useful": "UV 준비 검사와 PBR 생성"
+    },
+    {
+      "title": "dcc-mcp 조직",
+      "url": "https://github.com/dcc-mcp",
+      "source_type": "GitHub org",
+      "date": "2026",
+      "why_useful": "다중 DCC와 에셋 MCP 어댑터 목록"
+    },
+    {
+      "title": "dcc-mcp/dcc-asset-ambientcg",
+      "url": "https://github.com/dcc-mcp/dcc-asset-ambientcg",
+      "source_type": "GitHub README",
+      "date": "2026-07",
+      "why_useful": "ambientCG MCP 도구"
+    },
+    {
+      "title": "dcc-mcp/dcc-mcp-epic",
+      "url": "https://github.com/dcc-mcp/dcc-mcp-epic",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "Fab만 지원, Megascans 미지원 확인"
+    },
+    {
+      "title": "BlenderKit/BlenderKit",
+      "url": "https://github.com/BlenderKit/BlenderKit",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "라이브러리 규모, MCP 부재"
+    },
+    {
+      "title": "Poly-Haven/Public-API",
+      "url": "https://github.com/Poly-Haven/Public-API",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "API 이용 조건"
+    },
+    {
+      "title": "KINGWONWOO/Unreal_MCP_Persona",
+      "url": "https://github.com/KINGWONWOO/Unreal_MCP_Persona",
+      "source_type": "GitHub README(사례)",
+      "date": "2026-02",
+      "why_useful": "Blender 노드→Unreal 비호환 교훈"
+    },
+    {
+      "title": "visualbruno/3DGenStudio",
+      "url": "https://github.com/visualbruno/3DGenStudio",
+      "source_type": "GitHub README",
+      "date": "2026-09-23",
+      "why_useful": "ComfyUI 기반 생성→UV→텍스처링 오케스트레이터"
+    },
+    {
+      "title": "kijai/ComfyUI-Hunyuan3DWrapper",
+      "url": "https://github.com/kijai/ComfyUI-Hunyuan3DWrapper",
+      "source_type": "GitHub README",
+      "date": "2025",
+      "why_useful": "xatlas UV, 버텍스 인페인팅"
+    },
+    {
+      "title": "ErikBurdett/blender-art-factory",
+      "url": "https://github.com/ErikBurdett/blender-art-factory",
+      "source_type": "GitHub README",
+      "date": "2026-09",
+      "why_useful": "'기술 검증 통과 ≠ 보기 좋음' 품질 게이트 원칙"
+    },
+    {
+      "title": "GitHub issue search: Musgrave removed in Blender 4.1",
+      "url": "https://github.com/search?q=Musgrave+removed+4.1+noise+texture&type=issues",
+      "source_type": "GitHub 검색(이슈)",
+      "date": "2024-04",
+      "why_useful": "Musgrave 노드 제거로 인한 호환성 문제 증거"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "Tencent Hunyuan3D 2.1 Community License는 EU, UK, 한국에서 적용되지 않으며 Territory에서 이 지역들을 명시적으로 제외한다(한국 사용자는 라이선스상 사용 불가).",
+      "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE"
+    },
+    {
+      "claim": "blender-mcp의 Poly Haven 통합은 2026-09-21 PR #367 병합 전까지 normal/displacement 맵을 연결하지 않았고, Mapping 노드 TEXTURE 모드 때문에 타일링이 역전되었다(2m 텍스처가 4m 면에서 1.993회가 아니라 0.509회 반복).",
+      "url": "https://github.com/ahujasid/blender-mcp/pull/367"
+    },
+    {
+      "claim": "Meshy MCP의 retexture에서 enable_pbr 기본값은 false, remove_lighting 기본값은 true, enable_original_uv 기본값은 true이며, ai_model 'latest'는 Meshy 7로 해석된다.",
+      "url": "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/src/schemas/postprocessing.ts"
+    },
+    {
+      "claim": "Blender GPU(EEVEE) 셰이더에서 Geometry 노드의 Pointiness는 상수 0.5이고 Bevel 노드는 입력 노멀을 그대로 통과시킨다(Cycles 전용 기능).",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/gpu/shaders/material/gpu_shader_material_geometry.bsl.hh"
+    },
+    {
+      "claim": "Ubisoft CHORD(image→PBR, SIGGRAPH Asia 2025)는 'Ubisoft Machine Learning License (Research-Only - Copyleft)'로 상업 사용이 불가하다.",
+      "url": "https://github.com/ubisoft/ubisoft-laforge-chord"
+    },
+    {
+      "claim": "Hunyuan3D-Paint 2.1 텍스처 생성은 VRAM 21GB, 형상+텍스처는 29GB가 필요하다.",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1"
+    },
+    {
+      "claim": "TRELLIS.2(4B, MIT)는 Base Color/Roughness/Metallic/Opacity를 생성하고 기존 형상 텍스처링 모드가 있으며 24GB 이상 VRAM이 필요하다.",
+      "url": "https://github.com/microsoft/TRELLIS.2"
+    },
+    {
+      "claim": "StableGen v0.3.0(2026-03-05)은 TRELLIS.2 생성과 PBR 분해(albedo/roughness/metallic/normal/height/AO/emission)를 추가했고, v0.3.1은 2026-06-12에 출시되었으며, Blender 5.0은 미지원이다.",
+      "url": "https://github.com/sakalond/StableGen/releases"
+    },
+    {
+      "claim": "glTF Blender exporter는 metallic을 B, roughness를 G 채널로 요구하고, AO는 'glTF Material Output' 커스텀 노드 그룹의 Occlusion 입력으로만 내보낸다.",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Blender-IO/main/docs/blender_docs/scene_gltf2.rst"
+    },
+    {
+      "claim": "OBJECT_OT_bake의 기본값은 512x512, margin 16, normal_space TANGENT이며, 활성 이미지 텍스처 노드가 없으면 'No active and selected image texture node found in material' 오류가 난다.",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/object/object_bake_api.cc"
+    },
+    {
+      "claim": "Blender UV Unwrap에는 SLIM 기반 MINIMUM_STRETCH 메서드가 있고, Pack Islands는 CONCAVE/CONVEX/AABB shape_method를 지원한다.",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/editors/uvedit/uvedit_unwrap_ops.cc"
+    },
+    {
+      "claim": "blender-kiln 측정에서 Poly Haven american_walnut_veneer의 7개 맵 중 3개만 glTF에 남았다(AO와 Displacement 누락).",
+      "url": "https://raw.githubusercontent.com/elithril/blender-kiln/main/references/texturing-strategy.md"
+    },
+    {
+      "claim": "elliezu/SubstancePainterMCP는 Painter 12.1.1에서 테스트되었고, remote scripting 포트 60041로 79개 도구(bake, smart material, export 포함)를 노출한다.",
+      "url": "https://github.com/elliezu/SubstancePainterMCP"
+    },
+    {
+      "claim": "PBRify_Remix 모델은 ambientCG CC0 데이터로만 학습되었고 모델 자체도 CC0이다.",
+      "url": "https://github.com/Kim2091/PBRify_Remix"
+    },
+    {
+      "claim": "Blender 4.1에서 Musgrave Texture 노드가 제거되어 이를 쓰는 애드온과 스크립트가 실패한다.",
+      "url": "https://github.com/search?q=Musgrave+removed+4.1+noise+texture&type=issues"
+    }
+  ],
+  "gaps": [
+    "WebSearch 한도가 소진되고 egress가 GitHub 외 도메인을 막아, Reddit, YouTube, 80.lv, BlenderArtists, 개인 블로그의 실무자 후기와 프롬프트 사례를 거의 수집하지 못했습니다. 사례는 GitHub 저장소와 이슈 위주입니다.",
+    "Adobe Substance 3D Painter/Sampler의 Firefly 기반 text-to-texture와 Sampler 'Image to Material'의 최신 버전, 도입 시점, 사용 조건을 1차 출처로 확인하지 못했습니다(adobe.com 차단).",
+    "Meshy 웹 앱의 AI Texturing 세부(텍스처 편집, 부분 재생성 등), Polycam/withpoly AI 텍스처 생성기, NVIDIA RTX Remix의 AI Texture Tools 공식 문서를 확인하지 못했습니다.",
+    "UVPackmaster의 최신 버전과 가격, AI 기반 상용 UV 도구(RizomUV AI 기능 등)를 확인하지 못했습니다(PartUV README에서 UVPackMaster 연동만 확인).",
+    "Fab/Quixel Megascans를 MCP로 쓰는 공식 경로를 찾지 못했습니다. dcc-mcp-epic은 Fab만 지원하고 Megascans는 명시적으로 미지원입니다(스타 0).",
+    "BlenderKit 전용 MCP 서버는 GitHub 검색에서 0건이었습니다. ambientCG API v2/v3 엔드포인트 명세도 ambientcg.com 차단으로 직접 확인하지 못했습니다.",
+    "Hunyuan3D-Paint 2.1, Meshy 7, Tripo 텍스처의 정량 비교 벤치마크(CLIP-FID, 사용자 연구 등)를 확보하지 못했습니다. meshy-dev/meshybench 저장소는 발견했지만 열람하지 못했습니다.",
+    "PBR 수치 가이드(Adobe PBR Guide의 비금속 albedo sRGB 50~240(엄격)/30~240(허용), 금속 180~255, F0 2~5%)는 원문을 열지 못했습니다. physicallybased.info 데이터와 cc-blender-skill로 간접 확인만 했으며, Filament 문서도 경로 문제로 열람에 실패했습니다.",
+    "Blender Image Texture 노드 BOX projection과 projection_blend, Principled 4.0 이름 변경의 공식 릴리스 노트를 직접 확인하지 못했습니다. 현재 소켓 이름은 소스코드로 확인했지만 '4.0에서 변경'이라는 시점은 학습 지식에 기반합니다.",
+    "Musgrave 제거(Blender 4.1)는 서드파티 이슈 검색 결과로만 확인했고 Blender 공식 릴리스 노트는 열지 못했습니다.",
+    "GPT-6 Astra, Claude Fable/Opus 5.5, Gemini 등 최신 프론티어 모델이 셰이더 노드를 생성하는 품질을 정량 비교한 자료는 찾지 못했습니다.",
+    "Poly Haven Public API의 TERMS 원문(크레딧 문구의 정확한 요건)은 404로 열지 못했고, README 요약에만 의존했습니다.",
+    "Hunyuan3D 2.5/3.0 등 후속 버전의 텍스처 라이선스 지역 제한이 2.1과 같은지 확인하지 못했습니다."
+  ]
+}

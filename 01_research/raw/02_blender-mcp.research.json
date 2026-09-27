@@ -1,0 +1,931 @@
+{
+  "topic": "Blender MCP 생태계 심층 조사 (2026-09 기준): ahujasid MCP for Blender, Blender Lab 공식 MCP/Claude 커넥터, 대안 서버·포크·스킬, In-Blender AI 애드온, 헤드리스 방식, Blender+AI 실무 규칙과 함정",
+  "summary_ko": [
+    "2026년 9월 기준 Blender용 MCP는 크게 둘입니다. (1) Blender Foundation의 Blender Lab이 만든 공식 MCP 서버(lab/blender_mcp)는 2026-04-28 Anthropic이 발표한 Claude 공식 'Blender connector'의 실체입니다. Blender 5.1 이상이 필요하고 GPL-3.0-or-later이며, v1.0.0은 2026-04-27, 검색 결과 기준 최신은 v1.0.3(2026-09-11)입니다. (2) 커뮤니티 원조인 ahujasid의 'MCP for Blender'(구 blender-mcp)는 GitHub 약 29.4k stars, MIT, PyPI mcp-for-blender 2.1.0(2026-09-25)입니다.",
+    "흔한 오해를 바로잡습니다. Anthropic의 공식 Blender 커넥터는 ahujasid 프로젝트가 아닙니다. claude.com 커넥터 페이지의 제공자는 'Blender Lab'이고, Anthropic 발표문에도 'The Blender developers have created an MCP connector'라고 적혀 있습니다. ahujasid README는 스스로를 'Community plugin'이자 'not made by Blender'라고 밝힙니다. 참고로 Blender는 Anthropic의 후원을 Development Fund 대신 일회성 기부로 받았습니다.",
+    "두 서버는 용도가 다릅니다. 공식 서버는 작고 보수적입니다. 씬/.blend 포렌식(데이터블록 목록, 누락 파일, 링크 라이브러리), bpy API와 매뉴얼 검색, 스크린샷·썸네일 렌더, execute_blender_code 정도를 제공하고 에셋 다운로드나 AI 3D 생성 기능은 없습니다. ahujasid는 36개 tool을 제공합니다. Poly Haven·Sketchfab·Poly Pizza 에셋, Hyper3D Rodin·Hunyuan3D·Tripo(Premium) 생성, GLB/FBX export, bpy_api_lookup·describe_node_type, safe mode, trajectory feedback이 포함됩니다.",
+    "두 서버 모두 'MCP 클라이언트 ⇄ stdio ⇄ MCP 서버 프로세스 ⇄ TCP localhost:9876 ⇄ Blender 애드온(메인 스레드 timer 큐)' 구조라서 두 애드온을 동시에 켜면 포트가 충돌합니다. 또 `uvx blender-mcp`로 받는 PyPI 패키지 blender-mcp는 ahujasid 것이며 공식 서버가 아닙니다. blender-mcp.com, blendermcp.org 같은 사이트는 비공식입니다.",
+    "보안 측면에서 execute_blender_code는 임의 Python을 exec()로 실행하므로 사실상 OS 권한을 넘겨주는 것과 같습니다. ahujasid 관련 이력은 다음과 같습니다. CVE-2026-10661(input_image_url 경로, 심각도 Low)이 공개됐고, 텔레메트리가 기본 ON이라 GDPR 문제가 제기됐습니다(이슈 #232). 이후 2026-09-21 커밋에서 opt-in으로 바뀌었고 BLENDER_MCP_SAFE_MODE=1(파일 I/O·프로세스 실행·네트워크 차단)이 추가됐습니다. 작업 전에는 반드시 저장하고, 서버는 localhost에만 바인딩하며, DISABLE_TELEMETRY=true를 권장합니다.",
+    "대안과 보완 도구는 다음과 같습니다. 노드 트리 편집 특화로는 newo-ether 포크가 있습니다(Geometry/Shader/Compositor 트랜잭션 패치, v1.19.0). 대형 툴셋으로는 blend-ai(186 tools, AGPL, 샌드박스 실행), RFingAdam/mcp-blender(218 tools, 다중 AI 생성 백엔드), harveyxiacn(359 tools, 기본 32개만 로드)이 있습니다. 검증 중심 설계로는 PatrykIti/blender-ai-mcp(goal-first 라우팅과 결정적 측정)가 있습니다. 로컬 LLM용은 blender-open-mcp(Ollama 등), 유료는 blender-mcp-pro($5/월 또는 $15 일회성), 헤드리스는 sandraschi/blender-mcp와 Codex용 Blender Agent Studio가 있습니다.",
+    "Claude Code 스킬 레이어도 품질에 큰 영향을 줍니다. RobLe3/cc-blender-skill은 30개 스킬로 구성되며 실제 치수표, Bevel 0.02m/3seg를 SubSurf보다 먼저 적용하는 규칙, 재질별 조명 비율, 스크린샷 QA 게이트, 코드 5~20줄 단위 실행 원칙을 담고 있습니다. 이 밖에 공식 MCP용 ra100/blender-claude-plugin, 카메라 무빙용 kevinbadi/blender-skills, 여러 라이브러리를 묶은 MAX-786/claude-3d-harness가 있습니다.",
+    "Blender 안에서 도는 AI 애드온은 다음과 같습니다. StableGen은 ComfyUI 기반 멀티뷰 투영 텍스처링과 TRELLIS.2를 지원하며 Blender 4.2~4.5 또는 5.1+에서 동작하고 5.0은 지원하지 않습니다. Scenario for Blender는 자체 MCP 서버를 포함합니다. Blender-Copilot(halilogia)은 undo_push와 승인 게이트를 갖췄습니다. BlenderGPT는 2023-06 이후 업데이트가 없는 레거시이고, 3D-Agent는 상용 제품인데 마케팅성 자료가 많아 검증이 어렵습니다.",
+    "LLM이 쓴 bpy 코드가 자주 깨지는 API 변경 지점입니다. 4.0: Principled BSDF 소켓 이름 변경('Specular'→'Specular IOR Level' 등), context override dict 제거. 4.1: use_auto_smooth 제거. 4.2: EEVEE Next 도입, blend_method→surface_render_method, bloom 제거. 5.0: 'BLENDER_EEVEE_NEXT'→'BLENDER_EEVEE', scene.node_tree→scene.compositing_node_group, material.use_nodes deprecated, action.fcurves 제거(channelbag로 대체), bgl 제거. 5.1: Python 3.13. 5.2: Geometry Nodes 모디파이어 입력 접근이 modifier.properties.inputs.<id>.value로 바뀜.",
+    "실무 핵심 규칙입니다. 코드는 작은 청크로 나눠 실행합니다(ahujasid 소켓 타임아웃 180초). 오브젝트는 이름으로 다시 조회하고 GEO-/MAT-/LGT- 접두사를 붙입니다. 노드는 이름이 아니라 type으로 찾고(UI 현지화 대응), enum은 하드코딩하지 않습니다. 변경 전후로 스크린샷을 찍고, 모델링 전에 실측 치수를 먼저 확인합니다. 위험한 작업 전에는 .blend 사본을 저장합니다. 참고로 get_scene_info는 오브젝트를 10개까지만 반환하므로 큰 씬은 직접 쿼리 코드를 써야 합니다.",
+    "헤드리스 대안도 있습니다. Claude Code나 Codex가 `blender -b --factory-startup --python-exit-code 1 -P build.py`로 스크립트를 실행하고 렌더 PNG를 다시 읽는 방식입니다. 재현성이 높고 GUI 멈춤이 없으며, 생성 스크립트 자체가 산출물로 남습니다. bpy는 PyPI 모듈(5.2.2, Python 3.13 전용)로도 쓸 수 있습니다. Blender Lab 공식 서버에도 백그라운드용 *_for_cli tool이 있습니다.",
+    "한계도 분명합니다. 프리미티브 조합으로 사람 얼굴이나 유기체를 만들기는 어렵습니다. 이런 경우 에셋 검색이나 생성 모델, 스컬프팅으로 넘어가야 합니다. 긴 세션은 토큰을 많이 소모하고(ahujasid 도구 스키마만 약 6.9k 토큰), 결과물에 클리핑이나 색 아티팩트가 남을 수 있습니다. 에이전트는 '감독이 필요한 협업자'로 쓰는 것이 현실적입니다."
+  ],
+  "items": [
+    {
+      "name": "MCP for Blender (ahujasid/mcp-for-blender, 구 blender-mcp)",
+      "category": "커뮤니티 MCP 서버(원조)",
+      "what_it_is": "Siddharth Ahuja가 만든 Blender용 MCP입니다. 2025-03 공개 후 바이럴이 됐습니다. Blender 애드온(addon.py)이 localhost:9876에 TCP 소켓 서버를 띄우고, 별도 MCP 서버(src/blender_mcp/server.py, FastMCP)가 JSON {type, params} 명령을 중계합니다. 애드온은 명령을 큐에 넣고 bpy.app.timers로 메인 스레드에서 처리합니다. 현재 tool은 36개입니다: get_addon_status, disable_telemetry, get_scene_info, get_object_info, get_viewport_screenshot(max_size), execute_blender_code, describe_node_type, bpy_api_lookup, Poly Haven 6종(get_polyhaven_categories/search/preview/download/set_texture/status), Sketchfab 4종, Poly Pizza 3종, Hyper3D Rodin 5종(text/images/poll/import), Hunyuan3D 4종, Tripo 4종(Premium 전용), export_scene(GLB/FBX), record_trajectory_feedback. prompt로는 asset_creation_strategy가 있습니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://pypi.org/project/blender-mcp/",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://github.com/ahujasid/blender-mcp/commits/main"
+      ],
+      "confidence": "high",
+      "how_to_use": "요구 사항은 Blender 3.0+, Python 3.10+, uv(공식 설치 스크립트 사용, pip install uv는 비권장)입니다. 설치 순서: ① `uvx mcp-for-blender install-addon` 또는 addon.py를 수동 설치 → ② Edit>Preferences>Add-ons에서 'Interface: MCP for Blender' 활성화 → ③ 3D 뷰포트에서 N 키 → 'MCP for Blender' 탭 → Start MCP Server. 클라이언트별 설정: Claude Desktop은 claude_desktop_config.json에 {\"mcpServers\":{\"blender\":{\"command\":\"uvx\",\"args\":[\"mcp-for-blender\"]}}}. Claude Code는 `claude mcp add blender uvx mcp-for-blender`. Codex는 `codex mcp add blender -- uvx mcp-for-blender` 또는 ~/.codex/config.toml의 [mcp_servers.blender]. Cursor(Windows)는 command \"cmd\", args [\"/c\",\"uvx\",\"mcp-for-blender\"]. 주요 환경변수는 BLENDER_HOST(localhost), BLENDER_PORT(9876), BLENDER_MCP_SAFE_MODE=1, DISABLE_TELEMETRY=true, BLENDERMCP_SKETCHFAB_API_KEY / _POLYPIZZA_ / _HYPER3D_ / HUNYUAN3D_SECRET_ID·KEY·API_URL입니다. Blender를 여러 개 띄울 때는 두 번째 서버를 `uvx mcp-for-blender --port 9877`로 추가하고 해당 애드온 포트도 9877로 맞춥니다. uvx 서버를 터미널에서 따로 실행하면 안 됩니다(클라이언트가 직접 띄움).",
+      "license_or_price": "MIT, 무료입니다. 'Premium' 구독 티어(2026-09-25 커밋 'feat: integrate premium')를 쓰면 자체 API 키 없이 Hunyuan3D/Tripo/Rodin 생성이 가능하지만, 가격은 확인하지 못했습니다.",
+      "status_date": "PyPI mcp-for-blender 2.1.0(2026-09-25). blender-mcp 2.0.0(2026-09-16)은 이름 변경용 호환 래퍼입니다. GitHub Releases는 비어 있고 롤링 방식으로 배포합니다. 약 29.4k stars / 2.7k forks.",
+      "strengths": "에셋 통합(CC0 Poly Haven 약 2,400개, Poly Pizza 약 10,600개 로우폴리 중 69%가 CC-BY라 attribution을 custom property로 보존, Sketchfab)과 AI 3D 생성 연동이 가장 풍부합니다. 서버 instructions에 코드 정확성 가이드가 들어 있습니다(노드는 type으로 찾기, enum 하드코딩 금지, diffuse_color는 뷰포트 전용). bpy_api_lookup·describe_node_type로 API를 추측하지 않고 조회할 수 있습니다. 클라이언트 지원 폭이 가장 넓고(Claude/Cursor/VS Code/Codex/OpenCode/Antigravity) 문서와 커뮤니티(Discord)도 큽니다.",
+      "weaknesses": "get_scene_info는 오브젝트 10개만 반환합니다. undo_push 처리가 없습니다. Poly Haven 다운로드가 메인 스레드에서 돌아 고해상도 요청 시 Blender가 멈춥니다. Windows에서 '연결은 되는데 명령이 처리되지 않고 약 4분 뒤 타임아웃'되는 이슈(#339, #357, Blender 5.1.1/5.2.1)가 열려 있습니다. WSL↔Windows 조합에서 스크린샷이 실패합니다(#187). tool 스키마만 약 6,928 토큰입니다(#347). 과거 텔레메트리 기본 ON, CVE-2026-10661 이력이 있습니다."
+    },
+    {
+      "name": "Blender Lab 공식 MCP Server (projects.blender.org/lab/blender_mcp) = Claude 'Blender' 커넥터",
+      "category": "공식 MCP 서버",
+      "what_it_is": "Blender Foundation 내부 혁신 조직인 Blender Lab(2025-11 출범)이 만든 1st-party MCP 서버입니다. Anthropic이 2026-04-28 'Claude for Creative Work'에서 9개 크리에이티브 커넥터 중 하나로 발표했고, claude.com 커넥터 페이지에는 Provider가 'Blender Lab (Anthropic verified)'로 표시됩니다. 구조는 Blender 애드온(TCP 서버, 기본 localhost:9876, null-byte 구분 JSON)과 별도 MCP 서버 프로세스(mcp/blmcp, entry point `blender-mcp`, stdio)로 되어 있습니다. tool은 모듈 단위로 자동 발견되며, 미러 저장소 기준 목록은 다음과 같습니다: execute_blender_code / execute_blender_code_for_cli(백그라운드 Blender 실행), get_blendfile_summary_datablocks / missing_files / of_linked_libraries / path_info / usage_guess, get_objects_summary, get_object_detail_summary, get_python_api_docs, get_runtime_python_api_docs, search_api_docs, search_manual_docs, get_screenshot_of_area_as_image / window_as_image / window_as_json, jump_to_tab_by_name / by_space_type, jump_to_view3d_object_by_name, render_viewport_to_path, render_thumbnail_to_path. 대부분 _for_cli 변형이 있어 저장된 .blend를 새 서브프로세스에서 열어 분석할 수 있습니다.",
+      "urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://claude.com/connectors/blender",
+        "https://www.blender.org/lab/mcp-server/",
+        "https://projects.blender.org/lab/blender_mcp",
+        "https://projects.blender.org/lab/blender_mcp/releases/tag/v1.0.0",
+        "https://github.com/bpype/blender_mcp",
+        "https://github.com/bpy-dev/blender-mcp/blob/main/readme_tools.rst",
+        "https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit",
+        "https://github.com/scenario-labs/blender-plugin/issues/3",
+        "https://www.blender.org/news/introducing-blender-lab/"
+      ],
+      "confidence": "medium",
+      "how_to_use": "요구 사항은 Blender 5.1.0 이상입니다(하드 최소). 설치: blender.org/lab/mcp-server 페이지의 설치 링크를 Blender 창에 드래그합니다. 이 작업을 반드시 2번 합니다(1회차에 Lab 확장 저장소 추가, 2회차에 애드온 설치). 이후 Preferences에서 활성화하고 서버를 Start(또는 Auto Start)합니다. Claude Desktop은 Settings>Connectors에서 'blender'를 검색해 Anthropic & Partners 섹션에서 설치합니다. .mcpb 번들을 지원하는 클라이언트는 릴리스 페이지의 MCPB를 쓰면 됩니다. Claude Code는 서버 소스를 클론한 뒤 ~/.claude.json mcpServers에 {\"command\":\"<uv 절대경로>\",\"args\":[\"--directory\",\"<clone>/mcp\",\"run\",\"blender-mcp\"]}를 넣습니다($HOME 확장이 안 되므로 절대경로 사용). 첫 uv 실행 때 PyPI 패키지 약 41개를 받습니다. 로컬 LLM은 공식 위키의 llama.cpp 가이드(`llama-server -m <gguf>`)를 따릅니다. 예시 프롬프트: 'Analyze the scene and list the outliers: objects with highest polygon count but smaller size from the camera point of view'.",
+      "license_or_price": "GPL-3.0-or-later(애드온 manifest 기준), 무료입니다.",
+      "status_date": "v1.0.0 2026-04-27(Dalai Felinto, MCPB pre-release). 검색 결과상 v1.0.2 2026-09-08, v1.0.3 2026-09-11. Blender 5.2 LTS(2026-07-14) 사이클에 맞춰 standalone MCP 서버와 애드온으로 배포됩니다.",
+      "strengths": "Blender 개발팀이 유지보수하고 Anthropic이 공식 인증했습니다. .blend 포렌식(누락 텍스처, 링크 라이브러리, 용도 추정)과 번들 API 레퍼런스·매뉴얼 전문 검색으로 '추측하지 않는 코드'를 쓰기 좋습니다. 백그라운드(_for_cli) 실행을 지원해 GUI 없이 저장 파일을 분석할 수 있고, 텔레메트리나 외부 서비스 연동이 없습니다. 복잡한 노드·모디파이어 설명, 일괄 수정, 미사용 데이터 정리, UI 도구(애드온) 작성에 강합니다.",
+      "weaknesses": "의도적으로 작은 서버입니다. Poly Haven·Sketchfab 다운로드나 Hyper3D 같은 생성 tool이 없어 에셋은 수동 또는 다른 MCP(Meshy MCP 등)로 보완해야 합니다. Blender 5.1 미만은 쓸 수 없습니다. 기본 포트가 ahujasid와 같은 9876이라 동시 사용 시 충돌합니다. blender.org / projects.blender.org 원문은 이번 조사에서 직접 열람하지 못했고(프록시 차단) 미러와 검색 요약으로 확인했습니다."
+    },
+    {
+      "name": "newo-ether/blender-mcp (ahujasid 포크, 구조적 노드 편집)",
+      "category": "포크/확장 MCP 서버",
+      "what_it_is": "ahujasid 업스트림의 씬·에셋·생성 tool을 유지하면서 Geometry/Shader/Compositor 노드 트리를 '리비전 안전(revision-safe)'하게 읽고 쓰는 tool을 추가한 포크입니다. 추가 tool: get_node_editor_context, list_node_trees, create_node_group, export_node_tree(full/semantic/slim), validate_node_tree_patch, apply_node_tree_patch(트랜잭션 롤백), modify_verify_save, *_geometry_node_* 8종. 여러 Blender 인스턴스를 list_blender_instances / claim_blender_instance로 선택할 수 있고, claim은 6시간 비활동 시 만료됩니다.",
+      "urls": [
+        "https://github.com/newo-ether/blender-mcp",
+        "https://github.com/newo-ether/blender-mcp/releases",
+        "https://github.com/MAX-786/claude-3d-harness"
+      ],
+      "confidence": "high",
+      "how_to_use": "Windows에서는 PowerShell 원커맨드 설치(bootstrap.ps1)가 MCP 클라이언트와 Blender를 자동 감지해 서버·Extension·MCP 설정을 등록합니다. 체크섬이 붙은 wheel, Extension ZIP, MCPB, portable Skill이 Release 자산으로 제공됩니다. 노드 그래프를 LLM이 만들 때는 validate→apply→verify 순서를 강제하는 것이 핵심입니다.",
+      "license_or_price": "MIT, 무료",
+      "status_date": "v1.19.0(2026-09-21), v1.18.0(2026-09-15)에서 Simulation zone, 계층적 노드 레이아웃, inbound link provenance 추가. Blender 4.2.22 LTS, 5.1.2, 5.2 LTS RC에서 테스트됨. stars 8.",
+      "strengths": "Geometry Nodes·셰이더 노드를 LLM이 직접 편집할 때 가장 안전한 선택지입니다. v1.13.0의 slim 뷰는 30노드 export를 62KB에서 9.3KB로 줄여 컨텍스트를 절약합니다. claude-3d-harness의 기본 provider입니다.",
+      "weaknesses": "저장소 규모가 작고(8 stars) 1인 유지보수입니다. 설치 편의 기능이 Windows 위주입니다."
+    },
+    {
+      "name": "blend-ai (HoldMyBeer-gg/blend-ai)",
+      "category": "커뮤니티 MCP 서버(대형 툴셋)",
+      "what_it_is": "186개 tool(27개 모듈)을 가진 Blender MCP입니다. 모듈은 Scene, Objects, Transforms, Modeling, Mesh Editing, Mesh Quality, Bool Tool, Materials, Lighting, Camera, Animation, Rendering, Curves, Sculpting, UV, Physics, Geometry Nodes, Armature, Annotations, Collections, File I/O, Viewport, Screenshot, Code Exec 등입니다. 구조는 AI ⇄ stdio ⇄ blend-ai 서버(입력 검증) ⇄ TCP ⇄ 애드온(timer 큐)이며, 12개 expert prompt, 시각 피드백 자동 비평, 메시 결함 분석, 렌더 인지 큐잉과 크래시 복구를 갖췄습니다.",
+      "urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai",
+        "https://github.com/k0ncepts/blend-ai"
+      ],
+      "confidence": "high",
+      "how_to_use": "`uv pip install -e .`로 서버를 설치하고, Release의 애드온 zip을 Preferences>Get Extensions>Install from Disk로 설치합니다. N 패널에서 서버를 시작하고(기본 9876) Claude Code/Desktop을 연결합니다.",
+      "license_or_price": "AGPL-3.0-or-later, 무료",
+      "status_date": "v1.6.0(2026-09-25), 2026-09-26에도 커밋이 있어 매우 활발합니다. Blender 4.2 LTS 이상(5.1까지 테스트), 4.0/4.1 미지원. 148 stars.",
+      "strengths": "코드 실행을 샌드박싱합니다(위험 import 25종 차단, exec/eval/open 제거, 127.0.0.1 전용). 텔레메트리가 없고 unit test가 1190개입니다. 3D 프린트 결함 검사 등 메시 품질 도구가 있습니다.",
+      "weaknesses": "tool 수가 많아 upfront 로딩 클라이언트(Claude Desktop 등)에서 컨텍스트 비용이 큽니다. AGPL이라 상용 서비스에 통합하려면 검토가 필요합니다."
+    },
+    {
+      "name": "RFingAdam/mcp-blender",
+      "category": "커뮤니티 MCP 서버(대형 툴셋+AI 생성)",
+      "what_it_is": "218개 tool을 가진 MCP 서버입니다. 모델링, 메시 편집(24), 재질·노드(13), 애니메이션, 스컬프팅, MSFS(Microsoft Flight Simulator) 콘텐츠 파이프라인(LOD, 콜리전), AI 3D 생성(21+)을 다룹니다. 클라우드 생성은 Hyper3D Rodin/Meshy/Tripo, 로컬 생성은 TripoSR/Stable Fast 3D/Hunyuan3D/ComfyUI를 지원하고, Ollama 비전 모델로 render→analyze→fix 자기 개선 루프를 돌립니다.",
+      "urls": [
+        "https://github.com/RFingAdam/mcp-blender"
+      ],
+      "confidence": "medium",
+      "how_to_use": "`pip install mcp-blender`로 설치한 뒤 애드온 ZIP을 설치하고 포트 9876으로 MCP 클라이언트를 설정합니다. 멀티앵글 렌더를 동시에 캡처해 비전 평가에 씁니다.",
+      "license_or_price": "AGPL-3.0-or-later, 무료",
+      "status_date": "마지막 커밋 2026-09-10, Blender 4.2 LTS/5.0, 14 stars",
+      "strengths": "로컬 생성 백엔드가 가장 다양하고, 게임·시뮬레이터용 LOD/콜리전 파이프라인이 있습니다.",
+      "weaknesses": "사용자층이 작고, PyPI 이름 mcp-blender가 다른 프로젝트(pakkio)의 명령명과 겹쳐 혼동 소지가 있습니다."
+    },
+    {
+      "name": "PatrykIti/blender-ai-mcp",
+      "category": "커뮤니티 MCP 서버(검증 중심 설계)",
+      "what_it_is": "'코드 생성 스턴트가 아닌 제품 표면'을 표방하는 MCP 서버입니다. tool을 Atomic/Macro/Workflow 3계층으로 나누고, 기본 'llm-guided' 프로파일에서는 router_set_goal, router_get_status, browse_workflows, search_tools, call_tool, check_scene, inspect_scene, scene_scope_graph, scene_relation_graph, scene_view_diagnostics 같은 소수 tool만 노출합니다. 비전(MLX/OpenRouter/Gemini)은 보조로만 쓰고 판단은 결정적 측정·assertion으로 합니다.",
+      "urls": [
+        "https://github.com/PatrykIti/blender-ai-mcp"
+      ],
+      "confidence": "medium",
+      "how_to_use": "Python 3.11+, FastMCP 3.2.4, stdio 또는 Streamable HTTP로 연결합니다. 세션을 목표 선언(router_set_goal)으로 시작한 뒤 공간 관계 그래프로 배치를 검증합니다.",
+      "license_or_price": "Apache-2.0, 무료",
+      "status_date": "v3.3.0(2026-05-04 커밋), Blender 5.0 테스트, 59 stars",
+      "strengths": "오브젝트 배치와 공간 관계(scene_relation_graph)를 결정적으로 검증하는 설계라서, '가구·오브젝트가 제대로 놓였는가'를 따지는 작업에 참고 가치가 큽니다.",
+      "weaknesses": "2026-05 이후 커밋이 확인되지 않았고 설정 복잡도가 높습니다."
+    },
+    {
+      "name": "harveyxiacn/blender-mcp / glonorce/Blender_mcp",
+      "category": "커뮤니티 MCP 서버(컨텍스트 절약형)",
+      "what_it_is": "harveyxiacn은 359개 tool(51모듈)이지만 기본 'skill' 프로파일에서 32개만 로드하고 blender_activate_skill로 12개 그룹을 필요할 때 켭니다. 체크포인트 저장·복원, 절차적 재질 67종, 토폴로지·UV 감사, 렌더 스타일 프리셋 8종을 제공합니다. glonorce는 69개 tool을 ESSENTIAL/CORE/STANDARD/OPTIONAL로 나눠 다국어 intent 필터로 컨텍스트를 약 77% 줄이고, BVH 기반 실제 면 간 거리·관통 검출과 0~100 무결성 점수를 제공합니다.",
+      "urls": [
+        "https://github.com/harveyxiacn/blender-mcp",
+        "https://github.com/glonorce/Blender_mcp"
+      ],
+      "confidence": "medium",
+      "how_to_use": "tool이 많은 서버는 프로파일이나 필터로 노출 tool 수를 줄여 씁니다. 조립품의 관통이나 부유 검사는 glonorce의 BVH 분석 방식을 참고합니다.",
+      "license_or_price": "MIT(둘 다)",
+      "status_date": "harveyxiacn: Blender 4.x/5.x, 15 stars. glonorce: Blender 5.0+, 2026-01 업데이트, 6 stars",
+      "strengths": "tool 과다 문제에 대한 실용적 해법(동적 로딩)과 배치 검증용 BVH 교차 검사를 제공합니다.",
+      "weaknesses": "소규모 프로젝트라 장기 유지보수가 불확실합니다."
+    },
+    {
+      "name": "dhakalnirajan/blender-open-mcp",
+      "category": "커뮤니티 MCP 서버(로컬/오픈 모델)",
+      "what_it_is": "로컬 우선 Blender MCP입니다. FastMCP 서버가 TCP 9876으로 애드온과 통신하고, LLM provider(Ollama, LM Studio, llama.cpp, OpenAI 호환 /chat/completions)를 MCP tool로 런타임에 전환할 수 있습니다. PolyHaven 연동을 포함합니다.",
+      "urls": [
+        "https://github.com/dhakalnirajan/blender-open-mcp"
+      ],
+      "confidence": "high",
+      "how_to_use": "venv를 만들고 `pip install -e \".[dev]\"` → 애드온 활성화 → 서버 시작 순서로 설치합니다. 민감한 사내 씬을 클라우드로 보내지 않아야 할 때 씁니다.",
+      "license_or_price": "MIT",
+      "status_date": "마지막 커밋 2026-09-04(MCP prompts, E2E 테스트 추가), 120 stars",
+      "strengths": "완전 로컬 운용이 가능하고 provider를 런타임에 전환할 수 있습니다.",
+      "weaknesses": "로컬 소형 모델은 bpy 코드 정확도가 frontier 모델보다 크게 떨어지고, tool 수도 적습니다."
+    },
+    {
+      "name": "sandraschi/blender-mcp (헤드리스 FastMCP)",
+      "category": "헤드리스/CLI MCP 서버",
+      "what_it_is": "기본 모드에서는 Blender를 `blender --background` 서브프로세스로 돌리는 헤드리스 MCP입니다. 선택적 브리지 애드온을 설치하면 라이브 GUI도 볼 수 있습니다. 41개 portmanteau tool(150+ 작업)로 메시, 스컬프트, Geometry Nodes, 컴포지터, VSE, Grease Pencil, VRM, Gaussian splat, GLB/FBX/OBJ/USD export, MP4 렌더를 다루고 React 대시보드도 있습니다.",
+      "urls": [
+        "https://github.com/sandraschi/blender-mcp"
+      ],
+      "confidence": "medium",
+      "how_to_use": "Release의 .mcpb 파일을 Claude Desktop 설정에 드래그하고 Blender를 별도로 설치하면 됩니다(Python 불필요). 배치 export와 자동화에 적합합니다.",
+      "license_or_price": "MIT",
+      "status_date": "마지막 커밋 2026-09-18, 48 stars",
+      "strengths": "GUI 멈춤이나 소켓 타임아웃 문제가 적고 배치 작업에 강합니다.",
+      "weaknesses": "실시간 시각 확인은 브리지 애드온이 있어야 하고, 헤드리스 서버 환경에서는 EEVEE 렌더에 GPU 컨텍스트가 필요할 수 있습니다(주의)."
+    },
+    {
+      "name": "Blender MCP Pro (youichi-uda/blender-mcp-pro)",
+      "category": "상용 MCP 서버",
+      "what_it_is": "17개 카테고리에 120개 이상의 tool을 제공하는 유료 Blender MCP입니다(라이트, 모디파이어, 셰이더·지오메트리 노드, 애니메이션, 리깅 진단, 배치 처리 등). 애드온은 MIT이고 MCP 서버는 독점 소프트웨어입니다.",
+      "urls": [
+        "https://github.com/youichi-uda/blender-mcp-pro"
+      ],
+      "confidence": "medium",
+      "how_to_use": "Gumroad 또는 itch.io에서 구매 → pip으로 의존성 설치 → 애드온 로드 → BM Pro 사이드바에서 서버 시작 → 클라이언트 설정에 라이선스 키를 넣습니다.",
+      "license_or_price": "$5/월(7일 무료 체험, Gumroad) 또는 $15 일회성(itch.io)",
+      "status_date": "Blender 4.0+(5.0 권장), 31 stars. GitHub에는 커밋 이력이 없습니다(배포용 저장소).",
+      "strengths": "설치형 상용 지원이 있고 tool 폭이 넓습니다.",
+      "weaknesses": "서버가 비공개라 코드 감사가 불가능하고, 오픈소스 대안(blend-ai 등)과 기능 차별성이 크지 않습니다."
+    },
+    {
+      "name": "marlonka/better-blender-mcp / owenpkent/blendmcp / lucasgfsvd(TESSA LABS) 포크",
+      "category": "포크/확장 MCP 서버(안정성·프라이버시)",
+      "what_it_is": "ahujasid 기반 포크들입니다. better-blender-mcp는 scene delta, staged edit, job control, 백그라운드 워커(렌더·베이크를 별도 Blender 프로세스에서 데드라인·취소와 함께 실행), 명시적 스크린샷, 품질 검사(경계, 와인딩, degenerate face, UV 커버리지, 카메라 범위)를 추가했고 타임아웃된 명령은 자동 재실행하지 않습니다. blendmcp는 텔레메트리를 완전히 제거하고 add_primitive, modify_object, set_material, batch_edit, 재연결 재시도, 버전 핸드셰이크를 넣었습니다. TESSA LABS 포크는 텔레메트리를 제거하고 CAE용 tool 약 40개(스칼라장 컬러 베이킹, 단면, 치수선 등)를 더했습니다.",
+      "urls": [
+        "https://github.com/marlonka/better-blender-mcp",
+        "https://github.com/owenpkent/blendmcp",
+        "https://github.com/lucasgfsvd/blender-mcp"
+      ],
+      "confidence": "medium",
+      "how_to_use": "긴 렌더나 베이크 타임아웃, 텔레메트리 우려, 엔지니어링 시각화처럼 필요한 목적에 맞춰 골라 씁니다. 모두 소규모라 코드를 검토한 뒤 사용하길 권합니다.",
+      "license_or_price": "MIT",
+      "status_date": "better-blender-mcp는 Blender 5.2.1 LTS에서 테스트(커밋 201개), blendmcp v1.4.4(Blender 5.x 호환)",
+      "strengths": "원조의 약점(블로킹, 재시도, 텔레메트리)을 직접 해결했습니다.",
+      "weaknesses": "stars 0~2 수준이라 유지보수 지속성이 불확실합니다."
+    },
+    {
+      "name": "bpy-dev/blender-mcp · NThuesen/blender-game-mcp · marble810/blender-mcp-connect (Blender Lab MCP 파생 배포판)",
+      "category": "포크/확장 MCP 서버(공식판 기반)",
+      "what_it_is": "Blender Lab 공식 MCP를 기반으로 한 비공식 downstream입니다. bpy-dev와 NThuesen은 저장된 .blend를 격리 서브프로세스에서 다루는 tool, BLENDER_MCP_CLI_BACKEND(Blender 실행파일 또는 standalone bpy), 런타임 API 조회, 타임아웃·출력 상한·덮어쓰기 보호, BlenderBench(27 tasks/270 rounds, CLIP 유사도 채점)를 추가했습니다. marble810은 로컬 인스턴스 자동 발견, 동적 포트, 인증 연결을 지원하며 `uvx --from blender-mcp-connect==0.1.0 blender-mcp-connect`로 실행합니다.",
+      "urls": [
+        "https://github.com/bpy-dev/blender-mcp",
+        "https://github.com/NThuesen/blender-game-mcp",
+        "https://github.com/marble810/blender-mcp-connect"
+      ],
+      "confidence": "medium",
+      "how_to_use": "공식 서버 설치(클론 + uv 경로 설정)가 번거롭거나 GUI 없이 .blend를 분석해야 할 때 씁니다. 공식 지원 대상은 아니므로 NOTICE와 라이선스(GPL-3.0)를 확인합니다.",
+      "license_or_price": "GPL-3.0",
+      "status_date": "bpy-dev 94 stars(developer preview), 나머지는 0 stars",
+      "strengths": "공식판의 보수적 설계를 유지하면서 헤드리스·벤치마크 기능을 보강했습니다.",
+      "weaknesses": "비공식이고 초기 단계입니다."
+    },
+    {
+      "name": "Claude Code/Codex용 Blender 스킬 레이어 (RobLe3/cc-blender-skill, ra100/blender-claude-plugin, kevinbadi/blender-skills, Gaius114/blender-claude-mcp, MAX-786/claude-3d-harness)",
+      "category": "스킬/플러그인 레이어",
+      "what_it_is": "MCP tool 위에 전문가 절차를 얹는 SKILL.md 묶음입니다. cc-blender-skill(v1.3.0, 70 stars, MIT)은 text-to-blender 오케스트레이터와 30개 스킬로 구성되며 실측 치수표, 모디파이어 스택 규칙, 재질별 조명 프로파일, closed-surface UV 커버리지 게이트, quality-refinement-autoloop를 포함하고, Blender 5.1.1에서 검, 병, 의자, 비행사, 데스크램프, 아바타 6종으로 E2E 검증됐습니다. ra100 플러그인(v1.3.0, MIT)은 공식 Blender Lab MCP용 8개 전문 스킬입니다(GN 약 373노드, 셰이더 약 95노드, 컴포지팅 약 80노드 레퍼런스, Python 3.13). kevinbadi는 Meshy API 기반 image-to-3d와 턴테이블, 돌리, 크레인 등 카메라 애니메이션(ProRes 4444 알파, 1920x1080/24fps)을 다룹니다. Gaius114는 HTTP 브리지(포트 7234)와 arch, sculpt, geonodes, texture, lighting 스킬을 제공합니다. claude-3d-harness는 이들 라이브러리 58개 SKILL.md를 레지스트리로 묶어 fast/standard/cinematic 워크플로를 구성합니다.",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill",
+        "https://github.com/RobLe3/cc-blender-skill/pull/1",
+        "https://github.com/ra100/blender-claude-plugin",
+        "https://github.com/kevinbadi/blender-skills",
+        "https://github.com/Gaius114/blender-claude-mcp",
+        "https://github.com/MAX-786/claude-3d-harness"
+      ],
+      "confidence": "high",
+      "how_to_use": "cc-blender-skill은 `for skill in plugin/skills/*/; do ln -sfn \"$(pwd)/$skill\" \"$HOME/.claude/skills/$(basename $skill)\"; done`로 연결합니다. ra100은 `claude plugin marketplace add ra100/blender-claude-plugin` 후 `claude plugin install blender-skills@blender-claude-marketplace`로 설치합니다. 공식 MCP로 옮길 때는 tool 이름을 매핑해야 합니다: get_scene_info→get_objects_summary, get_object_info→get_object_detail_summary, get_viewport_screenshot→get_screenshot_of_area_as_image.",
+      "license_or_price": "대부분 MIT(kevinbadi는 라이선스 미표기)",
+      "status_date": "2026년 활발(cc-blender-skill v1.3.0, ra100 v1.3.0)",
+      "strengths": "모델의 막연한 감 대신 수치 규칙(치수, 베벨, 조명 비율, 바운스)과 QA 게이트로 결과 품질을 끌어올립니다. 가구·소품 형태 정확도에 특히 효과적입니다.",
+      "weaknesses": "스킬마다 대상 MCP의 tool 이름이 달라 호환성 관리가 필요하고, 사람 얼굴 같은 유기체는 범위 밖입니다."
+    },
+    {
+      "name": "StableGen (sakalond/StableGen)",
+      "category": "In-Blender AI 애드온(텍스처링/생성)",
+      "what_it_is": "ComfyUI 백엔드를 쓰는 Blender 애드온입니다. 여러 카메라 뷰에서 SDXL, FLUX.1-dev, Qwen Image Edit, FLUX.2 Klein 등으로 이미지를 생성해 메시에 투영 텍스처링합니다(sequential/grid). ControlNet(깊이·노멀), IPAdapter 스타일 가이드, PBR 분해, 로컬 편집 모드를 지원하고, TRELLIS.2로 텍스트나 이미지에서 텍스처가 입혀진 메시를 생성합니다.",
+      "urls": [
+        "https://github.com/sakalond/StableGen",
+        "https://github.com/sakalond/stablegen/releases"
+      ],
+      "confidence": "high",
+      "how_to_use": "① ComfyUI 설치 → ② installer.py로 의존성과 모델 설치(7~33GB, 11개 패키지 구성 중 선택) → ③ 애드온 설치 후 Server Address를 127.0.0.1:8188로 설정 → 카메라 배치 → Generate 순서입니다. VRAM은 최소 8GB, FLUX/Qwen은 16GB 이상이 필요합니다. MCP 에이전트가 모델링과 배치를 맡고 StableGen이 텍스처를 맡는 분업이 유효합니다.",
+      "license_or_price": "GPL-3.0, 무료(로컬 GPU 필요)",
+      "status_date": "v0.3.x, 2026-06-12 업데이트, 929 stars. Blender 4.2–4.5(OSL 투영)와 5.1+(GPU Raycast 노드) 지원, 5.0 미지원",
+      "strengths": "AI 에이전트가 약한 '예쁜 텍스처'를 로컬 확산 모델로 보완합니다.",
+      "weaknesses": "MCP 서버가 아니라 에이전트가 직접 조작하기 어렵고, 투영 방식 특성상 가려진 면에 이음새나 누락이 생길 수 있습니다."
+    },
+    {
+      "name": "Scenario for Blender (scenario-labs/blender-plugin)",
+      "category": "In-Blender AI 애드온(+내장 MCP)",
+      "what_it_is": "Scenario Inc.의 Blender 확장입니다. 이미지, 비디오, 3D 메시, 선택 메시용 PBR 재질, 오디오를 뷰포트 안에서 생성하고, 씬 설명을 그레이박스로 바꾸는 Blockout 기능과 로컬 MCP 서버(Blender 내부 Streamable HTTP + stdio shim)를 포함합니다.",
+      "urls": [
+        "https://github.com/scenario-labs/blender-plugin",
+        "https://github.com/scenario-labs/blender-plugin/issues/3"
+      ],
+      "confidence": "medium",
+      "how_to_use": "Blender 5.0+에서 'Allow Online Access'를 켜고 Scenario 계정과 API 크레딧(CU)을 준비합니다. GitHub Releases에서 설치합니다(extensions.blender.org에는 없음).",
+      "license_or_price": "GPL-3.0-or-later 애드온, 생성은 Scenario 유료 크레딧",
+      "status_date": "커밋 234개, 10 stars",
+      "strengths": "PBR 재질 생성과 블록아웃을 에이전트(MCP)와 연결할 수 있습니다.",
+      "weaknesses": "클라우드 과금에 종속되고 채택률이 낮습니다."
+    },
+    {
+      "name": "Blender-Copilot (halilogia) · GitHubCopilotBlender (ULT7RA) · BlenderGPT (gd3kr) · 3D-Agent",
+      "category": "In-Blender AI 애드온(채팅형)",
+      "what_it_is": "Blender 안에 채팅 에이전트를 넣는 애드온들입니다. halilogia/Blender-Copilot은 Blender 5.2.1 LTS 대상으로 read-only grounding tool, `bpy.ops.ed.undo_push()` 기반 원자적 undo, 파괴적 작업의 PENDING_APPROVAL 승인 게이트를 갖췄습니다(OpenAI 호환 엔드포인트: Ollama, LM Studio, OpenRouter 등, GPL-3.0). GitHubCopilotBlender는 GitHub OAuth와 다중 모델 tool-calling을 지원합니다. BlenderGPT(약 5k stars, MIT)는 GPT-4 시절 선구작이지만 마지막 커밋이 2023-06-10입니다. 3D-Agent는 MCP 기술을 쓴다는 상용 Blender AI 제품으로 '쿼드 토폴로지' 등을 홍보하며, 가격 정보는 $10/월부터라는 주장과 무료 티어가 없다는 주장이 섞여 있습니다.",
+      "urls": [
+        "https://github.com/halilogia/Blender-Copilot",
+        "https://github.com/ULT7RA/GitHubCopilotBlender",
+        "https://github.com/gd3kr/BlenderGPT",
+        "https://3d-agent.com/",
+        "https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106"
+      ],
+      "confidence": "low",
+      "how_to_use": "외부 MCP 클라이언트 없이 Blender UI 안에서 대화하고 싶을 때 씁니다. 파괴적 변경을 막으려면 undo/승인 게이트가 있는 구현을 고릅니다.",
+      "license_or_price": "Blender-Copilot GPL-3.0 / BlenderGPT MIT / 3D-Agent 상용",
+      "status_date": "Blender-Copilot 2 stars(초기), BlenderGPT 2023년 이후 정체, 3D-Agent 2026 출시",
+      "strengths": "UI 통합과 undo 안전장치(Copilot)가 장점입니다.",
+      "weaknesses": "대부분 초기 단계이거나 방치 상태입니다. 3D-Agent 관련 2026 자료는 자사 SEO 콘텐츠 비중이 커서 독립 검증이 안 됐습니다."
+    },
+    {
+      "name": "헤드리스 방식: Claude Code/Codex + `blender --background --python` (+ PyPI bpy)",
+      "category": "헤드리스/CLI 워크플로",
+      "what_it_is": "MCP 소켓 없이 코딩 에이전트가 .py 빌드 스크립트를 작성하고, Blender를 백그라운드로 실행해 .blend와 렌더 PNG를 만든 뒤, 이미지를 다시 읽어(Read tool 등) 비평하고 수정하는 루프입니다. Codex 플러그인 ifBars/blender-agent-studio(51 stars, MIT)가 이 방식을 핵심으로 씁니다(.blend와 생성 Python을 함께 보존, 실루엣 마스크 기반 레퍼런스 비교, Poly Haven 1K–8K). minihellboy/claude-blender는 `blender --background --python scripts/headless_blender.py -- --port 9876` 헤드리스 서버와 /blender-iterate, /blender-studio-shot, /blender-turntable 슬래시 명령을 제공합니다. Blender를 Python 모듈로 쓰는 PyPI bpy 5.2.2(2026-09-15, Python 3.13 전용, 약 1.2GB)도 선택지입니다.",
+      "urls": [
+        "https://github.com/ifBars/blender-agent-studio",
+        "https://github.com/minihellboy/claude-blender",
+        "https://pypi.org/project/bpy/",
+        "https://github.com/captproton/yardstake-ux/issues/151"
+      ],
+      "confidence": "high",
+      "how_to_use": "예시: `blender -b --factory-startup --python-exit-code 1 -P build_scene.py -- --out renders/v003.png` → 스크립트 안에서 sys.argv의 '--' 뒤 인자를 파싱하고, `bpy.ops.wm.save_as_mainfile(filepath=...)`, `scene.render.filepath=...`, `bpy.ops.render.render(write_still=True)`를 실행 → 에이전트가 PNG를 열어 확인합니다. 주의: --python-exit-code를 주지 않으면 스크립트 예외가 나도 종료 코드가 0이라 에이전트가 성공으로 오인합니다.",
+      "license_or_price": "Blender/bpy GPL-3.0, 무료",
+      "status_date": "2026년 표준적 대안(Blender Lab 공식 서버의 *_for_cli tool도 같은 발상)",
+      "strengths": "재현성(스크립트가 곧 소스), 버전 관리(git), GUI 멈춤이나 소켓 타임아웃이 없고, CI 병렬 렌더가 가능합니다.",
+      "weaknesses": "실시간 상호작용이 없고, 매 실행마다 씬을 처음부터 다시 빌드하는 비용이 듭니다. 헤드리스 리눅스에서는 EEVEE 렌더에 GPU나 디스플레이 컨텍스트가 필요할 수 있습니다."
+    },
+    {
+      "name": "Meshy MCP + Meshy Bridge (보완재)",
+      "category": "보완 MCP(에셋 생성)",
+      "what_it_is": "Meshy의 공식 MCP 서버(npm @meshy-ai/meshy-mcp-server)로 채팅에서 3D 생성, 텍스처링, 리깅을 수행합니다. 별도 Blender 플러그인인 Meshy Bridge는 로컬 HTTP 포트 5324로 Meshy 워크스페이스 모델을 Blender로 보냅니다. Blender MCP와 함께 쓰면 '생성→임포트→배치' 파이프라인이 됩니다.",
+      "urls": [
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://docs.meshy.ai/en/webapp/plugins/blender/bridge-to-blender",
+        "https://www.meshy.ai/tutorials/blender-mcp-guide"
+      ],
+      "confidence": "medium",
+      "how_to_use": "공식 Blender Lab 서버처럼 생성 tool이 없는 서버와 조합하면 좋습니다. Meshy MCP로 에셋을 만든 뒤 Blender MCP의 execute_blender_code로 임포트하고 스케일과 배치를 조정합니다.",
+      "license_or_price": "Meshy 유료 크레딧",
+      "status_date": "2026 가이드 존재",
+      "strengths": "유기체나 복잡한 소품처럼 프리미티브로 만들기 어려운 대상을 보완합니다.",
+      "weaknesses": "생성 메시의 토폴로지와 스케일 정규화를 후처리해야 합니다."
+    },
+    {
+      "name": "PolyMCP용 Blender-MCP-Server (namurokuro 등)",
+      "category": "커뮤니티 MCP 서버(에이전트 프레임워크 연동)",
+      "what_it_is": "PolyMCP(Python/TypeScript MCP 툴킷·에이전트 프레임워크)와 함께 쓰도록 만든 51-tool Blender 애드온 서버입니다. 스레드 안전 실행과 의존성 자동 설치를 제공합니다. 동일 README를 쓰는 포크가 여러 개 있습니다.",
+      "urls": [
+        "https://github.com/namurokuro/Blender-MCP-Server",
+        "https://github.com/poly-mcp"
+      ],
+      "confidence": "low",
+      "how_to_use": "PolyMCP 기반 멀티에이전트 오케스트레이션을 구성할 때 참고합니다.",
+      "license_or_price": "미확인",
+      "status_date": "미확인",
+      "strengths": "에이전트 프레임워크 연동을 전제로 설계됐습니다.",
+      "weaknesses": "원 저장소가 어디인지 불분명하고(다수 포크), 세부 검증을 하지 못했습니다."
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "목적에 따라 서버를 고르세요. 분석·디버깅·문서 기반 코딩에는 Blender Lab 공식 서버, 에셋과 AI 생성 파이프라인에는 ahujasid, 노드 그래프 편집에는 newo-ether, 배치 자동화에는 헤드리스 방식이 맞습니다.",
+      "why": "공식 서버는 의도적으로 작게 설계돼 에셋 다운로드나 생성 기능이 없고, ahujasid는 에셋과 생성은 풍부하지만 노드 편집이 execute_blender_code에 의존합니다. 한 서버로 모든 작업을 하려 하면 tool 스키마가 비대해지거나 기능이 비게 됩니다.",
+      "example": "AAA 소품 제작 조합 예: ①Blender Lab MCP의 search_api_docs로 API 확인 → ②ahujasid의 search_polyhaven_assets로 HDRI와 텍스처 확보(또는 Meshy MCP로 생성) → ③cc-blender-skill 규칙으로 하드서피스 모델링 → ④StableGen으로 텍스처 보강. 단, ahujasid와 공식 서버를 같은 Blender에 동시에 붙일 때는 포트를 분리해야 합니다.",
+      "urls": [
+        "https://claude.com/connectors/blender",
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/newo-ether/blender-mcp"
+      ]
+    },
+    {
+      "tip": "포트와 패키지 이름 혼동을 피하세요. 공식 애드온과 ahujasid 애드온은 둘 다 기본 localhost:9876을 씁니다. `uvx blender-mcp`나 `uvx mcp-for-blender`로 받는 것은 ahujasid 패키지이고, 공식 서버는 클론한 소스를 `uv --directory <clone>/mcp run blender-mcp`로 실행하거나 .mcpb 번들로 설치합니다.",
+      "why": "두 애드온이 모두 9876을 잡으면 연결이 엉뚱한 서버로 가거나 실패합니다. blender-mcp.com 같은 비공식 사이트에서 받은 애드온 때문에 증상이 꼬인 사례도 있습니다(이슈 #339).",
+      "example": "여러 Blender를 동시에 쓸 때(ahujasid): mcpServers에 \"blender-b\": {\"command\":\"uvx\",\"args\":[\"mcp-for-blender\",\"--port\",\"9877\"]}를 추가하고 두 번째 Blender 애드온의 포트를 9877로 설정합니다. newo-ether 포크는 list_blender_instances와 claim_blender_instance로 인스턴스를 고릅니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit",
+        "https://github.com/ahujasid/blender-mcp/issues/339"
+      ]
+    },
+    {
+      "tip": "Windows와 GUI 클라이언트에서 자주 겪는 설치 문제와 해법을 알아두세요.",
+      "why": "GUI로 실행한 Claude Desktop이나 Cursor는 터미널 PATH를 상속하지 않아 'spawn uvx ENOENT'가 납니다. conda, pyenv, asdf가 있으면 Python 버전 충돌도 생깁니다.",
+      "example": "command에 uvx 절대경로(`where uvx` 결과)를 넣습니다. Python을 고정하려면 args [\"--python\",\"3.11\",\"mcp-for-blender\"]와 env {\"UV_PYTHON_PREFERENCE\":\"only-managed\"}를 씁니다. Cursor(Windows)는 command \"cmd\", args [\"/c\",\"uvx\",\"mcp-for-blender\"]입니다. 첫 명령이 실패하면 두 번째부터 되는 경우가 많고, 계속 실패하면 Claude와 Blender 서버를 둘 다 재시작합니다. 공식 서버를 드래그 설치할 때는 반드시 두 번 드래그합니다(1회차 저장소 추가, 2회차 애드온 설치).",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko"
+      ]
+    },
+    {
+      "tip": "보안 기본값을 챙기세요. 작업 전에 저장하고, BLENDER_MCP_SAFE_MODE=1을 켜고, 서버는 localhost에만 바인딩하고, DISABLE_TELEMETRY=true를 설정하고, 모르는 .blend나 프롬프트는 넣지 마세요.",
+      "why": "execute_blender_code는 exec()로 bpy뿐 아니라 os와 subprocess까지 실행할 수 있어 OS 권한을 넘겨주는 것과 같습니다. 보안 이력도 있습니다: #207(샌드박스 요청, 'not planned'로 종료), #202와 CVE-2026-10661(input_image_url 주입으로 임의 파일 읽기), 텔레메트리 기본 ON 논란(#232, 2026-04). 이후 2026-09-21 커밋에서 opt-in으로 바뀌었습니다. 소켓에는 인증도 암호화도 없습니다.",
+      "example": "env {\"BLENDER_MCP_SAFE_MODE\":\"1\",\"DISABLE_TELEMETRY\":\"true\"}. safe mode는 파일 읽기·쓰기, 외부 프로그램 실행, 네트워크, 지속 코드 설치를 차단하지만 모델링, 재질, 렌더, import/export는 허용합니다. 원격 Blender가 필요하면 host를 노출하지 말고 SSH 터널을 씁니다. 더 강한 격리가 필요하면 샌드박스 실행을 하는 blend-ai나 승인 게이트가 있는 Blender-Copilot을 검토합니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/blender-mcp/issues/207",
+        "https://github.com/ahujasid/blender-mcp/issues/232",
+        "https://github.com/advisories/GHSA-qqw9-95ww-prfm",
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ]
+    },
+    {
+      "tip": "코드는 5~20줄 단위의 작은 청크로 실행하고, 무거운 작업(고해상도 렌더, 베이크, 4K 에셋 다운로드)은 해상도를 낮추거나 별도 프로세스로 돌리세요.",
+      "why": "ahujasid 서버의 소켓 타임아웃은 180초이고, 애드온은 Blender 메인 스레드에서 명령을 처리하므로 긴 작업이 GUI와 후속 명령을 막습니다. MCP 클라이언트 쪽에서도 약 4분에 포기하는 사례가 보고됐습니다. Poly Haven 다운로드도 메인 스레드에서 돌아 Blender가 멈춥니다.",
+      "example": "Poly Haven은 카메라에 가깝지 않으면 1k/2k로 요청합니다. 프리뷰는 EEVEE와 낮은 샘플로 뽑습니다. 최종 렌더는 better-blender-mcp의 백그라운드 워커나 헤드리스 `blender -b` 서브프로세스에서 돌립니다. execute_blender_code docstring도 'step-by-step by breaking it into smaller chunks'를 권장합니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md",
+        "https://github.com/marlonka/better-blender-mcp"
+      ]
+    },
+    {
+      "tip": "씬 정보는 기본 tool에 맡기지 말고 필요한 필드만 담은 압축 JSON을 직접 출력하게 하세요.",
+      "why": "ahujasid의 get_scene_info는 오브젝트 10개까지만 반환해 큰 씬에서 정보가 누락됩니다. 반대로 노드 트리 전체를 export하면 수십 KB가 되어 컨텍스트를 낭비합니다(newo-ether는 slim 뷰로 30노드 export를 62KB에서 9.3KB로 줄임).",
+      "example": "execute_blender_code 안에서: import json; print(json.dumps([{\"n\":o.name,\"t\":o.type,\"loc\":[round(v,3) for v in o.location],\"dim\":[round(v,3) for v in o.dimensions]} for o in bpy.context.scene.objects if o.type=='MESH'])). 공식 서버에서는 get_objects_summary와 get_object_detail_summary를 쓰고, 무거운 파일은 get_blendfile_summary_* 로 개요부터 봅니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://github.com/newo-ether/blender-mcp/releases"
+      ]
+    },
+    {
+      "tip": "버전 독립적인 bpy 코드 3원칙: 노드는 이름이 아니라 type으로 찾고, enum 식별자는 하드코딩하지 말고 런타임에 읽고, 색은 material.diffuse_color가 아니라 셰이더 노드 입력에 설정하세요.",
+      "why": "UI가 한국어 등으로 현지화된 Blender에서는 nodes['Principled BSDF']가 None을 반환합니다. enum은 버전마다 바뀝니다. diffuse_color는 뷰포트 표시에만 쓰이고 렌더에는 영향이 없습니다. 이 세 가지는 ahujasid 서버가 FastMCP instructions로 모델에 직접 주입하는 가이드이기도 합니다.",
+      "example": "bsdf = next(n for n in mat.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'); fmts = [i.identifier for i in scene.render.image_settings.bl_rna.properties['file_format'].enum_items]. 단, scene.render.engine은 애드온 엔진이 RNA enum에 없어 예외입니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py"
+      ]
+    },
+    {
+      "tip": "코드를 짜기 전에 Blender 버전부터 확인하세요(get_addon_status 또는 bpy.app.version). 그리고 LLM이 자주 틀리는 4.x→5.x API 변경을 체크리스트로 두세요.",
+      "why": "모델의 학습 데이터에는 3.x/4.x 코드가 많아 AttributeError나 KeyError가 반복됩니다. 5.2는 현재 LTS(2026-07-14 출시, 2028-07까지 지원)이고 5.2.1, 5.2.2가 이미 나왔습니다.",
+      "example": "4.0: BSDF 소켓 'Specular'→'Specular IOR Level', 'Emission'→'Emission Color', 'Subsurface'→'Subsurface Weight', 'Transmission'→'Transmission Weight', 'Coat'→'Coat Weight', 'Sheen'→'Sheen Weight'. bpy.ops에 context dict를 넘기던 방식은 `with bpy.context.temp_override(area=..., region=...):`로 바뀜. / 4.1: mesh.use_auto_smooth 제거 → 'Smooth by Angle' 모디파이어 또는 Shade Smooth by Angle. / 4.2: Material.blend_method→surface_render_method, scene.eevee.use_bloom 등 bloom 속성 제거 → 컴포지터 Glare(Bloom). / 5.0: 엔진 ID 'BLENDER_EEVEE_NEXT'→'BLENDER_EEVEE', scene.node_tree→scene.compositing_node_group(없으면 bpy.data.node_groups.new('Comp','CompositorNodeTree')로 만들어 할당), material.use_nodes는 항상 True이고 6.0에서 제거 예정, action.fcurves/groups 제거 → bpy_extras.anim_utils.action_get_channelbag_for_slot(action, slot).fcurves, bgl 제거 → gpu 모듈, Image.bindcode 제거, 일부 Compositor 노드를 Shader 노드로 대체(CompositorNodeGamma→ShaderNodeGamma). / 5.1: Python 3.13(컴파일된 휠은 ABI가 깨짐), user site-packages를 기본으로 불러오지 않음. / 5.2: GN 모디파이어 입력 mod['Socket_2']=5.0 → mod.properties.inputs.Socket_2.value = 5.0, paint.eraser_brush 제거. 교차 호환 스니펫: eng = 'BLENDER_EEVEE' if bpy.app.version >= (5,0,0) else 'BLENDER_EEVEE_NEXT'; ng = getattr(scene,'compositing_node_group',None) or getattr(scene,'node_tree',None).",
+      "urls": [
+        "https://developer.blender.org/docs/release_notes/5.0/python_api/",
+        "https://developer.blender.org/docs/release_notes/5.2/python_api/",
+        "https://developer.blender.org/docs/release_notes/4.2/python_api/",
+        "https://developer.blender.org/docs/release_notes/4.1/python_api/",
+        "https://developer.blender.org/docs/release_notes/5.1/python_api/",
+        "https://github.com/benrugg/AI-Render/issues/171",
+        "https://github.com/EverettFish/holo-card-studio/issues/172",
+        "https://github.com/Brachi/albam/issues/284",
+        "https://github.com/RobLe3/cc-blender-skill/pull/1"
+      ]
+    },
+    {
+      "tip": "API는 추측하지 말고 조회하세요. ahujasid의 bpy_api_lookup과 describe_node_type, 공식 서버의 search_api_docs, search_manual_docs, get_runtime_python_api_docs를 코드 작성 전에 호출하도록 프롬프트나 스킬에 못박으세요.",
+      "why": "소켓 순서, enum 이름, 노드 bl_idname을 틀리는 것이 LLM bpy 코드의 주된 실패 원인입니다. 런타임 조회는 설치된 버전 기준으로 정확합니다.",
+      "example": "프롬프트 예: 'Before writing any node code, call describe_node_type(\"ShaderNodeBsdfPrincipled\") and use exact socket names returned. Never guess enum identifiers.'",
+      "urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://github.com/bpy-dev/blender-mcp/blob/main/readme_tools.rst"
+      ]
+    },
+    {
+      "tip": "스크린샷 루프를 의무화하세요(변경 전 1회, 변경 후 1회). 단 비전은 보조로 쓰고, 치수, 바운딩박스, 교차 여부 같은 판정은 수치로 하세요.",
+      "why": "ahujasid의 asset_creation_strategy 프롬프트도 get_viewport_screenshot()을 변경 전후에 쓰라고 지시합니다. 하지만 스크린샷만으로는 관통, 부유, 스케일 오류를 놓치기 쉬워, PatrykIti는 'Vision assists but doesn't command'를 설계 원칙으로 삼았고 glonorce는 BVH 기반 면 간 거리와 관통 검사를 둡니다.",
+      "example": "보고 전 QA 게이트(cc-blender-skill): 피사체가 보이고 알아볼 수 있는지 / 비율이 실측 치수와 맞는지 / 프레임 안에 있고 잘리거나 너무 작지 않은지 / 재질 변화가 있는지 확인합니다. 'If the render is obviously wrong, do NOT report success.' 마지막에는 space.shading.type = 'MATERIAL'로 사용자에게 재질이 보이게 합니다. 4방향 contact sheet(pakkio)나 멀티앵글 렌더(RFingAdam)로 한 각도의 착시를 막습니다.",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md",
+        "https://github.com/PatrykIti/blender-ai-mcp",
+        "https://github.com/glonorce/Blender_mcp",
+        "https://github.com/pakkio/mcp-blender"
+      ]
+    },
+    {
+      "tip": "각 execute 호출은 새 namespace라고 생각하고, 오브젝트는 안정적인 이름으로 다시 조회하세요. 이름 규칙은 GEO-, MAT-, LGT-, CAM-, ARM- 접두사를 씁니다.",
+      "why": "ahujasid는 exec(code, {'bpy': bpy})로 실행하므로 이전 호출의 Python 변수가 남지 않습니다. 'Cube.027' 같은 기본 이름은 후속 수정 때 대상을 잃게 만듭니다.",
+      "example": "obj = bpy.data.objects['GEO-chair_seat']; print(f\"done:GEO-chair_seat {len(obj.data.vertices)}\"). 결과를 구조화된 print로 남기면 에이전트가 파싱하기 쉽습니다.",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py"
+      ]
+    },
+    {
+      "tip": "가구나 소품 형태를 정확하게 만들려면 실측 치수를 먼저 조회하고 하드서피스 표준 스택을 적용하세요. 스택은 Bevel(0.02m, 3 segments, ANGLE 30°)을 SubSurf(뷰 2 / 렌더 3)보다 먼저 두는 것입니다.",
+      "why": "LLM은 치수를 추측하면 비율이 어긋나고, 베벨이 없으면 '기본 큐브' 느낌이 납니다. Bevel을 SubSurf 뒤에 두면 핀칭(pinching) 아티팩트가 생깁니다.",
+      "example": "의자: 좌판 약 45×45×4cm, 좌판 높이 45cm, 등받이 약 45cm. 병: 높이 25~30cm, 몸통 지름 8~10cm. 모디파이어 순서는 Mirror → Array → Solidify → Bevel → Subdivision Surface → Boolean입니다. 부품 접합부는 5~15mm 겹쳐 틈을 없앱니다. Boolean은 solver='EXACT'로 적용한 뒤 normals_make_consistent를 실행합니다. 뾰족한 끝은 정점을 0으로 스케일하지 말고 중심선에 모은 뒤 remove_doubles(threshold=0.001)로 합칩니다. 긴 물체는 넓은 면이 카메라를 향하게 둡니다.",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/blender-modeling/SKILL.md",
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md"
+      ]
+    },
+    {
+      "tip": "Blender에서 '예쁘게' 보이게 하는 최소 조명과 렌더 규칙입니다. HDRI 월드를 항상 설정하고, 조명은 Area 라이트 위주로 쓰고, Key:Fill 비율과 바운스를 제대로 잡으세요.",
+      "why": "월드가 없으면 금속과 유리에 반사할 대상이 없어 밋밋해집니다. 유리 내부가 검게 나오는 것은 대개 transmission bounce 부족 때문입니다.",
+      "example": "Key:Fill 비율은 광고 2:1 / 인물 4:1 / 드라마틱 8:1 이상, Rim은 Key의 50~100%이되 Key를 넘지 않게 합니다. 제품샷은 5:1:1.5, 목재는 4:1:1.5에 Key 색 (1.0,0.92,0.78)을 씁니다. 유리는 scene.cycles.transmission_bounces = 24로 올리고(기본 12), 실내 실용 조명은 max_bounces 16 이상으로 둡니다. 부드러운 그림자는 Area size를 키우거나 Sun angle을 radians(5) 정도로 늘립니다. Poly Haven HDRI를 먼저 깔고 나서 재질을 다듬습니다.",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/blender-lighting/SKILL.md",
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md"
+      ]
+    },
+    {
+      "tip": "버전 저장과 undo 전략을 세우세요. 위험한 단계 전에는 .blend 사본을 저장하고, Blender의 Save Versions와 Save Incremental(Ctrl+Alt+S)도 켜 두세요.",
+      "why": "ahujasid 애드온에는 undo_push 처리가 없어 AI가 만든 변경을 Ctrl+Z로 한 단계씩 되돌린다는 보장이 없습니다. README도 'Always save work before using it'을 강조합니다.",
+      "example": "단계마다 bpy.ops.wm.save_as_mainfile(filepath='//versions/scene_v003.blend', copy=True)로 현재 파일은 유지한 채 사본을 남깁니다. undo 단위가 필요하면 bpy.ops.ed.undo_push(message='AI: add chair')를 호출합니다(Blender-Copilot 방식). harveyxiacn 서버의 named checkpoint 기능도 같은 목적입니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/halilogia/Blender-Copilot",
+        "https://github.com/harveyxiacn/blender-mcp"
+      ]
+    },
+    {
+      "tip": "tool 스키마의 컨텍스트 비용을 관리하세요. 모든 tool을 미리 불러오는 클라이언트(Claude Desktop, Cursor, VS Code, Windsurf)에서는 쓰지 않는 MCP를 끄고, tool이 많은 서버는 프로파일이나 필터 기능을 쓰세요.",
+      "why": "ahujasid의 tool 스키마는 2026-08-19부터 09-03 사이 5,462에서 6,928 토큰으로 27% 늘었습니다(25→28 tools 시점 측정). Claude Code는 tool 정의를 지연 로딩해 영향이 적습니다. 200~359개 tool 서버는 그대로 쓰면 컨텍스트를 크게 잠식합니다.",
+      "example": "harveyxiacn은 기본 32개 tool만 로드하고 blender_activate_skill로 그룹을 켭니다. glonorce의 intent 필터는 약 77%를 줄입니다. PatrykIti는 search_tools와 call_tool 게이트웨이만 노출합니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/347",
+        "https://github.com/harveyxiacn/blender-mcp",
+        "https://github.com/glonorce/Blender_mcp",
+        "https://github.com/PatrykIti/blender-ai-mcp"
+      ]
+    },
+    {
+      "tip": "'에셋 우선, 프리미티브는 하드서피스만'을 원칙으로 하세요. 유기체, 캐릭터, 얼굴, 조형물은 에셋 검색(Poly Haven, Sketchfab, Poly Pizza)이나 생성 모델(Rodin, Hunyuan3D, Tripo, Meshy), 스컬프팅으로 해결합니다.",
+      "why": "cc-blender-skill은 프리미티브로 사람 얼굴을 만드는 것을 명시적으로 범위 밖으로 둡니다. 코드 모델링은 방, 제품, 건축 같은 기하학적 대상에서 강하고 유기적 형태에서는 약합니다.",
+      "example": "ahujasid 프롬프트 예: 'Fill this room with low-poly furniture from Poly Pizza', 'Generate a 3D model of a garden gnome through Hyper3D'. 받은 에셋은 target_size나 normalize_size로 실제 스케일에 맞추고, CC-BY 에셋은 polypizza_attribution 속성을 유지해 크레딧을 보존합니다. Hyper3D 무료 체험 키는 하루 생성 수가 제한됩니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/RobLe3/cc-blender-skill"
+      ]
+    },
+    {
+      "tip": "헤드리스 파이프라인에서는 반드시 `--python-exit-code 1`을 붙이고, 생성 스크립트를 .blend와 함께 git으로 관리하세요.",
+      "why": "Blender는 --python 스크립트가 예외를 내도 기본적으로 종료 코드 0을 반환해 에이전트나 CI가 실패를 성공으로 오인합니다. 스크립트를 보존하면 에이전트가 나중에 파라미터만 바꿔 재빌드할 수 있습니다(Blender Agent Studio의 설계 철학).",
+      "example": "blender -b --factory-startup --python-exit-code 1 -P build_room.py -- --variant warm --out renders/room_warm.png. 또는 Python 3.13 venv에서 `pip install bpy==5.2.2` 후 import bpy로 직접 실행합니다.",
+      "urls": [
+        "https://github.com/captproton/yardstake-ux/issues/151",
+        "https://github.com/ifBars/blender-agent-studio",
+        "https://pypi.org/project/bpy/"
+      ]
+    },
+    {
+      "tip": "GPT-6 Astra와 Codex로 Blender를 구동하려면 ahujasid README의 Codex 설정을 쓰거나 공식 서버를 붙이고, '레퍼런스 이미지 → 스크립트 → 렌더 → 다시 보여주기' 루프를 돌리세요.",
+      "why": "2026-09에 'GPT Astra용 권장 blender mcp는?'이라는 질문(이슈 #351)과 Codex 가이드 요청(#350)이 올라올 만큼 수요가 큽니다. README에는 codex mcp add 명령과 config.toml 예시가 있습니다.",
+      "example": "codex mcp add blender -- uvx mcp-for-blender 또는 ~/.codex/config.toml에 [mcp_servers.blender] command=\"uvx\" args=[\"mcp-for-blender\"]. Codex Desktop에서는 Settings → MCP servers → STDIO → `uvx mcp-for-blender`로 추가합니다.",
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/blender-mcp/issues/351",
+        "https://gamedevacademy.org/gpt-astra-blender-mcp-tutorial/"
+      ]
+    },
+    {
+      "tip": "Geometry Nodes나 셰이더 그래프를 에이전트가 만들 때는 validate→apply→verify 트랜잭션 방식의 tool(newo-ether)이나 레퍼런스 스킬(ra100의 GN 약 373노드 레퍼런스)을 쓰고, 생성 뒤에는 노드 레이아웃과 프레임도 정리하게 하세요.",
+      "why": "execute_blender_code로 노드를 만들면 소켓 연결 오류가 조용히 남거나 그래프가 사람이 못 읽는 스파게티가 됩니다. newo-ether v1.18.0은 GN 생성 뒤 '시각적 post-pass'를 필수로 둡니다.",
+      "example": "apply_node_tree_patch는 실패하면 롤백합니다. 5.2에서 GN 모디파이어 입력은 mod.properties.inputs.<Socket_id>.value로 설정합니다. Simulation zone은 add_simulation_zone처럼 Input/Output 쌍을 원자적으로 만듭니다.",
+      "urls": [
+        "https://github.com/newo-ether/blender-mcp/releases",
+        "https://github.com/ra100/blender-claude-plugin"
+      ]
+    },
+    {
+      "tip": "로컬 LLM만 써야 한다면 공식 서버의 llama.cpp 가이드나 blender-open-mcp(Ollama, LM Studio)를 쓰되, 역할은 '분석과 간단한 편집' 정도로 기대치를 낮추세요.",
+      "why": "공식 Blender Lab 문서는 오픈 웨이트 모델과 로컬 환경 설정을 안내하지만, 복잡한 모델링 품질은 frontier 모델과 차이가 큽니다(사례 대부분이 Claude 또는 GPT 계열).",
+      "example": "llama-server -m <model.gguf> 실행 → 공식 MCP 서버에 연결 → 'Analyze the scene and list the outliers...' 같은 분석 프롬프트로 시작합니다.",
+      "urls": [
+        "https://www.blender.org/lab/mcp-server/",
+        "https://github.com/dhakalnirajan/blender-open-mcp"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Siddharth Ahuja의 Blender MCP 원조 데모: 'low-poly dragon guarding treasure'와 Poly Haven 해변 씬",
+      "who": "Siddharth Ahuja (@sidahuj)",
+      "date": "2025-03-11 (드래곤 데모), 2025-03 중순 (Poly Haven 통합)",
+      "what_was_made": "몇 문장의 프롬프트로 만든 로우폴리 던전 드래곤 씬과, HDRI·텍스처·바위·식생을 자동으로 가져와 구성한 해변 씬",
+      "process": "Claude Desktop에서 blender-mcp로 Blender를 조작했습니다. 처음에는 프리미티브와 코드로 씬을 만들었고, 이후 Poly Haven 통합(당시 1,500개 이상 에셋)으로 알맞은 HDRI, 텍스처, 모델을 검색해 임포트했습니다. 같은 무렵 '@Blender feel free to build on this for an official MCP!'라는 트윗을 남겼고, 이후 Blender Lab 공식 MCP가 나왔습니다.",
+      "tools": "blender-mcp(PyPI 0.1.0 2025-03-08 → 1.0.0 2025-03-10), Claude Desktop, Poly Haven",
+      "ai_model": "Claude (2025년 3월 당시 모델)",
+      "outcome": "바이럴이 됐고, 현재 약 29.4k stars입니다. 이 README 예시 프롬프트('Create a beach vibe using HDRIs, textures, and models like rocks and vegetation')가 사실상 표준 데모가 됐습니다.",
+      "urls": [
+        "https://x.com/sidahuj/status/1899460492999184534",
+        "https://x.com/sidahuj/status/1901632110395265452",
+        "https://x.com/sidahuj/status/1899828297346974060",
+        "https://pypi.org/project/blender-mcp/",
+        "https://ai.engineer/talks/blender-mcp-and-the-future-of-creative-tools-siddharth-ahuja"
+      ]
+    },
+    {
+      "title": "cc-blender-skill: 스킬 기반 텍스트→Blender 파이프라인을 6개 씬 클래스로 E2E 검증",
+      "who": "RobLe3 (GitHub)",
+      "date": "2026 (v1.3.0)",
+      "what_was_made": "검, 병, 의자, 비행사, 데스크램프, 방송용 아바타 6종과 wireframe-to-3d. 실패 사례를 포함한 증거 렌더가 저장소에 커밋돼 있습니다.",
+      "process": "text-to-blender 오케스트레이터가 10단계로 진행합니다: 의도 파악 → MCP 확인 → 월드 리셋(color 0.04/0.04/0.05, strength 0.4) → 실측 치수 조회 → 하위 스킬 로드 → 조립 순서대로 5~20줄 청크 실행 → scene/object info와 스크린샷으로 검증 → 반복 → 수치와 렌더 경로 보고. 이후 공식 Blender Lab MCP로 옮기면서(PR #1) tool 이름을 매핑했고, Blender 5.1.2에서 compositing_node_group, Glare 옵션의 소켓화, bmesh 편집 후 depsgraph 갱신 문제를 새로 발견했습니다.",
+      "tools": "Blender 5.1.1/5.1.2, ahujasid Blender MCP에서 공식 Blender Lab MCP로 이전, Claude Code Skills",
+      "ai_model": "Claude (Claude Code)",
+      "outcome": "하드서피스 소품은 재현 가능한 품질을 확보했습니다. 사람 얼굴은 범위 밖으로 명시하고 에셋 임포트, 스컬프트, 외부 생성으로 우회하는 경로를 문서화했습니다.",
+      "urls": [
+        "https://github.com/RobLe3/cc-blender-skill",
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md",
+        "https://github.com/RobLe3/cc-blender-skill/pull/1"
+      ]
+    },
+    {
+      "title": "Claude Fable 5.1이 주소 하나로 주택 워크스루 영상을 만든 사례 (MindStudio 보도)",
+      "who": "MindStudio 블로그 (검색 요약으로만 확인)",
+      "date": "2026",
+      "what_was_made": "시애틀 주택의 37초 시네마틱 워크스루(외부 → 현관 → 거실 → 천장 통과 → 부감)",
+      "process": "주소와 느슨한 크리에이티브 브리프만 주고, 모델이 코드로 집 지오메트리, 지형, 인테리어, 조명, 조경을 만든 뒤 카메라 경로를 설계하고 프리뷰 스틸로 자가 검증하고 최종 렌더까지 했다고 보도됐습니다.",
+      "tools": "Blender MCP(서버 종류 미확인), Python 실행, 뷰포트 피드백",
+      "ai_model": "Claude Fable 5.1",
+      "outcome": "사람의 수동 모델링 없이 단일 프롬프트로 완성했다고 주장합니다. 원문을 열람하지 못해 세부 검증은 하지 못했습니다(신뢰도 낮음).",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-fable-5-1-blender-video-generation"
+      ]
+    },
+    {
+      "title": "Claude + Blender MCP 실사용 평가: 2시간 작업, Max 플랜 세션 토큰 60% 소모, 클리핑과 색 아티팩트 잔존",
+      "who": "MindStudio 블로그 등 (검색 요약으로만 확인)",
+      "date": "2026",
+      "what_was_made": "방, 제품샷, 건축 콘셉트 등 하드서피스 중심 씬",
+      "process": "매싱 → 디테일 → 재질·조명 순으로 단계적으로 빌드했습니다. Poly Haven HDRI를 초기에 설정하고, '창문 더 크게' 같은 후속 프롬프트로 반복 수정했습니다. 치수를 주면 모델이 '30cm 통로 여유가 표준' 같은 설계 지식을 보태 주었습니다.",
+      "tools": "Claude Desktop/Code, Blender MCP, Poly Haven",
+      "ai_model": "Claude (2026)",
+      "outcome": "결론은 '감독이 필요한 협업자이지 자율 3D 아티스트가 아니다'입니다. 기하학적 씬에는 강하지만 비용과 시간이 크고 품질 결함이 남습니다.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance",
+        "https://note.com/tokyomakers/n/nbd3fade4b1ec?hl=en"
+      ]
+    },
+    {
+      "title": "GPT-6 Astra + Codex + Blender MCP로 Godot 3D 씬 제작",
+      "who": "GameDev Academy 튜토리얼 외 (검색 요약으로만 확인)",
+      "date": "2026",
+      "what_was_made": "Blender에서 만든 에셋을 Godot 프로젝트 씬으로 구성",
+      "process": "Codex 앱에 Blender MCP를 등록합니다. 씬을 설명하면 Astra가 Python을 생성해 실행하고, 렌더를 Astra에게 다시 보여 준 뒤 반복합니다. Godot도 설치해 두고 에이전트가 프로젝트를 만들고 테스트하게 했습니다.",
+      "tools": "Codex, Blender MCP(ahujasid로 추정), Godot",
+      "ai_model": "GPT-6 Astra",
+      "outcome": "빠른 프로토타이핑에 유효했습니다. '샷이 어떤 느낌이어야 하는지는 모른다'는 한계 때문에 방향 설정과 최종 QA는 사람이 맡는 패턴을 권했습니다.",
+      "urls": [
+        "https://gamedevacademy.org/gpt-astra-blender-mcp-tutorial/",
+        "https://note.com/snapreplica/n/n77a3c9fae946?hl=en"
+      ]
+    },
+    {
+      "title": "공식 Blender 커넥터 설정 경험기 (한국어·일본어 커뮤니티)",
+      "who": "Threads @dddesign.io(한국), 클리앙 사용자, zenn.dev/classmethod 등 일본 개발자",
+      "date": "2026-04~05",
+      "what_was_made": "Claude Desktop과 Claude Code에 공식 Blender connector를 연결하고 간단한 모델링과 텍스처링을 진행",
+      "process": "Claude Desktop → 설정 → 커넥터 → 'blender' 검색 → Enabled → 공식 링크에서 파일 다운로드 → Blender에 드래그. 드래그는 반드시 2번 반복하고, Edit > Preferences에서 확인합니다. 클리앙 사용자는 아이디어 시각화부터 모델링, 텍스처링까지 약 7~10분 걸렸다고 후기를 남겼습니다.",
+      "tools": "Blender Lab 공식 MCP, Claude Desktop/Claude Code",
+      "ai_model": "Claude (2026)",
+      "outcome": "초기 설정은 까다롭지만 한 번 잡아 두면 편하다는 평가입니다. 원문은 열람하지 못했고 검색 요약으로만 확인했습니다.",
+      "urls": [
+        "https://www.threads.com/@dddesign.io/post/DXsWAspka7F/%ED%81%B4%EB%A1%9C%EB%93%9C-%EB%B8%94%EB%A0%8C%EB%93%9C-%EC%BB%A4%ED%85%8D%ED%84%B0-%EC%82%AC%EC%9A%A9%EB%B2%95%EA%B3%B5%EC%8B%9D-%EA%B0%80%EC%9D%B4%EB%93%9C%EA%B0%80-%EB%B6%88%EC%B9%9C%EC%A0%88%ED%95%B4%EC%84%9C-%EB%A7%8C%EB%93%AC1-claude-%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%83%91-%EC%84%B8%ED%8C%85-%EC%BB%A4%EB%84%A5%ED%84%B0-%EC%9D%B4%EB%8F%992-blender-%EA%B2%80%EC%83%89-%EC%84%A0%ED%83%9D3-enbaled-%EB%88%84?hl=ko",
+        "https://www.clien.net/service/board/park/19015735",
+        "https://zenn.dev/shintama/articles/blender-official-mcp-claude?locale=en",
+        "https://dev.classmethod.jp/en/articles/claude-blender-connector-desktop-and-code/"
+      ]
+    },
+    {
+      "title": "claude-3d-harness: 여러 스킬 라이브러리와 단일 MCP 서버를 묶은 시네마틱 잡",
+      "who": "MAX-786 (GitHub)",
+      "date": "2026",
+      "what_was_made": "시네마틱 워크플로 잡 1건(Windows 11에서 성공)",
+      "process": "잡을 fast/standard/cinematic으로 분류하고, modeling/product/photography/animation/environment/cinematic 중 워크플로를 고릅니다. 레지스트리가 cc, gaius, kb, jo, newo 스킬 58개를 해석하고, 단계마다 체크포인트 렌더를 찍습니다. provider는 newo-ether(기본)와 ahujasid(대체)이며, 공식 Blender Lab 서버 지원은 이슈 #7로 논의 중입니다.",
+      "tools": "Claude Code, newo-ether blender-mcp, 오픈소스 스킬 라이브러리",
+      "ai_model": "Claude (Claude Code)",
+      "outcome": "초기 단계(6 stars)지만, 스킬을 고정 버전(pinned)으로 관리하고 체크섬으로 검증하는 운영 방식이 참고할 만합니다.",
+      "urls": [
+        "https://github.com/MAX-786/claude-3d-harness",
+        "https://github.com/MAX-786/claude-3d-harness/issues/7"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "ahujasid/mcp-for-blender (구 blender-mcp) GitHub README",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "source_type": "GitHub README (primary)",
+      "date": "2026-09-25 업데이트",
+      "why_useful": "설치(Claude Desktop/Code/Cursor/Codex/OpenCode/Antigravity/Docker), 환경변수, safe mode, 텔레메트리, 문제 해결 표, 예시 프롬프트"
+    },
+    {
+      "title": "mcp-for-blender server.py (raw)",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+      "source_type": "소스 코드 (primary)",
+      "date": "2026-09",
+      "why_useful": "36개 tool 목록과 파라미터, 180초 소켓 타임아웃, FastMCP instructions(노드 type 조회, enum 하드코딩 금지), Premium 감지 방식"
+    },
+    {
+      "title": "mcp-for-blender addon.py (raw)",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+      "source_type": "소스 코드 (primary)",
+      "date": "2026-09",
+      "why_useful": "get_scene_info의 10개 제한, GPUOffScreen 스크린샷, timer 큐, exec namespace, undo 처리 없음 확인"
+    },
+    {
+      "title": "PyPI mcp-for-blender",
+      "url": "https://pypi.org/project/mcp-for-blender/",
+      "source_type": "패키지 레지스트리",
+      "date": "2.1.0, 2026-09-25",
+      "why_useful": "최신 버전과 릴리스 이력, 이름 변경 공지"
+    },
+    {
+      "title": "PyPI blender-mcp (release history)",
+      "url": "https://pypi.org/project/blender-mcp/",
+      "source_type": "패키지 레지스트리",
+      "date": "0.1.0(2025-03-08) ~ 2.0.0(2026-09-16)",
+      "why_useful": "전체 버전 연혁과 2.0.0 호환 래퍼 확인"
+    },
+    {
+      "title": "mcp-for-blender commits",
+      "url": "https://github.com/ahujasid/blender-mcp/commits/main",
+      "source_type": "GitHub 커밋 로그",
+      "date": "2026-09-15~25",
+      "why_useful": "opt-in 텔레메트리 전환(09-21), safe mode 추가, export_scene, Poly Pizza, premium 통합"
+    },
+    {
+      "title": "Anthropic — Claude for Creative Work",
+      "url": "https://www.anthropic.com/news/claude-for-creative-work",
+      "source_type": "공식 발표",
+      "date": "2026-04-28 (2026-05-01 업데이트)",
+      "why_useful": "Blender 개발자가 만든 공식 커넥터라는 점, 9개 커넥터 목록, Blender가 Development Fund 대신 일회성 기부를 택한 사실"
+    },
+    {
+      "title": "Claude connectors — Blender",
+      "url": "https://claude.com/connectors/blender",
+      "source_type": "공식 커넥터 디렉터리",
+      "date": "2026-04 등록",
+      "why_useful": "Provider가 'Blender Lab (Anthropic verified)'이고 애드온이 필요하다는 점"
+    },
+    {
+      "title": "Blender Lab MCP Server 페이지",
+      "url": "https://www.blender.org/lab/mcp-server/",
+      "source_type": "공식 문서 (검색 요약으로 확인, 직접 열람 실패)",
+      "date": "2026",
+      "why_useful": "Blender 5.1+ 요구, 2회 드래그 설치, 샘플 프롬프트, 로컬 LLM 안내"
+    },
+    {
+      "title": "lab/blender_mcp 저장소 및 v1.0.0 릴리스",
+      "url": "https://projects.blender.org/lab/blender_mcp/releases/tag/v1.0.0",
+      "source_type": "공식 저장소 (검색 요약으로 확인)",
+      "date": "2026-04-27",
+      "why_useful": "초기 릴리스 날짜(Dalai Felinto), MCPB 번들"
+    },
+    {
+      "title": "bpype/blender_mcp (Blender Lab MCP GitHub 미러)",
+      "url": "https://github.com/bpype/blender_mcp",
+      "source_type": "미러 저장소",
+      "date": "2026",
+      "why_useful": "공식 서버의 tool 목록, 아키텍처, 애드온 설정(host/port/polling/auto-start)"
+    },
+    {
+      "title": "bpy-dev/blender-mcp readme_tools.rst",
+      "url": "https://github.com/bpy-dev/blender-mcp/blob/main/readme_tools.rst",
+      "source_type": "파생 배포판 문서",
+      "date": "2026",
+      "why_useful": "search_api_docs/search_manual_docs/get_runtime_python_api_docs 등 공식 계열 tool 설명"
+    },
+    {
+      "title": "stefancrm/claude-blender-mcp-connector-setup-kit",
+      "url": "https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit",
+      "source_type": "커뮤니티 설치 키트",
+      "date": "2026",
+      "why_useful": "공식 서버를 Claude Code에 붙이는 구체적 ~/.claude.json 설정, null-byte 구분 JSON, 포트 9876, 26 tools"
+    },
+    {
+      "title": "scenario-labs/blender-plugin issue #3 (Blender Lab 라이선스)",
+      "url": "https://github.com/scenario-labs/blender-plugin/issues/3",
+      "source_type": "GitHub 이슈",
+      "date": "2026",
+      "why_useful": "공식 blender_mcp manifest의 GPL-3.0-or-later 확인과 아키텍처 비교"
+    },
+    {
+      "title": "GHSA-qqw9-95ww-prfm / CVE-2026-10661",
+      "url": "https://github.com/advisories/GHSA-qqw9-95ww-prfm",
+      "source_type": "보안 권고",
+      "date": "2026-06-02/03",
+      "why_useful": "ahujasid blender-mcp 취약점의 범위, 심각도, 패치 커밋"
+    },
+    {
+      "title": "ahujasid issue #232 텔레메트리 opt-in 요구",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/232",
+      "source_type": "GitHub 이슈",
+      "date": "2026-04-20",
+      "why_useful": "과거 기본 ON(consent default=True)과 Supabase 업로드 데이터 범위"
+    },
+    {
+      "title": "ahujasid issue #347 tool-schema 컨텍스트 비용",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/347",
+      "source_type": "GitHub 이슈",
+      "date": "2026-09-05",
+      "why_useful": "5,462→6,928 토큰 측정치와 클라이언트별 영향"
+    },
+    {
+      "title": "ahujasid issues #339/#357/#219/#187",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/339",
+      "source_type": "GitHub 이슈",
+      "date": "2026-02~09",
+      "why_useful": "Windows 타임아웃(프레이밍 불일치 의심), 불완전 JSON, WSL 스크린샷 경로 문제"
+    },
+    {
+      "title": "newo-ether/blender-mcp releases",
+      "url": "https://github.com/newo-ether/blender-mcp/releases",
+      "source_type": "GitHub 릴리스",
+      "date": "v1.19.0 2026-09-21",
+      "why_useful": "노드 트리 패치 tool 진화와 slim export 수치"
+    },
+    {
+      "title": "HoldMyBeer-gg/blend-ai",
+      "url": "https://github.com/HoldMyBeer-gg/blend-ai",
+      "source_type": "GitHub README",
+      "date": "v1.6.0 2026-09-25",
+      "why_useful": "186 tools, 샌드박스, Blender 4.2+ 호환 정보"
+    },
+    {
+      "title": "PatrykIti/blender-ai-mcp",
+      "url": "https://github.com/PatrykIti/blender-ai-mcp",
+      "source_type": "GitHub README",
+      "date": "v3.3.0 2026-05",
+      "why_useful": "goal-first 라우팅과 결정적 검증 설계 원칙"
+    },
+    {
+      "title": "RobLe3/cc-blender-skill (modeling/lighting/text-to-blender SKILL.md)",
+      "url": "https://github.com/RobLe3/cc-blender-skill",
+      "source_type": "Claude Code 스킬 저장소",
+      "date": "v1.3.0 2026",
+      "why_useful": "치수, 베벨, 모디파이어 순서, 조명 비율, 바운스, QA 게이트 등 수치 규칙"
+    },
+    {
+      "title": "ra100/blender-claude-plugin",
+      "url": "https://github.com/ra100/blender-claude-plugin",
+      "source_type": "Claude Code 플러그인",
+      "date": "v1.3.0 2026",
+      "why_useful": "공식 MCP 전제의 Blender 5.x 스킬과 설치 명령"
+    },
+    {
+      "title": "sakalond/StableGen",
+      "url": "https://github.com/sakalond/StableGen",
+      "source_type": "GitHub README",
+      "date": "2026-06-12",
+      "why_useful": "Blender 내 AI 투영 텍스처링과 TRELLIS.2, 버전 지원 범위"
+    },
+    {
+      "title": "ifBars/blender-agent-studio",
+      "url": "https://github.com/ifBars/blender-agent-studio",
+      "source_type": "GitHub README",
+      "date": "2026",
+      "why_useful": "Codex 헤드리스 CLI 방식의 구체 사례"
+    },
+    {
+      "title": "captproton/yardstake-ux issue #151 (--python-exit-code)",
+      "url": "https://github.com/captproton/yardstake-ux/issues/151",
+      "source_type": "GitHub 이슈",
+      "date": "2026",
+      "why_useful": "헤드리스 실행에서 예외가 나도 exit 0이 되는 함정과 해결책"
+    },
+    {
+      "title": "Blender 5.0 Python API release notes",
+      "url": "https://developer.blender.org/docs/release_notes/5.0/python_api/",
+      "source_type": "공식 릴리스 노트 (검색 요약으로 확인)",
+      "date": "2025-11",
+      "why_useful": "EEVEE ID, action.fcurves, bgl, compositor 등 5.0 변경점"
+    },
+    {
+      "title": "Blender 5.2 LTS Python API release notes",
+      "url": "https://developer.blender.org/docs/release_notes/5.2/python_api/",
+      "source_type": "공식 릴리스 노트 (검색 요약으로 확인)",
+      "date": "2026-07-14",
+      "why_useful": "GN 모디파이어 properties.inputs API 변경"
+    },
+    {
+      "title": "benrugg/AI-Render issue #171 / EverettFish issue #172",
+      "url": "https://github.com/benrugg/AI-Render/issues/171",
+      "source_type": "GitHub 이슈",
+      "date": "2025-2026",
+      "why_useful": "scene.node_tree→compositing_node_group 실제 파손 사례와 호환 코드"
+    },
+    {
+      "title": "PyPI bpy",
+      "url": "https://pypi.org/project/bpy/",
+      "source_type": "패키지 레지스트리",
+      "date": "5.2.2, 2026-09-15",
+      "why_useful": "Blender를 Python 모듈로 쓰는 헤드리스 대안(Python 3.13 전용)"
+    },
+    {
+      "title": "dhakalnirajan/blender-open-mcp",
+      "url": "https://github.com/dhakalnirajan/blender-open-mcp",
+      "source_type": "GitHub README",
+      "date": "2026-09-04",
+      "why_useful": "로컬 LLM provider 전환형 MCP"
+    },
+    {
+      "title": "Introducing Blender Lab / CG Channel 보도",
+      "url": "https://www.cgchannel.com/2025/11/blender-foundation-launches-the-blender-lab/",
+      "source_type": "뉴스",
+      "date": "2025-11",
+      "why_useful": "Blender Lab 출범과 MCP 서버를 AI/ML 첫 과제로 삼은 배경"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "Anthropic의 공식 Claude 'Blender' 커넥터는 ahujasid 프로젝트가 아니라 Blender 개발자(Blender Lab)가 만든 MCP 서버이며, 2026-04-28 'Claude for Creative Work'에서 발표됐다.",
+      "url": "https://www.anthropic.com/news/claude-for-creative-work"
+    },
+    {
+      "claim": "claude.com 커넥터 디렉터리의 Blender 커넥터 제공자는 'Blender Lab (Anthropic verified)'로 표시된다.",
+      "url": "https://claude.com/connectors/blender"
+    },
+    {
+      "claim": "Blender는 Anthropic의 지원을 Blender Development Fund가 아니라 일회성 기부로 받기로 했다(2026-05-01 업데이트).",
+      "url": "https://www.anthropic.com/news/claude-for-creative-work"
+    },
+    {
+      "claim": "Blender Lab 공식 MCP 서버는 Blender 5.1 이상이 필요하고, v1.0.0은 2026-04-27에 릴리스됐다(v1.0.2 2026-09-08, v1.0.3 2026-09-11).",
+      "url": "https://projects.blender.org/lab/blender_mcp/releases/tag/v1.0.0"
+    },
+    {
+      "claim": "Blender Lab blender_mcp 애드온의 라이선스는 GPL-3.0-or-later다(manifest 기준).",
+      "url": "https://github.com/scenario-labs/blender-plugin/issues/3"
+    },
+    {
+      "claim": "ahujasid의 PyPI 패키지가 blender-mcp에서 mcp-for-blender로 이름을 바꿨고, 최신 버전은 2.1.0(2026-09-25)이며 blender-mcp 2.0.0은 호환 래퍼다.",
+      "url": "https://pypi.org/project/mcp-for-blender/"
+    },
+    {
+      "claim": "ahujasid/mcp-for-blender는 약 29.4k stars, 2.7k forks, MIT 라이선스이고 36개 MCP tool을 제공한다(Tripo는 Premium 전용).",
+      "url": "https://github.com/ahujasid/blender-mcp"
+    },
+    {
+      "claim": "ahujasid 애드온의 get_scene_info는 씬 오브젝트를 최대 10개까지만 반환한다.",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py"
+    },
+    {
+      "claim": "ahujasid 텔레메트리는 과거 기본 ON(consent default=True)이었다가 2026-09-21 커밋 'update: opt-in telemetry'로 opt-in이 됐고, BLENDER_MCP_SAFE_MODE=1 옵션이 추가됐다.",
+      "url": "https://github.com/ahujasid/blender-mcp/commits/main"
+    },
+    {
+      "claim": "CVE-2026-10661: ahujasid blender-mcp의 input_image_url 인자 주입 취약점(CVSS v4 2.1, Low), 패치 커밋 5b37be2.",
+      "url": "https://github.com/advisories/GHSA-qqw9-95ww-prfm"
+    },
+    {
+      "claim": "ahujasid tool 스키마의 컨텍스트 비용이 2026-08-19부터 09-03 사이 5,462에서 6,928 토큰으로 26.8% 증가했다.",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/347"
+    },
+    {
+      "claim": "Blender 5.0에서 scene.node_tree가 scene.compositing_node_group으로 바뀌어 기존 스크립트가 AttributeError를 낸다.",
+      "url": "https://github.com/benrugg/AI-Render/issues/171"
+    },
+    {
+      "claim": "Blender 5.2 LTS에서 Geometry Nodes 모디파이어 입력 접근이 modifier['Socket_x'] 방식에서 modifier.properties.inputs.<id>.value 방식으로 바뀌었다.",
+      "url": "https://developer.blender.org/docs/release_notes/5.2/python_api/"
+    },
+    {
+      "claim": "StableGen은 Blender 4.2–4.5와 5.1+를 지원하고 5.0은 지원하지 않는다.",
+      "url": "https://github.com/sakalond/StableGen"
+    },
+    {
+      "claim": "PyPI bpy 5.2.2(2026-09-15)는 Python 3.13 전용이다.",
+      "url": "https://pypi.org/project/bpy/"
+    }
+  ],
+  "gaps": [
+    "네트워크 프록시가 blender.org, projects.blender.org, developer.blender.org, docs.blender.org를 차단해 공식 Blender Lab MCP 페이지, 위키(Setup, Llama.cpp), 릴리스 노트 원문을 직접 열람하지 못했습니다. 공식 서버의 정확한 tool 목록, 설치 명령, 버전별 변경 내용은 GitHub 미러, 파생 배포판, 검색 요약으로 교차 확인했을 뿐입니다(v1.0.2/v1.0.3 날짜는 검색 요약 기준).",
+    "Blender 5.0, 5.1, 5.2 API 변경점 역시 공식 문서 원문 대신 검색 요약과 GitHub 이슈로 확인했습니다. 특히 5.2 GN 모디파이어 API의 정확한 문법은 실제 Blender에서 bpy_api_lookup으로 재확인이 필요합니다.",
+    "ahujasid 'MCP for Blender Premium'의 가격과 조건, mcp-for-blender.com 문서(텔레메트리 레퍼런스, Hyper3D 통합 페이지)는 사이트 차단으로 확인하지 못했습니다.",
+    "ahujasid 이슈 #360('무작위 서버로 무엇을 보내나')의 본문(이미지)과 메인테이너 답변, AgentSeal이 지적한 'tool description 내 숨은 지시(free trial 추적)'의 원문과 현재 해소 여부를 확인하지 못했습니다.",
+    "Windows 타임아웃 이슈(#339, #357: 프레이밍 불일치 의심)의 공식 수정 여부를 확인하지 못했습니다.",
+    "3D-Agent의 실체(가격, 무료 티어 여부, 기술 방식)는 자사 SEO 콘텐츠와 상충하는 요약만 있어 독립 검증이 안 됐습니다. blenderartists 스레드도 열람하지 못했습니다.",
+    "YouTube, Reddit, note.com, 클리앙, fastcampus, MindStudio, GameDev Academy 등 사례 원문은 차단 또는 fetch 실패로 검색 요약에만 의존했습니다(사례 신뢰도 낮음). Fable 5.1 주택 영상과 '2시간, 토큰 60%' 평가의 서버 종류와 설정 세부는 미확인입니다.",
+    "공식 Blender Lab 서버가 사용하는 execute_blender_code의 안전장치(샌드박스 확인 문구, 'Allow Online Access' 요구 여부)는 간접 언급만 있고 원문을 확인하지 못했습니다.",
+    "MCP 클라이언트별 tool 호출 타임아웃 기본값(Claude Desktop 약 4분 관측 외)과 공식 서버의 서버 측 타임아웃 값은 확인하지 못했습니다.",
+    "ahujasid의 Poly Haven, Sketchfab, Hyper3D, Hunyuan3D 통합이 각각 어느 버전에 도입됐는지는 PyPI 날짜만 있고 CHANGELOG가 없어 정확히 매핑하지 못했습니다.",
+    "헤드리스 리눅스 환경에서 EEVEE 백그라운드 렌더의 GPU·EGL 요구 사항은 최신 5.x 기준으로 확인하지 못했습니다(주의 사항으로만 기재)."
+  ]
+}

@@ -1,0 +1,372 @@
+{
+  "verdicts": [
+    {
+      "claim": "Tencent Hunyuan 3D 2.1 Community License의 Territory는 'worldwide territory, excluding the territory of the European Union, United Kingdom and South Korea'이며, Territory 밖에서 출력물을 쓰거나 배포하는 것도 금지된다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE"
+      ],
+      "note": "LICENSE 원문 3행에 'DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA', 18행에 Territory 정의, 40행(5.c)에 'must not use, reproduce, modify, distribute, or display ... Output or results ... outside the Territory'가 있습니다. MAU 100만 초과 시 별도 라이선스 조항(32행)도 확인했습니다."
+    },
+    {
+      "claim": "Hunyuan3D 2.0, Omni, Part, HY-World 2.0 라이선스도 동일하게 EU, 영국, 대한민국을 제외한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/HY-World-2.0/blob/main/License.txt",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni/blob/main/License.txt",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Part/blob/main/LICENSE"
+      ],
+      "note": "5개 라이선스 원문을 직접 받아 확인했습니다. 모두 같은 Territory 문구와 MAU 100만 조항이 있습니다. HunyuanWorld-1.0과 HY-Motion-1.0 License.txt에도 South Korea 제외 문구가 있습니다."
+    },
+    {
+      "claim": "TRELLIS.2는 4B 파라미터, MIT 라이선스이며 H100 기준 512³ 약 3초, 1024³ 약 17초, 1536³ 약 60초가 걸리고 24GB 이상 VRAM이 필요하다. PBR 속성은 base color, roughness, metallic, opacity다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/README.md"
+      ],
+      "note": "README 표(~3s: 2s+1s, ~17s: 10s+7s, ~60s: 35s+25s, 'Tested on NVIDIA H100')와 'at least 24GB ... verified on A100 and H100', 'Base Color, Roughness, Metallic, and Opacity', MIT를 모두 확인했습니다. 다만 코드의 이미지 인코더 설정은 facebook/dinov3-vitl16(DINOv3 License)이라서 'MIT만 보면 된다'는 해석은 피해야 합니다."
+    },
+    {
+      "claim": "TRELLIS.2는 2025-12-16 첫 공개, 2026-01-10 학습 코드가 공개되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/microsoft/TRELLIS.2/commits/main"
+      ],
+      "note": "git 이력 기준으로 'Init Release' 커밋은 committer date가 2025-12-16입니다(author date는 2025-12-09). 'Release Training Code'는 2026-01-10입니다. 단, 항목의 '저장소 최근 업데이트 2026-07'은 틀렸습니다. 모든 브랜치 중 마지막 커밋은 2026-06-05(CodeQL 워크플로)입니다."
+    },
+    {
+      "claim": "Pixal3D(TencentARC)는 SIGGRAPH 2026 채택, MIT 라이선스, TRELLIS.2 backbone이며 2026년 9월 multi-view 추론 코드가 공개되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/TencentARC/Pixal3D",
+        "https://github.com/TencentARC/Pixal3D/blob/main/NOTICE"
+      ],
+      "note": "README News에 'Apr 2026 SIGGRAPH 2026 accepted', 'May 2026 improved version based on Trellis.2 backbone', 'Sep 2026 multi-view inference code'가 있습니다. multi-view 커밋은 2026-09-01이고 LICENSE는 MIT입니다. 참고로 NOTICE에는 dinov2(Apache)만 적혀 있지만 inference.py와 inference_mv.py는 실제로 DINOv3(camenduru/dinov3-vitl16 미러)를 불러옵니다. 기본 해상도는 표준 1536, low-VRAM 1024입니다."
+    },
+    {
+      "claim": "Rodin Gen-2.5 티어는 Extreme-Low/Low/Medium/High/Extreme-High이고 Extreme-High만 1.0 credit, 나머지는 0.5 credit이다. HighPack(4K)은 +1 credit이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md",
+        "https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_api_nodes/nodes_rodin.py"
+      ],
+      "note": "SKILL.md 티어 표(78~86행)와 Add-ons 표('HighPack +1 credit 4K texture')를 확인했습니다. credit의 달러 환산은 확인하지 못했습니다."
+    },
+    {
+      "claim": "Hyper3D CLI의 quality 범위는 Raw 500~1,000,000(기본 500,000), Quad 1,000~50,000(기본 18,000)이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/DeemosTech/hyper3d-cli/main/README.md",
+        "https://www.npmjs.com/package/@hyper3d/cli"
+      ],
+      "note": "README 옵션 표에 해당 범위와 기본값이 그대로 있습니다. --texture-delight는 2026-09-23 커밋(#8)으로 추가되었습니다. npm @hyper3d/cli latest는 0.2.0(2026-09-23)입니다."
+    },
+    {
+      "claim": "Tripo model_version에 'v3.1-20260211'과 'P1-20260311'이 있으며 SDK 기본값은 여전히 'v2.5-20250123'이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+        "https://pypi.org/project/tripo3d/"
+      ],
+      "note": "client.py 557~560행과 627~630행 Literal 목록에 두 버전이 있고 기본값은 \"v2.5-20250123\"입니다. PyPI는 0.4.2(2026-07-01), MIT입니다."
+    },
+    {
+      "claim": "Tripo P2 노드가 2026-09-15, Meshy 7.1 지원이 2026-09-20에 ComfyUI Partner Nodes에 추가되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_tripo.py",
+        "https://github.com/comfyanonymous/ComfyUI/commits/master/comfy_api_nodes/nodes_meshy.py"
+      ],
+      "note": "커밋 #16320(2026-09-15)과 #16412(2026-09-20)를 확인했습니다. 다만 P2를 'quad 메시 P-series'로 설명한 부분은 부정확합니다. 노드 설명은 'low-poly 3D model with clean topology ... as a triangle mesh (GLB) or a quad-dominant mesh (FBX)'이고 quad는 선택 옵션(기본 off)입니다. face_limit는 48~50,000(quad 48~25,000)이고, Comfy 가격 배지는 100~130 credits(약 $1.00~1.30)입니다."
+    },
+    {
+      "claim": "Meshy image-to-3D는 meshy-7/6에서 mesh 20, +texture 30, +8K 35 credits이고, smart-topology meshy-t2는 5/15/20 credits다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/README.md"
+      ],
+      "note": "README 'Models & Credits' 표와 일치합니다. 다만 같은 README에 있는 'text-to-3D에는 meshy-7 없음'은 ComfyUI 공식 파트너 노드와 충돌합니다. ComfyUI의 Meshy Text to Model 노드(/openapi/v2/text-to-3d)는 2026-08-24부터 meshy-7, 2026-09-20부터 meshy-7.1을 선택지로 제공합니다. 또 npm에는 v0.5.0이 배포되지 않았고 0.5.1(2026-08-27), 0.5.2(2026-09-22)만 있습니다."
+    },
+    {
+      "claim": "Tencent Hunyuan 3D Pro API는 model 3.0/3.1과 face_count 3,000~1,500,000(기본 500,000)을 지원하고, LowPoly는 3.1에서 쓸 수 없다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_hunyuan3d.py"
+      ],
+      "note": "ComfyUI 코드에서 IO.Int.Input('face_count', default=500000, min=3000, max=1500000)과 'The LowPoly option is currently unavailable for the 3.1 model' ValueError를 확인했습니다. 서드파티 래퍼 기준이고 Tencent Cloud 공식 문서로는 확인하지 못했습니다. 최소값 3,000은 2026-03-29 커밋(#13207)에서 낮춰진 값입니다."
+    },
+    {
+      "claim": "3D Arena 에셋 기반 census에서 TRELLIS.2-4B 출력의 91.1%가 non-watertight, 14.9%가 non-manifold edge를 가졌다.",
+      "verdict": "partially",
+      "correction": "이슈 #181(2026-08-04, 작성자 Topoheal)에 이 수치가 있는 것은 맞습니다. 그러나 TRELLIS.2 표본은 n=101이고, 이 수치가 들어 있던 생성기별 표는 원저자가 2026-09-01 'retract: remove the superseded defect-rate table' 커밋으로 철회했습니다. 2026-08-17 재측정(FINDING-7)과 'three open findings undermine the per-generator defect-rate table'이 철회 이유입니다. 따라서 91.1%/14.9%/100%>30k를 현재 사실처럼 summary와 know-how에 인용하면 안 됩니다. '철회된 초기 측정치(n=101)'로만 표기하거나 삭제해야 합니다. 또 3dqa 패키지는 오픈소스가 아니라 'Free-Use License (Source-Available, No Redistribution)'이고, 작성자는 수리·인증을 판매하는 벤더(Topoheal)입니다.",
+      "evidence_urls": [
+        "https://github.com/microsoft/TRELLIS.2/issues/181",
+        "https://github.com/alza123123/3dqa-benchmark",
+        "https://github.com/alza123123/3dqa-benchmark/commit/8881e88",
+        "https://pypi.org/project/3dqa/"
+      ]
+    },
+    {
+      "claim": "Hitem3D API는 hitem3dv1/v1.5/v2.0, 해상도 512/1024/1536/1536pro, face 100,000~2,000,000, 4-view(front/back/left/right)를 지원한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/GeekatplayStudio/comfyui-hitem3d",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-sparc3d/SKILL.md"
+      ],
+      "note": "커뮤니티 래퍼 nodes.py와 hitem3d_client.py에서 확인했습니다. 모델 목록에는 scene-portraitv1.5도 있고, face_count 기본값은 1,000,000입니다. Scenario Sparc3D skill에서도 view 순서 front, back, left, right와 face 500K~2M을 교차 확인했습니다. 다만 공식 Hitem3D 문서가 아니라 서드파티 래퍼 기준이고, 마지막 업데이트는 2026-01-18입니다."
+    },
+    {
+      "claim": "Scenario의 'GPT-6 Astra 3D'는 1~8장 이미지로 named parts와 per-part PBR을 가진 편집 가능한 메시를 만들며, 하드서페이스 소품용이고 캐릭터용이 아니다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+        "https://github.com/scenario-labs/skills/commit/75d8a7a",
+        "https://github.com/scenario-labs/skills/blob/main/AGENTS.md"
+      ],
+      "note": "SKILL.md 29행 문구와 정확히 일치하고, 2026-09-21 커밋 #141로 추가되었습니다. 다만 출처가 Scenario 한 곳뿐입니다. 같은 저장소 AGENTS.md에 'Codex gpt-6-astra'가 OpenAI Codex 모델명으로 등장합니다. 그래서 'GPT-6 Astra'는 OpenAI LLM이고, 'GPT-6 Astra 3D'는 Scenario가 그 위에 만든 자체 파이프라인으로 보입니다(추정). OpenAI가 직접 제공하는 3D 제품이라고 쓰면 안 됩니다."
+    },
+    {
+      "claim": "SAM 3D Objects는 Gaussian splat(.ply)과 mesh(.glb)를 출력하며 SAM License로 상업 사용이 허용된다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/facebookresearch/sam-3d-objects/blob/main/LICENSE",
+        "https://raw.githubusercontent.com/facebookresearch/sam-3d-objects/main/README.md",
+        "https://github.com/facebookresearch/sam-3d-objects/blob/main/doc/setup.md"
+      ],
+      "note": "README 예시는 splat.ply만 보여 주지만, inference_pipeline.py가 decode_formats=['gaussian','mesh']로 디코딩하고 postprocessing_utils.to_glb로 outputs['glb']를 만듭니다. SAM License는 worldwide, royalty-free이고 ITAR/군사/제재 대상 금지와 역공학 금지 조항이 있습니다. 항목에서 'README에 하드웨어 요구사항이 없다'고 한 부분은 틀렸습니다. doc/setup.md에 'A NVIDIA GPU with at least 32 Gb of VRAM'이 명시되어 있습니다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "Microsoft TRELLIS.2",
+      "status": "issue",
+      "detail": "4B, MIT, 속도, 24GB, 텍스처링 파이프라인(example_texturing.py, texturing_pipeline.json), OPAQUE export 주의사항은 모두 README와 코드로 확인했습니다. 고칠 점은 두 가지입니다. (1) '저장소 최근 업데이트 2026-07'은 틀렸고 마지막 커밋은 2026-06-05입니다. (2) 라이선스 칸에 배경 제거 모델 문제가 빠졌습니다. 커뮤니티 두 곳(asset-studio, image-to-3dlab)에 따르면 TRELLIS.2/Pixal3D 파이프라인의 기본 matting은 briaai/RMBG-2.0이고, 이 모델은 gated이며 비상업 라이선스입니다. image-to-3dlab은 이 때문에 RMBG-2.0을 패치로 꺼 둡니다. 알파 PNG를 직접 넣으라는 조언은 품질뿐 아니라 라이선스 측면에서도 필요합니다. HF pipeline.json은 차단되어 직접 확인하지 못했습니다. 그 밖에 ComfyUI 본체가 2026-08-21부터 TRELLIS.2와 Pixal3D를 네이티브로 지원하는데 이 내용이 빠졌습니다.",
+      "evidence_urls": [
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://github.com/zorrobyte/asset-studio",
+        "https://github.com/Bingeljell/image-to-3dlab",
+        "https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_extras/nodes_trellis2.py"
+      ]
+    },
+    {
+      "name": "TencentARC Pixal3D",
+      "status": "ok",
+      "detail": "MIT, SIGGRAPH 2026, TRELLIS.2 backbone(main 브랜치)과 Direct3D-S2 기반(paper 브랜치), --low_vram, --resolution, inference_mv.py --views_dir 모두 README와 일치합니다. 최근 커밋은 2026-09-01입니다. pixal3d.cpp의 '16GB 카드'는 1024 cascade 기준이고('The 1024 cascade runs on a 16 GB card'), 'NVIDIA driver 575 이상'은 README에서 찾지 못했습니다.",
+      "evidence_urls": [
+        "https://github.com/TencentARC/Pixal3D",
+        "https://github.com/raven38/pixal3d.cpp"
+      ]
+    },
+    {
+      "name": "Tencent Hunyuan3D 2.1 / 2.0 / Omni (라이선스 경고)",
+      "status": "ok",
+      "detail": "VRAM 수치(2.1: 10GB/21GB/29GB, 2.0: 6GB/16GB, Omni: 10GB), 파라미터(3.3B/2B), 공개일(2025-06-13, 2025-01-21, 2025-09-25), api_server 포트 8080과 blender-mcp 기본 8081의 불일치를 모두 확인했습니다. 한국 제외 라이선스 경고도 정확합니다.",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Omni",
+        "https://github.com/ahujasid/blender-mcp/blob/main/addon.py"
+      ]
+    },
+    {
+      "name": "Hyper3D Rodin Gen-2.5 + 연동 도구",
+      "status": "ok",
+      "detail": "티어, credit, 면 수 매핑(High 1M/50k 등), Raw 권장(Gen-2.5)과 Quad(legacy), 이미지 1~5장(512~4096px, 16MB 이하), URL 10분 만료, BANG --strength 1~12(기본 5)를 확인했습니다. hyper3d-cli는 2026-09-24까지 활발히 커밋되고 있습니다. 반면 rodin-api-mcp는 마지막 커밋이 2025-04-22라 사실상 방치 상태이니 추천 목록에서 낮추는 것이 좋습니다. ComfyUI Gen-2 노드는 2025-09-24, Gen-2.5 노드는 2026-05-22로 일치합니다.",
+      "evidence_urls": [
+        "https://github.com/DeemosTech/rodin3d-skills/blob/main/skills/rodin3d-skill/SKILL.md",
+        "https://github.com/DeemosTech/hyper3d-cli",
+        "https://github.com/DeemosTech/rodin-api-mcp"
+      ]
+    },
+    {
+      "name": "Tripo (v3.1 / P1 / P2) + tripo-mcp / trident-mcp",
+      "status": "issue",
+      "detail": "model_version 문자열, SDK 기본값, smart_low_poly 500~20K(quad 500~10K), quad일 때 FBX 출력, trident-mcp 실측(P1 40 credits/76초, H3.1 50 credits/150초)을 확인했습니다. 고칠 점은 세 가지입니다. (1) P2는 quad 전용이 아니라 low-poly clean topology 모델이고 triangle GLB 또는 quad-dominant FBX를 선택합니다. face는 48~50k(quad 25k)이고 Comfy 가격은 100~130 credits입니다. (2) 공식 VAST-AI-Research/tripo-mcp는 마지막 커밋이 2025-04-14이고(8 commits), Tripo Blender Addon 의존 alpha라서 사실상 유지보수가 중단되었습니다. 추천하지 말아야 합니다. (3) ComfyUI 주석에 'quad meshes at 150,000'에서 조용히 잘린다는 내용이 있어, face_limit 최대 2M은 quad에는 해당하지 않습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfy_api_nodes/nodes_tripo.py",
+        "https://github.com/VAST-AI-Research/tripo-mcp",
+        "https://github.com/mordor-forge/trident-mcp/blob/main/docs/MCP_TOOLS.md"
+      ]
+    },
+    {
+      "name": "Meshy 공식 MCP (@meshy-ai/meshy-mcp-server)",
+      "status": "issue",
+      "detail": "24 tools, credit 표, add-mcp 설치 명령, smart-topology(t1/t2)는 확인했습니다. npm 최신은 0.5.2(2026-09-22)이고, 0.5.0은 npm에 없으며 0.5.1이 2026-08-27에 배포되었습니다. 'text-to-3D는 Meshy 6까지'는 MCP README 기준입니다. ComfyUI 공식 파트너 노드는 text-to-3D에도 meshy-7(2026-08-24)과 meshy-7.1(2026-09-20)을 노출하므로 '7 미적용'을 단정하면 안 됩니다. 또 ComfyUI 기준 4k ultra_resolution은 meshy-7.1/latest에서만 됩니다.",
+      "evidence_urls": [
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_api_nodes/nodes_meshy.py",
+        "https://www.npmjs.com/package/@meshy-ai/meshy-mcp-server"
+      ]
+    },
+    {
+      "name": "blender-mcp (ahujasid) 3D 생성기 통합",
+      "status": "issue",
+      "detail": "bl_info version (1,7), MIT, 환경변수 6개, generate_hyper3d_model_via_text/images, generate_hunyuan3d_model, Rodin 무료 체험 키 'vibecoding', Hunyuan 리전(ap-guangzhou 2025-05-13 / ap-singapore 2023-09-01), 로컬 8081을 확인했습니다. 불명확하다고 한 Tripo 조건은 이제 분명합니다. 2026-09-25 커밋 'feat: integrate premium' 이후 addon 코드 주석이 'Tripo is only offered through Premium'이고, README에 유료 Premium(mcp-for-blender.com, 자체 API 키 없이 Hunyuan3D, Tripo, Rodin 생성)이 새로 생겼습니다. 즉 Tripo는 BYO 키로 쓸 수 없고 유료 구독에서만 쓸 수 있습니다. 그 밖에 opt-in telemetry와 record_trajectory_feedback 도구가 있다는 점도 적어 두는 것이 좋습니다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://github.com/ahujasid/blender-mcp/blob/main/addon.py",
+        "https://github.com/ahujasid/blender-mcp/blob/main/README.md"
+      ]
+    },
+    {
+      "name": "Meta SAM 3D Objects",
+      "status": "issue",
+      "detail": "splat과 glb 출력, 다중 객체, SAM License, 날짜(2025-11-19, 2026-06-01, 2026-06-02)는 맞습니다. 다만 'README에 하드웨어 요구사항 없음'은 틀렸습니다. doc/setup.md에 NVIDIA GPU 32GB VRAM 이상이 명시되어 있어 한국 개인 사용자(24GB 카드)에게 중요한 제약입니다.",
+      "evidence_urls": [
+        "https://github.com/facebookresearch/sam-3d-objects/blob/main/doc/setup.md"
+      ]
+    },
+    {
+      "name": "Scenario MCP + scenario-labs/skills",
+      "status": "ok",
+      "detail": "저장소가 활발합니다(2026-09-26 skills 0.48.0, DCC/게임엔진 expert tools 추가). Astra 3D, Sparc3D(중앙값 17~21분, 재실행 금지), Marble 티어와 .spz, delight, autoSize, texture:false, seed/textureSeed 모두 원문과 일치합니다. 추가할 점은 3d-worlds skill에 'HY World members carried a geo restriction tag'가 있다는 것입니다. Scenario를 경유해도 HY World는 지역에 따라 보이지 않을 수 있습니다.",
+      "evidence_urls": [
+        "https://github.com/scenario-labs/skills",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d-worlds/SKILL.md"
+      ]
+    },
+    {
+      "name": "3DQA / Topoheal census",
+      "status": "issue",
+      "detail": "'license_or_price: 오픈'은 틀렸습니다. PyPI 3dqa 1.0.0 라이선스는 '3dqa Free-Use License (Source-Available, No Redistribution)'로 수정과 재배포가 금지됩니다. 생성기별 수치는 2026-09-01에 철회되었으니 know-how와 summary에서 91.1%/14.9%를 사실처럼 인용하면 안 됩니다.",
+      "evidence_urls": [
+        "https://pypi.org/project/3dqa/",
+        "https://github.com/alza123123/3dqa-benchmark/commit/8881e88"
+      ]
+    },
+    {
+      "name": "NVIDIA PartPacker (라이선스)",
+      "status": "issue",
+      "detail": "'라이선스 종류 미확인'이라고 했지만 license.md는 NVIDIA Source Code License이고, 3.3 Use Limitation에 'only may be used ... non-commercially'라고 되어 있습니다. 상업 사용은 불가입니다. VRAM 약 10GB(fp16)는 맞습니다.",
+      "evidence_urls": [
+        "https://github.com/NVlabs/PartPacker/blob/main/license.md"
+      ]
+    },
+    {
+      "name": "Roblox Cube / CubePart",
+      "status": "issue",
+      "detail": "라이선스(CUBE3D RESEARCH-ONLY RAIL-MS)와 v0.5 bbox(--bounding-box-xyz)는 맞습니다. VRAM은 '--fast-inference 사용 시 24GB, 아니면 16GB'여서 '권장 24GB'라는 표현은 부정확합니다. CubePart 코드는 README에 'same license as Cube'로 되어 있어 역시 연구 전용입니다(가중치 라이선스는 HF 차단으로 확인하지 못함).",
+      "evidence_urls": [
+        "https://github.com/Roblox/cube",
+        "https://github.com/Roblox/cube/tree/main/cubepart"
+      ]
+    },
+    {
+      "name": "NVIDIA Lyra 1.0/2.0",
+      "status": "ok",
+      "detail": "날짜(1.0 2025-09-23, 2.0 2026-04-15, GUI와 학습 코드 2026-07-20)와 코드 Apache-2.0을 확인했습니다. '출력 형식 불명확'은 보완할 수 있습니다. Lyra-2 README에 따르면 영상 생성 후 3DGS 재구성으로 reconstructed_scene.ply(Gaussian)를 출력하고, 1×H100 80GB 기준 약 9분이 걸립니다(DMD 사용 시 약 35초). 소비자 GPU용은 아닙니다.",
+      "evidence_urls": [
+        "https://github.com/nv-tlabs/lyra",
+        "https://github.com/nv-tlabs/lyra/tree/main/Lyra-2"
+      ]
+    },
+    {
+      "name": "사례: zorrobyte/asset-studio",
+      "status": "ok",
+      "detail": "RTX 5090, crate 954,901에서 7,998(voxel proxy)로 11.1분, pump 997,520에서 19,803으로 15.6분, 재최적화 약 80초, Khronos validator 통과, Godot 4.7.2, 프리셋 수치, LOD 50/25%, convex hull, 0BSD 라이선스를 모두 README에서 확인했습니다. 최근 커밋은 2026-09-15입니다. matting 기본값이 gated인 RMBG-2.0이라는 점도 README에 명시되어 있습니다.",
+      "evidence_urls": [
+        "https://github.com/zorrobyte/asset-studio"
+      ]
+    },
+    {
+      "name": "사례: AIWHOS/sketch-to-3d-codex",
+      "status": "issue",
+      "detail": "워크플로 설명(Design Lock, 마스터 2~4개, 승인 fingerprint)은 맞습니다. 그러나 README에 'Hyper3D was configured but not exposed to this session, so no live generation, import, rigging or rendering was tested'라고 되어 있습니다. 실제 생성 성공 사례로 소개하면 안 되고 '설계만 된 미검증 워크플로'로 표기해야 합니다. 커밋도 1개뿐입니다.",
+      "evidence_urls": [
+        "https://github.com/AIWHOS/sketch-to-3d-codex"
+      ]
+    },
+    {
+      "name": "img2threejs",
+      "status": "ok",
+      "detail": "16.9k stars, Apache-2.0, Claude Code/Codex/OpenCode 지원, 8단계(blockout부터 optimization까지)를 확인했습니다. 기본 브랜치 HEAD의 마지막 커밋은 2026-09-06이라서 '최근 업데이트 2026-09-23'과는 다를 수 있습니다(사소함).",
+      "evidence_urls": [
+        "https://github.com/img2threejs/img2threejs"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://github.com/microsoft/TRELLIS.2/issues/181",
+      "reason": "벤더(Topoheal)가 올린 홍보성 이슈입니다. 인용된 생성기별 수치(TRELLIS.2 n=101)는 원 보고서에서 2026-09-01 'superseded'로 철회되었습니다. 독립 평가로 인용하면 안 됩니다."
+    },
+    {
+      "url": "https://github.com/alza123123/3dqa-benchmark",
+      "reason": "수치 표가 삭제되고 topoheal.com(접근 불가)으로 리다이렉트됩니다. 엔진(3dqa)은 source-available 비재배포 라이선스라서 독립 재현성과 개방성이 제한적입니다."
+    },
+    {
+      "url": "https://github.com/GeekatplayStudio/comfyui-hitem3d",
+      "reason": "Hitem3D 공식이 아닌 커뮤니티 래퍼입니다(GITHUB_READY.md 등 자동 생성으로 보이는 문서가 다수 있음). 파라미터의 1차 출처로 삼으면 안 되고 Scenario Sparc3D skill 등으로 교차 확인이 필요합니다. 마지막 업데이트는 2026-01입니다."
+    },
+    {
+      "url": "https://github.com/AIWHOS/sketch-to-3d-codex",
+      "reason": "README가 직접 '실제 Hyper3D 생성, import, 리깅, 렌더링을 테스트하지 않았다'고 밝힙니다. 커밋 1개짜리 저장소라 성공 사례 근거로 쓸 수 없습니다."
+    },
+    {
+      "url": "https://github.com/KaelNebula/rodin-via-blender",
+      "reason": "커밋 1개(2026-05-02)짜리 개인 skill이고 결과물 증빙이 없습니다. 워크플로 아이디어 참고용일 뿐 검증된 사례로 볼 수 없습니다."
+    },
+    {
+      "url": "https://github.com/aigeboku/blender-ai-3d-setup",
+      "reason": "커밋 1개(2026-05-16)짜리 설정 가이드이고 실제 결과 품질 증빙이 없습니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/meshy-dev/meshy-mcp-server/main/README.md",
+      "reason": "공식 문서지만 'text-to-3D에 meshy-7 없음'이라는 기술이 ComfyUI 공식 파트너 노드(2026-08-24 meshy-7, 2026-09-20 meshy-7.1을 text-to-3D에 노출)와 충돌합니다. 모델 지원 범위는 Meshy 공식 API 문서로 재확인해야 합니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/scenario-3d/SKILL.md",
+      "reason": "'GPT-6 Astra 3D'의 유일한 출처입니다(2026-09-21 추가). 벤더 자체 문서라 성능 주장은 독립 검증이 없습니다. 단, 날조로 보이지는 않습니다(같은 저장소에 gpt-6-astra가 OpenAI Codex 모델명으로 등장)."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "ComfyUI 코어의 TRELLIS.2 / Pixal3D 네이티브 지원 (comfy_extras/nodes_trellis2.py, nodes_mesh_postprocess.py)",
+      "url": "https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_extras/nodes_trellis2.py",
+      "why_important": "2026-08-21 PR #14718('Support Pixal3d and TRELLIS2')부터 커스텀 노드 없이 ComfyUI 본체에서 TRELLIS.2와 Pixal3D를 돌리고 Paint Mesh, Bake Texture From Voxel(base_color/metallic/roughness 최대 8192) 노드를 쓸 수 있습니다. 한국에서 라이선스 문제가 없는 로컬 파이프라인의 가장 쉬운 진입로인데 빠졌습니다."
+    },
+    {
+      "name": "ComfyUI 네이티브 Gaussian splat / TripoSplat 노드",
+      "url": "https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_extras/nodes_triposplat.py",
+      "why_important": "2026-05-31 gaussian splat 노드, 2026-06-01 TripoSplat(단일 객체 사진을 splat으로) 지원이 추가되었습니다. 월드와 splat 워크플로를 로컬에서 구성할 수 있는데, 연구자는 TripoSplat을 Scenario 문맥에서만 언급했습니다."
+    },
+    {
+      "name": "Meta SAM 3D Body (+ ComfyUI 네이티브 지원 2026-08-22)",
+      "url": "https://github.com/facebookresearch/sam-3d-body",
+      "why_important": "단일 이미지에서 전신 인체 메시(MHR 파라메트릭 리그)를 복원합니다. 캐릭터 포즈와 체형 레퍼런스에 유용하고, SAM 3D Objects와 좌표를 정렬하는 노트북도 제공됩니다. 연구자는 comfy_extras 파일명만 언급했습니다."
+    },
+    {
+      "name": "Tencent HY-Motion 1.0 (text-to-3D 캐릭터 모션, 1.0B/0.46B)",
+      "url": "https://github.com/Tencent-Hunyuan/HY-Motion-1.0",
+      "why_important": "텍스트로 스켈레톤 기반 3D 캐릭터 애니메이션을 만드는 오픈 모델입니다(2025-12-30, VRAM 24~26GB). 이것도 License.txt에 South Korea 제외 문구가 있어 한국 사용자 경고 목록에 추가해야 합니다."
+    },
+    {
+      "name": "HY World 2.1(2026-07, 제품) / HY-WorldPlay / R-DMesh(SIGGRAPH 2026)",
+      "url": "https://github.com/Tencent-Hunyuan/HY-World-2.0",
+      "why_important": "HY-World 2.0 README News에 2026-07 'HY World 2.1' 업데이트(3d.hunyuan.tencent.com/sceneTo3D)가 있습니다. 조직에는 HY-WorldPlay(실시간 인터랙티브 월드)와 R-DMesh(영상 기반 3D 애니메이션)도 있습니다. 월드 생성 섹션이 2.0에서 멈춰 있습니다."
+    },
+    {
+      "name": "blender-mcp Premium (유료, Tripo는 Premium 전용)",
+      "url": "https://github.com/ahujasid/blender-mcp/blob/main/README.md",
+      "why_important": "2026-09-25에 추가되었습니다. 자체 키 없이 Hunyuan3D, Tripo, Rodin을 생성하는 유료 구독이고, Tripo는 Premium을 통해서만 쓸 수 있습니다. 가장 많이 추천되는 MCP의 비용 구조가 바뀐 것입니다."
+    },
+    {
+      "name": "BRIA RMBG-2.0 기본 matting의 비상업 라이선스 함정 (TRELLIS.2/Pixal3D 파이프라인)",
+      "url": "https://github.com/Bingeljell/image-to-3dlab",
+      "why_important": "MIT 모델이라도 파이프라인 기본 배경 제거기가 gated 비상업 RMBG-2.0이면 상업 프로젝트에서 문제가 됩니다. image-to-3dlab은 이를 패치로 비활성화하고, asset-studio는 gated라고 명시합니다. 알파 PNG를 직접 넣거나 rembg(u2net), BiRefNet(MIT)으로 대체하라는 권고가 필요합니다."
+    },
+    {
+      "name": "'Astra'와 'Fable'의 실체 단서 (사용자 질문과 직결)",
+      "url": "https://github.com/scenario-labs/skills/blob/main/AGENTS.md",
+      "why_important": "사용자가 '아스트라, 페이블, 오푸스 5.5'를 물었습니다. scenario-labs/skills 저장소에서 'gpt-6-astra'는 OpenAI Codex 모델명으로, 'Claude Fable 5.1'은 커밋 공동저자(Co-Authored-By)로 등장합니다(예: 커밋 75d8a7a). 즉 이 3D skill 문서 자체가 이런 LLM 에이전트로 작성되고 있다는 사례입니다. 연구자는 Astra를 3D 모델명으로만 다뤘으니, LLM(Astra/Fable/Opus)과 3D 생성기의 역할을 구분해 설명해야 합니다."
+    },
+    {
+      "name": "Tripo P2 가격과 스펙",
+      "url": "https://github.com/comfyanonymous/ComfyUI/blob/master/comfy_api_nodes/nodes_tripo.py",
+      "why_important": "P2는 text/image/multiview를 지원하고, face 48~50,000(quad 25,000), texture standard/detailed/extreme/none, texture_seed, auto_size, meshopt 압축 옵션이 있으며 Comfy 가격은 100~130 credits(약 $1.00~1.30)입니다. 게임용 저폴리 선택 가이드에 반영해야 할 최신 정보입니다."
+    }
+  ]
+}

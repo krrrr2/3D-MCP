@@ -1,0 +1,402 @@
+{
+  "verdicts": [
+    {
+      "claim": "Tencent Hunyuan 3D 2.1 Community License는 Territory를 'worldwide territory, excluding the territory of the European Union, United Kingdom and South Korea'로 정의한다(2.0과 Omni도 동일).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Omni/main/License.txt",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/bpt/main/License"
+      ],
+      "note": "세 라이선스 원문(2.0: 2025-01-21, 2.1: 2025-06-13, Omni: 2025-09-26) 모두 같은 Territory 정의를 갖고 있고, 'DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA' 문구도 들어 있습니다. MAU 100만 초과 시 별도 라이선스, 결과물로 다른 AI 모델을 개선하는 행위 금지 조항도 원문과 일치합니다. 추가로 확인한 사항: Tencent BPT(리토폴로지 모델) 저장소의 License 파일도 'TENCENT HUNYUAN 3D 2.0 COMMUNITY LICENSE'라서 한국이 제외됩니다. 또한 라이선스 정의상 'Tencent Hunyuan 3D 2.0'에는 가중치뿐 아니라 inference 코드와 소프트웨어도 포함됩니다."
+    },
+    {
+      "claim": "Hunyuan3D Omni 라이선스(2025-09-26)도 'DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'를 유지한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-Omni/main/License.txt"
+      ],
+      "note": "원문 확인 결과 Release Date는 September 26, 2025입니다. Territory 정의와 제5(b)조(다른 AI 모델 개선 금지)도 동일합니다."
+    },
+    {
+      "claim": "TRELLIS.2(4B, arXiv 2512.14692)는 MIT 라이선스지만 nvdiffrast와 nvdiffrec은 별도 라이선스이고, DINOv3 모델(facebook/dinov3)을 로드한다.",
+      "verdict": "partially",
+      "correction": "문장 자체는 사실입니다(MIT, 4B, arXiv 2512.14692, trellis2/modules/image_feature_extractor.py의 DINOv3ViTModel.from_pretrained, 이슈 #156/#161/#185). 문제는 '별도 라이선스'라고만 쓴 부분입니다. 실제로는 NVIDIA Source Code License(1-Way Commercial)이고, 제3.3조가 'non-commercially(research or evaluation only)'로 사용을 제한합니다. 공식 GLB 익스포트 함수 o_voxel.postprocess.to_glb가 nvdiffrast를 import해서 텍스처 베이크(dr.RasterizeCudaContext)에 씁니다. 따라서 공식 파이프라인 그대로는 상업적 이용에 제약이 있을 수 있습니다. 이 문제를 묻는 이슈 #22가 메인테이너 답변 없이 열려 있습니다. 불투명 입력의 배경 제거에는 BRIA RMBG-2.0이 쓰입니다(PR #175 설명). 그러므로 'TRELLIS.2 = 상업 게임 로컬 생성 1순위, 제약은 DINOv3뿐'이라는 결론은 수정해야 합니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/README.md",
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/o-voxel/o_voxel/postprocess.py",
+        "https://raw.githubusercontent.com/NVlabs/nvdiffrast/main/LICENSE.txt",
+        "https://github.com/microsoft/TRELLIS.2/issues/22",
+        "https://github.com/microsoft/TRELLIS.2/issues/175",
+        "https://github.com/microsoft/TRELLIS.2/issues?q=dinov3"
+      ],
+      "note": "to_glb의 기본값은 decimation_target=1,000,000, texture_size=2048입니다. README 예시에서 쓴 4096은 '최대값'이 아닙니다."
+    },
+    {
+      "claim": "Meshy 무료 플랜 결과물은 CC BY 4.0(저작자 표기 필요)이고, 유료 플랜은 private commercial license(표기 불필요)이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/meshy-dev/Meshy-guide",
+        "https://github.com/meshy-dev/game-asset-pipeline"
+      ],
+      "note": "Meshy 공식 GitHub 저장소 두 곳(Meshy-guide README, 2026-04-23 갱신 / game-asset-pipeline, 2026-05)에 같은 내용이 있습니다. FAQ에는 'Free plan … commercial use requires crediting Meshy'라고 되어 있어 표기 대상은 Meshy입니다. 무료 플랜은 월 200 credits, Pro는 1,000입니다. meshy.ai 약관 원문은 egress 차단으로 확인하지 못했고, 업그레이드 시 과거 생성물에 소급 적용되는지도 확인하지 못했습니다."
+    },
+    {
+      "claim": "mcp-for-blender(구 blender-mcp) 2.1.0이 2026-09-25에 릴리스되었고 Poly Haven, Sketchfab, Poly Pizza, Hyper3D, Hunyuan3D를 통합한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md"
+      ],
+      "note": "PyPI 릴리스 이력은 2.1.0(9/25), 2.0.4(9/24), 2.0.3/2.0.1(9/21), 2.0.0(9/16)입니다. README 기준 GitHub 스타는 약 29.4k입니다. 조사에서 빠진 점: README에 'Premium'(자체 API 키 없이 Hunyuan3D, Tripo, Rodin 생성)이 새로 생겼습니다. Hunyuan3D Tencent Cloud 모드는 본토 계정(ai3d, ap-guangzhou)과 국제 계정(hunyuan, ap-singapore)의 엔드포인트가 달라서, 한국 사용자는 국제 계정 토글이 필요합니다."
+    },
+    {
+      "claim": "Poly Haven 에셋은 CC0이지만, 라이브 API로 콘텐츠를 노출하면 'Powered by Poly Haven' 등 출처 표기가 필요하다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Poly-Haven/Public-API/blob/master/ToS.md"
+      ],
+      "note": "ToS 원문과 일치합니다. 다만 조사에서 빠진 요구사항이 있습니다. 제2.4조는 모든 API 호출에 앱 이름과 일치하는 고유한 Referer 헤더 또는 User-Agent를 쓰도록 요구합니다. 크레딧은 Poly Haven이 제작, 소유, 보증한 것처럼 보이게 해서는 안 됩니다. 기업 대상 선택 사항으로 'signed Provenance Attestation manifest'도 제공합니다(제2.7조)."
+    },
+    {
+      "claim": "Tripo SDK의 smart_lowpoly 기본값은 model_version 'P-v1.0-20250506', face_limit 4000이고, convert_model 기본값은 face_limit 10000, texture_size 4096이다.",
+      "verdict": "partially",
+      "correction": "인용한 docs/API.md에는 그렇게 적혀 있지만, 이 문서는 현행 코드와 맞지 않습니다. 실제 SDK 소스 tripo3d/client.py(PyPI tripo3d 0.4.2, 2026-07-01)에서는 smart_lowpoly의 model_version이 Literal['P-v2.0-20251226']이고 기본값도 'P-v2.0-20251226'입니다. face_limit 기본값은 None이고 part_names 인자가 추가되었습니다. convert_model도 face_limit 기본값이 None입니다(texture_size 4096, texture_format JPEG는 그대로). 새 인자로 scale_factor, fbx_preset(blender/mixamo/3dsmax), export_orientation(+x/+y/-x/-y), export_vertex_colors, with_animation이 생겼습니다. 저폴리 전용 생성 모델 'P1-20260311'도 있습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/docs/API.md",
+        "https://pypi.org/project/tripo3d/"
+      ]
+    },
+    {
+      "claim": "Tripo 2026 모델 버전으로 v3.1-20260211과 P1-20260311이 존재한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/mordor-forge/trident-mcp/main/docs/MCP_TOOLS.md",
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py"
+      ],
+      "note": "제3자 문서(trident-mcp)와 공식 SDK client.py의 Literal 목록('P1-20260311', 'Turbo-v1.0-20250506', 'v3.1-20260211', 'v3.0-20250812', 'v2.5-20250123') 두 곳에서 모두 확인했습니다. SDK 생성 함수의 기본값은 여전히 v2.5-20250123이라서 명시적으로 지정해야 한다는 조사자의 지적이 맞습니다."
+    },
+    {
+      "claim": "MeshAnything은 S-Lab License(비상업)이고 V1은 800면, V2는 1,600면이 상한이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/buaacyw/MeshAnything",
+        "https://github.com/buaacyw/MeshAnythingV2",
+        "https://raw.githubusercontent.com/buaacyw/MeshAnything/main/LICENSE.txt"
+      ],
+      "note": "두 저장소 모두 LICENSE가 'S-Lab License 1.0 … non-commercial purpose'이고 상업 이용은 'please contact the contributor(s)'입니다. V2 README에 +Y up 권장과 --mc 전처리도 있습니다(ICCV 2025)."
+    },
+    {
+      "claim": "Khronos 가이드 1.0은 삼각형 10만 이하, 파일 5MB 이하, 1K~2K 텍스처(Normal 2K), OpenGL 노멀과 MikkTSpace, ORM(R=AO, G=Rough, B=Metal)을 권장한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/KhronosGroup/3DC-Asset-Creation/main/asset-creation-guidelines-1.0/RealtimeAssetCreationGuidelines.md",
+        "https://raw.githubusercontent.com/KhronosGroup/3DC-Asset-Creation/main/asset-creation-guidelines/RealtimeAssetCreationGuidelines.md"
+      ],
+      "note": "원문과 일치합니다('File Size: Ideally less than 5MB', 'Triangle Count: 100,000 triangles or less', 정사각형 비율은 필수 아님, +Y up, 정면 +Z, 1 unit = 1 m). 요약에서는 '원점 바닥 중앙'이 1.0 수치와 함께 나열되어 있는데, 이 항목의 출처는 v2.0(2025-08)입니다. 두 문서 모두 CC-BY-4.0입니다."
+    },
+    {
+      "claim": "gltfpack은 Draco를 지원하지 않고, -c는 EXT_meshopt_compression, -tc는 KTX2 BasisU를 쓴다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/zeux/meshoptimizer/master/gltf/README.md"
+      ],
+      "note": "사실입니다. 다만 실무상 중요한 내용이 빠졌습니다. (1) 기본 출력에 KHR_mesh_quantization과 KHR_texture_transform이 적용되므로, 엔진 임포트용 LOD를 만들 때는 -noq가 필요할 수 있습니다. (2) extras는 기본적으로 버려지므로, provenance나 라이선스 메타를 extras로 싣는다면 -ke가 필수입니다. (3) 새 KHR_meshopt_compression(-cz, -ce khr)과 WebP(-tw)를 지원합니다. npm gltfpack 1.3.0은 2026-09-25에 배포되었습니다."
+    },
+    {
+      "claim": "Stable Fast 3D는 Stability AI Community License로, 연매출 100만 달러 미만이면 무료 상업 이용이 가능하고 결과물은 사용자 소유이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Stability-AI/stable-fast-3d/main/LICENSE.md"
+      ],
+      "note": "원문(Last Updated 2024-07-05)과 일치합니다. 보완할 점: 상업적으로 쓰려면 stability.ai/community-license 등록이 필수입니다. 100만 달러 기준은 본인과 계열사의 '전체' 연매출이며, 수익원과 무관하게 적용됩니다. 배포 시에는 Notice 파일과 'Powered by Stability AI' 표시가 필요하고, 출력물로 파운데이션 생성 모델을 만들거나 개선하는 것은 금지됩니다. 결과물 소유는 'to the extent permitted by applicable law' 범위입니다."
+    },
+    {
+      "claim": "Anthropic 상업 약관(2025-06-17 발효)에서 고객은 Outputs를 소유하며 Anthropic이 권리를 양도한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/legal/commercial-terms",
+        "https://www.anthropic.com/legal/consumer-terms"
+      ],
+      "note": "상업 약관은 'Customer … owns its Outputs', 'Anthropic hereby assigns to Customer its right, title and interest (if any) in and to Outputs'이고 발효일은 2025-06-17입니다. 소비자 약관은 2025-10-08 발효이며 'we assign to you all of our right, title, and interest—if any—in Outputs'입니다. 경쟁 제품이나 모델 학습 목적의 서비스 이용 금지 조항도 확인했습니다."
+    },
+    {
+      "claim": "한국 인공지능기본법은 2026-01-22 시행이고, 제31조는 생성형 AI 결과물 표시 의무를 규정한다(제3자 조문 데이터이므로 법령 원문 대조 필요).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/nfa-bigdata/ai-law-clause-search-set5-2026/main/%EC%A1%B0%ED%95%AD%EB%8D%B0%EC%9D%B4%ED%84%B0.json"
+      ],
+      "note": "조문 데이터는 국가법령정보센터 PDF에서 추출한 것으로 보입니다(쪽 머리글 포함). 제31조 ②항 문구와 부칙 '이 법은 2026년 1월 22일부터 시행한다'를 확인했습니다. law.go.kr은 차단되어 직접 대조하지 못했지만, 2025-01-21 공포, 2026-01-22 시행은 학습 지식과도 일치합니다. 조사에서 빠진 부분: ①항은 사전고지 의무입니다. ③항은 실제와 구분하기 어려운 가상의 음향, 이미지, 영상에 대해 명확한 고지를 요구하되, '예술적·창의적 표현물'이면 전시나 향유를 저해하지 않는 방식으로 할 수 있다는 예외를 두는데, 게임과 직결됩니다. ④항은 방법과 예외를 대통령령에 위임합니다. 제43조의 과태료(3천만원 이하)는 제31조 ①항 위반에만 적용됩니다. 부칙 번호는 개정법 <제21311호, 2026. 1. 20.>입니다."
+    },
+    {
+      "claim": "Smithsonian OpenAccess GitHub 저장소는 2026-05-21에 아카이브되었고 데이터는 AWS Open Data로 제공된다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/Smithsonian/OpenAccess"
+      ],
+      "note": "2026-05-21 아카이브(읽기 전용), Registry of Open Data on AWS(S3), 1,100만 건 이상의 메타데이터와 CC0-1.0 모두 확인했습니다. 3D 모델의 개별 라이선스는 이 저장소에 언급되지 않아 확인할 수 없습니다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "MCP for Blender (ahujasid/blender-mcp → mcp-for-blender)",
+      "status": "ok",
+      "detail": "저장소는 존재하고 활발히 유지되고 있습니다(스타 약 29.4k, PyPI 2.1.0이 2026-09-25 배포, 9월에만 릴리스 6회). Poly Haven(약 2,400개, 키 불필요), Poly Pizza(약 10,600개, 69% CC-BY, 무료 API 키), Sketchfab(BLENDERMCP_SKETCHFAB_API_KEY), Hyper3D, Hunyuan3D(SecretId/Key), 커스텀 프로퍼티 필드명(polyhaven_id/url/authors/resolution/licence, polypizza_attribution/id/licence), 옵트인 텔레메트리 모두 README와 일치합니다. 조사에서 빠진 점은 유료 Premium 옵션과, Tencent Cloud 국제 계정의 경우 ap-singapore 엔드포인트 토글이 필요하다는 점입니다.",
+      "evidence_urls": [
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md"
+      ]
+    },
+    {
+      "name": "Meshy MCP 서버 (meshy-dev/meshy-mcp-server)",
+      "status": "ok",
+      "detail": "MIT, 24개 도구, 설치 명령 npx add-mcp @meshy-ai/meshy-mcp-server, Pro 플랜 이상 필요, ai_model(meshy-5/6/7, t1/t2, latest), texture 2k/4k/8k, remesh 5, uv-unwrap 5, convert 1 credit 모두 확인했습니다. npm 0.5.2는 2026-09-22 배포입니다. 스타는 49개로 적지만 공식 조직 저장소입니다. game-asset-pipeline의 폴리곤 권장치(모바일 1K~5K, PC/콘솔 5K~50K, 범위 1K~300K)와 Unity 0.01 스케일(Meshy가 cm 단위로 익스포트하기 때문), UE5 Nanite, IK Retargeter도 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/meshy-dev/meshy-mcp-server",
+        "https://github.com/meshy-dev/game-asset-pipeline"
+      ]
+    },
+    {
+      "name": "Tripo API/SDK + tripo-mcp",
+      "status": "issue",
+      "detail": "docs/API.md는 현행 SDK와 맞지 않습니다. tripo3d 0.4.2(2026-07-01) client.py 기준으로 smart_lowpoly는 P-v2.0-20251226만 허용하고 face_limit 기본값은 None입니다. convert_model도 face_limit 기본값이 None입니다. fbx_preset, export_orientation, scale_factor 등 새 인자가 있습니다. KB에 적힌 'P-v1.0, 기본 4000/10000'은 수정해야 합니다. VAST-AI-Research/tripo-mcp는 MIT, 알파, Tripo Blender 애드온 필수, 스타 206개, 커밋 8개로 조사 내용과 일치합니다. Tripo 결과물 라이선스는 tripo3d.ai 차단으로 미확인입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+        "https://github.com/VAST-AI-Research/tripo-mcp"
+      ]
+    },
+    {
+      "name": "Tencent Hunyuan3D 오픈 웨이트 라이선스",
+      "status": "ok",
+      "detail": "2.0, 2.1, Omni 원문 모두 EU, 영국, 한국을 제외하고 MAU 100만 조항과 타 모델 개선 금지 조항이 있습니다. 2.1 VRAM(형상 10GB, 텍스처 21GB, 합계 29GB)과 Shape 3.3B, Paint 2B(2025-06-14)도 README와 일치합니다. 추가로, 같은 라이선스가 BPT와 Hunyuan3D-2 파생 코드(custom_rasterizer, differentiable_renderer)에도 적용된다는 점을 KB에 반영해야 합니다.",
+      "evidence_urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/README.md"
+      ]
+    },
+    {
+      "name": "TRELLIS.2 (Microsoft)",
+      "status": "issue",
+      "detail": "MIT, 4B, arXiv 2512.14692, H100 기준 512³ 약 3초/1024³ 약 17초/1536³ 약 60초, GLB/PBR은 사실입니다. 하지만 '한국 상업 로컬 생성 1순위'라는 권고는 위험합니다. (1) 공식 to_glb 텍스처 베이크가 nvdiffrast를 쓰는데, NVIDIA Source Code License 3.3조가 비상업(research/evaluation only)으로 제한합니다. 관련 이슈 #22는 무응답 상태입니다. (2) 불투명 입력의 배경 제거에 BRIA RMBG-2.0을 씁니다(PR #175. image-to-3dlab은 라이선스 때문에 패치로 비활성화). (3) DINOv3 라이선스 조건이 붙습니다. to_glb 기본값은 decimation_target 1,000,000, texture_size 2048입니다(4096은 README 예시값).",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/o-voxel/o_voxel/postprocess.py",
+        "https://raw.githubusercontent.com/NVlabs/nvdiffrast/main/LICENSE.txt",
+        "https://github.com/microsoft/TRELLIS.2/issues/22",
+        "https://github.com/microsoft/TRELLIS.2/issues/175"
+      ]
+    },
+    {
+      "name": "Step1X-3D / TripoSG / Stable Fast 3D (한국용 대안 추천)",
+      "status": "issue",
+      "detail": "Step1X-3D README와 LICENSE는 Apache-2.0(2025-05-13 가중치 공개)이 맞습니다. 하지만 텍스처 파이프라인 step1x3d_texture/custom_rasterizer와 differentiable_renderer는 Hunyuan3D 2.0 코드를 재사용했고, 파일 헤더에 'Hunyuan 3D is licensed under the TENCENT HUNYUAN NON-COMMERCIAL LICENSE AGREEMENT'가 남아 있습니다. requirements.txt에는 nvdiffrast도 있습니다. 따라서 '텍스처 포함 Apache-2.0 대안'은 한국에서 라이선스가 오염되었을 가능성이 있습니다. TripoSG는 MIT, 1.5B, --faces, 8GB VRAM이 확인되지만, 추론할 때 briaai/RMBG-1.4(BRIA 비상업 라이선스, 학습 지식이며 HF 차단으로 미확인)를 자동으로 내려받습니다. SF3D는 라이선스 내용이 맞고, remesh none/triangle/quad와 약 6GB VRAM도 확인했습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/stepfun-ai/Step1X-3D/main/step1x3d_texture/differentiable_renderer/mesh_render.py",
+        "https://raw.githubusercontent.com/stepfun-ai/Step1X-3D/main/requirements.txt",
+        "https://github.com/VAST-AI-Research/TripoSG",
+        "https://github.com/Stability-AI/stable-fast-3d"
+      ]
+    },
+    {
+      "name": "Poly Haven Public API",
+      "status": "ok",
+      "detail": "CC0 에셋, 무료 상업 API, 라이브 API 노출 시 출처 표기, API 코드 AGPL은 ToS와 일치합니다. 빠진 요구사항은 Referer 또는 User-Agent 헤더 필수(2.4조)입니다. MCP 서버를 직접 만들 때 필요합니다.",
+      "evidence_urls": [
+        "https://github.com/Poly-Haven/Public-API/blob/master/ToS.md"
+      ]
+    },
+    {
+      "name": "Sketchfab MCP 서버들 (gregkop, dcc-asset-sketchfab)",
+      "status": "ok",
+      "detail": "gregkop/sketchfab-mcp-server는 ISC, 도구 3개(sketchfab-search/model-details/download), 결과 1~24개(기본 10), API 키 필수가 맞습니다. 다만 스타 40개, 커밋 4개라 사실상 소규모 프로젝트입니다. dcc-asset-sketchfab은 MIT이고 검색은 공개 API, 다운로드는 SKETCHFAB_TOKEN(OAuth)으로 맞습니다. 스타는 0개입니다. Sketchfab 플랫폼 자체의 2026년 정책(스토어의 Fab 이전, NoAI)은 sketchfab.com과 fab.com 차단으로 확인하지 못했습니다.",
+      "evidence_urls": [
+        "https://github.com/gregkop/sketchfab-mcp-server",
+        "https://github.com/dcc-mcp/dcc-asset-sketchfab"
+      ]
+    },
+    {
+      "name": "meshoptimizer/gltfpack + glTF-Transform",
+      "status": "issue",
+      "detail": "플래그 설명은 대체로 맞고, meshoptimizer v1.3이 최신입니다(npm gltfpack 1.3.0, 2026-09-25. v1.3에서 voxel remeshing 추가). 수정할 점: (1) LOD 예시 'gltfpack -si 0.5 -kn -km'는 기본 양자화(KHR_mesh_quantization) 때문에 엔진 임포터 호환 문제가 생길 수 있고, extras(라이선스 메타)가 삭제됩니다. -noq -ke를 추가해야 합니다. (2) glTF-Transform에는 'ktx2' 명령이 없고 uastc/etc1s를 씁니다. 반대로 조사에서 빠진 unwrap(UV), center(피벗), tangents, xmp(KHR_xmp_json_ld 메타데이터), validate 명령이 있습니다. @gltf-transform/cli 4.5.0은 2026-09-01, MIT입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/zeux/meshoptimizer/master/gltf/README.md",
+        "https://github.com/zeux/meshoptimizer/releases",
+        "https://raw.githubusercontent.com/donmccurdy/glTF-Transform/main/packages/cli/src/cli.ts"
+      ]
+    },
+    {
+      "name": "Khronos glTF-Validator + glTF Asset Auditor",
+      "status": "ok",
+      "detail": "Validator는 Apache-2.0이고 CLI, npm, 웹과 .report.json 출력이 확인됩니다. 다만 npm 최신이 2.0.0-dev.3.10(2024-10-22)이라 릴리스 주기가 느립니다. Auditor는 Apache-2.0, 스타 27개이고 기본 프로파일(텍스처 512~2048, PBR 30~243, 삼각형 최대 100,000, 파일 최대 5,120KB), -1/false로 비활성화, 고폴리에서 느린 점이 모두 README와 일치합니다.",
+      "evidence_urls": [
+        "https://github.com/KhronosGroup/glTF-Validator",
+        "https://github.com/KhronosGroup/glTF-Asset-Auditor",
+        "https://registry.npmjs.org/gltf-validator"
+      ]
+    },
+    {
+      "name": "QRemeshify / AutoRemesher / Instant Meshes / xatlas / Texel Density Checker",
+      "status": "ok",
+      "detail": "QRemeshify: GPL-3.0, 스타 1.2k, Blender 4.2+, 입력 팁(1천 tris 이상, 10만 미만, 균일 분포, loose part 분리), Windows 우선 확인. AutoRemesher: MIT, 스타 3.5k, CLI 옵션 확인, 최근 커밋 2026-09-03. Instant Meshes: BSD-3, 스타 6.2k, Modo 10.2 확인. xatlas: MIT, Godot/Filament/ArmorPaint/Bakery, xatlas-python 확인. Texel Density Checker: GPL-3.0, 2026.1.1, 4.2+ 확인.",
+      "evidence_urls": [
+        "https://github.com/ksami/QRemeshify",
+        "https://github.com/huxingyi/autoremesher/commits/master",
+        "https://raw.githubusercontent.com/wjakob/instant-meshes/master/LICENSE.txt",
+        "https://github.com/jpcy/xatlas",
+        "https://github.com/mrven/Blender-Texel-Density-Checker"
+      ]
+    },
+    {
+      "name": "AI 리토폴로지 (MeshAnything, BPT, MeshRipple)",
+      "status": "issue",
+      "detail": "MeshAnything V1 800면/V2 1,600면, S-Lab 비상업은 확인했습니다. BPT는 8k+ 면, fp16 약 12GB, 약 2분, CVPR'25가 맞습니다. 그런데 라이선스 파일(main/License)이 'TENCENT HUNYUAN 3D 2.0 COMMUNITY LICENSE'라서 한국이 제외됩니다. 조사에서는 이 부분을 '미확인'으로 남겼으므로 반드시 추가해야 합니다. MeshRipple(CVPR 2026 highlight, 10k/20k면)에는 LICENSE 파일이 없어, 기본적으로 모든 권리가 유보된 것으로 보고 사용하지 않는 것이 맞습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/bpt/main/License",
+        "https://github.com/Tencent-Hunyuan/bpt",
+        "https://github.com/MayMhappy/MeshRipple",
+        "https://raw.githubusercontent.com/buaacyw/MeshAnything/main/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "UE 네이밍, 콜리전 (Allar 스타일 가이드, Send to Unreal)",
+      "status": "ok",
+      "detail": "Send to Unreal 문서의 UBX_/UCP_/USP_/UCX_[RenderMeshName]_##, _LOD0 제거, SOCKET_ 접두사를 확인했습니다. BlenderTools는 MIT입니다. Allar 가이드는 S_(SM_ 병기), SK_, M_, MI_, T_*_D/_N/_R/_O/_M을 쓰고, 패킹 텍스처는 글자를 이어 붙이는 규칙(예: _ERO)이라 _ORM도 이 규칙에 부합합니다. 주의할 점: Allar 저장소의 main 브랜치는 UE4용이고 UE5용은 v2 브랜치입니다. Epic 공식이 아닌 커뮤니티 가이드이며, _M이 Mask와 Metallic에 중복으로 쓰입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/EpicGamesExt/BlenderTools/main/docs/send2ue/asset-types/static-mesh.md",
+        "https://github.com/Allar/ue5-style-guide",
+        "https://github.com/EpicGamesExt/BlenderTools"
+      ]
+    },
+    {
+      "name": "Objaverse / Objaverse-XL",
+      "status": "ok",
+      "detail": "ODC-By v1.0(전체), 개별 객체별 라이선스, Polycam은 학술 비상업(신청 및 승인 필요), XL 1,000만 개 이상, 1.0 약 80만 개가 README와 일치합니다. objaverse PyPI 0.1.7(2023-11-01)도 맞습니다. 코드 라이선스는 Apache-2.0입니다.",
+      "evidence_urls": [
+        "https://github.com/allenai/objaverse-xl",
+        "https://pypi.org/project/objaverse/"
+      ]
+    },
+    {
+      "name": "Quartermaster (보유 에셋 MCP 색인)",
+      "status": "issue",
+      "detail": "존재하고 MIT이지만 스타 2개짜리 초기 프로젝트입니다. Fab은 비공개 GraphQL, Unity Asset Store와 Gumroad는 브라우저 인증 후 'session replay'로 수집합니다. README에 Unity '/account/purchases'가 2026-08 이후 404라고 되어 있습니다. 스토어 약관 위반 위험이 크므로 KB에서 '권장 도구'가 아니라 '패턴 예시(위험 고지)'로 격하해야 합니다.",
+      "evidence_urls": [
+        "https://github.com/Tanshaydar/Quartermaster"
+      ]
+    },
+    {
+      "name": "image-to-3dlab (사례)",
+      "status": "ok",
+      "detail": "README 내용이 대부분 일치합니다(스타 136개, 백엔드 5종, 32MB에서 5MB 미만, retopo_repaint.py --faces 40000 --skip-paint, .provenance.json, Hunyuan의 EU/UK/한국 불가 게이트, RMBG-2.0 비활성화). 빠진 주의사항: README에 'Qwen-Image 2.1 … Those weights are non-commercial'이라고 명시되어 있어, 텍스트에서 이미지를 거친 결과물은 비상업으로 분류됩니다. 이 저장소 자체 코드는 Apache-2.0입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Bingeljell/image-to-3dlab/main/README.md"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/devanshutak25/3d-resources/main/README.md",
+      "reason": "README에 'built with Claude'라고 명시된 AI 보조 큐레이션 목록이고 1차 자료가 아닙니다. Megascans를 한 곳에서는 'Free with Unreal Engine', 다른 곳에서는 'only UE projects'로 적는 등 서로 모순되고 낡은 항목이 있습니다. 'Kenney 60,000+'는 유료 All-in-1 번들 항목의 수치인데, KB는 이를 CC0 무료 에셋 수로 읽었습니다. 라이선스나 가격 근거로 쓰면 안 됩니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/docs/API.md",
+      "reason": "공식 문서지만 현행 SDK 소스(tripo3d/client.py, 0.4.2)와 맞지 않습니다. smart_lowpoly와 convert_model의 기본값이 바뀌었고, 새 인자와 새 모델 버전이 누락되어 있습니다. client.py를 1차 근거로 삼아야 합니다."
+    },
+    {
+      "url": "https://github.com/stepfun-ai/Step1X-3D",
+      "reason": "README와 LICENSE는 Apache-2.0이라고 하지만, 저장소에 Tencent Hunyuan 라이선스 헤더가 붙은 코드(step1x3d_texture/custom_rasterizer, differentiable_renderer)와 nvdiffrast 의존성이 들어 있습니다. 1차 자료 안에서 라이선스 표기가 서로 모순됩니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/microsoft/TRELLIS.2/main/README.md",
+      "reason": "라이선스 섹션에 nvdiffrast와 nvdiffrec만 '별도 라이선스'로 적혀 있습니다. 그 라이선스가 비상업이라는 점, DINOv3(Meta 라이선스)와 RMBG-2.0(BRIA) 의존성은 언급하지 않습니다. 1차 자료지만 라이선스 판단 근거로는 불완전합니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/nfa-bigdata/ai-law-clause-search-set5-2026/main/%EC%A1%B0%ED%95%AD%EB%8D%B0%EC%9D%B4%ED%84%B0.json",
+      "reason": "제3자가 가공한 조문 데이터입니다. 이번에 대조한 제31조와 부칙 내용은 국가법령정보센터 PDF 텍스트와 형식이 일치해 신뢰할 만합니다. 다만 KB에는 law.go.kr 원문 링크를 1차 출처로 달아야 합니다."
+    },
+    {
+      "url": "https://github.com/Tanshaydar/Quartermaster",
+      "reason": "스타 2개인 초기 개인 프로젝트이고, 스토어 비공개 API와 세션 재생 방식으로 수집해 약관 위반 위험이 있습니다. 권장 도구 근거로 부적절합니다."
+    },
+    {
+      "url": "https://github.com/iQreu/blender-mcp-suite",
+      "reason": "스타 1개, 커밋 1개입니다. scene_measure와 scene_assert 기능이 있는 것은 확인했지만, 성숙도가 검증되지 않아 '권장' 근거로 쓰기에는 약합니다."
+    },
+    {
+      "url": "https://github.com/dcc-mcp",
+      "reason": "조직 저장소 91개 중 에셋 스킬은 대부분 스타 0~1개이고, 스타 수로 보아 이용이 거의 없는 초기 프로젝트입니다. 존재와 기능 설명은 맞지만 KB에서 성숙한 도구처럼 소개하면 안 됩니다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "nvdiffrast / nvdiffrec의 NVIDIA Source Code License(1-Way Commercial) 비상업 제한",
+      "url": "https://raw.githubusercontent.com/NVlabs/nvdiffrast/main/LICENSE.txt",
+      "why_important": "TRELLIS.2(to_glb 텍스처 베이크)와 Step1X-3D가 이 라이브러리에 의존합니다. 3.3조가 'non-commercially(research or evaluation only)'로 사용을 제한하므로, KB의 '한국용 상업 로컬 대안' 권고를 수정하거나 대체 래스터라이저(PyTorch3D 등)를 안내해야 합니다. TRELLIS.2 이슈 #22(https://github.com/microsoft/TRELLIS.2/issues/22)도 같은 문제를 제기했지만 답변이 없습니다."
+    },
+    {
+      "name": "TRELLIS.2 공식 파이프라인의 BRIA RMBG-2.0 배경 제거 의존",
+      "url": "https://github.com/microsoft/TRELLIS.2/issues/175",
+      "why_important": "불투명 입력은 RMBG-2.0(BRIA, 비상업 조건, HF 게이트)으로 배경을 제거합니다. 상업 파이프라인에서는 알파가 있는 RGBA 입력을 쓰거나 다른 배경 제거기로 바꿔야 합니다(image-to-3dlab은 패치로 비활성화)."
+    },
+    {
+      "name": "Step1X-3D 텍스처 모듈에 포함된 Hunyuan3D 2.0 라이선스 코드",
+      "url": "https://raw.githubusercontent.com/stepfun-ai/Step1X-3D/main/step1x3d_texture/differentiable_renderer/mesh_render.py",
+      "why_important": "KB는 Step1X-3D를 한국용 Apache-2.0 대안(텍스처 포함)으로 추천합니다. 그런데 텍스처 베이커 코드에 Tencent Hunyuan 라이선스 헤더가 있고, Hunyuan 라이선스는 코드도 포괄하며 한국을 제외합니다. 텍스처 단계를 쓰기 전에 법률 검토가 필요합니다."
+    },
+    {
+      "name": "BPT 라이선스 = Tencent Hunyuan 3D 2.0 Community License (한국 제외)",
+      "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/bpt/main/License",
+      "why_important": "KB는 BPT를 AI 리토폴 옵션으로 소개하면서 라이선스를 미확인으로 남겼습니다. 실제로는 한국에서 쓸 수 없는 라이선스입니다."
+    },
+    {
+      "name": "TripoSG의 briaai/RMBG-1.4 자동 다운로드",
+      "url": "https://github.com/VAST-AI-Research/TripoSG",
+      "why_important": "TripoSG 본체는 MIT지만 추론 스크립트가 BRIA RMBG-1.4 가중치를 받습니다. RMBG-1.4는 학습 지식상 BRIA 비상업 라이선스입니다(HF 차단으로 원문 미확인). 상업용이라면 배경 제거 단계를 교체해야 합니다."
+    },
+    {
+      "name": "Tripo SDK 현행 파라미터 (tripo3d 0.4.2 client.py)와 저폴리 모델 P1-20260311, smart_lowpoly P-v2.0-20251226",
+      "url": "https://raw.githubusercontent.com/VAST-AI-Research/tripo-python-sdk/master/tripo3d/client.py",
+      "why_important": "KB의 Tripo 예시(P-v1.0, face_limit 기본 4000/10000)는 낡았습니다. fbx_preset(blender/mixamo/3dsmax), export_orientation, scale_factor는 엔진 임포트 자동화에 바로 쓸 수 있습니다."
+    },
+    {
+      "name": "gltfpack -noq / -ke / -cz(KHR_meshopt_compression) / -tw",
+      "url": "https://raw.githubusercontent.com/zeux/meshoptimizer/master/gltf/README.md",
+      "why_important": "기본 양자화와 extras 삭제 때문에 KB의 LOD 예시를 그대로 쓰면 엔진 호환 문제가 생기고 provenance 메타가 사라집니다. Khronos 표준 KHR_meshopt_compression도 새로 지원됩니다."
+    },
+    {
+      "name": "glTF-Transform CLI 4.5.0의 unwrap / center / tangents / xmp / validate 명령",
+      "url": "https://raw.githubusercontent.com/donmccurdy/glTF-Transform/main/packages/cli/src/cli.ts",
+      "why_important": "UV 재전개, 피벗 정규화, MikkTSpace 탄젠트를 헤드리스 CLI로 할 수 있어 MCP 에이전트에 적합합니다. xmp(KHR_xmp_json_ld)로 라이선스와 provenance를 glTF 표준 메타데이터로 담을 수 있어, KB의 provenance 권장사항과 직접 연결됩니다."
+    },
+    {
+      "name": "meshoptimizer v1.3 voxel remeshing",
+      "url": "https://github.com/zeux/meshoptimizer/releases",
+      "why_important": "KB의 핵심 팁 'Voxel Remesh 먼저, Decimate 나중'을 Blender 없이 라이브러리와 CLI 수준에서 자동화할 수 있는 새 기능입니다."
+    },
+    {
+      "name": "인공지능기본법 제31조 ③항(예술적·창의적 표현물 예외), ④항(대통령령 위임), 제43조 과태료",
+      "url": "https://raw.githubusercontent.com/nfa-bigdata/ai-law-clause-search-set5-2026/main/%EC%A1%B0%ED%95%AD%EB%8D%B0%EC%9D%B4%ED%84%B0.json",
+      "why_important": "게임은 예술적·창의적 표현물에 해당할 수 있어, 표시 방법에 완화 예외가 적용될 수 있습니다. 과태료(3천만원 이하)는 ①항(사전고지) 위반에만 붙습니다. 시행령과 가이드라인의 계도기간이나 적용 범위는 원문(law.go.kr, 과기정통부)에서 추가 확인이 필요합니다."
+    },
+    {
+      "name": "Poly Haven API ToS의 Referer/User-Agent 요구와 Provenance Attestation 옵션",
+      "url": "https://github.com/Poly-Haven/Public-API/blob/master/ToS.md",
+      "why_important": "MCP 서버를 직접 만들거나 커스터마이즈할 때 준수해야 하는 요구사항입니다. 기업용 서명된 provenance 매니페스트는 라이선스 추적 권장사항과 맞닿아 있습니다."
+    },
+    {
+      "name": "mcp-for-blender Premium 및 Tencent Cloud 국제(ap-singapore) 엔드포인트",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md",
+      "why_important": "한국 사용자가 blender-mcp로 Hunyuan3D API를 쓰려면 국제 계정 토글이 필요합니다. 자체 키 없이 Hunyuan3D, Tripo, Rodin을 쓰는 유료 경로가 있다는 점은 비용과 약관 검토 대상입니다."
+    },
+    {
+      "name": "Stability Community License의 상업 이용 등록 의무",
+      "url": "https://raw.githubusercontent.com/Stability-AI/stable-fast-3d/main/LICENSE.md",
+      "why_important": "SF3D를 상업적으로 쓰려면 stability.ai/community-license 등록이 필수입니다. 매출 기준은 계열사를 합산한 전체 연매출입니다. KB에는 '연매출 100만 달러 미만 무료'만 적혀 있습니다."
+    },
+    {
+      "name": "UE 5.5 이후 Nanite 스켈레탈 메시(실험 기능) 및 Nanite Foliage 등 지원 범위 변화",
+      "why_important": "KB는 '스켈레탈은 기존 LOD 유지'라고 단정했지만, 학습 지식상 최근 UE 버전에서 Nanite skinned mesh가 실험 또는 베타로 도입되었습니다. Epic 문서가 차단되어 미검증이므로, 공식 문서에서 버전별로 확인한 뒤 서술해야 합니다."
+    }
+  ]
+}
