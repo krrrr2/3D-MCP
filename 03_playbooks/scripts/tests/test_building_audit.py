@@ -109,6 +109,11 @@ def build_weird_house():
     for i, x0 in enumerate((4.1, 7.2, 10.3), 1):
         floor(f"Floor_room_{i}", x0, x0 + 3, -3.1, -0.1)            # 똑같은 빈 방 3개
     floor("Floor_study", 0, 4, -3.1, -0.1)                          # 문 없는 방
+    # 아래쪽 방들을 둘러싼 벽 (서재 서·남·동, 빈 방 사이 칸막이, 남쪽 외벽)
+    wall("Wall_D_W", -0.1, 0, -3.2, -0.1)
+    wall("Wall_D_S", 0, 13.4, -3.2, -3.1)
+    for i, x0 in enumerate((4.0, 7.1, 10.2, 13.3)):
+        wall(f"Wall_room_div_{i}", x0, x0 + 0.1, -3.1, -0.1)
     wa_w = wall("Wall_A_W", -0.1, 0, 0, 4)
     wa_n = wall("Wall_A_N", 0, 4, 4, 4.1)
     wad = wall("Wall_AD", 0, 4, -0.1, 0)
