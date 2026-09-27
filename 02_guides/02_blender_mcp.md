@@ -711,6 +711,7 @@ and use exact socket names returned. Never guess enum identifiers.
 
 ## 관련 문서
 
+- [컴퓨터 유즈 vs MCP vs 스크립트](12_computer_use_and_other_methods.md): MCP·헤드리스·화면 조작을 언제 쓰나
 - [목적·범위](../00_purpose/purpose_and_scope.md) · [조사 방법·신뢰도 정책](../01_research/research_method.md) · [출처 카탈로그](../01_research/sources_catalog.md) · [검증 로그](../01_research/verification_log.md)
 - [AI 모델 비교·MCP 클라이언트·비용](01_ai_models_and_clients.md): Codex 기본 effort, 모델별 단가
 - [기타 DCC·CAD·게임엔진 MCP](03_other_mcp_dcc_cad_engines.md): Fusion, SketchUp, Unreal 5.8 공식 MCP 등

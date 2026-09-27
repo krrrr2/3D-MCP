@@ -31,6 +31,8 @@
 | (필요 요소) | 어떤 AI를 쓸지 | `02_guides/01_ai_models_and_clients.md` |
 | (필요 요소) | 설치·연결 방법 | `03_playbooks/01_quickstart_setup.md` |
 | (필요 요소) | 라이선스·상업적 이용 | `02_guides/10_assets_pipeline_licensing.md` |
+| (추가 요청) | 건물·배치가 사람이 만든 것처럼 상식적인지(백룸 방지) | `03_playbooks/scripts/building_audit.py` |
+| (추가 요청) | 컴퓨터 유즈 등 MCP 외 방법 총정리 | `02_guides/12_computer_use_and_other_methods.md` |
 
 ## 4. 목적 달성에 필요한 기본 요소 (사용자가 명시하지 않았지만 필요한 것)
 

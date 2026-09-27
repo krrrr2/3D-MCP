@@ -24,8 +24,9 @@
 - [[보완] 가격·라이선스·법규](#g4_licensing_pricing) — 출처 34개
 - [[보완] AAA 실무·공식 변경사항](#g5_aaa_practice) — 출처 39개
 - [[보완] 벤치마크·모델 비교](#g6_benchmarks_models) — 출처 40개
+- [[보완] 컴퓨터 유즈 vs MCP vs 스크립트](#g7_computer_use) — 출처 11개
 
-항목·사례에 인용된 URL까지 합친 고유 URL 수: **1469개**
+항목·사례에 인용된 URL까지 합친 고유 URL 수: **1495개**
 
 <a id="01_ai-models"></a>
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
@@ -1123,4 +1124,23 @@
 | 38 | LL3M arXiv 2508.08228 | 학술 논문 (검색 요약) | 2025-08 |  | <https://arxiv.org/abs/2508.08228> |
 | 39 | Claude Opus 5.5 WebDev Ranking Puts Anthropic Ahead of GPT-6 Astra (remio) | 2차 기사 | 2026-09-23 |  | <https://www.remio.ai/post/claude-opus-5-5-webdev-ranking-puts-anthropic-ahead-of-gpt-6-astra> |
 | 40 | I Tried Claude Opus 5.5 vs GPT Astra in Blender (YouTube) | 영상 (내용 미확인, 존재만 확인) | 2026-09 |  | <https://www.youtube.com/watch?v=gr1v3ddUr7A> |
+
+<a id="g7_computer_use"></a>
+## [보완] 컴퓨터 유즈 vs MCP vs 스크립트
+
+주제 원문: [보완] 컴퓨터 유즈(Computer Use) vs MCP vs 스크립트 등 AI가 3D 도구를 조작하는 모든 방법 (2026-09-27, 메인 에이전트 직접 조사: WebSearch 16회 + code.claude.com 원문 1건)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | Claude Code: Let Claude use your computer from the CLI | official docs (원문 확인) | 2026-09 |  | <https://code.claude.com/docs/en/computer-use> |
+| 2 | OpenAI Computer use guide | official docs (검색 요약) |  |  | <https://developers.openai.com/api/docs/guides/tools-computer-use> |
+| 3 | Architectural visualization with Astra | official blog (검색 요약) |  |  | <https://developers.openai.com/blog/architectural-visualization-with-astra> |
+| 4 | GUI vs. CLI (arXiv 2606.24551) | paper (검색 요약) |  |  | <https://arxiv.org/abs/2606.24551> |
+| 5 | CADWorld (arXiv 2609.16251) | paper (검색 요약) |  |  | <https://arxiv.org/abs/2609.16251> |
+| 6 | WeaveBench (arXiv 2606.09426) | paper (검색 요약) |  |  | <https://arxiv.org/abs/2606.09426> |
+| 7 | 3DHarnessBench (arXiv 2609.06535) | paper (검색 요약) |  |  | <https://arxiv.org/abs/2609.06535> |
+| 8 | CLI-Anything | GitHub |  |  | <https://github.com/HKUDS/CLI-Anything> |
+| 9 | MindStudio: Claude + Blender MCP what it can't do | blog (검색 요약) |  |  | <https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance> |
+| 10 | AI타임스: 코덱스 윈도우 컴퓨터 유즈 | news ko |  |  | <https://www.aitimes.com/news/articleView.html?idxno=211135> |
+| 11 | GPT 6 x 블렌더 3D = 이제는 바이브 모델링 시대 (YouTube) | video ko (제목만) |  |  | <https://www.youtube.com/watch?v=_S4SaiNBlRk> |
 

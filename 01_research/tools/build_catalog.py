@@ -37,6 +37,7 @@ TOPIC_TITLES = {
     "G4_licensing_pricing": "[보완] 가격·라이선스·법규",
     "G5_aaa_practice": "[보완] AAA 실무·공식 변경사항",
     "G6_benchmarks_models": "[보완] 벤치마크·모델 비교",
+    "G7_computer_use": "[보완] 컴퓨터 유즈 vs MCP vs 스크립트",
 }
 
 VERDICT_KO = {"confirmed": "✅ 확인", "partially": "🟡 부분", "refuted": "❌ 반박", "unverifiable": "❔ 미확인"}

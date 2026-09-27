@@ -435,6 +435,7 @@ Opus 5.5 공식 가이드는 '제너릭한 AI 느낌을 피하라' 같은 막연
 
 ## 관련 문서
 
+- [컴퓨터 유즈 vs MCP vs 스크립트](12_computer_use_and_other_methods.md): 컴퓨터 유즈가 모델링에 정말 나은지, 방법 8가지 비교
 - [00 목적·범위](../00_purpose/purpose_and_scope.md) · [조사 방법·신뢰도 정책](../01_research/research_method.md) · [출처 카탈로그](../01_research/sources_catalog.md) · [검증 로그](../01_research/verification_log.md)
 - [02 Blender MCP 생태계](./02_blender_mcp.md): 공식 Blender Lab 서버와 ahujasid MCP for Blender 비교, 보안, API 함정
 - [03 기타 DCC·CAD·게임엔진 MCP](./03_other_mcp_dcc_cad_engines.md): SketchUp·Fusion 커넥터, Unreal·Unity 등

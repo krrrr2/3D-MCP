@@ -1,0 +1,294 @@
+{
+  "topic": "[보완] 컴퓨터 유즈(Computer Use) vs MCP vs 스크립트 등 AI가 3D 도구를 조작하는 모든 방법 (2026-09-27, 메인 에이전트 직접 조사: WebSearch 16회 + code.claude.com 원문 1건)",
+  "method_note": "하위 에이전트 주간 한도 때문에 메인 에이전트가 직접 조사. 대부분 검색 결과 요약 기반이며 arXiv·openai.com 원문은 차단되어 열람하지 못함(요약으로 교차 확인). code.claude.com/docs/en/computer-use 는 원문 확인.",
+  "summary_ko": [
+    "'컴퓨터 유즈가 직접 모델링하는 게 낫다'는 말의 출처는 GPT-6 Astra 출시 후 퍼진 데모·SNS 반응(예: Kyle Jeong의 X 글 'Astra가 Blender를 쓰는 능력은 새 컴퓨터 유즈 능력의 부산물')으로 보인다. 그러나 OpenAI 공식 아키비즈 사례를 보면 실제 모델링은 bpy 스크립트를 Blender 백그라운드 모드로 실행해서 했고, 컴퓨터 유즈는 렌더 이미지와 Blender 화면을 '확인'하는 데 썼다.",
+    "OpenAI 컴퓨터 유즈 가이드 요약: GPT-6 Astra에는 structured computer tool보다 code execution(모델이 PyAutoGUI/Playwright 코드를 작성)을 권장한다. 즉 화면 클릭조차 코드로 하게 한다.",
+    "Claude Code 공식 문서: 컴퓨터 유즈는 '가장 넓고 가장 느린' 방법이라 Claude는 MCP 서버 → Bash → Claude in Chrome → 컴퓨터 유즈 순서로 고른다. 화면 조작은 API가 없는 네이티브 앱 등에만 쓴다. CLI는 macOS 전용·Pro/Max·연구 프리뷰, Desktop 앱은 macOS/Windows.",
+    "GUI vs CLI 논문(arXiv 2606.24551, 18개 앱 440과제): 최강 GUI 에이전트 59.1%, 원래 스킬만 가진 CLI 에이전트 48.2%, 검증기로 스킬을 보강하면 CLI 69.3%. GUI는 시각 그라운딩·긴 작업에서, CLI는 스킬 커버리지에서 막힌다(상보적).",
+    "CADWorld(FreeCAD GUI 컴퓨터 유즈 200과제): 최고 에이전트 17.5% vs 전문가 87.0%. 강한 에이전트일수록 구조·형상·작업 순서 요건에서 실패. 정밀 CAD를 GUI 클릭으로 하는 것은 아직 약하다.",
+    "WeaveBench(GUI+CLI 혼합 114과제, 3D 도메인 포함): 최고 PassRate 41.2%. 결과만 채점하면 성능을 과대평가한다(가짜 시각 증거 등).",
+    "3DHarnessBench(Blender MCP로 3D를 Blender 코드로 복원): 함수 호출 접근(멀티뷰·능동 시점·전체 3D 상호작용)이 풍부할수록 모든 모델의 복원이 좋아진다. 최고 Uni3D 유사도 0.927.",
+    "CLI-Anything(HKUDS): Blender(208 테스트)·GIMP 등 앱에 에이전트용 CLI를 자동 생성. 테마·버전이 바뀌면 깨지는 화면 조작의 대안.",
+    "MCP로는 Blender 스컬프트 모드에 접근할 수 없다는 평가가 있다(MindStudio). 컴퓨터 유즈로 브러시를 드래그하는 것은 원리상 가능하지만 품질 근거는 찾지 못했다. 유기체는 이미지→3D 생성기 + 리메시가 권장(Astra 가이드들도 같은 결론).",
+    "실무 결론: 만드는 것은 스크립트/MCP, 확인과 GUI 전용 조작은 컴퓨터 유즈, 유기체는 생성형 3D. 이 조합(하이브리드)이 여러 가이드의 공통 권장이다."
+  ],
+  "items": [
+    {
+      "name": "Claude Code computer use (built-in MCP server 'computer-use')",
+      "category": "computer_use_client",
+      "what_it_is": "Claude가 앱을 열고 클릭·입력하며 화면을 보는 기능. 연구 프리뷰, CLI는 macOS 전용, Pro/Max 필요, 비대화형(-p) 불가. Desktop 앱은 macOS·Windows. 앱별 세션 승인, 다른 앱 숨김, 스크린샷 자동 축소(예: 3456×2234 → 약 1372×887), Esc로 중단, 한 번에 한 세션.",
+      "how_to_use": "대화형 세션에서 /mcp → computer-use 활성화 → macOS 접근성·화면 기록 권한 허용. 도구 선택 순서: MCP → Bash → Chrome → computer use.",
+      "strengths": "API 없는 네이티브 앱, 시뮬레이터, 시각 확인",
+      "weaknesses": "가장 느리고 넓은 방법. 실제 데스크톱에서 실행(샌드박스 아님)",
+      "status_date": "2026-09 문서",
+      "urls": [
+        "https://code.claude.com/docs/en/computer-use"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "OpenAI computer use (API) — GPT-6 Astra는 code execution 권장",
+      "category": "computer_use_api",
+      "what_it_is": "structured computer tool(마우스·키 동작 반환) 또는 code execution(모델이 PyAutoGUI/Playwright 코드를 작성). Astra에는 code execution을 권장하고 computer tool은 대안으로 지원. 격리된 VM·컨테이너에서 실행 권장.",
+      "urls": [
+        "https://developers.openai.com/api/docs/guides/tools-computer-use",
+        "https://github.com/piyo123/learning-computer-use-with-gpt-6-astra",
+        "https://www.elser.ai/news/gpt-6-astra-computer-use-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Codex computer use (Windows 11 지원 포함)",
+      "category": "computer_use_client",
+      "what_it_is": "OpenAI가 Codex에 Windows용 컴퓨터 유즈를 도입(화면 인식·클릭·키 입력·앱 조작, 모바일 원격 제어).",
+      "urls": [
+        "https://www.aitimes.com/news/articleView.html?idxno=211135"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "OpenAI 공식 아키비즈 사례 (Architectural visualization with Astra)",
+      "category": "case_official",
+      "what_it_is": "Astra가 Codex에서 bpy로 편집 가능한 장면을 만들고, Blender 실행 파일을 --python 백그라운드 모드로 돌려 미리보기 렌더를 만든 뒤, 저장된 이미지와 Blender 앱을 컴퓨터 유즈로 확인하며 수정.",
+      "urls": [
+        "https://developers.openai.com/blog/architectural-visualization-with-astra",
+        "https://community.openai.com/t/how-does-gpt-6-actually-generate-3d-models-in-release-demo-via-codex-local-blender-or-mcps-apis/1395391",
+        "https://ciyo.ai/blog/gpt-6-astra-blender-3d"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Kyle Jeong — How does Astra's computer use actually work?",
+      "category": "analysis",
+      "what_it_is": "'Astra의 Blender 능력은 새 컴퓨터 유즈 능력의 부산물'이라는 X 글. 요약에 따르면 루프는 Node REPL 세션 유지, Guardian 정책(GPT 5.6 Luna 배경 분류기)으로 안전 검토, Blender는 백그라운드 스크립트 실행 후 렌더를 보고 반복.",
+      "urls": [
+        "https://x.com/kylejeong/status/2097077446663372966",
+        "https://x.com/kylejeong/article/2097077446663372966"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "GUI vs. CLI: Execution Bottlenecks in Screen-Only and Skill-Mediated Computer-Use Agents",
+      "category": "paper",
+      "what_it_is": "18개 데스크톱 앱 440과제에서 같은 목표·상태·검증기로 비교. GUI 최고 59.1%, CLI(원래 스킬) 48.2%, 검증기 기반 스킬 보강 시 CLI 69.3%.",
+      "urls": [
+        "https://arxiv.org/abs/2606.24551",
+        "https://aiweekly.co/alerts/cli-agents-surpass-gui-once-skill-coverage-gaps-are-filled"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CADWorld",
+      "category": "benchmark",
+      "what_it_is": "FreeCAD GUI 장기 컴퓨터 유즈 벤치마크 200과제(11개 범주). 7개 에이전트 중 최고 17.5%, 전문가 87.0%.",
+      "urls": [
+        "https://arxiv.org/abs/2609.16251",
+        "https://github.com/Zdong104/CADWORLD",
+        "https://aiweekly.co/alerts/cadworld-benchmark-top-agent-175-on-freecad-vs-experts-87"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "WeaveBench",
+      "category": "benchmark",
+      "what_it_is": "GUI+CLI 혼합 인터페이스 114과제(Spatial/3D 포함). 최고 PassRate 41.2%. 결과만 보는 채점은 과대평가.",
+      "urls": [
+        "https://arxiv.org/abs/2606.09426",
+        "https://www.emergentmind.com/papers/2606.09426"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "3DHarnessBench",
+      "category": "benchmark",
+      "what_it_is": "Blender MCP로 3D 형상을 Blender Python 코드로 복원. 단일뷰/멀티뷰/능동 시점/전체 3D 상호작용 4단계. 함수 호출 접근이 풍부할수록 향상, 최고 Uni3D 0.927.",
+      "urls": [
+        "https://arxiv.org/abs/2609.06535",
+        "https://github.com/llada60/3DHarnessBench"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "VideoCAD",
+      "category": "dataset",
+      "what_it_is": "CAD UI 조작 영상 41,005개. GPT-4.1은 돌출 횟수 추정 47%, 프레임 순서 36%로 CAD 화면 시간 추론이 약함.",
+      "urls": [
+        "https://arxiv.org/abs/2505.24838",
+        "https://www.fabbaloo.com/news/videocad-trains-ai-agents-on-a-real-cad-interface"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "OSWorld (원본, 2024)",
+      "category": "benchmark",
+      "what_it_is": "실제 데스크톱 369과제. 당시 사람 72.36% vs 최고 모델 12.24%, 주된 실패는 GUI 그라운딩과 앱 조작 지식.",
+      "urls": [
+        "https://arxiv.org/abs/2404.07972"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CLI-Anything (HKUDS)",
+      "category": "tool",
+      "what_it_is": "앱 코드베이스에서 에이전트용 CLI를 자동 생성하는 Claude Code 플러그인. Blender 208·GIMP 107 테스트. 실제 백엔드(Blender 엔진)를 쓰고 JSON 출력.",
+      "urls": [
+        "https://github.com/HKUDS/CLI-Anything",
+        "https://arxiv.org/abs/2606.03854"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "codex-blender-plugin / blender-design-plugin",
+      "category": "tool",
+      "what_it_is": "Codex가 Blender를 '가드된 하네스'로 조작. 임의 Python 기본 차단, 메인 스레드에서만 변경, 되돌릴 수 없는 작업은 토큰 승인, 사용자가 중간에 손으로 편집하면 재조회 후 이어감.",
+      "urls": [
+        "https://github.com/partme-ai/codex-blender-plugin",
+        "https://github.com/full-aigc-plugins/blender-design-plugin"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "UI-TARS Desktop (ByteDance, 오픈소스)",
+      "category": "computer_use_open",
+      "what_it_is": "스크린샷만 보고 동작하는 오픈 가중치 GUI 에이전트 앱. 로컬·원격 컴퓨터 조작.",
+      "urls": [
+        "https://github.com/bytedance/ui-tars-desktop"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "텍스트 기반 3D 부분 편집 연구 (ES3D, 3DEditFormer, EditFlow3D, Hunyuan3D-Buffalo)",
+      "category": "other_method",
+      "what_it_is": "생성된 메시의 특정 부위를 텍스트·이미지로 수정하는 연구 흐름. 컴퓨터 유즈로 스컬프트하는 대신 생성 모델로 형태를 고치는 방향.",
+      "urls": [
+        "https://arxiv.org/pdf/2608.15749",
+        "https://arxiv.org/pdf/2608.02711",
+        "https://arxiv.org/pdf/2608.03179"
+      ],
+      "confidence": "low"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "만드는 것은 코드(bpy 스크립트·MCP), 확인과 GUI 전용 조작은 컴퓨터 유즈로 나눈다",
+      "why": "컴퓨터 유즈는 가장 느리고 비싸며(Claude Code 문서), 정밀 CAD GUI 조작 성공률이 낮다(CADWorld 17.5%). 반면 화면을 직접 보고 확인하는 데는 유용하다.",
+      "urls": [
+        "https://code.claude.com/docs/en/computer-use",
+        "https://arxiv.org/abs/2609.16251"
+      ]
+    },
+    {
+      "tip": "컴퓨터 유즈 결과도 숫자 검사로 확인한다",
+      "why": "결과만 보는 채점은 과대평가되고(WeaveBench), 에이전트가 가짜 시각 증거를 만들기도 한다.",
+      "urls": [
+        "https://arxiv.org/abs/2606.09426"
+      ]
+    },
+    {
+      "tip": "CLI/스킬을 보강하면 GUI보다 낫다",
+      "why": "스킬 보강 CLI 69.3% > GUI 59.1%.",
+      "urls": [
+        "https://arxiv.org/abs/2606.24551"
+      ]
+    },
+    {
+      "tip": "컴퓨터 유즈는 격리 환경에서",
+      "why": "실제 데스크톱에서 동작하므로 OpenAI는 VM·컨테이너 격리를, Anthropic은 앱별 승인·Esc 중단을 둔다.",
+      "urls": [
+        "https://developers.openai.com/api/docs/guides/tools-computer-use",
+        "https://code.claude.com/docs/en/computer-use"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "MCP + 컴퓨터 유즈 혼합 권장",
+      "who": "kingy.ai 가이드 요약",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP + Computer Use",
+      "what_was_made": "대화형 3D 작업",
+      "process": "MCP로 장면을 효율적으로 수정하고, 필요할 때 컴퓨터 유즈로 Blender를 눈으로 확인",
+      "outcome": "컴퓨터 유즈 단독은 직관적이지만 비싸고, MCP는 빠르고 구조화된 결과를 돌려줌",
+      "urls": [
+        "https://kingy.ai/blog/blender-openai-astra-complete-guide/",
+        "https://blog.neural4d.com/user-guide/gpt-6-astra-blender-mcp/"
+      ]
+    },
+    {
+      "title": "레퍼런스 이미지 드래곤 → 영상",
+      "who": "Sarang Borude (X)",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender(헤드리스)",
+      "what_was_made": "레퍼런스 이미지 기반 드래곤과 10초 시네마틱",
+      "process": "Blender 헤드리스 사용",
+      "outcome": "유기체 형상 실험, 기본 모델은 쿼드를 어느 정도 유지(요약 기준)",
+      "urls": [
+        "https://x.com/doomdave/status/2096335588727349434"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Claude Code: Let Claude use your computer from the CLI",
+      "url": "https://code.claude.com/docs/en/computer-use",
+      "source_type": "official docs (원문 확인)",
+      "date": "2026-09"
+    },
+    {
+      "title": "OpenAI Computer use guide",
+      "url": "https://developers.openai.com/api/docs/guides/tools-computer-use",
+      "source_type": "official docs (검색 요약)"
+    },
+    {
+      "title": "Architectural visualization with Astra",
+      "url": "https://developers.openai.com/blog/architectural-visualization-with-astra",
+      "source_type": "official blog (검색 요약)"
+    },
+    {
+      "title": "GUI vs. CLI (arXiv 2606.24551)",
+      "url": "https://arxiv.org/abs/2606.24551",
+      "source_type": "paper (검색 요약)"
+    },
+    {
+      "title": "CADWorld (arXiv 2609.16251)",
+      "url": "https://arxiv.org/abs/2609.16251",
+      "source_type": "paper (검색 요약)"
+    },
+    {
+      "title": "WeaveBench (arXiv 2606.09426)",
+      "url": "https://arxiv.org/abs/2606.09426",
+      "source_type": "paper (검색 요약)"
+    },
+    {
+      "title": "3DHarnessBench (arXiv 2609.06535)",
+      "url": "https://arxiv.org/abs/2609.06535",
+      "source_type": "paper (검색 요약)"
+    },
+    {
+      "title": "CLI-Anything",
+      "url": "https://github.com/HKUDS/CLI-Anything",
+      "source_type": "GitHub"
+    },
+    {
+      "title": "MindStudio: Claude + Blender MCP what it can't do",
+      "url": "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance",
+      "source_type": "blog (검색 요약)"
+    },
+    {
+      "title": "AI타임스: 코덱스 윈도우 컴퓨터 유즈",
+      "url": "https://www.aitimes.com/news/articleView.html?idxno=211135",
+      "source_type": "news ko"
+    },
+    {
+      "title": "GPT 6 x 블렌더 3D = 이제는 바이브 모델링 시대 (YouTube)",
+      "url": "https://www.youtube.com/watch?v=_S4SaiNBlRk",
+      "source_type": "video ko (제목만)"
+    }
+  ],
+  "gaps": [
+    "컴퓨터 유즈로 Blender 스컬프트 모드를 조작해 좋은 결과를 냈다는 검증된 사례는 찾지 못함",
+    "MCP vs 컴퓨터 유즈를 같은 3D 과제로 직접 비교한 정량 자료는 없음(일반 데스크톱 과제 GUI vs CLI 비교와 CAD GUI 벤치마크만 있음)",
+    "arXiv·openai.com 원문 미열람(검색 요약 기반)"
+  ]
+}

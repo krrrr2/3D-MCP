@@ -20,6 +20,7 @@ SKIP = {os.path.join(ROOT, "01_research", "sources_catalog.md"), os.path.join(RO
 # 원자료에 없어도 되는 URL (도구 설치·문서 안내용으로 이 저장소가 직접 확인한 것)
 ALLOW_PREFIXES = (
     "https://code.claude.com/docs/en/claude-code-on-the-web",
+    "https://github.com/krrrr2/3D-MCP",   # 이 저장소 자신(PR 등)
 )
 
 MD_LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")

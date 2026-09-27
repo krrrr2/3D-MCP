@@ -807,6 +807,7 @@ def add_scatter(ground, collection, dist_min=4.0, density_max=0.08, seed=0,
 
 ## 관련 문서
 
+- [건축 상식 검사 `building_audit.py`](../03_playbooks/scripts/README.md): 문·창·방 연결·동선·계단의 비상식(백룸식 기묘함) 자동 검출
 - [오브젝트·가구·조형물 모델링](07_modeling_objects_furniture_sculpture.md): 에셋 정면·원점·스케일 정규화, 부품 분해
 - [에이전트 워크플로·프롬프팅](09_agent_workflow_prompting.md): 시각 피드백 루프, 스킬·CLAUDE.md, 토큰 비용
 - [Blender MCP 생태계](02_blender_mcp.md): 서버 선택, 타임아웃, undo·버전 저장, 한국어 UI 문제

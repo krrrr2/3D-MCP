@@ -734,6 +734,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 
 ## 관련 문서
 
+- [컴퓨터 유즈 vs MCP vs 스크립트](12_computer_use_and_other_methods.md): 스컬프트·유기체를 컴퓨터 유즈로 할 수 있나
 - [00 목적·범위](../00_purpose/purpose_and_scope.md) · [조사 방법·신뢰도 정책](../01_research/research_method.md) · [출처 카탈로그](../01_research/sources_catalog.md) · [검증 로그](../01_research/verification_log.md)
 - [01 AI 모델·클라이언트](01_ai_models_and_clients.md): 모델별 역할, effort, 비용
 - [02 Blender MCP](02_blender_mcp.md): 공식 vs ahujasid, 보안, 버전별 API 함정
