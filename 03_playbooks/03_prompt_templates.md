@@ -11,7 +11,7 @@
 - **숫자 검사가 먼저, 그림 검사는 그다음입니다.** [`scene_audit.py`](scripts/README.md) → [`review_views.py`](scripts/README.md) 4뷰 → 체크리스트형 비평(큰 구조 문제만, `NEEDS_FIX: YES/NO`) 순서로 돌립니다. 숫자가 통과해도 그림이 틀리면 실패이고, 그림이 그럴듯해도 숫자가 틀리면 실패입니다.
 - **이미지 입력 규칙:** 이미지를 텍스트보다 먼저 넣고 `Image 1:`처럼 라벨을 붙입니다. 검토용 스크린샷은 긴 변 1000px 안팎이면 충분하고, 한 요청에 이미지가 20장을 넘으면 각 변을 2000px 이하로 줄여야 합니다([Claude vision 문서](https://platform.claude.com/docs/en/build-with-claude/vision)).
 - **모델 설정:** Codex에서 GPT-6 Astra의 기본 effort는 low이니 반드시 명시하세요. Opus 5.5의 기본 effort는 medium이라 스펙·레이아웃 설계 턴에서만 올리면 됩니다. 모델 비교는 대부분 개인 테스트(n=1)이므로 템플릿은 특정 모델에 기대지 않게 썼습니다([AI 모델 가이드](../02_guides/01_ai_models_and_clients.md)).
-- **[한국 사용자]** 치수는 `REGION=KR` 프리셋([치수표](05_reference_dimensions.md) 10절), 오브젝트 이름은 **영어 snake_case**(한국어나 CamelCase를 쓰면 `scene_audit` 치수 규칙이 맞지 않음), 노드는 **type**으로 찾기(한국어 UI에서 노드 이름이 번역될 수 있음), Tencent Hunyuan3D 계열은 호출 금지(라이선스 적용 지역에서 대한민국 제외, 출력물 사용도 제한).
+- **[한국 사용자]** 치수는 `REGION=KR` 프리셋([치수표](05_reference_dimensions.md) 10절), 오브젝트 이름은 **영어 snake_case**(한국어 이름은 `scene_audit` 치수 규칙이 인식하지 못함. 종류 단어 `chair`·`sofa` 등을 넣을 것), 노드는 **type**으로 찾기(한국어 UI에서 노드 이름이 번역될 수 있음), Tencent Hunyuan3D 계열은 호출 금지(라이선스 적용 지역에서 대한민국 제외, 출력물 사용도 제한).
 - **기대치:** 독립적으로 검증된 'AAA급' AI+MCP 결과물은 아직 찾지 못했습니다. 이 템플릿들은 에이전트를 "감독이 필요한 협업자"로 두고 사람이 마무리하는 운영을 전제로 합니다.
 
 ---
@@ -923,7 +923,7 @@ spec 경로, 현재 단계, 최신 버전 파일, 오브젝트 인덱스(유닛 
 | 비평이 사소한 지적으로 끝나지 않음 | 종료 조건 없음, 리뷰어의 과잉 보고 | T07 큰 문제만 + `NEEDS_FIX` + 2회 연속/최대 5회 |
 | 비평가가 늘 합격을 줌 | 만든 에이전트가 자기 작업을 채점 | 읽기 전용 subagent, 예/아니오 질문 먼저 |
 | 재질을 넣었는데 스크린샷에 색이 안 보임 | 뷰포트가 Solid 모드 | Material Preview 또는 렌더로 확인 |
-| `scene_audit` 치수 규칙이 엉뚱하게 걸리거나 안 걸림 | 한국어·CamelCase 이름, 이름 부분 일치 | 영어 snake_case, [치수표](05_reference_dimensions.md) 11절 `KR_SIZE_RULES` |
+| `scene_audit` 치수 규칙이 엉뚱하게 걸리거나 안 걸림 | 한국어 이름, 종류 단어 없는 이름(`thing_01`), 이름이 `_wall`로 끝남(구조물로 분류) | 영어 snake_case + 종류 단어, [치수표](05_reference_dimensions.md) 11절 `KR_SIZE_RULES` |
 | `KeyError: 'Principled BSDF'` | 한국어 UI에서 노드 이름 번역 | 노드는 type, 소켓은 identifier(T08 코드) |
 | 5.0에서 EXR 멀티레이어 설정 오류 | `media_type`을 먼저 바꾸지 않음 | T10 코드 |
 | 스크린샷 루프가 길어지자 요청 오류 | 이미지 20장 초과 시 치수 제한 강화 | 긴 변 1000px, 각 변 2000px 이하 |

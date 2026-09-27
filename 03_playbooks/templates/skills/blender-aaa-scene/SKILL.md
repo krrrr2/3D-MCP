@@ -185,7 +185,7 @@ import sys, importlib, json, bpy
 sys.path.append(r"{{SCRIPTS}}")                  # 03_playbooks/scripts 절대 경로
 import scene_audit, placement_utils as pu
 importlib.reload(scene_audit); importlib.reload(pu)
-rep = scene_audit.audit_scene(floor_z=0.0)        # KR 프리셋: size_rules=KR_SIZE_RULES (치수표 11절)
+rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)  # 천장 높이(구축 2.30, 신축 2.40~2.50). KR 프리셋: size_rules=KR_SIZE_RULES (치수표 11절)
 bad = [(u["name"], u["issues"]) for u in rep["units"] if u["issues"]]
 print("done:audit", json.dumps(rep["summary"]), bad[:20], rep["interpenetrations"][:20])
 ```

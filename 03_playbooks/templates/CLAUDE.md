@@ -23,11 +23,12 @@
 - One furniture piece = one parent Empty (the "unit") + child parts. scene_audit judges units by their top parent,
   so loose parts without a parent will be reported as floating.
 - Names: English snake_case containing the category word: unit `dining_chair_01`, parts `dining_chair_01_leg_FL`.
-  No Korean names, no CamelCase (size rules match substrings like `coffee_table`, `dining_table`, `sofa`).
+  No Korean names. Size rules match whole words (`coffee_table`, `dining_table`, `sofa`, `armchair`); snake_case preferred.
   Optional engine prefix on units: `SM_dining_chair_01`.
 - Materials `M_<type>_<variant>` (M_wood_oak) · lights `LGT_<role>` (LGT_key) · cameras `CAM_<shot>`.
 - Collections: COL_Blockout, COL_Hero, COL_Props, COL_Lights, COL_Cameras.
-- Structural objects must contain `floor`, `wall` or `ceiling` in the name (audit uses them as supports, skips them for collisions).
+- Structural objects: last word `floor`, `wall` or `ceiling` (`Floor`, `Wall_N`, `ceiling_01`). Audit uses them as supports and checks
+  furniture-vs-structure penetration. Never end a furniture name with `_wall` (`wall_shelf` is fine).
 - Rename imported assets to these rules immediately.
 
 ## 2. Files
@@ -82,7 +83,7 @@ import sys, importlib, bpy
 sys.path.append(r"{{ABSOLUTE_PATH}}/03_playbooks/scripts")
 import scene_audit, placement_utils as pu, review_views as rv
 for m in (scene_audit, pu, rv): importlib.reload(m)
-rep = scene_audit.audit_scene(floor_z=0.0)            # KR: size_rules=KR_SIZE_RULES (05_reference_dimensions.md §11)
+rep = scene_audit.audit_scene(floor_z=0.0, ceiling_z=2.30)  # ceiling_z = room ceiling (KR old apt 2.30). KR: size_rules=KR_SIZE_RULES (05_reference_dimensions.md §11)
 print(rep["summary"], [(u["name"], u["issues"]) for u in rep["units"] if u["issues"]], rep["interpenetrations"])
 print(rv.render_review_views(bpy.path.abspath("//review/v001"), engine="BLENDER_WORKBENCH", res=768))  # ABSOLUTE out dir
 ```
