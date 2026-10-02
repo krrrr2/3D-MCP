@@ -1,0 +1,151 @@
+[
+ [
+  "search_api2",
+  "search_api_docs",
+  {
+   "query": "bevel segments",
+   "max_results": 3
+  }
+ ],
+ [
+  "search_api3",
+  "search_api_docs",
+  {
+   "query": "BevelModifier",
+   "max_results": 3
+  }
+ ],
+ [
+  "search_api4",
+  "search_api_docs",
+  {
+   "query": "how to bake",
+   "max_results": 3
+  }
+ ],
+ [
+  "search_idx",
+  "search_api_docs",
+  {
+   "query": "bevel segments",
+   "index": 0
+  }
+ ],
+ [
+  "detail",
+  "get_object_detail_summary",
+  {
+   "name": "apron"
+  }
+ ],
+ [
+  "detail_bad",
+  "get_object_detail_summary",
+  {
+   "name": "nope"
+  }
+ ],
+ [
+  "thumb",
+  "render_thumbnail_to_path",
+  {
+   "output_path": "${SCRATCH}/offmcp/out/thumb.png"
+  }
+ ],
+ [
+  "viewport",
+  "render_viewport_to_path",
+  {
+   "output_path": "${SCRATCH}/offmcp/out/viewport.png"
+  }
+ ],
+ [
+  "shot_json",
+  "get_screenshot_of_window_as_json",
+  {}
+ ],
+ [
+  "shot_img",
+  "get_screenshot_of_window_as_image",
+  {}
+ ],
+ [
+  "jump_tab",
+  "jump_to_tab_by_name",
+  {
+   "name": "Shading"
+  }
+ ],
+ [
+  "jump_obj",
+  "jump_to_view3d_object_by_name",
+  {
+   "name": "apron"
+  }
+ ],
+ [
+  "sb_exit",
+  "execute_blender_code",
+  {
+   "code": "import sys\nsys.exit(0)"
+  }
+ ],
+ [
+  "sb_quit",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nbpy.ops.wm.quit_blender()"
+  }
+ ],
+ [
+  "sb_factory",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nbpy.ops.wm.read_factory_settings()"
+  }
+ ],
+ [
+  "sb_os",
+  "execute_blender_code",
+  {
+   "code": "import os\nresult={'cwd': os.getcwd(), 'uid': os.getuid(), 'can_list_home': len(os.listdir('/home/user'))}"
+  }
+ ],
+ [
+  "sb_osexit_alias",
+  "execute_blender_code",
+  {
+   "code": "import builtins\nresult={'has_exit': hasattr(builtins,'exit')}"
+  }
+ ],
+ [
+  "alive",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nresult={'alive': True, 'n': len(bpy.data.objects)}"
+  }
+ ],
+ [
+  "cli_exec",
+  "execute_blender_code_for_cli",
+  {
+   "blend_file": "${SCRATCH}/h3d/fable_italian.blend",
+   "code": "import bpy\nresult={'file': bpy.data.filepath, 'n': len(bpy.data.objects)}"
+  }
+ ],
+ [
+  "cli_sum",
+  "get_blendfile_summary_datablocks_for_cli",
+  {
+   "blend_file": "${SCRATCH}/h3d/fable_italian.blend"
+  }
+ ],
+ [
+  "cli_same_dirty",
+  "execute_blender_code_for_cli",
+  {
+   "blend_file": "${SCRATCH}/h3d/fable_modern.blend",
+   "code": "import bpy\nresult={'file': bpy.data.filepath}"
+  }
+ ]
+]

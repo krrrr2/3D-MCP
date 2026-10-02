@@ -1,0 +1,1371 @@
+{
+  "topic": "AI로 오브젝트·가구·조형물을 올바른 형태/비율/디테일로 모델링하기 (치수 표준, 모델링 접근법, 부품 분해, 유기 조형, LLM/VLM 형상 프로그램 연구, 실패 모드와 bpy 자동 검사)",
+  "summary_ko": [
+    "핵심 결론: AI가 만든 가구·소품이 '그럴듯하게' 나오는지는 모델 성능보다 파이프라인 설계에서 더 크게 갈린다. (1) 코드 작성 전에 부품별 치수 명세(JSON)를 먼저 만들고, (2) 부품 단위 코드(bpy / build123d)로 짓고, (3) 결정론적 검사(치수·접촉·관입·manifold)를 먼저 통과시킨 뒤 (4) 렌더로 시각 검사를 반복한다. build123d-mcp의 시스템 프롬프트는 이 순서를 'deterministic checks before visual'로 명시하고, blender-game-skills는 'Render evidence at every gate; the viewport is not evidence'를 규칙으로 둔다.",
+    "스케일 규약은 '1 unit = 1 m, Z-up, 원점 = 바닥 접점, 스케일 적용(Apply Scale)'이다. 표준 치수를 프롬프트에 숫자로 넣어 준다. 예: 식탁 0.72–0.76 m, 의자 좌면 0.43–0.46 m, 테이블 상판과 좌면의 차이 0.27–0.30 m, 주방 상판 0.85–0.91 m, 문 2.0–2.1 m, 계단 2R+T = 0.62–0.64 m. Infinigen 가구 생성기 코드의 샘플링 범위(의자 leg_height 0.45–0.5, 책상 높이 평균 0.73)도 실측형 레퍼런스로 쓸 수 있다.",
+    "접근법 선택 가이드: 일반 가구·제품은 bpy primitive와 modifier stack(Bevel+Weighted Normal, Solidify, Mirror, Array, Subdivision+crease/support loop, Boolean Exact/Manifold)으로 만든다. 정밀 치수·조인트·기구는 build123d / CadQuery / OpenSCAD(BOSL2)와 MCP로, 변형 다양성이 필요하면 Infinigen / Geometry Nodes / Sverchok / Archimesh로 간다. 유기 조형물은 metaball·SDF·Skin·Volume→Mesh 방식이나 AI image-to-3D를 쓴 뒤 remesh한다. 배경 소품은 에셋 라이브러리를 쓴다.",
+    "부품 분해: PartNet의 계층 구조를 프롬프트 체크리스트로 쓰면 누락 부품이 줄어든다. 예: chair = chair_back / chair_seat / chair_base / chair_arm, regular_leg_base = leg / bar_stretcher / runner / foot / rocker. 부품마다 별도 오브젝트로 두고 이름을 붙이고, 현실적인 두께를 명시하고, 의도한 결합(장부 등)만 관입을 허용하는 명명 규칙을 쓰는 것이 핵심이다.",
+    "연구에서 얻은 교훈: LL3M(멀티 에이전트, Blender 코드, BlenderRAG), BlenderLLM(CADBench), MeshCoder(점군을 부품 분할된 Blender 코드로), CAD-Recode(점군을 CadQuery로, ICCV 2025), Text2CAD(초급~전문가 수준 프롬프트), CADCodeVerify(VLM이 검증 질문을 스스로 만들어 반복 수정, ICLR 2025)가 공통으로 보여 주는 점은 '코드가 편집 가능한 3D 표현'이고 '렌더 기반 VLM 검증 루프'가 정확도를 올린다는 것이다. 반면 LLaMA-Mesh·MeshLLM처럼 메쉬를 텍스트로 직접 생성하는 방식은 아직 저폴리 수준이라 프로덕션용으로는 부적합하다.",
+    "2026년 실전 사례: GPT-6 Astra로 만든 kitchen-twin은 휴대폰 영상을 metric scan하고 Blender DSL(parts / joints / dimensions)로 옮겨 32개 에셋과 138개의 작동 조인트를 만들었고, 독립 검증 세션을 두었다. CADGenBench에서 build123d-mcp를 붙였을 때 Opus 5가 0.677로 GPT-5.6 Sol(0.532)과 Gemini 3.7 Flash(0.508)보다 높았다. 다만 이는 단일 제3자 저장소의 결과다.",
+    "대표 실패 모드는 떠 있는 부품, 부품 간 관입, 비율 오류, 뒤집힌 normal, 미적용 스케일·음수 스케일, non-manifold, bevel 누락으로 생기는 CG 느낌, 디테일 부족(하드웨어·이음새·두께 없음)이다. bmesh + mathutils.BVHTree + scene.ray_cast로 된 50줄 정도의 검사 스크립트로 대부분 자동 검출할 수 있다. Blender 3D Print Toolbox의 검사 로직(non-manifold, degenerate, intersect, thickness)을 그대로 재사용할 수 있다.",
+    "MCP 추천(이 주제 관점): mcp-for-blender(구 blender-mcp, 코드 실행과 뷰포트 캡처), blend-ai(186개 도구, mesh 품질 분석 포함), build123d-mcp(measure / compare / validate / render), agentcad, OpenSCAD MCP 서버. 여기에 검증용 skill(blender-image-to-3d의 IoU 게이트, blender-production의 defect ledger)을 결합하는 방식이 2026년의 실전 패턴이다.",
+    "조사 한계: 이번 세션은 웹 검색 예산이 이미 소진되었고, 네트워크 정책상 GitHub 이외 도메인(dimensions.com, ICC 코드, 법제처, arXiv, Blender 매뉴얼 등)이 차단되었다. 그래서 치수 표준 수치 가운데 GitHub 소스코드(Infinigen, Archimesh, FreeCAD, Holodeck)로 확인되지 않은 값은 일반 표준 지식에 기반하며, 반드시 재검증이 필요하다."
+  ],
+  "items": [
+    {
+      "name": "실세계 치수 표준 치트시트 (Neufert / IRC / NKBA / EN / 국내 관행) + 코드로 확인된 기본값",
+      "category": "dimension-standard",
+      "what_it_is": "가구·건축 요소가 '맞아 보이게' 만드는 기준 치수 모음이다. 이번 세션에서 1차 소스로 확인한 값은 다음과 같다. FreeCAD ArchStairs의 Blondel ratio(2R+T)는 설명문상 62–64 cm(24.5–25.5 in)가 편안한 계단이다. Blender Archimesh 기본값은 문틀 1.0×2.1 m(frame thickness 0.08), 계단 단높이 0.14 m·단너비 0.30 m·디딤판 두께 0.03 m, 주방 하부장 깊이 0.59 m·높이 0.70 m·걸레받이 0.16 m·상판 두께 0.02 m·상판 돌출 0.03 m·보드 두께 0.018 m, 상부장 깊이 0.35 m이다. Holodeck 프롬프트는 문 폭 single 1 m / double 2 m, 방 한 변 3–8 m, 최대 48 m², 오브젝트 size를 [L, W, H] cm로 적도록 한다. 그 밖의 일반 표준값(재검증 필요)은 know_how의 치수표 항목에 정리했다.",
+      "how_to_use": "시스템 프롬프트나 spec 단계에 '허용 범위 표'를 숫자로 넣고, 생성 후에는 bpy 검사 스크립트의 RULES 딕셔너리로 자동 판정한다. 사진에서 스케일을 잡을 때는 문 높이(2.0–2.1 m)와 주방 상판(0.85–0.91 m)을 캘리브레이션 앵커로 쓴다.",
+      "strengths": "LLM이 흔히 틀리는 절대 스케일과 상대 비율(테이블과 의자 높이 차이 등)을 숫자로 고정할 수 있다.",
+      "weaknesses": "dimensions.com, ICC IRC, 법제처(건축물의 피난·방화구조 등의 기준에 관한 규칙, 주택건설기준 등에 관한 규정), EN 527/1335, KS 가구 규격의 원문은 egress 차단으로 직접 확인하지 못했다. 국가별 차이(한국 주방 상판 850 mm 관행 vs 미국 36 in)가 있으므로 타깃 지역을 명시해야 한다.",
+      "license_or_price": "표준 문서 자체는 유료(ISO/EN/KS) 또는 공개(법령). 코드 출처는 GPL(Archimesh·FreeCAD), Apache(Holodeck)",
+      "status_date": "코드 기본값은 2026-09 확인",
+      "urls": [
+        "https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/BIM/ArchStairs.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_kitchen_maker.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_door_maker.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_stairs_maker.py",
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Infinigen Indoors (v1, indoors-stable 브랜치) 가구 절차적 생성기",
+      "category": "procedural-generator",
+      "what_it_is": "Princeton VL의 Blender 기반 절차적 생성기로, CVPR 2024 Infinigen Indoors에 해당한다. 의자, 식탁, 책상, 소파, 침대 프레임, 주방 캐비닛, 책장 등을 factory 클래스로 생성한다. 코드에서 확인한 샘플링 범위(m)는 다음과 같다. 의자: width 0.4–0.5, 깊이 0.38–0.45, 좌판 두께 0.04–0.08, leg_thickness 0.04–0.06, leg_height 0.45–0.5, back_height 0.4–0.5이고, 부품은 seat, 4 legs, back supports, arms, leg cross-bars로 구성된다. 식탁: 높이 0.65–0.85, 폭 0.91–1.16, 길이 1.4–2.8, 상판 두께 0.03–0.06, 다리 직경 0.05–0.07(straight), stretcher는 다리 높이의 0.2–0.6 위치에 둔다. 책상: 높이 N(0.73, 0.05)를 0.6–0.83으로 clip, 폭 N(1.0, 0.1), 깊이 N(0.6, 0.05), 상판 두께 0.01–0.03. 침대 프레임: 폭 1.4–2.4, 길이 2.0–2.4, 다리 높이 0.2–0.6, 헤드보드 0.5–1.3. 주방 캐비닛: 측판 0.02, 하단 0.06.",
+      "how_to_use": "단일 에셋 생성: python -m infinigen_examples.generate_individual_assets --output_folder outputs/x -f <FactoryName> -n 4 --save_blend (--export obj/usdc/fbx, --render none). 방 단위 생성: python -m infinigen_examples.generate_indoors --seed 0 --task coarse --output_folder outputs/indoors/coarse -g fast_solve.gin singleroom.gin -p compose_indoors.terrain_enabled=False restrict_solving.restrict_parent_rooms=[\"DiningRoom\"]. AI 에이전트에게는 'Infinigen factory 파라미터 범위를 기준으로 치수를 정하라'고 지시하거나, 생성된 .blend를 레퍼런스 형태로 불러와 쓴다.",
+      "strengths": "실측형 파라미터 분포와 부품 구조(다리·가로대·등받이 타입)가 코드로 공개되어 있어 치수·구조의 모범 답안 역할을 한다. BSD-3로 상업 사용이 가능하다.",
+      "weaknesses": "설치가 무겁고 렌더 시간이 길다(단일 방 coarse 단계 CPU 약 8–13분). 스타일 다양성이 제한적이다. main 브랜치는 2.0 alpha로 구조가 바뀌어 v1 경로는 indoors-stable 브랜치에서 봐야 한다.",
+      "license_or_price": "BSD-3-Clause, 무료",
+      "status_date": "2026-09 확인 (indoors-stable 브랜치)",
+      "urls": [
+        "https://github.com/princeton-vl/infinigen",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/GeneratingIndividualAssets.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/tables/dining_table.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/shelves/simple_desk.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/bedframe.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/shelves/kitchen_cabinet.py"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Infinigen 2.0 (alpha 2.0.0a2, procfunc 기반)",
+      "category": "procedural-generator",
+      "what_it_is": "Infinigen을 처음부터 다시 설계한 버전이다. procfunc 라이브러리로 생성기를 조합하고 CLI에서 체인으로 연결한다. CHANGELOG 기준 v2.0.0a2에는 office와 wooden-dining 계열 V2 chair 생성기(부품을 독립적으로 샘플링), 손잡이 생성기(lever / bar-pull / knob / curved-pull), 1–5 panel geonode 문, room_rand 씬이 들어 있다. 'lower base polycount with edge creasing and subsurf'로 지오메트리를 재구성했고, 렌더 샘플은 1024이며, 지오메트리·transform·가시성·셰이더 오류를 검사하는 render validation도 추가됐다.",
+      "how_to_use": "uv venv --python 3.11 && uv pip install \"infinigen==2.0.0a2\" 후 uv run infinigen sofa_rand object_demo render_cycles --seed 0, uv run infinigen lamp_rand object_demo render_cycles --seed 0, uv run infinigen livingroom_rand render_cycles --seed 0, uv run infinigen --list",
+      "strengths": "저폴리 베이스 + crease + subsurf 방식이라 AAA 가구 모델링의 모범 워크플로와 같다. 컴포넌트 단위 샘플링 구조는 AI 에이전트가 부품 분해를 설계할 때 참고 모델이 된다.",
+      "weaknesses": "alpha 버전이고 실내 오브젝트 일부만 지원한다(sofa, lamp 등). API가 바뀔 수 있다.",
+      "license_or_price": "BSD-3-Clause",
+      "status_date": "2026-09 (2.0.0a2)",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender 핵심 modifier stack (Bevel / Weighted Normal / Solidify / Mirror / Array / Subdivision / Boolean)",
+      "category": "modeling-technique",
+      "what_it_is": "AI가 bpy로 제품·가구를 만들 때 쓰는 기본 도구다. Boolean modifier는 현재 main 소스에서 Float(Fast), Mesh_Arr(Exact), Manifold 3가지 solver를 갖는다(MOD_boolean.cc에서 eBooleanModifierSolver_Manifold 확인). Bevel은 Limit Method Angle(기본 30°로 알려짐)과 Harden Normals를 쓰고, Weighted Normal은 Face Area 모드에 Keep Sharp를 켠다. Blender 4.1부터는 Auto Smooth 대신 Smooth by Angle을 쓴다(2차 확인 필요).",
+      "how_to_use": "순서 예: (1) 치수대로 primitive를 배치하고 transform_apply(scale=True) (2) Mirror(X, clipping) (3) Array(슬랫·서랍 반복) (4) Boolean(solver='EXACT' 또는 'MANIFOLD', 커터는 숨김) (5) Bevel(width 0.001–0.003 m, segments 2–3, limit_method='ANGLE', harden_normals=True) (6) Weighted Normal(keep_sharp=True) 또는 Subdivision(level 2) + support loop/crease. 얇은 판재는 평면 + Solidify(thickness 0.018, use_even_offset=True).",
+      "strengths": "비파괴적이라 LLM이 파라미터만 바꿔 반복 수정할 수 있다. 하이라이트가 생기는 bevel만으로도 CG 느낌이 크게 줄어든다.",
+      "weaknesses": "스케일을 적용하지 않으면 bevel·solidify 폭이 축마다 왜곡된다. non-manifold 입력에서는 Boolean이 실패하거나 구멍을 만든다. 버전마다 API 차이가 있다(4.1 auto smooth 제거, 5.x 변경). Blender 매뉴얼은 이번 세션에서 직접 확인하지 못했다.",
+      "license_or_price": "Blender GPL, 무료",
+      "status_date": "2026-09 (main 소스 기준)",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/modifiers/intern/MOD_boolean.cc",
+        "https://github.com/blender/blender"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "3D Print Toolbox (Blender, 검사 로직 재사용용)",
+      "category": "validation",
+      "what_it_is": "Campbell Barton이 만든 메쉬 검사 애드온이다. Volume/Area, Solid(non-manifold), Intersections, Degenerate, Distorted, Thickness, Sharp, Overhang 검사를 제공한다. 기본값은 thickness_min 0.001, threshold_zero 0.0001, angle_distort 45°, angle_sharp 160°, angle_overhang 45°다. self-intersection은 BVHTree.FromBMesh(bm, epsilon=0.00001) 후 tree.overlap(tree)로 구현되어 있다. 구 blender-addons 저장소는 2025-05-09에 archived되었고, 4.2 이후에는 Extensions로 배포되는 것으로 알려져 있다.",
+      "how_to_use": "UI 검사를 쓰거나, 에이전트용 검사 스크립트에 동일한 로직을 복사한다: non-manifold = [e for e in bm.edges if not e.is_manifold], degenerate = f.calc_area() <= threshold, intersect = BVH overlap. 가구에는 thickness_min을 0.005–0.01로 올려 종이처럼 얇은 판을 잡아낸다.",
+      "strengths": "검증된 구현이라 MCP execute_code로 바로 쓸 수 있다.",
+      "weaknesses": "오브젝트 간 관입은 검사하지 않는다(자기 교차만). Thickness 검사는 normal이 올바르다는 전제가 필요하다.",
+      "license_or_price": "GPL, 무료",
+      "status_date": "코드 2026-09 확인 (archived mirror)",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/__init__.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/mesh_helpers.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/operators.py",
+        "https://github.com/blender/blender-addons"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Archimesh (Blender 건축 요소 생성기)",
+      "category": "procedural-generator",
+      "what_it_is": "방, 문, 창, 계단, 주방, 선반, 책, 램프, 커튼, 블라인드, 기둥, 지붕을 파라미터로 생성하는 Blender 애드온이다. 기본값 자체가 실무 치수 레퍼런스다: 문 1.0×2.1 m, 계단 0.14/0.30 m, 하부장 0.59×0.70 m + 걸레받이 0.16 m + 상판 0.02 m = 약 0.88 m.",
+      "how_to_use": "Blender 4.2 이상에서는 Extensions로 설치하는 것으로 알려져 있다(원문 미확인). 에이전트에게 'Archimesh 연산자로 주방을 만든 뒤 bpy로 디테일을 추가하라'고 지시하거나, 기본값을 치수 사전으로 쓴다.",
+      "strengths": "건축 요소를 빠르게 올바른 스케일로 배치할 수 있다.",
+      "weaknesses": "형태가 단순하고 스타일이 오래되었다. 고품질 표현은 후처리가 필요하다.",
+      "license_or_price": "GPL, 무료",
+      "status_date": "소스 mirror archived 2025-05",
+      "urls": [
+        "https://github.com/blender/blender-addons/tree/main/archimesh",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_kitchen_maker.py"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Archipack",
+      "category": "procedural-generator",
+      "what_it_is": "벽, 문, 창, 계단, 펜스, 주방을 파라미터로 만드는 건축 애드온이다. GitHub 공개판(s-leger/archipack)은 Blender 2.78/2.79용이고 GPL-3.0이다.",
+      "how_to_use": "최신 Blender용 버전은 blender-archipack.org의 별도 배포판으로 알려져 있으나 이번 세션에서 확인하지 못했다. 사용 전 호환성을 먼저 확인한다.",
+      "strengths": "계단·창호처럼 규칙 기반 요소를 정확하게 만든다.",
+      "weaknesses": "공개 GitHub 버전은 구버전 전용이다. 최신 호환성은 미확인이다.",
+      "license_or_price": "GPL-3.0 (공개판)",
+      "status_date": "2026-09 GitHub 확인",
+      "urls": [
+        "https://github.com/s-leger/archipack"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Sverchok (Blender 파라메트릭 노드)",
+      "category": "procedural-generator",
+      "what_it_is": "600개 이상의 노드를 가진 Blender용 비주얼 파라메트릭 모델링 애드온이다. README 기준 Blender 5.1 / 4.5 / 3.6 / 2.8을 지원한다. 단면·압출·면적·부피 계산, BREP/NURBS/IFC 교환, SVG/DXF 출력을 제공한다.",
+      "how_to_use": "수학적 패턴(격자 스크린, 파라메트릭 파빌리온, 트위스트 타워 조형물)이나 치수 연동 설계에 쓴다. 파이썬 스크립트 노드로 에이전트 코드를 삽입할 수 있다.",
+      "strengths": "건축·조형의 파라메트릭 형상과 정밀 계산에 강하다.",
+      "weaknesses": "노드 트리를 LLM이 직접 조립하기 어렵다(bpy로 노드 연결하는 코드가 장황해진다).",
+      "license_or_price": "GPL3, 무료",
+      "status_date": "2026-09 (Blender 5.1 지원 표기)",
+      "urls": [
+        "https://github.com/nortikin/sverchok"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "build123d + build123d-mcp",
+      "category": "parametric-CAD / MCP",
+      "what_it_is": "build123d는 OCCT 기반 Python BREP CAD 프레임워크다(Builder mode / Algebra mode, STEP / STL / SVG, Apache-2.0, Python 3.11–3.14). build123d-mcp는 영속 세션 코드 실행, PNG/SVG/DXF 렌더, measure(부피·면적·bbox·위상·질량중심), compare(fit/interference), validate(프린트 가능성), design_audit, 스냅샷, STEP/STL export를 MCP 도구로 제공한다. README에 따르면 이 워크플로가 한 모델의 CADGenBench 점수를 0.360에서 0.457로, validity를 88%에서 100%로 올렸다. build123d에는 RigidJoint / RevoluteJoint / LinearJoint / CylindricalJoint / BallJoint와 connect_to가 있어 부품을 틈 없이 조립할 수 있다.",
+      "how_to_use": "Claude Code 설정: {\"mcpServers\":{\"build123d-mcp\":{\"command\":\"uv\",\"args\":[\"tool\",\"run\",\"--python\",\"3.12\",\"build123d-mcp@latest\"]}}}. 프롬프트 예: 'Build incrementally, render after main features, measure final dimensions, run validate(), export STEP if it passes.' 기본 단위는 mm이다. 가구의 장부맞춤·도브테일·서랍 레일처럼 정밀 부품은 여기서 만들고 STL/glTF로 Blender에 가져가 재질을 입힌다.",
+      "strengths": "치수 정확도, 조인트, 간섭 검사가 도구 수준에서 제공된다. 결정론적 검증이 가능하다.",
+      "weaknesses": "유기 형상과 텍스처에는 약하다. 메쉬 export 후 UV와 bevel 하이라이트는 Blender에서 다시 처리해야 한다.",
+      "license_or_price": "Apache-2.0, 무료",
+      "status_date": "2026-09 (활발히 개발 중, 560+ commits)",
+      "urls": [
+        "https://github.com/pzfreo/build123d-mcp",
+        "https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/default_prompt.md",
+        "https://raw.githubusercontent.com/gumyr/build123d/dev/README.md",
+        "https://github.com/gumyr/build123d/blob/dev/docs/joints.rst"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "AgentCAD (CAD CLI + MCP for AI agents)",
+      "category": "parametric-CAD / MCP",
+      "what_it_is": "build123d 스크립트를 실행해 버전이 붙은 STEP을 만들고 측정·검사하는 CLI와 MCP다. 명령은 run, measure, check-spec, inspect, parts, diff, view(A/B 비교)이고, iso/front PNG, turntable GIF, STL/GLB/OBJ export를 지원한다.",
+      "how_to_use": "pip install agentcad[mcp]. 에이전트가 구조화된 JSON 메트릭을 받아 자기검증하도록 설계되어 있다. 버전 diff로 수정 전후를 비교한다.",
+      "strengths": "디자인 버전 관리와 A/B 비교가 가능하다.",
+      "weaknesses": "Python 3.10–3.12로 제한된다. 기계 부품 중심이다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2026-09",
+      "urls": [
+        "https://github.com/jdilla1277/agentcad"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CadQuery",
+      "category": "parametric-CAD",
+      "what_it_is": "OCCT(OCP 바인딩) 기반 Python 파라메트릭 CAD다. STEP / DXF / STL / VRML / AMF / 3MF export를 지원하며 Apache-2.0이다. CAD-Recode·CADCodeVerify 같은 연구의 코드 표현으로 쓰여 LLM이 가장 많이 학습한 CAD 코드 중 하나다.",
+      "how_to_use": "mamba install -c conda-forge cadquery (conda 권장) 또는 pip install cadquery. MCP는 jdilla1277/agentcad(cadquery extra) 등 여러 서버가 있다.",
+      "strengths": "LLM 친화적이고 연구 데이터가 풍부하다.",
+      "weaknesses": "설치 의존성이 무겁다. 메쉬·텍스처 파이프라인이 따로 필요하다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2026-09",
+      "urls": [
+        "https://github.com/CadQuery/cadquery"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "OpenSCAD + BOSL2 + OpenSCAD MCP 서버",
+      "category": "parametric-CAD / MCP",
+      "what_it_is": "BOSL2(BSD-2, OpenSCAD 2021.01 이상, 베타)는 attachments/anchoring(TOP, RIGHT 등 상대 배치), 둥근 cuboid, edge_profile 마스크, dovetail joiner, 힌지, 나사산을 제공한다. MCP 서버로는 jhacksman/OpenSCAD-MCP-Server(197★), RobertCoop/openscad-mcp(142★), codeofaxel/Kiln(3D 프린팅) 등이 있다.",
+      "how_to_use": "상대 배치(attach)로 부품이 붙게 만들면 LLM의 좌표 계산 실수(떠 있는 부품)를 줄일 수 있다. 예: cuboid([450,420,40], rounding=3) attach(BOT) 식으로 다리를 좌면 아래에 부착한다.",
+      "strengths": "anchoring 덕분에 접촉이 구조적으로 보장된다. 코드가 짧다.",
+      "weaknesses": "CSG 메쉬 품질과 UV가 없다. 렌더용으로는 Blender 후처리가 필수다.",
+      "license_or_price": "BOSL2 BSD-2 / OpenSCAD GPL",
+      "status_date": "2026-09 GitHub 검색",
+      "urls": [
+        "https://github.com/BelfrySCAD/BOSL2",
+        "https://github.com/search?q=openscad+mcp&type=repositories&s=stars&o=desc"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "fogleman/sdf (Python SDF 모델링)",
+      "category": "organic-modeling",
+      "what_it_is": "signed distance function을 조합하고(union |, difference -, intersection &, smooth k) marching cubes로 STL을 만드는 Python 라이브러리다. rounded_box, capsule, twist, bend를 지원한다(MIT).",
+      "how_to_use": "조형물이나 유기적 손잡이 예: f = sphere(0.3).k(0.05) | capsule(...) 형태의 smooth union → f.save('sculpt.stl') → Blender에서 voxel remesh → decimate → normal bake.",
+      "strengths": "매끈한 블렌딩과 유기적 조형을 코드로 정확하게 제어할 수 있다. LLM이 쓰기 쉽다.",
+      "weaknesses": "marching cubes 메쉬는 토폴로지가 거칠어 리토폴로지나 decimate가 필요하다. UV가 없다.",
+      "license_or_price": "MIT",
+      "status_date": "2026-09",
+      "urls": [
+        "https://github.com/fogleman/sdf"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "MCP for Blender (ahujasid, 구 blender-mcp)",
+      "category": "MCP",
+      "what_it_is": "가장 널리 쓰이는 Blender MCP다(약 29.4k★). PyPI 패키지 이름이 blender-mcp에서 mcp-for-blender로 바뀌었다. 씬·오브젝트 정보, 임의 Python 실행, 뷰포트 스크린샷, Poly Haven / Sketchfab / Poly Pizza 에셋, Hyper3D Rodin / Hunyuan3D 생성, GLB/FBX export를 제공한다.",
+      "how_to_use": "uvx mcp-for-blender, uvx mcp-for-blender install-addon → 애드온 활성화 → 'Start MCP Server'. 이 주제에서는 execute_code로 치수 검사 스크립트를 실행하고, 스크린샷으로 시각 검증하는 용도가 핵심이다.",
+      "strengths": "생태계가 크다. 코드 실행과 이미지 피드백을 둘 다 제공한다.",
+      "weaknesses": "README에 따르면 execute_code 전에 저장해야 하고, 복잡한 작업은 쪼개야 하며, Poly Haven 다운로드 중에는 UI가 블록된다.",
+      "license_or_price": "오픈소스, 무료",
+      "status_date": "2026-09 (활발히 업데이트)",
+      "urls": [
+        "https://github.com/ahujasid/mcp-for-blender"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "blend-ai (Blender MCP, 186개 도구)",
+      "category": "MCP",
+      "what_it_is": "Blender 4.2 LTS 이상용 Extension 형태의 MCP다. 27개 모듈과 186개 도구를 제공하며, modifier·boolean·bevel·loop cut·geometry nodes와 mesh 품질 분석(non-manifold, loose vertex, zero-area face, duplicate vertex)을 포함한다. 127.0.0.1:9876에서 로컬로 돌고, 샌드박스 실행과 테스트 1,190개를 갖췄다.",
+      "how_to_use": "GitHub Release의 zip을 Get Extensions → Install from Disk로 설치한다. 구조화된 도구 호출이 필요할 때 쓰고, 자유 코드 대신 검사 도구로 결함 보고서를 받는다.",
+      "strengths": "mesh analysis가 도구로 내장되어 있다.",
+      "weaknesses": "AGPL-3.0이라 상업 배포 시 주의가 필요하다. 도구가 많아 컨텍스트를 많이 차지한다.",
+      "license_or_price": "AGPL-3.0-or-later",
+      "status_date": "2026-09",
+      "urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "blender-image-to-3d skill (majidmanzarpour/blender-game-skills)",
+      "category": "agent-skill / validation",
+      "what_it_is": "컨셉 아트를 게임용 에셋으로 만드는 10단계 게이트 파이프라인이다(Claude Code skill). Blockout 단계는 실루엣 IoU 0.85 이상, band width 오차 ±0.05, 비율 오차 5% 이내다. Forms 단계는 IoU 0.90 이상, ±0.03, 비율 오차 2% 이내다. 규칙은 '1 unit = 1 m, Z up, -Y forward, origin at the ground contact point'이고, init_master.py가 z=0 지면, m 단위 눈금자, 1.0×2.2 m 문틀, 정사영 레퍼런스 플레인을 만든다. validate.py는 음수 스케일, 미적용 scale/rotation(1e-4), n-gon, zero-area(1e-9), loose vertex, wire edge, non-manifold(link_faces > 2), doubles(1e-4), flipped normal, UV, 재질, tri budget을 검사한다. world_gate.py는 IoU, 10-band 폭 프로파일, ref_only_pct / render_only_pct를 계산한다. Blender 4.2 이상에서 동작하며 5.2까지 테스트되었다고 표기되어 있다.",
+      "how_to_use": "skill 전체를 쓰거나, validate.py와 world_gate.py만 가져와 가구에 적용한다. 정면·측면 레퍼런스 사진과 실루엣을 비교해 비율 오류를 수치로 잡는다.",
+      "strengths": "'Render evidence at every gate' 원칙과 수치 게이트가 AI의 '됐다고 주장만 하는' 문제를 막는다.",
+      "weaknesses": "캐릭터·게임 에셋 중심이라 가구용 임계값은 조정이 필요하다.",
+      "license_or_price": "오픈소스(GitHub)",
+      "status_date": "2026-09 (2일 전 업데이트)",
+      "urls": [
+        "https://github.com/majidmanzarpour/blender-game-skills",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/world_gate.py",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/init_master.py"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "blender-production skill (per-simmons)",
+      "category": "agent-skill / QA",
+      "what_it_is": "Blender Python API와 MCP로 build, inspect, render, visually verify를 수행하는 에이전트 skill이다(MIT, Blender 5.1.2 이상). Fallingwater 재현에 쓰였다. 순서는 'Units, coordinates, references, major shape, camera → Visible structure, thickness, joints, gaps, silhouette detail → Materials…'이다. realism.md는 macro(형태·패널) / meso(이음새·마모) / micro(결·거칠기) 계층을 두고 'Plausible mesh bevels provide real highlight surfaces on manufactured edges'라고 적는다. defect ledger(위치, 결함, 증거, 원인, 변경, 검증)도 운영한다.",
+      "how_to_use": "SKILL.md와 references/*.md를 에이전트 컨텍스트에 넣는다. '보정용 조명·재질로 결함을 숨기지 말고 원인을 고친 뒤 동일 뷰로 비교하라'는 규칙을 그대로 쓴다.",
+      "strengths": "빌드 순서와 증거 기반 QA 원칙이 명확하다.",
+      "weaknesses": "건축·렌더 중심이다. 구체적인 가구 치수 수치는 없다.",
+      "license_or_price": "MIT",
+      "status_date": "2026-09 (validation 2026-09-09)",
+      "urls": [
+        "https://github.com/per-simmons/blender-production",
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/SKILL.md",
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/references/realism.md",
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/references/validation.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "PartNet 부품 계층 (chair / table 등 24개 카테고리)",
+      "category": "part-decomposition-reference",
+      "what_it_is": "26,671개 모델, 573,585개 파트 인스턴스, 24개 카테고리의 계층형 파트 주석이다(CVPR 2019, MIT). Chair-hier에는 chair_back(back_surface의 vertical/horizontal bar, back_connector, back_support, back_frame), chair_seat(seat_support, seat_frame의 seat_frame_bar, seat_surface), chair_base(regular_leg_base: leg, bar_stretcher, runner, foot, rocker / star_leg_base / pedestal_base), chair_arm, chair_head, footrest가 있다. Table-hier에는 tabletop, 다양한 base(leg + stretcher, pedestal, drawer_base → drawer_box 등)가 있다.",
+      "how_to_use": "프롬프트에 '다음 계층의 각 leaf 부품이 존재하는지 spec에서 체크하라'고 넣는다. 이름 규칙도 이 계층을 따르면(chair_base/leg_FL) 검사 스크립트에서 부품 존재 여부를 자동으로 확인할 수 있다.",
+      "strengths": "실제 가구 수만 개에서 도출한 부품 어휘라 누락 부품(stretcher, apron, back_connector)을 줄여 준다.",
+      "weaknesses": "치수 정보는 없다(구조만).",
+      "license_or_price": "MIT (주석 레포), 데이터는 ShapeNet 약관",
+      "status_date": "2019 (안정)",
+      "urls": [
+        "https://github.com/daerduoCarey/partnet_dataset",
+        "https://raw.githubusercontent.com/daerduoCarey/partnet_dataset/master/stats/after_merging_label_ids/Chair-hier.txt",
+        "https://raw.githubusercontent.com/daerduoCarey/partnet_dataset/master/stats/after_merging_label_ids/Table-hier.txt"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "ShapeAssembly (가구 형상 프로그램 DSL)",
+      "category": "research / shape-program",
+      "what_it_is": "SIGGRAPH Asia 2020 연구다. Cuboid 프록시를 attach / squeeze / reflect / translate로 계층적으로 조립하는 DSL이며, PartNet의 chair / table / storage로 학습했다.",
+      "how_to_use": "LLM 프롬프트의 중간 표현으로 차용한다. 먼저 'Cuboid(이름, 치수) + attach(부모 면, 자식 면)' 수준의 blockout 프로그램을 만들고, 그다음 각 cuboid를 디테일 부품으로 교체한다. attach 기반이라 떠 있는 부품이 구조적으로 생기지 않는다.",
+      "strengths": "부품 간 접촉과 대칭을 문법 수준에서 보장한다.",
+      "weaknesses": "cuboid 추상화라 곡면 디테일은 별도 단계가 필요하다. 오래된 코드다.",
+      "license_or_price": "GitHub 공개",
+      "status_date": "2020",
+      "urls": [
+        "https://github.com/rkjones4/ShapeAssembly"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "파트 단위 image-to-3D (PartCrafter / PartPacker / OmniPart / Hunyuan3D-Part)",
+      "category": "ai-image-to-3d (part-aware)",
+      "what_it_is": "PartCrafter는 단일 이미지에서 최대 16개 파트 메쉬를 생성한다(NeurIPS 2025, MIT). PartPacker(NVIDIA, arXiv 2506.09980)는 Dual Volume Packing으로 파트를 분리하며 VRAM 약 10GB가 필요하다. OmniPart(SIGGRAPH Asia 2025, MIT)는 2D 파트 마스크를 입력으로 받아 TRELLIS 기반으로 생성한다. Hunyuan3D-Part는 P3-SAM으로 파트를 분할하고 X-Part로 파트를 생성한다(arXiv 2509.06784 / 2509.08643).",
+      "how_to_use": "AI 생성 가구를 다리·좌판·등받이로 분리된 상태로 받아 각 파트를 리메시·bevel·UV 처리한다. 또는 파트의 bbox만 뽑아 bpy 코드로 깨끗하게 다시 모델링한다(하이브리드).",
+      "strengths": "통짜 메쉬의 편집 불가 문제를 해결하고 부품별 재질을 지정할 수 있다.",
+      "weaknesses": "치수 정확도와 대칭은 보장되지 않는다. 라이선스를 모델별로 확인해야 한다(PartPacker는 license.md 별도).",
+      "license_or_price": "모델별 상이 (MIT / NVIDIA / Tencent)",
+      "status_date": "2025–2026",
+      "urls": [
+        "https://github.com/wgsxm/PartCrafter",
+        "https://github.com/NVlabs/PartPacker",
+        "https://github.com/HKU-MMLab/OmniPart",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-Part"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Nova3D (코드 네이티브 파트 인식 생성)",
+      "category": "ai-code-generation",
+      "what_it_is": "텍스트나 레퍼런스 이미지를 LLM(OpenRouter / OpenAI / Anthropic / Gemini 선택)이 Blender Python 코드로 바꾸고, 이름이 붙은 파트·계층·조인트 피벗·PBR을 가진 GLB로 컴파일한다. 'assets are executable programs, not opaque meshes'라고 표방한다. 클라이언트는 MIT이고 백엔드는 비공개다.",
+      "how_to_use": "파트 분리와 조인트가 필요한 가구나 기계(오븐, 크레인)의 초안 생성에 쓴다. 생성된 코드를 편집해 치수를 보정한다.",
+      "strengths": "파트를 사후에 분할하는 대신 처음부터 부품 단위로 만든다.",
+      "weaknesses": "생성 서비스가 비공개 백엔드에 의존한다. 품질은 독립 검증되지 않았다.",
+      "license_or_price": "클라이언트 MIT, 백엔드 비공개",
+      "status_date": "2026-08 업데이트, 약 721★",
+      "urls": [
+        "https://github.com/RareSense/Nova3D"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "LL3M: Large Language 3D Modelers (연구, UChicago threedle)",
+      "category": "research / LLM-code-3D",
+      "what_it_is": "여러 LLM 에이전트가 계획, 검색(BlenderRAG: Blender API 문서 RAG), 코드 작성, 디버그, 개선을 나눠 맡아 Blender Python으로 3D 에셋을 만드는 시스템이다. 초기 생성 → 자동 개선 → 사용자 가이드 개선의 3단계로 진행된다. README에 따르면 사용 모델 Claude Sonnet 3.7이 retire되면서 LL3M 서버는 중단되었다. Blender 4.4, Python 3.12를 쓴다.",
+      "how_to_use": "구조를 차용한다. planner가 부품 목록을 만들고, retriever가 현재 Blender 버전 API 문서를 주입하고, coder가 코드를 쓰고, critic이 렌더를 보고 결함 목록을 내고, verifier가 수정 여부를 확인한다. 특히 Blender 버전별 API 문서를 RAG로 주입하면 4.1+ auto smooth 제거 같은 API 오류가 줄어든다.",
+      "strengths": "코드 기반이라 편집 가능하고 모듈화되어 있다. 에이전트 역할 분리의 레퍼런스가 된다.",
+      "weaknesses": "서비스가 중단되었다. 같은 프롬프트에도 결과가 달라질 수 있다.",
+      "license_or_price": "GitHub 공개",
+      "status_date": "2025 발표, 2026-09 기준 서버 중단",
+      "urls": [
+        "https://github.com/threedle/ll3m",
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderLLM + BlendNet + CADBench",
+      "category": "research / LLM-code-3D",
+      "what_it_is": "Qwen2.5-Coder-7B-Instruct를 파인튜닝한 Blender CAD 스크립트 생성 모델이다(Apache-2.0, 2024-12-17 공개). BlendNet은 12k 지시-스크립트 쌍(수작업 2k + GPT-4o 생성 10k, 16개 카테고리)이다. CADBench(시뮬레이션 500 + 실제 200)에서 평균 74.8%로 GPT-4o 56.5%, o1-Preview 68.7%보다 높았고, 문법 오류율은 3.4%로 GPT-4o의 21.4%보다 낮았다.",
+      "how_to_use": "로컬·오프라인 소형 모델로 기본 형상 스크립트를 뽑는 데 쓴다. CADBench의 평가 축(속성, 공간 관계, 지시 준수)을 자체 검수 체크리스트로 차용한다.",
+      "strengths": "공개 가중치이고, 7B로 로컬 실행이 가능하다.",
+      "weaknesses": "2024년 비교라 2026년 frontier 모델 대비 우위는 불확실하다. 형상이 단순하다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2024-12 (가중치 공개)",
+      "urls": [
+        "https://github.com/FreedomIntelligence/BlenderLLM"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "MeshCoder (점군 → 부품 분할 Blender 코드)",
+      "category": "research / shape-program",
+      "what_it_is": "점군을 편집 가능한 파트 분할 Blender Python 스크립트로 변환하는 멀티모달 LLM이다(arXiv 2508.14879). 41개 카테고리의 100만 개 object-code 쌍으로 학습했고, Llama-3.2-1B + LoRA와 shape tokenizer를 쓴다. MIT이며 코드와 모델은 2025-11-11에 공개되었다.",
+      "how_to_use": "스캔하거나 AI로 생성한 가구 메쉬를 점군으로 샘플링해 파트 코드로 역변환한 뒤, 코드의 치수를 표준값으로 보정해 다시 생성한다(메쉬를 파라메트릭 코드로 바꾸는 경로).",
+      "strengths": "통짜 메쉬를 편집 가능한 코드로 되돌린다. 부품 구조를 보존한다.",
+      "weaknesses": "학습 카테고리 밖에서는 일반화가 제한적이다. 전용 API에 의존한다.",
+      "license_or_price": "MIT",
+      "status_date": "2025-11 공개",
+      "urls": [
+        "https://github.com/InternRobotics/MeshCoder",
+        "https://raw.githubusercontent.com/InternRobotics/MeshCoder/main/README.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CAD-Recode (점군 → CadQuery 코드, ICCV 2025)",
+      "category": "research / CAD-code",
+      "what_it_is": "Qwen2-1.5B에 선형층 하나를 붙여 점군에서 CadQuery Python 코드를 생성한다. DeepCAD, Fusion360, CC3D에서 SOTA를 기록했고, v1 / v1.5 / cadrille 변형이 있다(arXiv 2412.14042).",
+      "how_to_use": "실측 스캔 부품을 정밀 CAD 코드로 역설계한다. 에이전트 루프에 '코드를 CadQuery로 표현하라'는 표현 선택의 근거로 쓴다.",
+      "strengths": "실행 가능하고 편집 가능한 CAD 출력이다.",
+      "weaknesses": "기계 부품(스케치-압출) 분포에 편중되어 있다. 유기적 가구 곡면에는 약하다.",
+      "license_or_price": "LICENSE.md (저장소 참조)",
+      "status_date": "ICCV 2025",
+      "urls": [
+        "https://github.com/filaPro/cad-recode"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Text2CAD (NeurIPS 2024 Spotlight)",
+      "category": "research / CAD-code",
+      "what_it_is": "초급부터 전문가 수준까지 여러 난이도의 텍스트 프롬프트를 순차 CAD(sketch-extrude) 시퀀스로 바꾼다(arXiv 2409.17106). DeepCAD 기반 주석 데이터셋을 쓴다.",
+      "how_to_use": "교훈: 전문가 수준 프롬프트(스케치 평면, 치수, 압출 거리를 명시)일수록 정확하다. 프롬프트에 '형용사' 대신 '치수와 연산 순서'를 쓴다.",
+      "strengths": "프롬프트 상세도와 정확도의 관계를 보여 준다.",
+      "weaknesses": "단순한 기계 형상에 한정된다.",
+      "license_or_price": "LICENSE 파일",
+      "status_date": "2024",
+      "urls": [
+        "https://github.com/SadilKhan/Text2CAD"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CADCodeVerify + CADPrompt (ICLR 2025)",
+      "category": "research / VLM-verification",
+      "what_it_is": "VLM이 렌더된 3D 객체에 대한 검증 질문을 스스로 만들고 답해 원래 프롬프트와의 편차를 찾아낸 뒤 CadQuery 코드를 반복 수정한다. CADPrompt는 200개 샘플(STL/OBJ, 설명, JSON CAD 명령, 전문가 코드)로 구성된다. 논문 제목은 'Generating CAD Code with Vision-Language Models for 3D Designs'다.",
+      "how_to_use": "가구 검수에 그대로 적용한다. VLM에게 '이 요청을 만족하는지 확인할 예/아니오 질문 8–12개를 만들고 4방향 렌더를 보고 답하라'고 시킨 뒤, 아니오 항목만 수정 지시로 바꾼다.",
+      "strengths": "값싼 자기검증 루프로 구현이 쉽다.",
+      "weaknesses": "VLM의 공간 판단 오류는 남는다. 수치 검증은 bpy 스크립트로 보완해야 한다.",
+      "license_or_price": "GitHub 공개",
+      "status_date": "ICLR 2025",
+      "urls": [
+        "https://github.com/Kamel773/CAD_Code_Generation"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "CADFusion (Microsoft, ICML 2025)",
+      "category": "research / CAD-code",
+      "what_it_is": "텍스트-CAD LLM(Llama3)을 순차 학습 단계와 시각 피드백 단계를 번갈아 거치며 학습시킨다(arXiv 2501.19054, MIT).",
+      "how_to_use": "교훈: 렌더 이미지 기반 선호 피드백이 텍스트만으로 한 학습보다 형상 품질을 높인다. 에이전트 루프에서 렌더를 비평하는 단계를 필수로 둔다.",
+      "strengths": "시각 피드백의 효과를 실증했다.",
+      "weaknesses": "학습 방법 연구라 도구로 바로 쓰기는 어렵다.",
+      "license_or_price": "MIT",
+      "status_date": "2025",
+      "urls": [
+        "https://github.com/microsoft/CADFusion"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "LLaMA-Mesh / MeshLLM (메쉬를 텍스트로 생성)",
+      "category": "research / mesh-as-text",
+      "what_it_is": "LLaMA-Mesh(NVIDIA, arXiv 2411.09595)는 OBJ 정점과 면을 일반 텍스트 토큰으로 다뤄 LLaMA를 파인튜닝한다(가중치 공개). MeshLLM(ICCV 2025, Apache-2.0)은 primitive-mesh 분해와 단계적 학습(LLaMA3 LoRA)을 쓰고 SamPart3D 데이터를 사용한다.",
+      "how_to_use": "프로덕션용이 아니라 저폴리 아이콘이나 개념 탐색용이다. 교훈: 메쉬를 직접 토큰으로 쓰는 방식은 면 수와 컨텍스트 한계 때문에 AAA 디테일에 부적합하다. 코드로 생성하는 경로가 현실적이다.",
+      "strengths": "대화형 생성과 이해가 통합되어 있다.",
+      "weaknesses": "저폴리에 머문다. 세부 수치(LLaMA-Mesh 약 500면 / 8K 컨텍스트로 알려짐)는 이번 세션에서 확인하지 못했다.",
+      "license_or_price": "LLaMA 라이선스 / Apache-2.0",
+      "status_date": "2024–2025",
+      "urls": [
+        "https://github.com/nv-tlabs/LLaMA-Mesh",
+        "https://github.com/Fangkang515/MeshLLM"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "ShapeLLM-Omni (NeurIPS 2025 Spotlight)",
+      "category": "research / native-3D-MLLM",
+      "what_it_is": "Qwen2.5-VL에 3D VQVAE 토크나이저를 붙인 네이티브 3D 멀티모달 LLM이다. text-to-3D, image-to-3D, 3D 편집, 3D 이해를 지원한다. 3D-Alpaca 편집 쌍은 50k가 공개되었고 7B 가중치가 있으며 MIT다(arXiv 2506.01853).",
+      "how_to_use": "대화형 3D 편집('등받이를 더 높게')을 실험할 때 쓴다. 정밀 치수가 필요한 가구에는 코드 경로를 우선한다.",
+      "strengths": "하나의 모델에서 이해와 생성을 모두 한다.",
+      "weaknesses": "TRELLIS 기반 해상도 한계가 있다. 치수 제어가 약하다.",
+      "license_or_price": "MIT",
+      "status_date": "2025",
+      "urls": [
+        "https://github.com/JAMESYJL/ShapeLLM-Omni"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderGym (CVPR 2025 Highlight)",
+      "category": "research / benchmark",
+      "what_it_is": "VLM 시스템의 Blender 편집 능력을 측정하는 벤치마크다. 과제는 procedural geometry, lighting, material, blend shape, placement이고, generator-verifier 구조와 inference scaling을 평가한다.",
+      "how_to_use": "교훈: 생성기와 검증기를 분리하고 검증에 연산을 더 쓰면 성능이 오른다. 에이전트 설계에서 critic과 verifier를 따로 두는 근거가 된다.",
+      "strengths": "공개 평가 코드와 리더보드가 있다.",
+      "weaknesses": "2025년 모델 기준이다.",
+      "license_or_price": "GitHub 공개",
+      "status_date": "2025",
+      "urls": [
+        "https://github.com/richard-guyunqi/BlenderGym-Open"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "L3GO (Chain-of-3D-Thoughts, NAACL 2025)",
+      "category": "research / part-by-part agent",
+      "what_it_is": "언어 에이전트가 Blender에서 부품을 하나씩 만들고, 부착·겹침 같은 공간 피드백을 받아 수정하며 특이한 사물을 조립하는 연구다. GitHub 저장소(runopti/L3GO)는 존재하지만 README와 코드는 비어 있어, 세부 방법은 논문 기억에 기반한다.",
+      "how_to_use": "교훈: 부품을 하나 만들 때마다 '부모와 접촉하는가, 겹치는가'를 확인하고 다음 부품으로 넘어간다(점진적 조립 + 검사).",
+      "strengths": "떠 있는 부품과 관입을 조립 단계에서 차단한다.",
+      "weaknesses": "코드가 공개되지 않았다. 세부 수치는 미확인이다.",
+      "license_or_price": "MIT(저장소)",
+      "status_date": "2025",
+      "urls": [
+        "https://github.com/runopti/L3GO"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "CADGenBench (Hugging Face) + 모델 비교",
+      "category": "benchmark",
+      "what_it_is": "공학 도면에서 3D 부품을 만드는 생성 과제와 STEP 편집 과제로 구성된 벤치마크다. validity, shape similarity, interface match, topology(Betti numbers)를 CAD Score로 종합한다(Apache-2.0). pzfreo/cadgenbench-build123d의 비교(81 fixtures, build123d-mcp 사용): Opus 5(xhigh) 0.6771(생성 0.6583 / 편집 0.7058), GPT-5.6 Sol 0.5319, Gemini 3.7 Flash 0.5078이며, 세 시스템 모두 80/81 valid였다. 토큰 사용량은 GPT 대비 Gemini +16%, Opus +44%였고 Opus 비용은 약 $724.77이었다.",
+      "how_to_use": "정밀 치수가 핵심인 부품(가구 하드웨어, 조인트)에서는 모델만이 아니라 '모델 + MCP + 프롬프트' 시스템 단위로 평가하고 고른다.",
+      "strengths": "공개 벤치마크이고 재현 가능한 파이프라인이다.",
+      "weaknesses": "기계 부품 중심이라 미적 품질은 측정하지 않는다. 단일 제3자 저장소의 결과다. 비교에 GPT-6 Astra와 Fable 5.1은 없다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2026-07~09 실행",
+      "urls": [
+        "https://github.com/huggingface/cadgenbench",
+        "https://github.com/pzfreo/cadgenbench-build123d",
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Holodeck (LLM에게 오브젝트 크기를 cm로 명시시키는 프롬프트 설계)",
+      "category": "prompt-pattern",
+      "what_it_is": "AI2 Holodeck은 LLM에게 오브젝트 size를 '[length, width, height] in centimeters' 형식으로 요구한다(예: sofa [200, 100, 80]). 방 크기 제약(3–8 m, 최대 48 m²)과 문 폭(1 m / 2 m)도 명시한다.",
+      "how_to_use": "오브젝트 생성 전에 이 형식으로 크기부터 답하게 하고, 그 값을 치수표로 검사한 다음 모델링 코드에 넘긴다.",
+      "strengths": "크기를 먼저 결정하는 패턴이 스케일 오류를 줄인다.",
+      "weaknesses": "배치용 bbox 수준이라 부품 치수는 따로 정해야 한다.",
+      "license_or_price": "Apache-2.0",
+      "status_date": "2024 (코드)",
+      "urls": [
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "치수표(재검증 필요): 프롬프트에 그대로 붙여 넣는 표준 범위(m)",
+      "why": "LLM은 절대 스케일과 '관계 치수'(테이블-의자 높이 차, 무릎 공간)를 자주 틀린다. 숫자 범위를 주고 사후 자동 판정하면 이런 오류가 크게 줄어든다. 아래 값은 Neufert·IRC·NKBA·EN 계열 일반 표준과 국내 관행을 정리한 것으로, 이번 세션에서 원문을 확인한 것은 Blondel, Archimesh, Infinigen 값뿐이다.",
+      "example": "[착석] 의자 좌면 높이 0.43–0.46(범위 0.40–0.48), 좌면 깊이 0.40–0.45, 좌면 폭 0.42–0.50, 등받이 상단 0.80–0.95, 팔걸이 높이(좌면 위) 0.18–0.25, 사무용 의자 좌면 가변 약 0.40–0.51(EN 1335 계열). [테이블] 식탁 0.72–0.76(US 28–30 in), 테이블 상판과 좌면 차이 0.27–0.30, 상판 아래 무릎 공간 0.60 이상, 1인 식사 폭 0.60, 식탁 폭 0.80–1.00, 책상 0.72–0.76(국내 사무용 0.72 관행), 커피테이블 0.40–0.45, 바 카운터 1.02–1.07에는 스툴 좌면 0.74–0.76, 카운터 0.91에는 스툴 0.61–0.66. [소파] 좌면 0.40–0.45, 좌면 깊이 0.53–0.60, 전체 깊이 0.85–1.00, 등받이 0.75–0.90, 팔걸이 0.55–0.65, 3인용 폭 1.8–2.2. [침대 매트리스] 한국 S 1.0×2.0 / SS 1.1×2.0 / Q 1.5×2.0 / K 1.6×2.0 / LK 약 1.8×2.0, US Twin 0.97×1.91 / Full 1.37×1.91 / Queen 1.52×2.03 / King 1.93×2.03 / Cal King 1.83×2.13, EU 0.9 / 1.4 / 1.6 / 1.8×2.0, 매트리스 상면 높이 0.50–0.65. [수납] 책장 깊이 0.25–0.35, 선반 간격 0.25–0.35, 판 두께 0.018–0.025, 18 mm 판 무지지 스팬 0.8 이하, 옷장 깊이 0.55–0.65, 옷봉 높이 1.6–1.8. [주방] 상판 높이 한국 0.85(0.85–0.90) / US 0.914 / EU 0.90–0.91, 하부장 깊이 0.58–0.60, 상판 깊이 0.60–0.65, 걸레받이 0.10–0.15, 상부장 깊이 0.30–0.35, 상판과 상부장 사이 0.45–0.60. [건축] 문 0.8–0.9×2.0–2.1(현관 0.9–1.0), 천장고 한국 아파트 약 2.3–2.4 / US 2.44–2.74, 창 sill 0.9(침실) 또는 바닥까지(거실), 계단 IRC 단높이 0.196 이하·단너비 0.254 이상, Blondel 2R+T 0.62–0.64(FreeCAD 확인), 핸드레일 0.86–0.97. [인체] 성인 키 약 1.60–1.76, 선 눈높이 약 1.50–1.65, 앉은 눈높이 약 1.15–1.20, 오금 높이 0.40–0.45(좌면 높이 결정), 엉덩이-오금 길이 0.45–0.50(좌면 깊이 결정).",
+      "urls": [
+        "https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/BIM/ArchStairs.py",
+        "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_kitchen_maker.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py"
+      ]
+    },
+    {
+      "tip": "Spec-first: 코드를 쓰기 전에 부품 명세 JSON을 먼저 출력하게 한다",
+      "why": "LLM이 좌표를 코드 안에서 즉흥적으로 계산하면 부품이 떠 있거나 관입되는 일이 잦다. 명세 단계에서 치수표 검사와 부품 누락 검사(PartNet 계층)를 먼저 하면 코드 단계의 오류가 줄어든다. Holodeck의 '크기 먼저' 패턴, ShapeAssembly의 cuboid + attach, kitchen-twin의 DSL(parts / joints / dimensions)이 모두 같은 원리다.",
+      "example": "프롬프트: '너는 Blender 5.x bpy로 가구를 만드는 시니어 하드서피스 모델러다. 코드 전에 JSON spec만 먼저 출력해: {units:\"m\", origin:\"floor contact, Z-up\", parts:[{name:\"chair_seat\", primitive:\"box\", size:[0.46,0.44,0.035], location:[0,0,0.445], attach_to:{parent:\"chair_leg_*\", face:\"top\"}, material:\"oak\", bevel:0.002}, ...], joints:[{type:\"mortise_tenon\", a:\"leg_FL\", b:\"apron_front\", overlap_allowed:true}], checks:{seat_height:[0.43,0.46], table_gap:[0.27,0.30]}}. PartNet 계층 chair_back / chair_seat / chair_base(leg, bar_stretcher) / chair_arm 중 무엇을 쓰고 무엇을 생략했는지 이유와 함께 적어. 내가 승인하면 코드를 작성해.'",
+      "urls": [
+        "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+        "https://github.com/rkjones4/ShapeAssembly",
+        "https://github.com/Frank-ZY-Dou/kitchen-twin"
+      ]
+    },
+    {
+      "tip": "씬 규약을 고정한다: 1 unit = 1 m, Z-up, 원점 = 바닥 접점, 모든 오브젝트는 스케일과 회전 적용",
+      "why": "미적용 스케일은 bevel·solidify 폭 왜곡, 물리 오류, export 스케일 오류의 주 원인이다. blender-image-to-3d skill은 이 규약을 첫 단계 규칙으로 두고, validate.py에서 |scale-1| > 1e-4와 음수 스케일을 실패로 처리한다.",
+      "example": "scene.unit_settings.system='METRIC'; scene.unit_settings.scale_length=1.0; scene.unit_settings.length_unit='METERS'. 모델링 후 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True). 원점: bpy.ops.object.origin_set(type='ORIGIN_CURSOR')로 커서를 (x, y, 0) 바닥 중심에 둔 뒤 설정.",
+      "urls": [
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/init_master.py",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py"
+      ]
+    },
+    {
+      "tip": "현실적인 부재 두께와 결합 구조를 명시한다(가구는 '판과 각재의 조립품'이다)",
+      "why": "AI 가구의 CG 느낌은 부재 두께가 너무 얇거나 두껍고, 에이프런·스트레처·몰딩 같은 구조 부재가 빠진 데서 온다. Infinigen의 실측형 범위(좌판 0.04–0.08, 다리 0.04–0.06, 식탁 상판 0.03–0.06, 캐비닛 측판 0.02)와 목재 상식을 함께 준다.",
+      "example": "원목 식탁: 상판 0.025–0.04, 에이프런 높이 0.07–0.10 × 두께 0.02–0.025(상판 가장자리에서 0.03–0.05 안쪽), 다리 0.04–0.07 각재, 스트레처 0.02×0.03(바닥에서 0.10–0.20). 의자: 다리 0.035–0.045, 좌판 0.02–0.035(쿠션이면 0.05–0.10), 등받이 슬랫 0.015–0.02. 판재 가구: 18 mm 합판·MDF, 뒤판 3–6 mm, 문과 서랍 틈 2–3 mm. 금속 프레임: 각파이프 20×20–40×40, 두께 1.2–2 mm. 장부 관입은 'JOINT_' 접두사 오브젝트로만 허용한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/tables/dining_table.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/shelves/kitchen_cabinet.py"
+      ]
+    },
+    {
+      "tip": "모든 제조 모서리에 bevel을 넣고, 재질별 폭을 다르게 주고, Weighted Normal로 셰이딩을 정리한다",
+      "why": "'Plausible mesh bevels provide real highlight surfaces on manufactured edges'(blender-production realism.md). 완전히 날카로운 90° 모서리는 실제로 존재하지 않아 CG 티가 난다.",
+      "example": "mod = obj.modifiers.new('Bevel', 'BEVEL'); mod.width = 0.002; mod.segments = 3; mod.limit_method = 'ANGLE'; mod.angle_limit = math.radians(30); mod.harden_normals = True; wn = obj.modifiers.new('WN', 'WEIGHTED_NORMAL'); wn.keep_sharp = True. 폭 가이드(경험치): 원목 1–3 mm, 도장 MDF 0.5–1.5 mm, 금속 0.3–1 mm, 석재 2–5 mm, 사출 플라스틱 0.5–2 mm, 패브릭 쿠션 모서리 10–30 mm(또는 subdivision + cloth). 반드시 스케일 적용 후에 넣는다.",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/references/realism.md"
+      ]
+    },
+    {
+      "tip": "곡면 제품은 저폴리 베이스 + crease 또는 support loop + Subdivision으로 만든다",
+      "why": "Infinigen 2.0이 가구 지오메트리를 'lower base polycount with edge creasing and subsurf'로 다시 만든 것이 대표 사례다. 무작정 폴리곤을 늘리는 것보다 형태 제어와 셰이딩 품질이 좋다.",
+      "example": "sub = obj.modifiers.new('Sub', 'SUBSURF'); sub.levels = 2; sub.render_levels = 3. 날카로워야 할 에지는 crease 1.0(Blender 4.x 이상은 edge attribute 'crease_edge'), 또는 에지 양쪽에 에지 길이의 약 2–5% 간격으로 holding loop를 둔다. 소파 쿠션은 box에 subdivision 2 + 중앙 loop를 살짝 부풀리고, 파이핑은 curve bevel 0.004로 표현한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md"
+      ]
+    },
+    {
+      "tip": "Boolean은 Exact 또는 Manifold solver로 쓰고, 입력 메쉬는 manifold를 보장하고, 커터는 숨긴 뒤 Weighted Normal로 마무리한다",
+      "why": "LLM이 만든 non-manifold 입력에 Boolean을 걸면 구멍이나 잔여 면이 생긴다. 현재 Blender 소스에는 Float / Exact(Mesh_Arr) / Manifold 3가지 solver가 있다.",
+      "example": "b = obj.modifiers.new('Cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'; b.solver = 'EXACT'(또는 버전이 지원하면 'MANIFOLD'); b.object = cutter; cutter.hide_render = True; cutter.display_type = 'WIRE'. 적용 전후로 non-manifold 개수를 검사한다. 손잡이 홈, 서랍 핑거 홀, 도브테일에 쓴다.",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/modifiers/intern/MOD_boolean.cc"
+      ]
+    },
+    {
+      "tip": "정밀 부품은 build123d로 만들고 Blender에서 마감하는 하이브리드 방식을 쓴다",
+      "why": "장부맞춤, 도브테일, 레일, 힌지처럼 mm 정확도와 간섭 검사가 필요한 부품은 BREP CAD가 확실하다. build123d-mcp의 measure / compare(kind='fit')로 간섭을 수치로 확인할 수 있다.",
+      "example": "워크플로: build123d-mcp에서 reset → execute(부품) → measure() → compare(a='tenon', b='mortise', kind='fit') → validate() → export STL/STEP → Blender import(단위 mm를 m로, scale 0.001 적용 후 Apply) → Bevel·UV·재질. build123d Joint(RigidJoint.connect_to)로 조립 위치를 계산한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/default_prompt.md",
+        "https://github.com/gumyr/build123d/blob/dev/docs/joints.rst"
+      ]
+    },
+    {
+      "tip": "검증 순서: 결정론적 검사를 먼저 하고 시각 검사는 그다음에 한다",
+      "why": "build123d-mcp 프롬프트 규칙: '(1) After every execute() call measure(); (2) After assembly positioning call compare(); (3) Only after (1) and (2) pass call render_view()'. VLM의 시각 판단은 mm 단위 오류와 숨은 관입을 놓치므로, 수치 검사를 먼저 통과시킨 뒤 렌더를 본다.",
+      "example": "에이전트 루프: build → check_scene()(치수표, 부품 수, non-manifold, floating, overlap, 규칙 위반) → FAIL이 0이 될 때까지 수정 → 정사영 front / side / top + 3/4 persp 렌더(1.75 m 인체 더미와 문틀 레퍼런스 포함) → VLM 검수 질문 → 가장 큰 결함 하나만 수정 → 같은 카메라로 재렌더해 비교.",
+      "urls": [
+        "https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/default_prompt.md",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "bpy 자동 검사 스크립트(치수 보고, 부품 수, non-manifold, 관입, 떠 있음, 규칙 위반)를 execute_code로 매 반복 실행한다",
+      "why": "validate.py와 3D Print Toolbox의 검증된 로직을 조합하면 AI의 대표 실패 모드 대부분을 50줄 안팎으로 잡을 수 있다. BVHTree.overlap은 삼각형 교차만 잡고 완전 내포는 못 잡는다는 점에 주의한다.",
+      "example": "import bpy, bmesh; from mathutils import Vector; from mathutils.bvhtree import BVHTree; from itertools import combinations\ndg = bpy.context.evaluated_depsgraph_get()\nM = [o for o in bpy.context.scene.objects if o.type == 'MESH' and o.visible_get()]\ndef wbm(o):\n  bm = bmesh.new(); bm.from_object(o, dg); bm.transform(o.matrix_world); return bm\ndef islands(bm):\n  seen = set(); n = 0\n  for v in bm.verts:\n    if v in seen: continue\n    n += 1; st = [v]\n    while st:\n      x = st.pop()\n      if x in seen: continue\n      seen.add(x); st += [e.other_vert(x) for e in x.link_edges]\n  return n\nT = {}\nfor o in M:\n  bm = wbm(o); z = [v.co.z for v in bm.verts]\n  print(o.name, [round(d, 3) for d in o.dimensions], 'z', round(min(z), 3), round(max(z), 3), 'scaleOK', all(abs(s - 1) < 1e-4 for s in o.scale), 'nonman', sum(not e.is_manifold for e in bm.edges), 'parts', islands(bm), 'zero', sum(f.calc_area() < 1e-9 for f in bm.faces))\n  T[o.name] = BVHTree.FromBMesh(bm); bm.free()\nfor a, b in combinations(T, 2):\n  if T[a].overlap(T[b]) and not (a.startswith('JOINT_') or b.startswith('JOINT_')): print('PENETRATION', a, b)\nfor o in M:\n  bb = [o.matrix_world @ Vector(c) for c in o.bound_box]; zmin = min(v.z for v in bb); c = sum(bb, Vector()) / 8\n  hit, loc, *_ = bpy.context.scene.ray_cast(dg, Vector((c.x, c.y, zmin - 1e-4)), Vector((0, 0, -1)))\n  gap = zmin - (loc.z if hit else 0.0)\n  if gap > 0.002: print('FLOATING', o.name, round(gap, 4))\nRULES = {'chair_seat': (0.40, 0.48), 'table_top': (0.71, 0.76), 'desk_top': (0.70, 0.76), 'counter_top': (0.85, 0.92)}\nfor o in M:\n  for k, (lo, hi) in RULES.items():\n    if o.name.startswith(k):\n      top = max((o.matrix_world @ Vector(c)).z for c in o.bound_box)\n      if not lo <= top <= hi: print('RULE', o.name, round(top, 3), (lo, hi))\n(주의: 옆에 붙는 부품(등받이, 벽 선반)은 아래 방향 ray 대신 T[x].find_nearest로 최소 거리 1 mm 이하 접촉을 검사한다.)",
+      "urls": [
+        "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/mesh_helpers.py",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py"
+      ]
+    },
+    {
+      "tip": "실패 모드와 자동 수정 매핑표를 에이전트 규칙으로 준다",
+      "why": "실패마다 원인과 표준 처방이 정해져 있어, 에이전트가 증상을 보고 바로 인과적 수정을 할 수 있다(blender-production: 조명이나 재질로 결함을 가리지 말 것).",
+      "example": "floating → 부모 부품의 상면 z로 snap하고 parent를 설정. 관입 → 접촉 면까지 이동하거나, 의도된 결합이면 JOINT_ 명명 후 boolean union. 비율 오류 → spec 치수를 표준 범위로 되돌리고 실루엣 IoU를 재측정. flipped normal → 음수 스케일 적용 후 bmesh.ops.recalc_face_normals(bm, faces=bm.faces) 또는 normals_make_consistent(inside=False). 미적용 스케일 → transform_apply 후 bevel 재적용. non-manifold → merge by distance(1e-4), fill holes, 커터 manifold 보장. Z-fighting(동일 평면 겹침) → 0.1–0.5 mm 오프셋 또는 union. bevel 누락 → 모든 제조 모서리에 bevel stack. 디테일 부족 → macro / meso / micro 체크리스트(이음새, 나사·경첩, 손잡이, 쿠션 파이핑, 스티칭, 모서리 마모).",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/references/realism.md",
+        "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/skills/unreal-home-wizard/SKILL.md"
+      ]
+    },
+    {
+      "tip": "레퍼런스 이미지가 있으면 실루엣 IoU와 폭 프로파일로 비율을 수치 검증한다",
+      "why": "VLM의 '비슷해 보인다'는 판정은 5–10% 비율 오류를 놓친다. blender-image-to-3d는 blockout 단계에서 IoU 0.85 이상과 비율 오차 5%, forms 단계에서 IoU 0.90 이상과 2%를 게이트로 둔다. world_gate.py는 '3 cm too short or 2 cm off axis'도 IoU 손실로 드러나게 설계되어 있다.",
+      "example": "정면·측면 사진을 정사영 카메라에 맞추고(지면 행 z=0, 축 열) 흑백 matte를 렌더한 뒤 IoU, 10-band 폭 차이, ref_only_pct(누락), render_only_pct(여분)를 계산한다. 가구 임계값 예: blockout IoU 0.85 이상, final IoU 0.92 이상.",
+      "urls": [
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/world_gate.py",
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md"
+      ]
+    },
+    {
+      "tip": "VLM 자기검증은 CADCodeVerify 방식으로 예/아니오 질문 리스트를 만들어 답하게 한다",
+      "why": "막연히 '잘 됐는지 봐 줘'라고 하면 VLM이 관대하게 통과시킨다. 검증 질문을 먼저 만들고 각 항목에 증거와 함께 답하게 하면 결함 검출률이 오른다(ICLR 2025 CADCodeVerify). BlenderGym도 생성기와 검증기를 분리하는 구조가 유효하다고 보여 준다.",
+      "example": "'원래 요청: <요청>. 먼저 이 요청의 충족 여부를 판정할 예/아니오 질문 10개를 만들어라(구조, 부품 수, 접촉, 비율, 대칭, 두께, 모서리, 재질 경계 포함). 그다음 첨부된 front / side / top / 3-4 렌더를 보고 각 질문에 [예 | 아니오 | 불확실] + 근거 픽셀 위치로 답하라. 아니오 항목만 우선순위순 수정 지시(수치 포함)로 바꿔라.'",
+      "urls": [
+        "https://github.com/Kamel773/CAD_Code_Generation",
+        "https://github.com/richard-guyunqi/BlenderGym-Open"
+      ]
+    },
+    {
+      "tip": "에이전트 역할을 분리하고 Blender 버전별 API 문서를 주입한다(LL3M 구조)",
+      "why": "LL3M은 planner, retriever(BlenderRAG), coder, debugger, refiner로 역할을 나눴다. Blender API는 버전마다 바뀌므로(4.1 Auto Smooth 제거, 4.2 Extensions 전환, 5.x) 문서를 주입하지 않으면 없는 속성을 호출하는 오류가 흔하다.",
+      "example": "세션 시작 시 bpy.app.version_string을 확인하고 버전을 명시한다. 오류가 나면 해당 bpy.types 문서를 찾아 수정한다. MCP for Blender는 execute_code 전에 저장이 필요하고, 복잡한 작업은 작은 단계로 나눠야 한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md",
+        "https://github.com/ahujasid/mcp-for-blender"
+      ]
+    },
+    {
+      "tip": "조형물과 유기 형상은 코드 기반 SDF·메타볼·볼륨으로 형태를 잡고 remesh → multires/displace → bake 순서로 마감한다",
+      "why": "LLM이 bpy vertex 조작으로 유기 곡면을 만들면 울퉁불퉁하거나 깨진다. 암시적 표면(SDF, metaball, volume)은 블렌딩이 자연스럽고 manifold가 보장된다.",
+      "example": "경로 A(코드 SDF): fogleman/sdf로 smooth union(k=0.03–0.08) 조합 → STL → Blender voxel remesh(voxel size 0.003–0.01 m) → Multires 2–3 또는 Displace(노이즈 strength 0.002–0.005) → Decimate → normal·AO bake. 경로 B(Blender 네이티브): Metaball(resolution 0.02) → Convert to Mesh → Remesh. 또는 Geometry Nodes의 Mesh to Volume → Volume to Mesh(voxel 0.005)로 블롭 결합. 가지나 관 형태는 Curve to Mesh + radius 프로파일, 크리처 골격은 Skin modifier. 경로 C(AI): image-to-3D(Hunyuan3D / TRELLIS / Rodin 등) → QuadriFlow 또는 voxel remesh → 받침대·설치 부재는 하드서피스로 따로 모델링(석재 받침 0.4×0.4×0.9, bevel 3 mm).",
+      "urls": [
+        "https://github.com/fogleman/sdf",
+        "https://github.com/blender/blender/tree/main/extern"
+      ]
+    },
+    {
+      "tip": "AI 생성 메쉬는 파트 단위로 받거나 파트 bbox만 뽑아 코드로 재모델링한다(하이브리드)",
+      "why": "통짜 메쉬는 편집이 불가능하고, 다리 두께와 대칭이 틀린 경우가 많다. PartCrafter(최대 16파트), PartPacker, OmniPart, Hunyuan3D-Part는 파트 분리 결과를 주고, MeshCoder·CAD-Recode는 형상을 코드로 역변환한다.",
+      "example": "이미지 → PartCrafter로 파트 메쉬 → 각 파트 bbox와 주축 추출 → 표준 치수로 스냅(다리 0.04, 좌면 0.445) → bpy primitive로 재생성 + bevel → 원본 AI 메쉬는 레퍼런스로만 사용한다(IoU 비교).",
+      "urls": [
+        "https://github.com/wgsxm/PartCrafter",
+        "https://github.com/InternRobotics/MeshCoder",
+        "https://github.com/filaPro/cad-recode"
+      ]
+    },
+    {
+      "tip": "사진·도면에서 스케일을 잡을 때는 표준 요소를 앵커로 쓰고, 카메라를 먼저 맞춘다",
+      "why": "blender-production 규칙: 'Solve camera/lens before deforming geometry to fit a photograph.' 사진 속 문(2.0–2.1 m), 주방 상판(0.85–0.91 m), 콘센트 높이 등으로 스케일을 역산하면 가구 비율이 맞는다. unreal-home-wizard도 문·천장·상판 높이를 캘리브레이션 앵커로 쓴다.",
+      "example": "'사진 3장에서 문틀 상단을 2.05 m로 가정하고 카메라 초점거리와 높이를 먼저 추정하라. 불확실한 치수는 [uncertain]으로 표시하고, 여러 뷰를 등록해 교차 확인하라.'",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/SKILL.md",
+        "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/skills/unreal-home-wizard/SKILL.md"
+      ]
+    },
+    {
+      "tip": "결함 원장(defect ledger)을 두고 한 번에 가장 큰 결함 하나만 고친다",
+      "why": "한꺼번에 여러 곳을 고치면 회귀가 생긴다. blender-production은 '위치/뷰, 결함, 증거, 추정 원인, 변경, 검증'을 기록하는 작은 원장을 요구하고, 'Do not claim ... completion without evidence'를 규칙으로 둔다.",
+      "example": "| # | view | defect | evidence | cause | change | verify |\n| 1 | side | 등받이가 좌면 뒤에서 12 mm 떠 있음 | check: FLOATING chair_back 0.012 | location.y 계산 오류 | y = seat_back_edge | 재검사 0, 동일 카메라 렌더 |",
+      "urls": [
+        "https://raw.githubusercontent.com/per-simmons/blender-production/master/SKILL.md"
+      ]
+    },
+    {
+      "tip": "절차적 생성기를 '형태와 비율의 교사'로 쓴다",
+      "why": "Infinigen의 factory 코드는 부품 구조와 실측형 파라미터 분포를 제공해, LLM의 상상에 기대는 것보다 정확하다. Infinigen 2.0의 V2 chair는 부품을 독립적으로 샘플링하고 손잡이 생성기를 갖췄다.",
+      "example": "'Infinigen ChairFactory의 파라미터(width 0.4–0.5, size 0.38–0.45, leg_height 0.45–0.5, back_height 0.4–0.5, leg_type 4종, back_type whole / partial / horizontal-bar / vertical-bar)를 기준 공간으로 삼아, 요청 스타일(미드센추리)에 맞는 값을 고르고 이유를 적어라.' 또는 Infinigen으로 10개를 생성해 파라미터 분포 밖의 AI 결과를 경고한다.",
+      "urls": [
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py",
+        "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md"
+      ]
+    },
+    {
+      "tip": "모델과 시스템 선택: 정밀 형상은 '모델 + MCP + 프롬프트' 조합으로 평가한다",
+      "why": "CADGenBench 제3자 비교(build123d-mcp)에서 Opus 5가 0.677로 GPT-5.6 Sol 0.532, Gemini 3.7 Flash 0.508보다 높았지만 토큰은 44% 더 썼다. build123d-mcp README는 도구 사용만으로 0.360에서 0.457로 올랐다고 보고한다. 모델보다 도구와 검증 루프의 효과가 큰 경우가 많다.",
+      "example": "짧은 A/B 테스트: 같은 의자 spec으로 두 모델을 동일한 MCP와 검사 스크립트로 돌려 FAIL 수, 반복 횟수, 비용을 비교한다. 2026-09 사례 목록에서는 GPT-6 Astra(대규모 오브젝트 재현), Claude Opus 5.5 / Fable 5.1(Claude Code + Blender MCP) 모두 쓰인다.",
+      "urls": [
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+        "https://github.com/pzfreo/build123d-mcp",
+        "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics"
+      ]
+    },
+    {
+      "tip": "부품 명명과 계층 규칙을 강제한다(검사 자동화의 전제)",
+      "why": "이름이 규칙적이어야 RULES 검사, JOINT_ 관입 예외, 부품 존재 체크리스트가 자동화된다. validate.py는 '.001' 같은 숫자 접미사를 경고한다.",
+      "example": "규칙: <category>_<part>_<pos> (chair_leg_FL, chair_leg_FR, chair_stretcher_side_L, table_top, table_apron_front). 빈 오브젝트 'chair_ROOT'(원점은 바닥 중심)에 parent한다. 컬렉션은 GEO / CUTTERS / REF. 커터와 레퍼런스는 hide_render=True로 둔다.",
+      "urls": [
+        "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py",
+        "https://raw.githubusercontent.com/daerduoCarey/partnet_dataset/master/stats/after_merging_label_ids/Chair-hier.txt"
+      ]
+    },
+    {
+      "tip": "예시 프롬프트(목재 식탁 세트, 한국 주거 기준)",
+      "why": "치수, 부품 계층, 결합, 모디파이어, 검증 게이트를 한 프롬프트에 묶으면 한 번에 품질 기준을 전달할 수 있다.",
+      "example": "'한국 아파트 4인 식탁 세트를 만든다. 단위 m, Z-up. 식탁 1.40×0.80×0.74(상판 0.03 오크, 에이프런 0.08×0.022, 상판 가장자리에서 0.04 안쪽, 다리 0.055 각재 테이퍼 하단 0.04, 스트레처 없음). 의자 4개: 좌면 높이 0.45, 좌면 0.44×0.42×0.03, 등받이 상단 0.84, 뒷다리는 등받이까지 이어지는 일체형에 8° 뒤로 기울임, 사이드 스트레처 0.02×0.03(바닥에서 0.15), 좌면 앞 모서리 R 5 mm. 모든 부품은 별도 오브젝트이고 PartNet 명명을 따른다. Bevel 2 mm / 3 segments / harden normals + Weighted Normal. 의자는 식탁 아래로 0.10 넣어 배치(무릎 공간 확인: 상판 하면과 좌면 차이 0.25 이상). 빌드 후 check_scene()을 돌려 FAIL 0을 확인하고, front / side / top 정사영 + 3/4 렌더를 1.75 m 인체 더미와 함께 제출하라. 결함은 원장에 기록하라.'",
+      "urls": [
+        "https://raw.githubusercontent.com/daerduoCarey/partnet_dataset/master/stats/after_merging_label_ids/Chair-hier.txt"
+      ]
+    },
+    {
+      "tip": "메쉬를 텍스트로 직접 생성하는 LLM 대신 코드 생성을 쓴다",
+      "why": "LLaMA-Mesh·MeshLLM은 흥미로운 연구지만 면 수와 컨텍스트 한계로 저폴리에 머문다. LL3M, BlenderLLM, MeshCoder, CAD-Recode 등 코드 계열은 편집성, 정확도, 확장성이 우월하다.",
+      "example": "'정점 좌표를 직접 나열하지 말고 primitive, modifier, bmesh 연산으로 구성하라. 정점을 직접 다루는 것은 프로파일 커브(단면 폴리라인 20점 이하)에만 허용한다.'",
+      "urls": [
+        "https://github.com/nv-tlabs/LLaMA-Mesh",
+        "https://github.com/threedle/ll3m"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "kitchen-twin: 휴대폰 영상에서 조인트가 있는 주방 디지털 트윈",
+      "who": "Zhiyang (Frank) Dou",
+      "date": "2026-09-11",
+      "ai_model": "GPT-6 Astra",
+      "tools": "ViPE(metric scan), 인스턴스 분할, 자체 Blender DSL, MJCF/URDF, Three.js(GLB 약 15 MB)",
+      "what_was_made": "실험실 주방 32개 에셋, 작동 조인트 138개(문·서랍), 룸 셸, decimated 점군",
+      "process": "약 20초 분량의 휴대폰 워크스루 영상 → metric scan → 인스턴스 분할 → 에셋별 치수 측정 → GPT-6 Astra가 parts / joints / dimensions로 된 Blender DSL 코드 작성 → 독립 검증 세션이 영상 프레임과 스캔 데이터로 대조해 반복 렌더 검증 → export. 저장소는 결과물만 공개하고 파이프라인 소스는 비공개다.",
+      "outcome": "치수 기반 DSL과 독립 검증 세션의 조합이 정확한 가구·수납 재현의 핵심임을 보여 준다.",
+      "urls": [
+        "https://github.com/Frank-ZY-Dou/kitchen-twin",
+        "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics"
+      ]
+    },
+    {
+      "title": "blender-production skill로 만든 Fallingwater 재현",
+      "who": "Pat Simmons (per-simmons)",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra(사례 목록 기준) / skill은 에이전트 범용",
+      "tools": "Blender 5.1.2+, Blender MCP, probe_scene.py, benchmark.py, sequence_tools.py",
+      "what_was_made": "Fallingwater 3D 재현과 인터랙티브 플라이스루, 스튜디오 빌드 3개 프로젝트",
+      "process": "세션 확인(버전, PID, 파일) → 브리프를 검사 기준으로 변환 → 의존 순서대로 빌드(단위, 레퍼런스, 큰 형태, 카메라 → 구조, 두께, 조인트, 틈 → 재질 → 조명) → 렌더 벤치마크 → 증거 기반 QA와 defect ledger. 사례 목록에는 '54 hours of unattended compute'라는 인용이 있다.",
+      "outcome": "장시간 무인 에이전트 작업에서도 규칙 기반 QA로 결과물을 안정화했다.",
+      "urls": [
+        "https://github.com/per-simmons/blender-production",
+        "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics"
+      ]
+    },
+    {
+      "title": "증기기관차 도면을 편집 가능한 Blender 오브젝트 3,295개로",
+      "who": "Tom Krcha",
+      "date": "2026-09-04",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender, Python 코드(MCP)",
+      "what_was_made": "역사적 증기기관차 도면에서 만든 3,295개의 편집 가능한 상세 오브젝트",
+      "process": "도면 레퍼런스를 부품 단위 Python 코드로 모델링했다(사례 목록 요약 기준. 원문 X 게시물은 직접 확인하지 못함).",
+      "outcome": "대규모 부품 분해 모델링이 가능함을 보여 준다. 같은 작성자의 Porsche 서브디비전 토폴로지 사례도 있다.",
+      "urls": [
+        "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+        "https://x.com/tomkrcha/status/2095756085890310311"
+      ]
+    },
+    {
+      "title": "CADGenBench에 build123d-mcp와 Claude Code 파이프라인 제출",
+      "who": "pzfreo",
+      "date": "2026-07~09",
+      "ai_model": "Opus 5, GPT-5.6 Sol, Gemini 3.7 Flash (+ Fable, Codex 경로)",
+      "tools": "build123d-mcp(pinned 0.3.79–0.3.83), 범용 생성·편집 프롬프트, 로컬 validity gate",
+      "what_was_made": "공학 도면 81개 fixture를 STEP 솔리드로 생성하고 편집",
+      "process": "과제 유형별 범용 프롬프트(checkpoint-first, validity-as-invariant) → MCP로 증분 빌드, measure, compare, validate → 제출 패키징. fixture별 튜닝은 금지했다.",
+      "outcome": "Opus 5 0.6771, GPT-5.6 Sol 0.5319, Gemini 3.7 Flash 0.5078이었고 셋 다 80/81 valid였다. build123d-mcp README는 도구 워크플로만으로 0.360에서 0.457, validity 88%에서 100%로 개선됐다고 보고한다.",
+      "urls": [
+        "https://github.com/pzfreo/cadgenbench-build123d",
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+        "https://github.com/pzfreo/build123d-mcp"
+      ]
+    },
+    {
+      "title": "LL3M: 멀티 에이전트가 Blender 코드로 에셋 생성(연구)",
+      "who": "threedle (UChicago 3DL)",
+      "date": "2025 (2026-09 기준 서버 중단)",
+      "ai_model": "Claude Sonnet 3.7",
+      "tools": "Blender 4.4, BlenderRAG, Blender 애드온",
+      "what_was_made": "텍스트나 이미지로부터 편집 가능한 Blender 스크립트 기반 3D 에셋(예: 'Create a 3D object of a chair')",
+      "process": "계획 → 문서 검색 → 코드 작성 → 디버그 → 자동 개선 → 사용자 가이드 개선",
+      "outcome": "코드 기반 생성의 편집성과 모듈성을 입증했다. 사용 모델이 retire되면서 서비스는 중단되었다. 모델 의존 서비스의 수명 위험을 보여 주는 교훈이기도 하다.",
+      "urls": [
+        "https://github.com/threedle/ll3m",
+        "https://raw.githubusercontent.com/threedle/ll3m/main/README.md"
+      ]
+    },
+    {
+      "title": "Unreal Home Wizard: 집 사진에서 걸어 다닐 수 있는 UE 프로젝트로(물리 논리 QA)",
+      "who": "AmirMušić (amirmushichge)",
+      "date": "2026-09-21",
+      "ai_model": "GPT-6 Astra(skill은 Sol, Opus 5.5도 명시)",
+      "tools": "Codex, Unreal Engine 5.8, Python in Unreal Editor",
+      "what_was_made": "매물 사진 20장과 파노라마로 만든 워크스루",
+      "process": "사진 재현 모드(임의 재디자인 금지) → 모든 보이는 오브젝트의 physical logic, support, mounting, placement 개별 검증 → floating, 관입, 구멍, light leak, Z-fighting을 결함으로 수리 → 러프 레이아웃과 최종 뷰의 두 단계 승인. '사용자는 1차 버그 탐지자가 아니다'가 원칙이다.",
+      "outcome": "떠 있는 쿠션, 지지 없는 조명, 바닥에서 뜬 가구를 최종 결과로 내지 않도록 체크리스트화했다.",
+      "urls": [
+        "https://github.com/amirmushichge/unreal-home-wizard",
+        "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/skills/unreal-home-wizard/SKILL.md"
+      ]
+    },
+    {
+      "title": "평면도에서 가구가 배치된 2층 주택까지(Opus 5.5)",
+      "who": "AIパースおじさん (@uncle_render)",
+      "date": "2026-09-24",
+      "ai_model": "Claude Opus 5.5",
+      "tools": "Claude Code",
+      "what_was_made": "층을 선택할 수 있는 인터랙티브 3D 주택(가구 포함)",
+      "process": "평면도 입력 → Claude Code로 모델과 뷰어 생성(사례 목록 요약 기준. 세부 공정은 미확인).",
+      "outcome": "Opus 5.5로 가구가 포함된 건축 시각화 사례. 원문을 직접 확인하지 못해 신뢰도는 중간이다.",
+      "urls": [
+        "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+        "https://x.com/uncle_render/status/2103080046537904576"
+      ]
+    },
+    {
+      "title": "GPU 워크스테이션 사진 4장을 Blender 모델로(Astra와 Fable 5.1 비교)",
+      "who": "Alexey Fateev (@superalesha)",
+      "date": "2026-09-06",
+      "ai_model": "GPT-6 Astra, Claude Fable 5.1",
+      "tools": "Blender MCP",
+      "what_was_made": "4×3090 리그의 Blender 모델과 애니메이션 웹사이트",
+      "process": "사진 4장 → Blender MCP로 두 모델이 각각 제품 형상 모델링(사례 목록 요약 기준).",
+      "outcome": "사진 기반 제품 모델링에서 두 frontier 모델을 같은 MCP로 비교한 사례. 세부 결과는 미확인이다.",
+      "urls": [
+        "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+        "https://x.com/superalesha/status/2096706133121540436"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Infinigen GitHub README",
+      "url": "https://github.com/princeton-vl/infinigen",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "Infinigen Indoors, Articulated, 2.0 브랜치 구조와 라이선스"
+    },
+    {
+      "title": "Infinigen HelloRoom.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/HelloRoom.md",
+      "source_type": "official docs",
+      "date": "2026-09",
+      "why_useful": "실내 씬 생성 명령과 오버라이드"
+    },
+    {
+      "title": "Infinigen GeneratingIndividualAssets.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/GeneratingIndividualAssets.md",
+      "source_type": "official docs",
+      "date": "2026-09",
+      "why_useful": "단일 에셋 생성과 export 명령"
+    },
+    {
+      "title": "Infinigen2.md",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md",
+      "source_type": "official docs",
+      "date": "2026-09",
+      "why_useful": "2.0 alpha 설치와 생성기 목록"
+    },
+    {
+      "title": "Infinigen CHANGELOG",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/CHANGELOG.md",
+      "source_type": "changelog",
+      "date": "2026-09",
+      "why_useful": "V2 chair, handle 생성기, crease+subsurf 재구성"
+    },
+    {
+      "title": "Infinigen chair.py (indoors-stable)",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py",
+      "source_type": "source code",
+      "date": "2026-09 확인",
+      "why_useful": "의자 치수 분포와 부품 구조"
+    },
+    {
+      "title": "Infinigen dining_table.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/tables/dining_table.py",
+      "source_type": "source code",
+      "date": "2026-09 확인",
+      "why_useful": "식탁 치수와 다리·스트레처 분포"
+    },
+    {
+      "title": "Infinigen simple_desk.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/shelves/simple_desk.py",
+      "source_type": "source code",
+      "date": "2026-09 확인",
+      "why_useful": "책상 높이 N(0.73, 0.05) 등"
+    },
+    {
+      "title": "Infinigen bedframe.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/bedframe.py",
+      "source_type": "source code",
+      "date": "2026-09 확인",
+      "why_useful": "침대 프레임 치수 분포"
+    },
+    {
+      "title": "Infinigen kitchen_cabinet.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/shelves/kitchen_cabinet.py",
+      "source_type": "source code",
+      "date": "2026-09 확인",
+      "why_useful": "캐비닛 판 두께 등"
+    },
+    {
+      "title": "Infinigen sofa.py",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/sofa.py",
+      "source_type": "source code",
+      "date": "2026-09 확인",
+      "why_useful": "소파 파라미터 구조(상대 비율 포함)"
+    },
+    {
+      "title": "Blender 3D Print Toolbox __init__.py",
+      "url": "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/__init__.py",
+      "source_type": "source code",
+      "date": "archived 2025-05",
+      "why_useful": "검사 기본값"
+    },
+    {
+      "title": "Blender 3D Print Toolbox mesh_helpers.py",
+      "url": "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/mesh_helpers.py",
+      "source_type": "source code",
+      "date": "archived 2025-05",
+      "why_useful": "BVHTree overlap 기반 교차 검사 코드"
+    },
+    {
+      "title": "Blender 3D Print Toolbox operators.py",
+      "url": "https://raw.githubusercontent.com/blender/blender-addons/main/object_print3d_utils/operators.py",
+      "source_type": "source code",
+      "date": "archived 2025-05",
+      "why_useful": "non-manifold / degenerate 검사 코드"
+    },
+    {
+      "title": "blender-addons mirror (archived)",
+      "url": "https://github.com/blender/blender-addons",
+      "source_type": "GitHub repo",
+      "date": "2025-05-09 archived",
+      "why_useful": "애드온 저장소 보관 상태"
+    },
+    {
+      "title": "Archimesh kitchen / door / stairs maker",
+      "url": "https://raw.githubusercontent.com/blender/blender-addons/main/archimesh/achm_kitchen_maker.py",
+      "source_type": "source code",
+      "date": "archived 2025-05",
+      "why_useful": "주방·문·계단 기본 치수"
+    },
+    {
+      "title": "Blender MOD_boolean.cc (main)",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/modifiers/intern/MOD_boolean.cc",
+      "source_type": "source code",
+      "date": "2026-09",
+      "why_useful": "Manifold boolean solver 존재 확인"
+    },
+    {
+      "title": "FreeCAD ArchStairs.py",
+      "url": "https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/BIM/ArchStairs.py",
+      "source_type": "source code",
+      "date": "2026-09",
+      "why_useful": "Blondel ratio 62–64 cm"
+    },
+    {
+      "title": "Holodeck prompts.py",
+      "url": "https://raw.githubusercontent.com/allenai/Holodeck/main/ai2holodeck/generation/prompts.py",
+      "source_type": "source code",
+      "date": "2024",
+      "why_useful": "LLM에게 cm 크기를 명시시키는 프롬프트 형식"
+    },
+    {
+      "title": "build123d-mcp",
+      "url": "https://github.com/pzfreo/build123d-mcp",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "CAD MCP 도구, 설치, 성능 개선 수치"
+    },
+    {
+      "title": "build123d-mcp default_prompt.md",
+      "url": "https://raw.githubusercontent.com/pzfreo/build123d-mcp/main/default_prompt.md",
+      "source_type": "prompt",
+      "date": "2026-09",
+      "why_useful": "결정론적 검사를 시각 검사보다 먼저 하는 규칙"
+    },
+    {
+      "title": "build123d README",
+      "url": "https://raw.githubusercontent.com/gumyr/build123d/dev/README.md",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "build123d 개요와 요구사항"
+    },
+    {
+      "title": "build123d joints docs",
+      "url": "https://github.com/gumyr/build123d/blob/dev/docs/joints.rst",
+      "source_type": "official docs",
+      "date": "2026-09",
+      "why_useful": "조인트 기반 조립"
+    },
+    {
+      "title": "AgentCAD",
+      "url": "https://github.com/jdilla1277/agentcad",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "CAD CLI와 MCP"
+    },
+    {
+      "title": "CadQuery",
+      "url": "https://github.com/CadQuery/cadquery",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "CadQuery 개요"
+    },
+    {
+      "title": "BOSL2",
+      "url": "https://github.com/BelfrySCAD/BOSL2",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "OpenSCAD attachments와 joiners"
+    },
+    {
+      "title": "fogleman/sdf",
+      "url": "https://github.com/fogleman/sdf",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "SDF 코드 모델링"
+    },
+    {
+      "title": "MCP for Blender (ahujasid)",
+      "url": "https://github.com/ahujasid/mcp-for-blender",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "주요 Blender MCP, 패키지명 변경"
+    },
+    {
+      "title": "blend-ai",
+      "url": "https://github.com/HoldMyBeer-gg/blend-ai",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "mesh 분석 도구를 포함한 MCP"
+    },
+    {
+      "title": "blender-game-skills: blender-image-to-3d SKILL.md",
+      "url": "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md",
+      "source_type": "agent skill",
+      "date": "2026-09",
+      "why_useful": "IoU·비율 게이트, 단위 규약"
+    },
+    {
+      "title": "blender-game-skills validate.py",
+      "url": "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/validate.py",
+      "source_type": "source code",
+      "date": "2026-09",
+      "why_useful": "메쉬 검사 임계값과 코드"
+    },
+    {
+      "title": "blender-game-skills world_gate.py",
+      "url": "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/scripts/world_gate.py",
+      "source_type": "source code",
+      "date": "2026-09",
+      "why_useful": "실루엣 IoU와 폭 프로파일"
+    },
+    {
+      "title": "blender-production SKILL.md",
+      "url": "https://raw.githubusercontent.com/per-simmons/blender-production/master/SKILL.md",
+      "source_type": "agent skill",
+      "date": "2026-09",
+      "why_useful": "빌드 순서와 defect ledger"
+    },
+    {
+      "title": "blender-production realism.md",
+      "url": "https://raw.githubusercontent.com/per-simmons/blender-production/master/references/realism.md",
+      "source_type": "agent skill reference",
+      "date": "2026-09",
+      "why_useful": "bevel과 macro / meso / micro 디테일"
+    },
+    {
+      "title": "unreal-home-wizard SKILL.md",
+      "url": "https://raw.githubusercontent.com/amirmushichge/unreal-home-wizard/main/skills/unreal-home-wizard/SKILL.md",
+      "source_type": "agent skill",
+      "date": "2026-09",
+      "why_useful": "물리 논리 QA 체크리스트"
+    },
+    {
+      "title": "PartNet dataset repo",
+      "url": "https://github.com/daerduoCarey/partnet_dataset",
+      "source_type": "dataset",
+      "date": "2019",
+      "why_useful": "부품 계층"
+    },
+    {
+      "title": "PartNet Chair-hier.txt",
+      "url": "https://raw.githubusercontent.com/daerduoCarey/partnet_dataset/master/stats/after_merging_label_ids/Chair-hier.txt",
+      "source_type": "dataset",
+      "date": "2019",
+      "why_useful": "의자 부품 leaf 목록"
+    },
+    {
+      "title": "ShapeAssembly",
+      "url": "https://github.com/rkjones4/ShapeAssembly",
+      "source_type": "research code",
+      "date": "2020",
+      "why_useful": "cuboid + attach 형상 프로그램"
+    },
+    {
+      "title": "LL3M README",
+      "url": "https://raw.githubusercontent.com/threedle/ll3m/main/README.md",
+      "source_type": "research code",
+      "date": "2026-09 확인",
+      "why_useful": "멀티 에이전트 구조와 서비스 중단 사실"
+    },
+    {
+      "title": "BlenderLLM",
+      "url": "https://github.com/FreedomIntelligence/BlenderLLM",
+      "source_type": "research code",
+      "date": "2024-12",
+      "why_useful": "CADBench 결과"
+    },
+    {
+      "title": "MeshCoder",
+      "url": "https://github.com/InternRobotics/MeshCoder",
+      "source_type": "research code",
+      "date": "2025-11",
+      "why_useful": "점군을 부품 코드로 변환"
+    },
+    {
+      "title": "CAD-Recode",
+      "url": "https://github.com/filaPro/cad-recode",
+      "source_type": "research code",
+      "date": "ICCV 2025",
+      "why_useful": "점군을 CadQuery 코드로 변환"
+    },
+    {
+      "title": "Text2CAD",
+      "url": "https://github.com/SadilKhan/Text2CAD",
+      "source_type": "research code",
+      "date": "NeurIPS 2024",
+      "why_useful": "프롬프트 난이도 수준별 CAD"
+    },
+    {
+      "title": "CADCodeVerify (CAD_Code_Generation)",
+      "url": "https://github.com/Kamel773/CAD_Code_Generation",
+      "source_type": "research code",
+      "date": "ICLR 2025",
+      "why_useful": "VLM 검증 질문 루프"
+    },
+    {
+      "title": "CADFusion",
+      "url": "https://github.com/microsoft/CADFusion",
+      "source_type": "research code",
+      "date": "ICML 2025",
+      "why_useful": "시각 피드백 학습"
+    },
+    {
+      "title": "LLaMA-Mesh",
+      "url": "https://github.com/nv-tlabs/LLaMA-Mesh",
+      "source_type": "research code",
+      "date": "2024-11",
+      "why_useful": "메쉬를 텍스트로 다루는 LLM"
+    },
+    {
+      "title": "MeshLLM",
+      "url": "https://github.com/Fangkang515/MeshLLM",
+      "source_type": "research code",
+      "date": "ICCV 2025",
+      "why_useful": "primitive 분해 기반 메쉬 LLM"
+    },
+    {
+      "title": "ShapeLLM-Omni",
+      "url": "https://github.com/JAMESYJL/ShapeLLM-Omni",
+      "source_type": "research code",
+      "date": "NeurIPS 2025",
+      "why_useful": "네이티브 3D MLLM"
+    },
+    {
+      "title": "BlenderGym-Open",
+      "url": "https://github.com/richard-guyunqi/BlenderGym-Open",
+      "source_type": "benchmark",
+      "date": "CVPR 2025",
+      "why_useful": "generator-verifier 구조의 유효성"
+    },
+    {
+      "title": "L3GO repo",
+      "url": "https://github.com/runopti/L3GO",
+      "source_type": "research code (empty)",
+      "date": "2025",
+      "why_useful": "부품 단위 조립 에이전트(코드 미공개)"
+    },
+    {
+      "title": "CADGenBench",
+      "url": "https://github.com/huggingface/cadgenbench",
+      "source_type": "benchmark",
+      "date": "2026",
+      "why_useful": "CAD 생성·편집 평가 지표"
+    },
+    {
+      "title": "cadgenbench-build123d 모델 비교",
+      "url": "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+      "source_type": "third-party eval",
+      "date": "2026-07~09",
+      "why_useful": "Opus 5 / GPT-5.6 Sol / Gemini 3.7 Flash 점수"
+    },
+    {
+      "title": "PartCrafter",
+      "url": "https://github.com/wgsxm/PartCrafter",
+      "source_type": "research code",
+      "date": "NeurIPS 2025",
+      "why_useful": "파트 단위 image-to-3D"
+    },
+    {
+      "title": "PartPacker",
+      "url": "https://github.com/NVlabs/PartPacker",
+      "source_type": "research code",
+      "date": "2025-06",
+      "why_useful": "파트 단위 생성"
+    },
+    {
+      "title": "OmniPart",
+      "url": "https://github.com/HKU-MMLab/OmniPart",
+      "source_type": "research code",
+      "date": "SIGGRAPH Asia 2025",
+      "why_useful": "파트 인식 생성"
+    },
+    {
+      "title": "Hunyuan3D-Part",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-Part",
+      "source_type": "research code",
+      "date": "2025-09",
+      "why_useful": "P3-SAM과 X-Part"
+    },
+    {
+      "title": "Nova3D",
+      "url": "https://github.com/RareSense/Nova3D",
+      "source_type": "GitHub repo",
+      "date": "2026-08",
+      "why_useful": "코드 네이티브 파트 생성"
+    },
+    {
+      "title": "Sverchok",
+      "url": "https://github.com/nortikin/sverchok",
+      "source_type": "GitHub repo",
+      "date": "2026-09",
+      "why_useful": "파라메트릭 노드"
+    },
+    {
+      "title": "Archipack",
+      "url": "https://github.com/s-leger/archipack",
+      "source_type": "GitHub repo",
+      "date": "legacy",
+      "why_useful": "건축 요소 애드온"
+    },
+    {
+      "title": "awesome-ai-3d-modeling-robotics",
+      "url": "https://github.com/Frank-ZY-Dou/awesome-ai-3d-modeling-robotics",
+      "source_type": "curated list",
+      "date": "2026-09",
+      "why_useful": "2026-09 GPT-6 Astra / Opus 5.5 / Fable 5.1 3D 사례 원문 링크 모음"
+    },
+    {
+      "title": "kitchen-twin",
+      "url": "https://github.com/Frank-ZY-Dou/kitchen-twin",
+      "source_type": "case study repo",
+      "date": "2026-09",
+      "why_useful": "Blender DSL과 독립 검증 사례"
+    },
+    {
+      "title": "blender-production repo",
+      "url": "https://github.com/per-simmons/blender-production",
+      "source_type": "case study repo",
+      "date": "2026-09",
+      "why_useful": "Fallingwater 재현 skill"
+    },
+    {
+      "title": "unreal-home-wizard",
+      "url": "https://github.com/amirmushichge/unreal-home-wizard",
+      "source_type": "case study repo",
+      "date": "2026-09",
+      "why_useful": "사진에서 UE 프로젝트로, 물리 QA"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "LL3M 서버가 중단되었고, 논문에 쓰인 모델은 Claude Sonnet 3.7이다(Blender 4.4 기반).",
+      "url": "https://raw.githubusercontent.com/threedle/ll3m/main/README.md"
+    },
+    {
+      "claim": "BlenderLLM(Qwen2.5-Coder-7B)은 CADBench 시뮬레이션 평균 74.8%로 GPT-4o 56.5%, o1-Preview 68.7%보다 높고, 문법 오류율은 3.4%(GPT-4o 21.4%)다. Apache-2.0, 2024-12-17 공개.",
+      "url": "https://github.com/FreedomIntelligence/BlenderLLM"
+    },
+    {
+      "claim": "MeshCoder: arXiv 2508.14879, 41개 카테고리 100만 object-code 쌍, Llama-3.2-1B LoRA, MIT, 2025-11-11 공개.",
+      "url": "https://github.com/InternRobotics/MeshCoder"
+    },
+    {
+      "claim": "CAD-Recode는 ICCV 2025 채택이고, Qwen2-1.5B에 선형층 하나를 붙여 점군에서 CadQuery 코드를 생성한다.",
+      "url": "https://github.com/filaPro/cad-recode"
+    },
+    {
+      "claim": "build123d-mcp 워크플로가 한 모델의 CADGenBench 점수를 0.360에서 0.457로, validity를 88%에서 100%로 개선했다.",
+      "url": "https://github.com/pzfreo/build123d-mcp"
+    },
+    {
+      "claim": "build123d-mcp를 쓴 CADGenBench 81 fixture 비교에서 Opus 5가 0.6771, GPT-5.6 Sol이 0.5319, Gemini 3.7 Flash가 0.5078이다.",
+      "url": "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md"
+    },
+    {
+      "claim": "Infinigen 2.0은 alpha(2.0.0a2)이고 procfunc 기반이며, 지원하는 실내 오브젝트가 제한적이다(sofa_rand, lamp_rand 등).",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/main/docs/source/Infinigen2.md"
+    },
+    {
+      "claim": "Infinigen v1 ChairFactory는 leg_height uniform(0.45, 0.5), width 0.4–0.5, 깊이 0.38–0.45를 샘플링한다.",
+      "url": "https://raw.githubusercontent.com/princeton-vl/infinigen/indoors-stable/infinigen/assets/objects/seating/chairs/chair.py"
+    },
+    {
+      "claim": "Blender Boolean modifier는 Float, Exact(Mesh_Arr), Manifold solver를 가진다(main 소스).",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/modifiers/intern/MOD_boolean.cc"
+    },
+    {
+      "claim": "blender-image-to-3d skill의 게이트는 blockout IoU 0.85 이상 + 비율 오차 5%, forms IoU 0.90 이상 + 2%다.",
+      "url": "https://raw.githubusercontent.com/majidmanzarpour/blender-game-skills/main/skills/blender-image-to-3d/SKILL.md"
+    },
+    {
+      "claim": "kitchen-twin은 GPT-6 Astra가 쓴 Blender DSL로 32개 에셋과 138개 작동 조인트를 만들었다.",
+      "url": "https://github.com/Frank-ZY-Dou/kitchen-twin"
+    },
+    {
+      "claim": "FreeCAD BIM의 Blondel ratio 설명은 62–64 cm(24.5–25.5 in)를 편안한 계단으로 규정한다.",
+      "url": "https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/BIM/ArchStairs.py"
+    },
+    {
+      "claim": "ahujasid의 Blender MCP는 PyPI 패키지명이 blender-mcp에서 mcp-for-blender로 바뀌었다.",
+      "url": "https://github.com/ahujasid/mcp-for-blender"
+    },
+    {
+      "claim": "PartCrafter는 단일 이미지에서 최대 16개 파트를 생성한다(NeurIPS 2025, MIT).",
+      "url": "https://github.com/wgsxm/PartCrafter"
+    },
+    {
+      "claim": "blender/blender-addons 저장소는 2025-05-09에 archived(read-only)되었다.",
+      "url": "https://github.com/blender/blender-addons"
+    }
+  ],
+  "gaps": [
+    "이번 세션은 WebSearch 예산(200회)이 이미 소진된 상태였고, 네트워크 egress 정책상 GitHub(github.com, raw.githubusercontent.com)를 뺀 거의 모든 도메인이 차단되었다(arXiv, Hugging Face, dimensions.com, ICC IRC, law.go.kr, ISO, IKEA, docs.blender.org, developer.blender.org, extensions.blender.org, readthedocs, openreview, Wikipedia, github.io). 그래서 모든 내용이 GitHub 소스에 기반한다.",
+    "치수 표준 가운데 Neufert, dimensions.com, IRC R311.7.5(단높이 7-3/4 in, 단너비 10 in), NKBA 주방 가이드, EN 527/EN 1335, KS 가구 규격, 한국 건축법령(건축물의 피난·방화구조 등의 기준에 관한 규칙 제15조, 주택건설기준 등에 관한 규정의 계단 단높이·단너비)은 원문을 확인하지 못했다. 치수표 값 중 코드(Infinigen, Archimesh, FreeCAD, Holodeck)로 확인하지 못한 값은 일반 표준 지식에 기반하므로 재검증이 필요하다.",
+    "한국 침대 규격(S / SS / Q / K / LK)과 한국 주방 상판 850 mm 관행, 국내 책상 720 mm 관행의 공식 출처(KS 또는 제조사 표준)는 미확인이다.",
+    "Size Korea와 ANSUR II의 인체 치수 수치(키, 오금 높이, 엉덩이-오금 길이)는 1차 데이터로 확인하지 못했다.",
+    "Blender 5.x 매뉴얼의 세부(Bevel 기본값, Weighted Normal 동작, 4.1 Auto Smooth 제거 이후 권장 워크플로, Geometry Nodes의 bevel·SDF grid 노드 존재 여부)는 docs 도메인 차단으로 검증하지 못했다.",
+    "3D-PreMise(arXiv 2401.06437로 기억)는 GitHub에서 찾지 못해 내용을 확인하지 못했다. L3GO는 저장소는 있지만 README와 코드가 비어 있다.",
+    "LLaMA-Mesh의 세부 스펙(LLaMA-3.1-8B-Instruct, 8K 컨텍스트, 약 500면, 64-bin 양자화)과 MeshLLM의 데이터 규모는 README에 없어 확인하지 못했다.",
+    "LL3M의 arXiv 번호와 정량 결과, CADCodeVerify의 수치 결과(point cloud distance 개선 폭 등)는 arXiv와 openreview 차단으로 확인하지 못했다.",
+    "2026-09 X와 LinkedIn 사례(Tom Krcha 기관차, Opus 5.5 평면도 주택, Fable 5.1 워크스테이션)는 큐레이션 리스트를 통해서만 봤고 원문 게시물은 직접 확인하지 못했다.",
+    "Archimesh·3D Print Toolbox의 Blender 4.2+ Extensions 배포 현황, Archipack의 최신 Blender 호환판 현황은 extensions.blender.org 차단으로 확인하지 못했다.",
+    "GPT-6 Astra, Claude Fable 5.1, Gemini 최신 모델을 같은 가구 모델링 과제로 직접 비교한 벤치마크는 찾지 못했다(CADGenBench 비교는 Opus 5 / GPT-5.6 Sol / Gemini 3.7 Flash만 포함)."
+  ]
+}

@@ -1,0 +1,1077 @@
+{
+  "topic": "MCP로 3D 툴을 구동하기 위한 프런티어 AI 모델 비교 (2026년 9월 기준): GPT-6 Astra, Claude Fable 5.1/Opus 5.5/Sonnet 5/Haiku 4.5, Gemini 3.x, Grok, 오픈웨이트 모델, MCP 클라이언트, 3D 벤치마크",
+  "summary_ko": [
+    "[현황, 2026-09-26] 3D+MCP 작업에서 거론되는 최상위 모델은 다음과 같습니다. OpenAI GPT-6 Astra(2026-09-03 제한 프리뷰로 출시 후 순차 배포), Anthropic Claude Fable 5.1(09-01), Claude Opus 5.5(09-22), Claude Sonnet 5(06-30), Haiku 4.5. Google은 Gemini 3.1 Pro(02-19)가 여전히 Pro급 최신이고, 3.5 Pro는 5월 I/O에서 발표만 된 채 미출시입니다. 대신 Gemini 3.8 Flash(09-02)가 나왔습니다. 그 밖에 xAI Grok 4.7(09-21)과 오픈웨이트 모델 Kimi K3, Qwen3.8, DeepSeek V4.x, GLM-5.x가 있습니다. OpenAI는 09-22에 저가형 GPT-6 Sol($2/$10)과 Luna($0.10/$0.50)를 추가했습니다.",
+    "[이름 정리] 이 맥락에서 '아스트라'는 OpenAI의 모델 GPT-6 Astra입니다. Google DeepMind의 Project Astra는 실시간 멀티모달 비서 연구 프로토타입으로, 기능 일부가 Gemini Live에 들어가 있을 뿐 3D MCP 작업과는 관계가 없습니다. '페이블'은 Claude Fable 5.1입니다. Mythos 5.1은 같은 모델을 사이버보안·생명과학 검증 기관에만 제공하는 제한판입니다.",
+    "[3D 평판] GPT-6 Astra는 공간 추론, CAD, 사진·도면·스케치를 3D로 재구성하는 작업, 분해도, 조립·리깅에서 가장 강하다는 평이 우세합니다. OpenAI가 보고한 BenchCAD 수치는 95.9%로 Fable 5.1(84.3%)보다 높지만, 도구 사용(렌더→측정→수정) 조건의 벤더 자체 보고 값입니다. Hierarchy.ch와 Danny Stuart의 비교에서도 'Blender·3D는 Astra 압승, 소프트웨어 완성도는 Fable 5.1'이라는 결론이 나왔습니다.",
+    "[Opus 5.5 반격] 09-22 이후 실사용 비교에서는 Opus 5.5가 Astra와 대등하거나 앞선다는 결과가 늘고 있습니다. Stefan 3D AI의 단일 프롬프트 절차적 Blender 테스트에서 Opus 5.5는 35분·출력 199.6k토큰·약 $13.3, Astra는 28분·56.6k토큰·약 $14.5였고, Stefan은 'Opus가 더 많은 요소를 동시에 다룬다'고 평했습니다. Brendan Jowett의 UE+Blender 게임 테스트에서는 Opus 5.5가 전 항목 우위였고, Nate Herk의 12개 과제 비교는 Opus 8 대 Astra 4였습니다(단 Astra가 시간 45%, 비용 38% 절감). 창작 감각·아트디렉션은 Opus, 속도와 토큰 효율은 Astra라는 구도입니다.",
+    "[독립 지표는 '절대 1위 없음'] 커뮤니티 블라인드 투표인 Blender AI Arena 시즌 3은 3D-Agent, GPT-6 Astra, Claude Opus 5, Claude Fable 5.1, Grok 4.6이 1,687표 기준 오차범위 내 5자 동률입니다. BenchCAD 공식 재채점(도구 없는 Vision2Code)의 최고점은 Gemini 3.1 Pro의 IoU 0.289 수준이라 벤더의 '95.9%'와는 조건이 달라 직접 비교할 수 없습니다. BlenderGym 리더보드는 GPT-4o 세대에서 멈춰 있습니다.",
+    "[작업별 모델 선택] 하드서피스, 건축, CAD, 사진·도면 재구성, 치수가 중요한 배치는 GPT-6 Astra(high~xhigh)가 1순위이고 대안은 Opus 5.5(high)입니다. 장시간 씬 빌드와 아트디렉션·룩뎁 감각은 Opus 5.5가 1순위입니다. 수 시간짜리 오케스트레이션이나 가장 어려운 계획은 Fable 5.1(어드바이저 또는 코디네이터 역할)이 맡습니다. 대량의 bpy 반복 작업, 네이밍, 머티리얼 일괄 수정은 Sonnet 5 또는 GPT-6 Sol이 적합합니다. 저가 렌더 비평과 대량 이미지 검수는 Gemini 3.8 Flash($0.75/$3.75)를 씁니다. 로컬·오프라인 환경이면 Qwen3.6-27B·Qwen3.8-27B급(32B 이상 권장)이나 API로 Kimi K3·DeepSeek V4.1 Flash를 씁니다.",
+    "[모든 모델 공통의 약점] 유기체, 캐릭터, 서브디비전 토폴로지는 여전히 약합니다. Sculpt 모드는 MCP로 접근이 안 되어 결과가 프리미티브 조합 수준에 그칩니다. 그래서 실전에서는 Tripo, Meshy, Hunyuan3D, Rodin 같은 생성형 3D로 메시를 만들고, LLM은 조립·리깅·배치·머티리얼·렌더를 맡기는 분업이 표준처럼 쓰입니다(Astra+Tripo P2.0, Grok 4.6+Meshy 사례).",
+    "[모델보다 하네스] 3DCodeBench에서 실행 오류를 모델에 되돌려 주는 멀티턴 루프만으로 실행 가능률이 0.69에서 0.97로 올랐습니다. BlenderGym은 연산 예산이 클수록 생성보다 검증(렌더 비평)에 연산을 더 배분하는 편이 효과적이라고 보고했습니다. 결국 품질은 렌더 → 멀티뷰 스크린샷 → 수치(bbox·치수) 검증 → 수정 루프와, bpy 스크립트를 Git으로 관리하는 방식이 좌우합니다.",
+    "[Anthropic 크리에이티브 커넥터, 2026-04-28] 공식 발표 기준 9종은 Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice입니다. Blender 커넥터는 Blender Lab(Blender 재단)이 만든 공식 MCP 서버로 Blender 5.1 이상과 애드온 설치가 필요합니다. SketchUp은 Trimble이 만든 클라우드 세션형으로 build_model·get_docs·save_model 도구를 제공하고 무료로 30개 모델까지 저장할 수 있습니다. Fusion은 로컬 방식이며 Preferences > General > API > Fusion MCP Server를 켜야 합니다(Claude 커넥터 페이지 표기는 2026년 5월 추가).",
+    "[클라이언트] 3D 에이전트 작업에는 Claude Code와 Codex CLI/앱이 가장 적합합니다. 둘 다 로컬 stdio를 쓰고, 이미지 결과를 반환하며, 긴 세션을 지원합니다. Claude Desktop은 비개발자가 공식 커넥터를 쓰기에 가장 쉽습니다. ChatGPT 웹 채팅은 원격 MCP만 되므로 로컬 Blender에 직접 붙지 않습니다. Gemini CLI는 2026-06-18부로 무료·Pro·Ultra 사용자 대상 서비스가 끝나고 Antigravity CLI로 옮겨 갔습니다. Cursor는 활성 도구가 약 40개로 제한됩니다.",
+    "[비용 감각] API 단가(입력/출력, 1M토큰당)는 Astra $10/$50(입력 272k 초과 시 요청 전체가 $20/$75로 재과금), Fable 5.1 $10/$50(캐시 읽기 $0.25), Opus 5.5 $4/$20(캐시 $0.20), Sonnet 5 $2/$10, Haiku 4.5 $1/$5, Gemini 3.1 Pro $2/$12, Gemini 3.8 Flash $0.75/$3.75입니다. 구독형에서는 Plus의 Astra가 ChatGPT Work와 Codex에서만 제한적으로 제공되고, Claude Pro에서 Fable은 크레딧 과금, Max에서는 주간 한도의 50%까지 포함입니다. 사례로 Claude+Blender MCP 도넛 튜토리얼 2시간이 Max 5x 세션 한도의 60%를 썼고, SketchUp에서 Astra 테스트는 Plus 주간 한도를 하루에 소진했습니다.",
+    "[스크린샷 해상도·비용] Claude 4.7 이후 모델은 고해상도 이미지 티어(긴 변 2576px, 최대 4784 비주얼 토큰)를 씁니다. 1920×1080 뷰포트 캡처는 2691토큰, Opus 5.5 기준 장당 약 $0.011입니다. 한 요청에 이미지가 20장을 넘으면 각 이미지를 2000px 이하로 줄여야 합니다. Opus 5.5는 공식 문서상 스크린샷·다이어그램 판독이 크게 개선되었고, 밀집된 이미지에는 crop·zoom 도구(PIL/OpenCV)를 붙이면 정확도가 더 오릅니다."
+  ],
+  "items": [
+    {
+      "name": "OpenAI GPT-6 Astra",
+      "category": "프런티어 모델 (OpenAI)",
+      "what_it_is": "OpenAI의 플래그십 추론 모델입니다. 2026-09-03 승인된 조직 대상 제한 프리뷰로 시작해 ChatGPT(Plus/Pro/Business/Enterprise), API, Azure, AWS Bedrock으로 순차 배포되었습니다. 컨텍스트는 약 1.05M토큰이고 reasoning.effort는 low/medium/high/xhigh/max 5단계입니다. 출시 데모에서 Blender를 직접 다뤘습니다. 씬 계획 → bpy 작성 → 백그라운드 렌더 → 이미지 확인 → 수정 루프를 돌렸고, 도면을 Blender 집으로 만든 뒤 걸어 다닐 수 있는 Unreal Engine 5 씬으로 옮겼으며, KiCad PCB 배치도 시연했습니다. 광고된 3D 기능은 사진→3D, 스케치→3D, 분해도, 다부품 캐릭터 조립·리깅, 공간 추론입니다.",
+      "how_to_use": "권장 경로는 Codex CLI, Codex 앱, IDE 확장입니다(ChatGPT 데스크톱 앱과 ~/.codex/config.toml을 공유). 커뮤니티 서버는 `codex mcp add blender --env DISABLE_TELEMETRY=true -- uvx blender-mcp`, Blender Lab 공식 서버는 `codex mcp add blender -- blender-mcp`로 등록합니다. config.toml에서 model을 gpt-6-astra, model_reasoning_effort를 \"high\"로 두고, 렌더처럼 오래 걸리는 도구는 [mcp_servers.blender]의 tool_timeout_sec(기본 60초)을 늘립니다. MCP 없이 headless Blender에 bpy 스크립트를 돌리고 렌더 이미지를 보게 하는 경로도 Astra가 선호하는 방식으로 보고됩니다. Astra를 쓰려면 Codex CLI 0.153.0 이상이 필요하다는 보도가 있습니다.",
+      "strengths": "OpenAI 발표 기준 BenchCAD voxel IoU 95.9%(도구 사용, GPT-5.6 Sol 83.3%, Fable 5.1 84.3%), OSWorld 2.0 72.6%(과제당 약 40분), Terminal-Bench 4.0 57.7%입니다. Roboflow Vision Evals 1위(59개 중, 평균 86.6%), Artificial Analysis MMMU-Pro 87%입니다. 출력 토큰 효율이 매우 높습니다(Stefan 테스트 56.6k vs Opus 5.5 199.6k, AA Coding Agent Index에서 Fable과 동급 점수를 비용 약 60%로 달성). 배치, 비례, 씬 구성의 일관성이 GPT-6 Sol보다 뚜렷하게 좋다는 평입니다. 커뮤니티 사례로는 증기기관차 그림을 3,295개 편집 가능 오브젝트로 재구성, 아이폰 사진 몇 장으로 건물을 30분 안에 재구성, Tripo 캐릭터 조립·리깅 등이 있습니다.",
+      "weaknesses": "캐릭터·유기체·서브디비전 토폴로지가 약해, Meshy 7과의 비교에서 '프리미티브 블록 근사' 수준에 머물렀습니다. 여러 결과물의 스타일이 비슷해지는 경향(숲색 위주 팔레트)이 지적됩니다. 사진 재구성 시 원본에 없는 요소를 지어낸 사례가 있습니다. SketchUp MCP 테스트에서는 인테리어 치수가 어긋나고 문 여는 방향이 틀렸습니다. 컴퓨터 사용 성공률 72.6%는 약 네 번에 한 번 실패한다는 뜻입니다. 토큰당 단가가 비쌉니다($10/$50, 입력 272k 초과 시 요청 전체 $20/$75). Plus 플랜에서는 채팅이 아닌 Work와 Codex에서만 제한적으로 쓸 수 있습니다.",
+      "license_or_price": "API $10 입력, $50 출력, 캐시 입력 $1(1M토큰당). Batch/Flex는 50%, Fast는 2배. ChatGPT 채팅 안에서는 'GPT-6 Pro' 명칭으로 Pro·Business·Enterprise에 제공되고, Plus는 Work/Codex 한정 제한 사용량과 추가 크레딧 방식입니다.",
+      "status_date": "2026-09-03 출시(제한 프리뷰), 이후 GA로 확대. 2026-09-26 기준 최신 OpenAI 플래그십.",
+      "urls": [
+        "https://openai.com/index/gpt-6-astra/",
+        "https://www.datacamp.com/blog/gpt-6-astra-vs-claude-fable-5-1",
+        "https://www.winzheng.com/en/article/gpt-6-astra-plus-business-rollout-pricing-analysis",
+        "https://computingforgeeks.com/gpt-6-astra-released-features-benchmarks/",
+        "https://help.openai.com/en/articles/20001516-managing-usage-with-gpt-6-astra-in-work-and-codex",
+        "https://www.notebookcheck.net/GPT-6-Astra-is-on-ChatGPT-Plus-but-only-in-Work-and-Codex.1391574.0.html",
+        "https://runtimewire.com/article/gpt-6-astra-blender-scene-control-stefan-vaskevich",
+        "https://hackernoon.com/gpt-6-astra-vs-meshy-7-for-3d-creation-what-three-creator-workflows-reveal",
+        "https://playground.roboflow.com/models/openai/gpt-6-astra",
+        "https://github.com/magiccreator-ai/awesome-gpt-6-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "OpenAI GPT-6 Sol / GPT-6 Luna",
+      "category": "프런티어 모델 (OpenAI 저가 티어)",
+      "what_it_is": "2026-09-22 Opus 5.5 발표 직후 공개된 GPT-6 계열의 저가 티어입니다. Sol은 $2/$10, Luna는 $0.10/$0.50으로, OpenAI는 이 가격이 판촉가가 아닌 영구 가격이라고 밝혔습니다. Astra($10/$50)와 함께 3티어 구성이 되었습니다.",
+      "how_to_use": "Codex에서 모델명만 바꿔 쓰면 됩니다. 3D 파이프라인에서는 Astra가 계획과 공간 판단을 맡고, 반복적인 bpy 수정이나 파일·에셋 정리는 Sol, 분류·네이밍은 Luna에 맡기는 식의 분업이 합리적입니다.",
+      "strengths": "비용이 Astra의 1/5입니다. 일상적인 코딩·에이전트 작업의 출발점으로 적합합니다.",
+      "weaknesses": "비교 기사들에 따르면 3D 공간 추론(배치·비례·씬 구성)은 Astra와 격차가 크다고 합니다('magnitude step up'). BenchCAD 기준으로도 Astra 95.9%에 비해 이전 세대 Sol(GPT-5.6 Sol)은 83.3%였습니다.",
+      "license_or_price": "Sol $2/$10, Luna $0.10/$0.50 (1M토큰당)",
+      "status_date": "2026-09-22 출시",
+      "urls": [
+        "https://venturebeat.com/technology/openai-releases-gpt-6-sol-and-luna-models-slashing-api-costs-50-or-more",
+        "https://www.gradually.ai/en/llm-comparison/gpt-6-astra-vs-gpt-6-sol/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Claude Opus 5.5 (claude-opus-5-5)",
+      "category": "프런티어 모델 (Anthropic)",
+      "what_it_is": "장시간 에이전트 코딩과 지식 작업용 Anthropic 모델로 2026-09-22에 출시되었습니다. 컨텍스트 1M, 최대 출력 128K(Batch 베타 300K)이며, adaptive thinking이 항상 켜져 있고 기본 effort는 medium입니다. 입력은 텍스트와 이미지입니다. 공식 문서에 따르면 차트·다이어그램·스크린샷 판독이 Opus 5 대비 크게 좋아졌고, 가장 낮은 effort에서도 Opus 5 최고 effort보다 정확했습니다. 위치 관계 이해와 여러 단계에 걸친 스크린샷 기반 컴퓨터 사용도 개선되었습니다. 출력 속도는 Opus 5보다 30% 이상 빠릅니다.",
+      "how_to_use": "Claude Code v2.1.280 이상, Claude Desktop, claude.ai(Pro/Max/Team/Enterprise), API, Bedrock, Vertex, Foundry, GitHub Copilot에서 쓸 수 있습니다. Blender는 `claude mcp add blender -- uvx blender-mcp`나 Claude Desktop의 Customize > Connectors > Blender로 연결합니다. effort는 medium으로 시작해 높여 가고, 긴 에이전트 턴에는 max_tokens를 128000으로 둡니다. 무인 장시간 실행에서는 턴이 중간에 끝나는 문제가 있으므로 공식 'Unattended agentic runs' 시스템 프롬프트와 체크리스트 파일을 함께 씁니다. 계산 API로 쓸 때의 주의점은 세 가지입니다. forced tool_choice(any/tool)는 400 오류를 냅니다. 컴퓨터 사용은 computer_toolset_20260801만 받습니다. 도구 호출 사이 텍스트는 thinking 블록으로 오므로 display 설정이 필요합니다.",
+      "strengths": "공식 벤치마크는 Terminal-Bench 4.0 66.4%, OSWorld 2.0 81.8%(partial), FrontierCode v1.1 54.4%(GPT-6 Astra 53.3%), GDPval-AA 1846 Elo(Fable 5.1 1735)입니다. MMMU-Pro 88%(Artificial Analysis)입니다. 실사용 3D 사례로는 Higgsfield의 오브젝트 5,112개 신칸센(좌석 430개 개별 오브젝트), 15분 만에 만든 풍차 모델링·리깅·텍스처링·애니메이션, Brendan Jowett의 UE+Blender 게임 테스트 전 항목 우위, Stefan 3D AI 테스트의 '더 많은 요소 동시 처리'가 있습니다. 창작 감각이 Astra보다 낫다는 평이 다수입니다(Nate Herk 8-4). 토큰당 가격도 Astra의 40%입니다.",
+      "weaknesses": "같은 과제에서 출력 토큰을 Astra보다 훨씬 많이 씁니다(199.6k vs 56.6k). 유기체·캐릭터는 여전히 프리미티브 조합에 머뭅니다. 무인 루프에서 진행 보고 후 턴이 끝나는 early stop이 있습니다. 독립적인 3D 전용 벤치마크 수치는 아직 거의 없습니다(BenchCAD 공식 표에 미등재).",
+      "license_or_price": "API $4/$20, 캐시 읽기 $0.20, 5분 캐시 쓰기 $5, Batch 50%. Fast mode(API 전용, 연구 프리뷰)는 최대 2.5배 속도에 별도 과금.",
+      "status_date": "2026-09-22 출시, 은퇴는 2027-09-22 이후",
+      "urls": [
+        "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+        "https://platform.claude.com/docs/en/models/opus-5-5/whats-new-opus-5-5",
+        "https://www.anthropic.com/claude-opus-5-5",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5",
+        "https://github.com/magiccreator-ai/awesome-claude-opus-5-5-demos",
+        "https://x.com/Stefan_3D_AI/status/2102471841046786153"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Claude Fable 5.1 (claude-fable-5-1) / Mythos 5.1",
+      "category": "프런티어 모델 (Anthropic 최상위)",
+      "what_it_is": "모든 고객이 쓸 수 있는 Anthropic 최상위 모델로 2026-09-01에 출시되었습니다. 컨텍스트 1M, 최대 출력 128K, adaptive thinking 상시, 기본 effort high이며 응답은 'Slower' 등급입니다. 입력은 텍스트와 이미지입니다. Mythos 5.1은 같은 모델을 Project Glasswing 참가 기관에만 제공하는 버전입니다.",
+      "how_to_use": "Claude Code v2.1.255 이상에서 씁니다. 3D에서는 수 시간짜리 멀티스텝 씬 제작이나 오케스트레이터·어드바이저 역할로 쓰는 것이 비용 대비 효율적입니다. 공식 측정에서 Opus 5.5(high) 실행자에 Fable 5.1 어드바이저를 붙이면 90.1%, 시도당 $2.92였습니다.",
+      "strengths": "Artificial Analysis Intelligence Index 1위권입니다(보도상 Fable 5.1 약 66, Astra 약 61). Terminal-Bench 4.0 55.8%, CursorBench 3.2.0 73.4%입니다. Blender MCP로 씬을 만들고 뷰포트를 확인해 스스로 고치며, Astra보다 빠르고 캐시 덕분에 저렴하다는 평입니다(Hierarchy.ch, Danny Stuart). '아이디어가 더 다양하고 보기 좋다(better eye)'는 평가도 있습니다. 부동산 주소 하나로 37초짜리 Blender 워크스루 영상을 만든 사례가 있습니다.",
+      "weaknesses": "Astra와의 직접 비교에서 순수 3D 품질은 대체로 졌습니다(BenchCAD 84.3% vs 95.9%, 벤더 보고). 단가가 높고 느립니다. Pro 플랜에서는 사용량 크레딧으로 별도 과금되고 Free에서는 쓸 수 없습니다. 3D 관련 공식 수치는 공개되지 않았습니다.",
+      "license_or_price": "API $10/$50, 캐시 읽기 $0.25(75% 인하), 5분 캐시 쓰기 $12.50. Max와 Team/Enterprise 프리미엄 좌석은 주간 한도의 50%까지 포함, Pro와 표준 좌석은 크레딧 과금.",
+      "status_date": "2026-09-01 출시, 은퇴는 2027-09-01 이후",
+      "urls": [
+        "https://platform.claude.com/docs/en/models/fable-5-1/overview",
+        "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+        "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+        "https://hierarchy.ch/en/news/gpt-6-astra-vs-claude-fable-5-1",
+        "https://www.mindstudio.ai/blog/claude-fable-5-1-blender-video-generation",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Claude Sonnet 5 / Claude Haiku 4.5",
+      "category": "프런티어 모델 (Anthropic 중·저가)",
+      "what_it_is": "Sonnet 5는 2026-06-30에 출시되었고 $2/$10, 1M 컨텍스트, 128K 출력, 기본 effort high, 지식 기준일 2026년 1월입니다. claude.ai Free/Pro의 기본 모델입니다. Haiku 4.5는 $1/$5, 200K 컨텍스트, 64K 출력이며 표준 이미지 티어(긴 변 1568px)를 씁니다.",
+      "how_to_use": "Sonnet 5는 bpy 일괄 수정, 머티리얼 파라미터 조정, 렌더 설정처럼 반복적인 실행자 역할을 맡기거나, Opus/Fable 코디네이터 아래 워커로 둡니다. Haiku 4.5는 서브에이전트(에셋 검색, 네이밍, 파일 정리)용이며 공간 판단은 맡기지 않습니다.",
+      "strengths": "Sonnet 5는 보도 기준 SWE-bench Verified 85.2%, OSWorld-Verified 81.2%로 Opus 4.8에 근접하면서 가격은 절반 이하입니다. Blender AI Arena 시즌 1에서 Haiku 4.5, Sonnet 5, Opus 4.8, Fable 5를 같은 12개 프롬프트로 비교하기도 했습니다.",
+      "weaknesses": "Sonnet 5는 어드바이저 패턴에서 조언 요청을 멈추는 경향이 관찰되었습니다(SWE-bench Pro). 긴 씬 상태 유지는 상위 티어가 낫다는 평입니다. Haiku 4.5는 저해상도 티어라 스크린샷 비평에 불리합니다.",
+      "license_or_price": "Sonnet 5 $2/$10, Haiku 4.5 $1/$5",
+      "status_date": "Sonnet 5 2026-06-30, Haiku 4.5는 현행(지식 기준일 2025-02)",
+      "urls": [
+        "https://www.anthropic.com/news/claude-sonnet-5",
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/build-with-claude/vision"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Anthropic 'Claude for Creative Work' 커넥터 9종 (2026-04-28)",
+      "category": "MCP 커넥터 (공식)",
+      "what_it_is": "Anthropic 공식 발표에 개별로 나열된 9종은 Ableton, Adobe for creativity(Creative Cloud 50개 이상 도구), Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice입니다. 3D 관련은 Blender(Python API를 자연어로 다루는 인터페이스, 씬 분석·디버깅·일괄 스크립트), SketchUp(방·가구·부지 콘셉트를 설명하면 모델 생성), Fusion(대화로 3D 모델 생성·수정) 세 가지입니다. Anthropic은 Blender 프로젝트에 일회성 기부를 했습니다.",
+      "how_to_use": "claude.ai 커넥터 디렉터리나 Claude Desktop의 Customize > Connectors에서 추가합니다. 로컬 앱(Blender, Fusion)은 Desktop이나 Claude Code가 필요하고, SketchUp은 클라우드 세션이라 웹에서도 됩니다.",
+      "strengths": "벤더가 직접 만들었거나 Anthropic이 검증(verified)한 커넥터라 설치가 간단합니다. Fusion과 Blender 커넥터는 일반 MCP 서버라 Codex, Cursor 등 다른 클라이언트에서도 연결할 수 있습니다.",
+      "weaknesses": "Blender 커넥터는 문서 탐색과 씬 이해 위주로 소개되며, Poly Haven이나 Hyper3D 같은 에셋·생성 연동은 커뮤니티판(ahujasid)이 더 풍부합니다. 커넥터 자체의 요금제 조건은 발표문에 명시되지 않았습니다.",
+      "license_or_price": "커넥터 자체는 무료. SketchUp은 Trimble ID가 필요하며 무료로 30개 모델까지 저장, 이후 유료. Fusion은 Fusion 구독이 필요.",
+      "status_date": "2026-04-28 발표(Claude 커넥터 페이지의 Fusion 추가 표기는 2026년 5월)",
+      "urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://claude.com/connectors/blender",
+        "https://claude.com/connectors/sketchup",
+        "https://claude.com/connectors/autodesk-fusion",
+        "https://news.trimble.com/2026-04-28-Trimble-Links-SketchUp-with-Anthropics-Claude,-Bringing-New-Conversational-AI-powered-Capabilities-to-3D-Modeling"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender Lab 공식 Blender MCP 서버 (Claude Blender 커넥터)",
+      "category": "MCP 서버 (DCC, 공식)",
+      "what_it_is": "Blender 재단 산하 Blender Lab이 만든 1st-party MCP 서버와 애드온입니다(projects.blender.org/lab/blender_mcp). Blender 안의 애드온이 TCP 소켓(9876)으로 독립 MCP 서버와 통신합니다. Python API 실행, 데이터블록 목록, 누락 파일·링크 라이브러리 리포트, 뷰포트 스크린샷, 썸네일 렌더, Python API 레퍼런스와 매뉴얼 검색을 제공하며, 도구는 보도상 27개입니다.",
+      "how_to_use": "Blender 5.1 이상이 필요합니다. Blender Lab 저장소를 추가해 애드온을 설치하고, Claude Desktop은 Connectors > Blender, Claude Code와 Codex는 `blender-mcp` 명령으로 등록합니다.",
+      "strengths": "공식 지원이라 업데이트 알림과 문서 검색이 되고, 씬 포렌식(누락 텍스처 등) 기능이 강합니다.",
+      "weaknesses": "Blender 5.1 미만은 지원하지 않습니다. 생성형 3D나 에셋 라이브러리 연동은 커뮤니티판(ahujasid/blender-mcp, PyPI 이름이 mcp-for-blender로 변경)에 비해 부족합니다. 상세는 Blender MCP 담당 조사를 참고하세요.",
+      "license_or_price": "무료 (Blender 라이선스 GPL)",
+      "status_date": "v1.0.0, 2026 (Claude 커넥터 2026-04)",
+      "urls": [
+        "https://claude.com/connectors/blender",
+        "https://projects.blender.org/lab/blender_mcp",
+        "https://github.com/ahujasid/blender-mcp"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Google Gemini 3.1 Pro (3.5 Pro는 미출시)",
+      "category": "프런티어 모델 (Google)",
+      "what_it_is": "Google의 현행 Pro급 모델로 2026-02-19에 출시되었습니다. 1,048,576토큰 컨텍스트, 65,536 출력, Low/Medium/High thinking을 지원합니다. Gemini 3.5 Pro는 2026-05-19 I/O에서 발표되었지만 품질 목표 미달로 연기되어 9월 말까지 출시되지 않았습니다.",
+      "how_to_use": "Antigravity(IDE/CLI), Cursor, API에서 씁니다. 3D에서는 CadQuery나 bpy로 CAD 코드를 생성하거나 렌더 비평을 맡기는 역할이 적합합니다.",
+      "strengths": "BenchCAD 공식 재채점(도구 없이, 벤더 보고가 아닌 값) Vision2Code에서 IoU 0.289로 1위이고, Vision-QA와 Code-QA에서도 1위입니다. Cartwheel 공동창업자는 3D 애니메이션 파이프라인의 회전 순서(rotation order) 버그를 해결했다고 사례로 들었습니다. 무료 티어가 넉넉하고 멀티모달 렌더 피드백에 강하다는 평입니다.",
+      "weaknesses": "Blender MCP 관련 튜토리얼과 커뮤니티 자료가 Claude나 GPT보다 적습니다. 무료 티어의 레이트 리밋이 도구 호출이 많은 세션에서 걸림돌이 됩니다. 에이전트 지표는 3.5 Flash에도 뒤집니다(GDPval-AA 1317 vs 1656).",
+      "license_or_price": "$2/$12 (입력 200k 초과 시 $4/$18)",
+      "status_date": "3.1 Pro 2026-02-19 / 3.5 Pro 미출시(2026-09 기준)",
+      "urls": [
+        "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/",
+        "https://techcrunch.com/2026/07/21/google-releases-three-new-gemini-models-but-no-3-5-pro/",
+        "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md",
+        "https://blenderai.org/models/gemini"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Google Gemini 3.8 Flash (및 3.6 Flash / 3.5 Flash)",
+      "category": "프런티어 모델 (Google 워크호스)",
+      "what_it_is": "Gemini 3.8 Flash는 2026-09-02에 출시되었고(내부명 'Skimaki'), 1M 컨텍스트, 64K 출력, low/medium/high thinking을 지원하며 텍스트·이미지·오디오·영상을 입력받습니다. 3.6 Flash는 2026-07-21, 3.5 Flash는 2026-05-19(I/O)에 나왔습니다.",
+      "how_to_use": "대량 렌더·스크린샷 비평이나 에셋 분류처럼 싸고 빠른 비전 작업을 맡기거나, Antigravity에서 Three.js 프로토타입을 만드는 데 씁니다. 비싼 모델이 만든 씬의 1차 QA 필터로 쓰면 좋습니다.",
+      "strengths": "초기 가격 $0.75/$3.75(2026-12-31까지)입니다. 보도 기준 DeepSWE v1.1 73.7~73.8%로 Opus 5와 비슷합니다. 3.6 Flash는 Roboflow Vision Evals 4위(83.1%), OSWorld-Verified 83.0%입니다. Three.js 3D 제품 데모 평가가 좋습니다(Kingbench 3의 3D 렌즈 케이스 9/10).",
+      "weaknesses": "3.8 Flash의 OSWorld는 59%로 Opus 5(75%)에 뒤진다는 보도가 있습니다(3.6 Flash의 OSWorld-Verified 83.0%와는 측정 버전이 달라 보임). 하네스에 따라 결과 편차가 큽니다. Blender 전용 테스트는 드뭅니다.",
+      "license_or_price": "3.8 Flash $0.75/$3.75(프로모션), 3.5 Flash $1.50/$9, 3.5 Flash-Lite $0.30/$2.50",
+      "status_date": "2026-09-02 (3.8 Flash)",
+      "urls": [
+        "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/",
+        "https://www.marktechpost.com/2026/05/20/google-introduces-gemini-3-5-flash-at-i-o-2026-a-faster-and-cheaper-model-for-ai-agents-and-coding/",
+        "https://www.datacamp.com/blog/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber",
+        "https://playground.roboflow.com/models/google/gemini-3-6-flash"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "'Astra' 명칭 구분: GPT-6 Astra vs Google Project Astra",
+      "category": "용어 정리",
+      "what_it_is": "GPT-6 Astra는 OpenAI의 LLM 플래그십 모델입니다(2026-09-03, 코딩·컴퓨터 사용·3D). Google Project Astra는 DeepMind의 범용 실시간 비서 연구 프로토타입(비전·오디오·텍스트 저지연 처리)이며 기능이 Gemini Live에 들어가 있습니다. 두 회사가 같은 단어를 독립적으로 골랐을 뿐 기술적 관계는 없습니다. 'GPT-5.6 Astra'나 'ChatGPT-6 Astra는 존재하지 않는다' 같은 글은 출시 전의 낡은 SEO 글입니다.",
+      "how_to_use": "검색할 때 'GPT-6 Astra Blender', 'Codex Astra'처럼 OpenAI 쪽 키워드를 함께 쓰면 혼선을 피할 수 있습니다.",
+      "strengths": "-",
+      "weaknesses": "AI가 대량 생성한 SEO 글에서 두 제품이 섞여 설명되는 경우가 많습니다.",
+      "license_or_price": "-",
+      "status_date": "2026-09",
+      "urls": [
+        "https://codersera.com/blog/gpt-astra-vs-google-project-astra-2026/",
+        "https://openai.com/index/gpt-6-astra/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "xAI Grok 4.7 (및 Grok 4.6 + Blender MCP)",
+      "category": "프런티어 모델 (xAI)",
+      "what_it_is": "xAI의 코딩·에이전트용 모델로 2026-09-21에 출시되었습니다. 500K 컨텍스트, 텍스트·이미지 입력을 받습니다. Cursor, Grok Build, xAI API에서 쓸 수 있습니다. Grok 5는 2026-09 기준 미출시입니다.",
+      "how_to_use": "Grok Build나 Grok CLI에 Blender Lab MCP 플러그인(franjorub/grok-build-blender-plugin)이나 grok-blender-mcp(뷰포트 스크린샷 비전 피드백, Safe Mode, 변경마다 자동 undo, dry-run)를 붙입니다.",
+      "strengths": "저렴합니다($2/$6). Grok 4.6은 Blender AI Arena 시즌 3에서 1위권 5자 동률에 들었습니다. Grok Imagine 턴어라운드 시트 → Meshy 리깅 모델 → Grok 4.6+Blender MCP 애니메이션(손 흔들기, 점프) 사례가 있습니다.",
+      "weaknesses": "3D 전용 벤치마크와 체계적인 비교 자료가 거의 없습니다. 4.7의 3D 성능은 검증되지 않았습니다.",
+      "license_or_price": "$2 입력 / $0.50 캐시 / $6 출력(200k 이하), 200k 초과 시 $4/$1/$12",
+      "status_date": "2026-09-21 (4.7)",
+      "urls": [
+        "https://docs.x.ai/developers/models",
+        "https://evolink.ai/blog/grok-4-7-release-date",
+        "https://github.com/jaskirat1616/grok-blender-mcp",
+        "https://github.com/franjorub/grok-build-blender-plugin",
+        "https://x.com/chongdashu/status/2087850978200764539",
+        "https://blenderai.org/leaderboard"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Moonshot Kimi K3 (오픈웨이트)",
+      "category": "오픈웨이트 모델",
+      "what_it_is": "2.8T 파라미터 MoE 모델로 활성 파라미터는 104B(896개 전문가 중 16개)입니다. 1M 컨텍스트이며 비전 인코더 MoonViT-V2(401M)로 텍스트·이미지·영상을 입력받습니다. MXFP4 QAT를 적용했고, 2026-07-16 API 공개 후 07-26 가중치가 공개되었습니다.",
+      "how_to_use": "개인이 자체 호스팅하기에는 너무 큽니다. Kimi 플랫폼의 OpenAI/Anthropic 호환 엔드포인트를 Claude Code, Cline, OpenCode 등에 연결해 bpy 생성기로 씁니다.",
+      "strengths": "벤더 보고 기준 Terminal-Bench 2.1 88.3, OSWorld-Verified 84.8, MCPMark-Verified 94.5, DeepSWE 67.5, CharXiv 84.8/91.3입니다. 오픈웨이트 중 Arena 코드·에이전트 보드 1위이며, 3DHarnessBench 평가 대상에도 포함되었습니다.",
+      "weaknesses": "자체 라이선스(Kimi K3 License)입니다. MaaS 운영자는 매출 기준 별도 계약이 필요하고, MAU 1억 이상이면 표기 의무가 있습니다(K2의 Modified MIT가 아님). Blender MCP 비교 영상은 있지만 결과를 확인하지 못했습니다.",
+      "license_or_price": "Kimi K3 License (커스텀)",
+      "status_date": "가중치 2026-07-26",
+      "urls": [
+        "https://github.com/MoonshotAI/Kimi-K3",
+        "https://www.morphllm.com/best-open-source-coding-model-2026",
+        "https://www.youtube.com/watch?v=VZy67sfl6OQ"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Qwen 3.6 / 3.8 계열 (Alibaba)",
+      "category": "오픈웨이트 모델",
+      "what_it_is": "Qwen3.6-27B는 2026-04-22에 나온 dense 오픈웨이트 모델이고, 같은 계열에 35B-A3B MoE가 있으며 Apache 2.0입니다(Qwen3.6-Plus는 API 전용, 1M). Qwen3.8-Max는 2026-08-03 API로 공개된 2.4T MoE(활성 95B)로 1M 컨텍스트와 이미지·영상 입력을 지원하며 $2/$6입니다. 가중치는 8월 중순 공개되었지만 Max급 체크포인트는 텍스트 전용이라는 보도가 있고, Qwen3.8-27B dense도 함께 공개되었습니다.",
+      "how_to_use": "로컬에서는 Ollama나 vLLM에 올린 뒤 MCP 클라이언트(Cline, Cursor, OpenCode)를 백엔드로 연결합니다. Ollama 자체는 MCP를 말하지 않습니다. blender-open-mcp 같은 서버를 씁니다. 도구 사용에는 14B가 최소이고, 멀티스텝을 안정적으로 하려면 32B 이상이 권장됩니다.",
+      "strengths": "라이선스가 가장 관대하고(Apache 2.0) 로컬·오프라인 실행이 가능합니다. Qwen3.6-27B는 보도 기준 MMMU 82.9, AndroidWorld 70.3으로 스크린샷 기반 에이전트에 쓸 만합니다. Qwen3.8-Max는 VLM 중 객체 검출이 가장 강하다는 평입니다(Roboflow).",
+      "weaknesses": "복잡한 bpy나 공간 추론은 프런티어 폐쇄형 모델과 격차가 큽니다. 버전과 체크포인트별로 비전 지원 여부가 다르니 꼭 확인해야 합니다.",
+      "license_or_price": "Qwen3.6 오픈웨이트 Apache 2.0 / Qwen3.8-Max API $2/$6",
+      "status_date": "2026-04 ~ 2026-08",
+      "urls": [
+        "https://huggingface.co/Qwen/Qwen3.6-27B",
+        "https://www.datacamp.com/blog/qwen3-8-max",
+        "https://github.com/dhakalnirajan/blender-open-mcp",
+        "https://blendermcp.org/setup/ollama"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "DeepSeek V4 계열 / GLM-5.x",
+      "category": "오픈웨이트 모델",
+      "what_it_is": "DeepSeek V4 Pro와 V4.1 Flash(2026-09-10 가중치 공개)는 가격 대비 성능 1위권입니다. deepseek-v4-flash-vision-exp(2026-08-21 API)는 V4-Flash에 이미지 입력을 더한 실험 모델로 1M 컨텍스트, 최대 384K 출력을 지원합니다. Zhipu GLM-5.1/5.2/5.3은 오픈웨이트 코딩 품질 상위권으로 거론됩니다.",
+      "how_to_use": "대량 bpy 변형 생성, 스크립트 리팩터링, 에셋 메타데이터 처리처럼 싼 실행자가 필요한 곳에 씁니다. 공간 판단과 최종 검수는 프런티어 모델에 맡깁니다.",
+      "strengths": "DeepSeek V4.1 Flash의 출력은 약 $1.20/M으로 Opus 5.5의 1/17, Fable 5.1의 1/42 수준입니다(보도).",
+      "weaknesses": "3D·Blender 전용 검증 자료가 거의 없습니다. 비전 모델은 실험판이고, GLM-5.x의 비전·라이선스 세부는 확인하지 못했습니다.",
+      "license_or_price": "DeepSeek 오픈웨이트(모델별 라이선스 확인 필요)",
+      "status_date": "2026-08 ~ 2026-09",
+      "urls": [
+        "https://www.digitalapplied.com/blog/deepseek-v4-flash-vision-exp-launch-pricing",
+        "https://www.morphllm.com/best-open-source-coding-model-2026"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Claude Code (CLI/Desktop 탭)",
+      "category": "MCP 클라이언트",
+      "what_it_is": "Anthropic의 에이전트형 코딩 CLI입니다. stdio, HTTP, WebSocket MCP를 지원하고, 도구 결과로 받은 이미지(PNG/JPEG/GIF/WebP)를 인라인으로 모델에 전달합니다. 기본 제공 computer-use MCP로 macOS에서 네이티브 앱을 직접 조작할 수도 있습니다(Pro/Max, 연구 프리뷰).",
+      "how_to_use": "`claude mcp add blender -- uvx blender-mcp`로 등록하고, 팀 공유가 필요하면 --scope project로 .mcp.json을 만듭니다. 큰 스크린샷이나 씬 덤프가 잘리면 `export MAX_MCP_OUTPUT_TOKENS=50000`(기본 25,000, 경고 10,000)으로 늘립니다. 렌더처럼 느린 도구는 .mcp.json의 서버별 \"timeout\"(ms)을 설정합니다. 서버 시작 타임아웃은 MCP_TIMEOUT입니다. 컴퓨터 사용은 /mcp에서 computer-use를 켜고 macOS 손쉬운 사용·화면 기록 권한을 줍니다. 스크린샷은 자동 축소되어 16인치 Retina 3456×2234가 약 1372×887이 됩니다.",
+      "strengths": "3DCodeBench의 에이전트 하네스 비교에서 '형상(shape) 정확도 1위'로 보고되었습니다. 서브에이전트, 스킬, 훅, 플러그인 생태계가 있고(예: claude-3d-harness의 58개 스킬 렌더-검증 파이프라인), tool search가 기본으로 켜져 있어 도구가 많아도 대응합니다.",
+      "weaknesses": "Claude 모델 전용입니다(ANTHROPIC_BASE_URL로 호환 모델을 쓸 수는 있으나 tool search가 비활성화됨). CLI의 컴퓨터 사용은 macOS 전용입니다.",
+      "license_or_price": "Claude 구독(Pro/Max/Team/Enterprise) 또는 API 과금",
+      "status_date": "2026-09 (Opus 5.5는 v2.1.280 이상, Fable 5.1은 v2.1.255 이상)",
+      "urls": [
+        "https://code.claude.com/docs/en/mcp",
+        "https://code.claude.com/docs/en/computer-use",
+        "https://github.com/MAX-786/claude-3d-harness"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Claude Desktop / claude.ai",
+      "category": "MCP 클라이언트",
+      "what_it_is": "Customize > Connectors에서 공식 커넥터(Blender, SketchUp, Fusion 등)를 클릭으로 추가하는 GUI 클라이언트입니다. Desktop은 macOS와 Windows에서 컴퓨터 사용을 지원합니다(설정 > 일반). claude.ai 웹은 원격(클라우드) 커넥터만 쓸 수 있습니다.",
+      "how_to_use": "비개발자는 Desktop에 Blender 커넥터를 추가하고 Blender 5.1에 Blender Lab 애드온을 설치하면 됩니다. SketchUp은 웹에서도 Trimble ID로 로그인해 쓸 수 있습니다.",
+      "strengths": "설치가 가장 쉽고 공식 검증된 커넥터를 씁니다.",
+      "weaknesses": "claude.ai에서는 메시지당 이미지 20장 제한이 있습니다. 장시간 자율 루프나 Git 기반 재현성은 Claude Code가 낫습니다.",
+      "license_or_price": "Free/Pro/Max 등 (Opus 5.5와 Fable은 유료 플랜)",
+      "status_date": "2026-09",
+      "urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://code.claude.com/docs/en/computer-use",
+        "https://platform.claude.com/docs/en/build-with-claude/vision"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "OpenAI Codex (CLI/앱/IDE 확장) 및 ChatGPT 데스크톱·웹",
+      "category": "MCP 클라이언트",
+      "what_it_is": "Codex CLI, 앱, IDE 확장, ChatGPT 데스크톱 앱(Codex 모드와 Work)은 ~/.codex/config.toml을 공유하며 로컬 stdio MCP를 완전히 지원합니다. ChatGPT 웹 채팅의 개발자 모드는 원격 MCP(SSE, Streamable HTTP, OAuth)만 지원합니다. Codex 앱에는 Computer Use 플러그인(Node REPL 기반 네이티브 앱·브라우저 제어)이 있습니다.",
+      "how_to_use": "`codex mcp add blender -- uvx blender-mcp` 다음에 `codex mcp list`로 확인합니다. 설정 파일에는 [mcp_servers.blender] 아래 command, args, env, startup_timeout_sec(기본 10), tool_timeout_sec(기본 60), enabled_tools/disabled_tools를 둡니다. HTTP 서버는 url과 bearer_token_env_var를 씁니다. 프로젝트별 설정은 .codex/config.toml(신뢰된 프로젝트만)입니다.",
+      "strengths": "GPT-6 Astra를 쓰는 가장 깔끔한 경로이고, 3DCodeBench에서 Codex 하네스가 '이미지 유사도 1위'로 보고되었습니다(GPT-5.5 시기).",
+      "weaknesses": "ChatGPT 웹에서는 로컬 Blender에 연결할 수 없습니다(Secure MCP Tunnel이 필요). Windows 네이티브 앱 컴퓨터 사용 버그가 보고되었습니다(openai/codex #42214). Plus 플랜의 Astra 사용량은 5시간당 약 5~45 메시지로 추정됩니다.",
+      "license_or_price": "ChatGPT Plus/Pro/Business/Enterprise 또는 API",
+      "status_date": "2026-09 (Astra는 Codex CLI 0.153.0 이상)",
+      "urls": [
+        "https://developers.openai.com/codex/mcp",
+        "https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta",
+        "https://github.com/danielsobrado/Codex-and-Blender",
+        "https://blog.neural4d.com/user-guide/gpt-6-astra-blender-mcp/",
+        "https://github.com/openai/codex/issues/42214"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Cursor / VS Code GitHub Copilot / Windsurf / Cline / OpenCode",
+      "category": "MCP 클라이언트 (IDE)",
+      "what_it_is": "Cursor는 Settings → MCP 또는 .cursor/mcp.json으로 설정하고, Claude, GPT, Gemini, Grok 4.7 등 여러 모델을 고를 수 있습니다. VS Code는 1.102(2025-07)에 MCP가 GA되었고 2026-01에 MCP Apps를 지원했으며, Copilot에서 Claude Opus 5.5를 2026-09-22부터 쓸 수 있습니다. Cline과 OpenCode는 Ollama 같은 로컬 모델 백엔드와 MCP를 결합하기 좋습니다.",
+      "how_to_use": "Blender MCP를 전역이나 프로젝트 단위로 등록합니다. Cursor는 활성 도구 합계가 약 40개를 넘으면 일부 도구를 조용히 잃으므로, 쓰지 않는 서버와 도구는 꺼야 합니다.",
+      "strengths": "여러 모델을 하나의 IDE에서 전환하며 비교할 수 있습니다. Cursor는 MCP 결과 이미지를 direct, embedded, linked 3가지 형태 모두 모델에 전달한다고 보고되었습니다(MCPJam).",
+      "weaknesses": "도구 수 제한이 있습니다(Cursor). 장시간 자율 3D 세션에는 CLI 에이전트(Claude Code, Codex)보다 불리하다는 평입니다. Windsurf와 Cline의 이미지 결과 처리는 1차 문서로 확인하지 못했습니다.",
+      "license_or_price": "각 제품 구독",
+      "status_date": "2026-09",
+      "urls": [
+        "https://mcpverdict.com/mcp/clients/cursor/",
+        "https://www.mcpjam.com/clients/cursor/tool-testing",
+        "https://code.visualstudio.com/blogs/2026/01/26/mcp-apps-support",
+        "https://github.blog/changelog/2026-09-22-claude-opus-5-5-is-now-available-in-github-copilot/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Gemini CLI → Antigravity CLI / Antigravity IDE",
+      "category": "MCP 클라이언트 (Google)",
+      "what_it_is": "Gemini CLI는 ~/.gemini/settings.json의 mcpServers로 MCP를 붙였습니다. 2026-05-19 발표에 따라 2026-06-18부터 무료, Google AI Pro, Ultra 사용자 요청 처리를 중단하고 Go로 만든 독점 도구 Antigravity CLI로 옮겨 갔습니다. Code Assist Standard/Enterprise와 Google Cloud 경유 사용자는 계속 지원되고, 저장소는 Apache 2.0으로 남아 있습니다.",
+      "how_to_use": "Antigravity에서는 mcp_config.json을 씁니다(보도상 전역 ~/.gemini/config/mcp_config.json 또는 워크스페이스 .agents/mcp_config.json). Gemini CLI 구성에서는 httpUrl이 Streamable HTTP, url이 구형 SSE이므로 최신 Blender MCP 서버는 httpUrl을 써야 합니다.",
+      "strengths": "Gemini 3.8 Flash를 싸게 쓸 수 있고, 커뮤니티 확장(blender-mcp-gemini-cli-extension)이 있습니다.",
+      "weaknesses": "2026년 중반의 전환으로 기존 튜토리얼 상당수가 낡았습니다. Antigravity CLI의 MCP 세부는 공식 문서로 추가 확인이 필요합니다.",
+      "license_or_price": "Antigravity 무료/유료 티어",
+      "status_date": "Gemini CLI 소비자 티어 종료 2026-06-18",
+      "urls": [
+        "https://github.com/google-gemini/gemini-cli/discussions/27274",
+        "https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/",
+        "https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html",
+        "https://antigravity.google/docs/mcp",
+        "https://github.com/JosephKu/blender-mcp-gemini-cli-extension"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BenchCAD (CadQuery 기반 CAD 벤치마크)",
+      "category": "3D 벤치마크",
+      "what_it_is": "106개 산업 부품군, 47개 표준(ISO, DIN 등)에서 뽑은 실행 검증된 CadQuery 프로그램 17,900개로 구성된 벤치마크입니다. 과제는 Vision2Code(4뷰 렌더 → CadQuery, voxel IoU 채점), CodeEdit, Vision-QA, Code-QA이며 LLM 심판 없이 CAD 커널로 채점합니다.",
+      "how_to_use": "모델을 고를 때 '도구 없는 재채점 값'과 '벤더가 보고한 도구 사용 값'을 반드시 구분해야 합니다.",
+      "strengths": "실행 결과로 채점하므로 그럴듯하지만 틀린 출력을 걸러 냅니다. 공식 리더보드(2026-06 갱신)는 Gemini 3.1 Pro 0.289, Claude Opus 4.7 0.269, Sonnet 4.6 0.222, GPT-5.3 0.179 IoU이고, 벤더 보고(†)는 Mythos 5 0.384, Opus 4.8 0.273입니다.",
+      "weaknesses": "OpenAI가 발표한 Astra 95.9%와 Fable 5.1 84.3%는 도구 사용 에이전트 조건의 자체 보고로, 공식 표에는 없습니다. llm-stats에 'Opus 5.5 0.730 선두'라는 표기도 있으나 조건을 확인하지 못했습니다.",
+      "license_or_price": "오픈 (GitHub)",
+      "status_date": "논문 2026-05 (arXiv 2605.10865), 리더보드 2026-06",
+      "urls": [
+        "https://github.com/BenchCAD/BenchCAD-main",
+        "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md",
+        "https://arxiv.org/html/2605.10865v1",
+        "https://llm-stats.com/benchmarks/benchcad"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "BlenderGym / 3DCodeBench / 3DHarnessBench",
+      "category": "3D 벤치마크 (Blender 코드)",
+      "what_it_is": "BlenderGym(CVPR 2025 Highlight)은 배치, 조명, 절차적 머티리얼, 블렌드셰이프, 절차적 지오메트리 편집 5개 과제를 다룹니다. 3DCodeBench(2026-06-01)는 Blender 5.0 bpy로 212개 카테고리(가구, 식물, 해양생물 등)를 절차적으로 생성하는 과제로, 단발·멀티턴·에이전트 하네스(Claude Code, Codex CLI, Gemini CLI) 조건을 두고 실행 가능률, SigLIP-2/DINOv3, Chamfer/Uni3D, LLM 심판, 3DCodeArena Elo로 평가합니다. 3DHarnessBench(2026-09)는 단일뷰 → 멀티뷰 → 능동 시점 → Blender 함수 호출까지 조건을 넓혀 가며 3D→코드 복원을 측정하고, gpt-6-astra, gpt-5-6-sol, kimi-k3, opus-5, fable-5, qwen3-8-max-preview, gemini3-1-pro, minimax-m3를 대상으로 합니다.",
+      "how_to_use": "자기 파이프라인을 설계하는 근거로 씁니다. 에러 피드백 루프, 멀티뷰 입력, 검증에 쓸 연산 배분을 정하는 데 참고합니다.",
+      "strengths": "3DCodeBench에서 멀티턴 에러 피드백만으로 실행 가능률이 0.69에서 0.97로 올랐고(Opus 4.7, GPT-5.5는 1.000), Arena Elo는 GPT-5.5 1163으로 Gemini 3.1 Pro보다 16점 앞섰습니다. 3DHarnessBench는 모든 모델이 함수 호출 접근이 늘수록 개선되지만 개선폭은 모델마다 크게 다르며, 최고 Uni3D 0.927이었습니다. BlenderGym은 예산이 클수록 검증(verifier) 비중을 높이는 것이 최적이라고 보고했습니다.",
+      "weaknesses": "BlenderGym 리더보드는 GPT-4o와 Claude 3.5 세대에 머물러 있습니다. 3DCodeBench와 3DHarnessBench의 최신 모델(Astra, Opus 5.5)별 수치는 확보하지 못했습니다(arXiv와 사이트 접근 불가).",
+      "license_or_price": "오픈 (MIT 등)",
+      "status_date": "2025-04 / 2026-06 / 2026-09",
+      "urls": [
+        "https://arxiv.org/abs/2504.01786",
+        "https://github.com/richard-guyunqi/BlenderGym-Open",
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://arxiv.org/html/2606.01057v1",
+        "https://github.com/llada60/3DHarnessBench",
+        "https://arxiv.org/abs/2609.06535"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Blender AI Arena / MineBench·MC-Bench / EASI / Roboflow Vision Evals",
+      "category": "커뮤니티·공간·비전 벤치마크",
+      "what_it_is": "Blender AI Arena(blenderai.org)는 블라인드 투표에 Glicko-2 레이팅을 쓰는 Blender 결과물 아레나입니다. MineBench와 MC-Bench는 마인크래프트식 복셀 건축으로 공간 구성을 투표로 비교합니다. EASI는 VSI-Bench, MMSI, OmniSpatial, MindCube 등 27개 공간지능 벤치마크를 묶은 평가 도구입니다(v0.2.2, 2026-04-27). Roboflow Vision Evals는 6개 비전 과제의 종합 점수입니다.",
+      "how_to_use": "모델 순위보다 '어떤 작업에서 격차가 오차범위 안인지'를 확인하는 용도로 씁니다.",
+      "strengths": "Arena 시즌 3는 3D-Agent, GPT-6 Astra, Opus 5, Fable 5.1, Grok 4.6의 5자 동률(1,687표)이었고, 시즌 2(2026-08-13~09-07, 1,800표)는 4자 동률이었습니다. Roboflow에서는 GPT-6 Astra 1위(86.6%), Gemini 3.6 Flash 83.1%, Claude Opus 5 77.0%입니다.",
+      "weaknesses": "EASI에는 GPT-6 Astra 평가 요청 이슈(#39, 2026-09-12)만 있고 결과는 없습니다. Astra가 REMAP(미공개)에서 인간 수준에 근접했다는 주장은 연구자 발언 수준입니다. MineBench 최신 순위는 확인하지 못했습니다.",
+      "license_or_price": "무료 열람",
+      "status_date": "2026-09",
+      "urls": [
+        "https://blenderai.org/leaderboard",
+        "https://minebench.ai/",
+        "https://github.com/EvolvingLMMs-Lab/EASI",
+        "https://github.com/EvolvingLMMs-Lab/EASI/issues/39",
+        "https://playground.roboflow.com/models/openai/gpt-6-astra",
+        "https://the-decoder.com/gpt-6-astra-appears-to-show-a-step-change-in-spatial-reasoning-based-on-early-benchmarks/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Codex-and-Blender 워크플로 템플릿 / claude-3d-harness",
+      "category": "워크플로 템플릿 (GitHub)",
+      "what_it_is": "danielsobrado/Codex-and-Blender는 Astra용으로 3단 구조를 씁니다. YAML/JSON 구성(치수, 에셋, 카메라, 렌더 설정) → 결정론적 bpy → Blender CLI 클린 빌드이고, MCP는 '비정본' 점검 레이어로만 둡니다. visual_evaluator.py(Astra 멀티뷰 리뷰), iteration_controller.py(자동 수정, 보호 파일이 바뀌면 롤백), acceptance.yaml(필수 카메라와 합격 기준)로 구성됩니다. MAX-786/claude-3d-harness는 Claude Code용으로 5개 라이브러리 58개 스킬을 레지스트리로 묶어, 작업을 fast/standard/cinematic으로 분류하고 6개 템플릿 중 하나를 골라 체크포인트마다 렌더 검증과 최대 4회 수정을 합니다.",
+      "how_to_use": "새 프로젝트에 구조를 그대로 가져와 합격 기준을 파일로 고정하고, 에이전트가 기준을 몰래 낮추지 못하게 막습니다.",
+      "strengths": "재현성, 감사 가능성, 자동 롤백을 갖춥니다.",
+      "weaknesses": "초기 설정이 필요하고 애니메이션은 사람이 후반 작업하는 사례가 있습니다.",
+      "license_or_price": "오픈소스 (MIT/Apache 혼합)",
+      "status_date": "2026",
+      "urls": [
+        "https://github.com/danielsobrado/Codex-and-Blender",
+        "https://github.com/MAX-786/claude-3d-harness"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "작업 유형별로 모델을 나눠 씁니다(라우팅).",
+      "why": "3D 지표상 절대 강자가 없고 모델마다 강점이 뚜렷이 갈립니다. Astra는 공간·CAD·재구성과 토큰 효율, Opus 5.5는 창작 감각과 장시간 씬 빌드, Fable 5.1은 최고 난도 계획, Flash·Sol·Sonnet은 싼 반복 작업에 강합니다.",
+      "example": "도면이나 사진을 넣어 매스와 가구를 배치하는 단계는 GPT-6 Astra(Codex, high)로 합니다. 룩뎁·조명·카메라 연출과 샷 완성은 Opus 5.5(Claude Code, high)로 합니다. 200개 소품 머티리얼 일괄 수정은 Sonnet 5나 GPT-6 Sol로, 렌더 1차 QA는 Gemini 3.8 Flash로 돌립니다.",
+      "urls": [
+        "https://hierarchy.ch/en/news/gpt-6-astra-vs-claude-fable-5-1",
+        "https://x.com/Stefan_3D_AI/status/2102471841046786153",
+        "https://www.geeky-gadgets.com/opus-5-5-vs-gpt-6-astra/"
+      ]
+    },
+    {
+      "tip": "실행 에러를 반드시 모델에 되돌려 주는 루프를 만듭니다. 최소 3회 재시도가 되도록 합니다.",
+      "why": "3DCodeBench에서 멀티턴 에러 피드백만으로 평균 실행 가능률이 0.69에서 0.97로 올랐습니다. 모델을 바꾸는 것보다 효과가 큽니다.",
+      "example": "bpy 실행이 실패하면 traceback 전문과 해당 오브젝트 상태(get_scene_info)를 함께 반환합니다. 3회 연속 실패하면 스크립트를 더 작은 단위로 나누라고 지시합니다.",
+      "urls": [
+        "https://arxiv.org/html/2606.01057v1",
+        "https://github.com/gaoypeng/3dcodebench"
+      ]
+    },
+    {
+      "tip": "렌더-검증 루프에서는 단일 뷰가 아니라 멀티뷰(전·측·상·3/4)를 쓰고, 수치 검증을 함께 합니다.",
+      "why": "3DHarnessBench에서 모든 모델이 시점과 함수 호출 접근이 늘수록 3D 복원 정확도가 올랐습니다. BlenderGym은 연산 예산이 클수록 검증 비중을 늘리는 것이 최적이라고 보고했습니다. Astra 데모의 핵심도 '렌더→보기→고치기' 반복이었습니다.",
+      "example": "각 수정 뒤 4방향 뷰포트 캡처(1568~1920px)와 오브젝트별 bounding box, dimensions, 바닥 접지 여부(min z=0), 교차 검사 결과를 JSON으로 반환합니다. '치수 오차 ±1cm 초과 항목을 모두 고친 뒤에만 다음 단계로' 같은 합격 기준을 acceptance.yaml에 적어 둡니다.",
+      "urls": [
+        "https://github.com/llada60/3DHarnessBench",
+        "https://arxiv.org/abs/2504.01786",
+        "https://github.com/danielsobrado/Codex-and-Blender"
+      ]
+    },
+    {
+      "tip": "스크린샷 해상도와 토큰 비용을 계산해서 보냅니다.",
+      "why": "Claude 4.7 이후 모델(Sonnet 5, Opus 5.5, Fable 5.1)은 고해상도 티어(긴 변 2576px, 최대 4784 비주얼 토큰)를 씁니다. 토큰 수는 ⌈w/28⌉×⌈h/28⌉입니다. 한 요청에 이미지가 20장을 넘으면 각 이미지가 2000px 이하여야 합니다. 도구 결과로 돌려주는 컴퓨터 사용 스크린샷은 한도를 넘으면 자동 축소 대신 거부됩니다.",
+      "example": "1920×1080 캡처는 2691토큰으로 Opus 5.5 기준 장당 약 $0.011입니다. 비교가 필요한 시점만 고해상도로 보내고 나머지는 1092×1092(1521토큰) 이하로 축소합니다. 장기 세션에서는 Files API의 file_id로 참조해 요청 크기를 줄입니다.",
+      "urls": [
+        "https://platform.claude.com/docs/en/build-with-claude/vision"
+      ]
+    },
+    {
+      "tip": "밀집된 시각 정보(와이어프레임, 노드 그래프, 기술도면)는 crop과 zoom 도구를 쥐여 줍니다.",
+      "why": "Opus 5.5 공식 가이드에 따르면 고해상도 이미지와 PIL/OpenCV 기반 자르기·확대·측정 도구가 가장 밀집된 입력에서도 정확도를 높이고, effort가 높을수록 도구를 더 잘 씁니다. 기술도면은 도구 없이도 effort를 올리면 개선됩니다.",
+      "example": "렌더 이미지를 컨테이너에 두고 'crop(x,y,w,h)' 도구를 제공합니다. '문 손잡이 높이를 픽셀로 재서 실제 치수와 비교하라'고 지시합니다.",
+      "urls": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5"
+      ]
+    },
+    {
+      "tip": "effort(추론 강도)는 명시적으로 지정하고 과제별로 따로 정합니다.",
+      "why": "Opus 5.5 기본값은 medium(Opus 5는 high)입니다. SWE-bench Pro 기준 low는 약 8점 낮고 비용은 약 1/3, xhigh는 1.4점 높고 비용은 2.5배입니다. Astra는 Max 53분 대 Medium 25분 사례가 있고, xhigh가 medium보다 토큰을 1.76~2.52배 씁니다.",
+      "example": "레이아웃과 치수 설계 턴만 xhigh, 반복 수정 턴은 medium으로 둡니다. Claude API에서는 per-message effort(베타)로 캐시를 깨지 않고 턴별로 바꿉니다. 긴 에이전트 턴에는 max_tokens=128000을 줍니다. Codex는 model_reasoning_effort=\"high\"를 기본으로 둡니다.",
+      "urls": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://trilogyai.substack.com/p/astra-reasoning-effort-token-usage",
+        "https://www.mindstudio.ai/blog/gpt-6-astra-video-game-development"
+      ]
+    },
+    {
+      "tip": "유기체와 캐릭터는 LLM으로 모델링하지 말고 생성형 3D와 분업합니다.",
+      "why": "Blender의 Sculpt 모드는 MCP/Python 경로로 쓸 수 없어서, 결과가 늘린 구체와 큐브의 조합이 됩니다. Astra도 Meshy 7과의 비교에서 캐릭터가 프리미티브 블록 수준이었습니다. 반면 조립, 리깅, 애니메이션, 배치는 LLM이 잘합니다.",
+      "example": "Tripo P2.0, Meshy, Hunyuan3D, Rodin으로 부품 메시를 생성합니다. 그다음 Astra나 Opus 5.5가 Blender MCP로 import → 스케일과 피벗 정리 → 조립 → 아마추어 리깅 → 보조 모션까지 처리합니다(Stefan 3D AI의 Astra+Tripo, Grok 4.6+Meshy 사례).",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance",
+        "https://hackernoon.com/gpt-6-astra-vs-meshy-7-for-3d-creation-what-three-creator-workflows-reveal",
+        "https://x.com/Stefan_3D_AI/status/2096481425050743048"
+      ]
+    },
+    {
+      "tip": "치수와 방향은 수치로 주고, 모델이 측정해서 스스로 확인하게 합니다.",
+      "why": "SketchUp MCP 농가 테스트에서 Astra는 외관을 17~22분 만에 인상적으로 만들었지만 인테리어 치수가 어긋나고 문 여는 방향이 틀렸습니다.",
+      "example": "'모든 문: 폭 900mm, 높이 2100mm, 경첩은 벽 모서리 쪽, 실내 방향으로 열림. 완료 후 각 문의 dimensions와 회전축 좌표를 표로 출력하고 도면 치수와 차이를 보고하라.'",
+      "urls": [
+        "https://daily.dev/posts/i-tested-gpt-astra-for-3d-modeling---this-is-getting-serious-to6zgaa2h",
+        "https://www.youtube.com/watch?v=SsBLhNgqTqQ"
+      ]
+    },
+    {
+      "tip": "정본(source of truth)은 Git에 둔 bpy/YAML로 하고, MCP 라이브 세션은 점검용으로 씁니다.",
+      "why": "라이브 씬에 누적된 변경은 재현하기 어렵고, 컨텍스트가 길어지면 품질이 떨어집니다. Codex-and-Blender 템플릿은 MCP를 '비정본 점검 레이어'로 규정했습니다.",
+      "example": "scene.yaml(치수, 카메라, 에셋) → build_scene.py → `blender -b -P build_scene.py` 클린 빌드 → render.png와 validation.json을 만들고, 에이전트가 수정하면 커밋합니다. 합격 기준 파일이나 검증기 코드가 바뀌면 롤백합니다.",
+      "urls": [
+        "https://github.com/danielsobrado/Codex-and-Blender"
+      ]
+    },
+    {
+      "tip": "장시간 무인 실행에서는 조기 종료 방지 프롬프트와 체크리스트를 씁니다.",
+      "why": "Opus 5.5는 진행 보고 후 텍스트로 턴을 끝내는 경향이 있어, 무인 루프가 거기서 멈출 수 있습니다. 공식 가이드는 체크리스트 파일, 미완료 항목 재지시(2~3회 한도), 시스템 프롬프트 추가를 권합니다.",
+      "example": "TODO.md에 '모델링 → UV → 머티리얼 → 조명 → 카메라 → 렌더'를 적고, 턴이 끝날 때 열린 항목이 있으면 'Your task list still has open items: ... Continue with them.'을 자동으로 주입합니다.",
+      "urls": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5"
+      ]
+    },
+    {
+      "tip": "비용은 '작업당 비용'으로 비교하고, 구독 한도 소진을 미리 대비합니다.",
+      "why": "토큰당 가격과 실제 작업당 비용은 다릅니다. Opus 5.5는 199.6k 출력에 약 $13.3, Astra는 56.6k 출력에 약 $14.5였습니다. Claude+Blender 도넛 2시간은 Max 5x($200/월) 세션 한도의 60%를 썼고, SketchUp Astra 테스트는 Plus 주간 한도를 하루에 소진했습니다. Brendan Jowett은 Opus 5.5 두 시간 자율 제작을 API 기준 $60~70으로 추정했습니다.",
+      "example": "API 사용이면 프롬프트 캐싱을 적극적으로 씁니다(Fable 캐시 읽기 $0.25, Opus 5.5 $0.20/M). Astra는 입력 272k를 넘으면 요청 전체가 $20/$75로 재과금되므로 씬 덤프를 요약해서 보냅니다.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-60-percent-tokens-donut-test-results",
+        "https://se7en.ws/ai-claude-opus-5-5-surpasses-gpt-6-astra-in-unreal-engine-game-development/?lang=en",
+        "https://www.winzheng.com/en/article/gpt-6-astra-plus-business-rollout-pricing-analysis"
+      ]
+    },
+    {
+      "tip": "실행자와 어드바이저 패턴으로 비싼 모델은 계획에만 씁니다.",
+      "why": "공식 측정에서 Opus 5.5 실행자에 Fable 5.1 어드바이저를 붙이면 90.1%, 시도당 $2.92였습니다. 어드바이저는 실행자가 실제로 조언을 요청할 때만 효과가 있고(과제당 2~3회 요청 유도), Sonnet 5 실행자는 조언 요청을 멈추는 경향이 관찰되었습니다.",
+      "example": "Opus 5.5가 bpy 루프를 돌리다가 '공간 배치나 구도 결정' 시점에만 Fable 5.1(advisor tool)에 자문합니다. OpenAI 쪽이면 Sol이 실행하고 Astra가 레이아웃을 검수하는 구성을 씁니다.",
+      "urls": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+      ]
+    },
+    {
+      "tip": "클라이언트별 제한 설정을 미리 조정합니다.",
+      "why": "기본값이 3D 작업에 맞지 않습니다. 렌더는 60초를 넘기 쉽고 씬 덤프는 커서 잘립니다.",
+      "example": "Codex는 [mcp_servers.blender]에 tool_timeout_sec = 600, startup_timeout_sec = 30을 둡니다. Claude Code는 MAX_MCP_OUTPUT_TOKENS=50000을 쓰고 .mcp.json에 \"timeout\": 600000을 둡니다. Cursor는 활성 도구를 40개 미만으로 유지합니다. Gemini/Antigravity는 url 대신 httpUrl을 씁니다.",
+      "urls": [
+        "https://code.claude.com/docs/en/mcp",
+        "https://developers.openai.com/codex/mcp",
+        "https://mcpverdict.com/mcp/clients/cursor/",
+        "https://blendermcp.org/setup/gemini"
+      ]
+    },
+    {
+      "tip": "ChatGPT 웹 채팅으로 로컬 Blender를 제어하려 하지 않습니다.",
+      "why": "ChatGPT 채팅 모드는 원격 MCP(HTTPS)만 지원합니다. 로컬 stdio 서버는 Codex(CLI, 앱, IDE)나 ChatGPT 데스크톱의 Codex·Work 모드에서만 됩니다. 그 밖에는 Secure MCP Tunnel이 필요합니다.",
+      "example": "Astra로 Blender 작업을 할 때는 Codex 앱이나 CLI에 blender-mcp를 등록하고 모델을 gpt-6-astra로 지정합니다.",
+      "urls": [
+        "https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta",
+        "https://blog.neural4d.com/user-guide/gpt-6-astra-blender-mcp/"
+      ]
+    },
+    {
+      "tip": "아트디렉션은 '피해야 할 패턴'을 구체적으로 적습니다.",
+      "why": "Opus 5.5 공식 가이드는 '제너릭한 AI 느낌을 피하라' 같은 막연한 지시가 기본 스타일 하나를 다른 기본 스타일로 바꿀 뿐이라고 설명합니다. 명시적 금지 목록이 효과적입니다. Astra 결과물에서도 비슷한 팔레트(숲색 위주)가 반복된다는 비판이 있습니다.",
+      "example": "'채도 높은 숲색·청록 팔레트, 균일한 3점 조명, 정면 대칭 구도, 모든 표면 동일 roughness 0.5는 금지. 레퍼런스 3장의 색온도(3200K 실내, 5600K 창광)를 따르라.' 첫 결과를 본 뒤 금지 목록을 늘려 갑니다.",
+      "urls": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5",
+        "https://hackernoon.com/gpt-6-astra-vs-meshy-7-for-3d-creation-what-three-creator-workflows-reveal"
+      ]
+    },
+    {
+      "tip": "렌더가 마젠타(분홍)로 나오면 컨텍스트 문제가 아니라 텍스처 경로 누락부터 확인합니다.",
+      "why": "MindStudio 도넛 테스트 글은 마젠타 화면을 컨텍스트 초과 탓으로 설명했습니다. 하지만 Blender에서 마젠타는 일반적으로 이미지 텍스처 파일을 찾지 못했다는 표시입니다(Blender 일반 지식). Blender Lab MCP에는 누락 파일 리포트 기능이 있습니다.",
+      "example": "'File > External Data > Report Missing Files에 해당하는 검사를 하고, 누락된 텍스처 경로를 절대경로로 다시 연결하라'고 지시합니다.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-60-percent-tokens-donut-test-results",
+        "https://mcp.film/mcps/blender-lab-mcp/"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Opus 5.5 vs GPT-6 Astra 단일 프롬프트 절차적 Blender 샷 대결",
+      "who": "Stefan 3D AI (X)",
+      "date": "2026-09-22~23",
+      "ai_model": "Claude Opus 5.5 vs GPT-6 Astra (Max effort로 미러링)",
+      "tools": "Blender(절차적 생성만 사용), 빌드 타임랩스 녹화",
+      "what_was_made": "10초짜리 렌더 샷입니다(보도상 네온 시티와 레이싱 게임 과제도 포함).",
+      "process": "한 프롬프트로 Blender만 써서 모든 요소를 절차적으로 생성한 뒤 10초 샷을 렌더하고 빌드 과정을 기록하게 했습니다. 이후 VFX, 캐릭터 애니메이션, 풀 씬 등 여러 라운드를 같은 조건으로 반복했습니다.",
+      "outcome": "Opus 5.5는 35분, 출력 199.6k토큰, 약 $13.3였고 GPT-6 Astra는 28분, 56.6k토큰, 약 $14.5였습니다. Stefan은 'Opus가 훨씬 많은 요소를 동시에 다룬다, Astra도 좋은 라이벌'이라고 평했고, 모든 라운드에서 Opus가 이긴 것은 아니라고 밝혔습니다.",
+      "urls": [
+        "https://x.com/Stefan_3D_AI/status/2102471841046786153",
+        "https://x.com/Stefan_3D_AI/status/2103113590446440763"
+      ]
+    },
+    {
+      "title": "GPT-6 Astra vs Claude Fable 5.1: Blender 테스트와 1주일 실사용",
+      "who": "Hierarchy Agency (스위스) / Danny Stuart (Substack)",
+      "date": "2026-09 초",
+      "ai_model": "GPT-6 Astra, Claude Fable 5.1",
+      "tools": "Blender MCP, Three.js, Codex / Claude Code",
+      "what_was_made": "Danny Stuart는 Apple iPod Classic 분해도가 들어간 3D 렌더 기반 랜딩 페이지 히어로 섹션(스크롤 애니메이션)을 만들었고, Hierarchy는 도면을 편집 가능한 씬으로 만든 뒤 걸어 다닐 수 있는 UE 씬으로 옮겼습니다.",
+      "process": "두 모델에 같은 시작 프롬프트를 주고 Blender MCP로 제작하게 했습니다. Astra는 Blender Python 작성 → 백그라운드 렌더 → 이미지 확인 → 형상과 비례가 맞을 때까지 수정하는 루프를 돌렸습니다.",
+      "outcome": "3D에서는 Astra가 큰 차이로 이겼습니다(렌더가 깔끔하고 손볼 곳이 적음). Fable 5.1은 뷰포트를 보며 스스로 고치고 더 빠르고 저렴했으며, 아이디어가 더 다양하다(better eye)는 평을 받았지만 소문자 대문자 마이크로카피를 과하게 넣는 버릇이 있었습니다. 결론은 '공간 작업은 Astra, 소프트웨어 완성과 오케스트레이션은 Fable 5.1'입니다.",
+      "urls": [
+        "https://hierarchy.ch/en/news/gpt-6-astra-vs-claude-fable-5-1",
+        "https://dannystuart.substack.com/p/codex-astra-vs-claude-fable-battle"
+      ]
+    },
+    {
+      "title": "SketchUp MCP로 GPT Astra 건축 모델링 3종 테스트 (사진·치수 도면·19페이지 농가 도면 세트)",
+      "who": "YouTube 'I Tested GPT Astra for 3D Modeling - This is Getting Serious' 제작자",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra (ChatGPT/Codex)",
+      "tools": "SketchUp + MCP 서버(Ruby 스크립트 실행)",
+      "what_was_made": "앞·뒤 사진을 보고 집을 재현했고, 치수가 적힌 평면도를 따라 모델링했으며, 오픈소스 19페이지 도면 세트로 농가 전체를 지었습니다.",
+      "process": "MCP로 SketchUp에 Ruby 스크립트를 실행해 지오메트리를 생성하는 방식입니다.",
+      "outcome": "모델당 17~22분 만에 인상적인 외관을 만들었습니다. 하지만 인테리어 정확도가 떨어지고 치수가 누락되었으며 문 여는 방향이 틀렸습니다. 토큰 소모가 커서 Plus 주간 할당량을 하루에 썼습니다. 제작자 평은 '아직 사람 모델러를 대체할 수준은 아니지만 가까워지고 있다'였습니다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=SsBLhNgqTqQ",
+        "https://daily.dev/posts/i-tested-gpt-astra-for-3d-modeling---this-is-getting-serious-to6zgaa2h"
+      ]
+    },
+    {
+      "title": "OpenAI 출시 데모: 도면 → Blender 집 → 걸을 수 있는 Unreal Engine 5 씬",
+      "who": "Thomas Ricouard (OpenAI)",
+      "date": "2026-09-03",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender(headless/CLI + Python, 컴퓨터 사용), Unreal Engine 5",
+      "what_was_made": "방 개수와 전체 평면을 입력해 생성한 주택 도면을 Blender 3D 모델로 만들고, 걸어서 둘러볼 수 있는 UE5 씬으로 옮겼습니다.",
+      "process": "Astra는 headless Blender와 Python으로 모델을 만들고, 화면으로 확인한 뒤 다른 3D 툴로 넘기는 방식을 선호했다고 보고되었습니다. 오브젝트, 좌표, 카메라, 조명, 앱 상태를 이해하면서 기존 작업을 망가뜨리지 않고 수정하는 것이 핵심이었습니다.",
+      "outcome": "지오메트리, 머티리얼, 조명이 유지된 채 UE5로 옮겨졌습니다. 공식 데모이므로 선별된 결과일 수 있습니다.",
+      "urls": [
+        "https://x.com/Dimillian/status/2095596700815516004",
+        "https://runtimewire.com/article/gpt-6-astra-blender-scene-control-stefan-vaskevich",
+        "https://github.com/magiccreator-ai/awesome-gpt-6-astra"
+      ]
+    },
+    {
+      "title": "옛 증기기관차 그림 → 편집 가능한 오브젝트 3,295개 Blender 모델",
+      "who": "Tom Krcha",
+      "date": "2026-09-04 전후",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender",
+      "what_was_made": "상세한 증기기관차를 편집 가능한 오브젝트 3,295개로 구성했습니다. 같은 제작자가 집 사진을 가구까지 포함한 편집 가능 지오메트리로 재구성한 사례도 있습니다.",
+      "process": "그림 한 장을 주고 Blender에서 재구성하게 했습니다. 디테일 수준은 지시로 조절할 수 있다고 밝혔습니다.",
+      "outcome": "몇 분 만에 완료되었고 '아름다운 지오메트리'라는 평을 받았습니다. 기계·하드서피스 재구성에서 Astra가 강하다는 대표 사례입니다.",
+      "urls": [
+        "https://x.com/tomkrcha/status/2095756085890310311",
+        "https://x.com/tomkrcha/status/2095598645190291775"
+      ]
+    },
+    {
+      "title": "아이폰 사진 몇 장 → Blender 건물 재구성 (30분 이내)",
+      "who": "Bad Decisions Studio",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender",
+      "what_was_made": "실존 건물의 3D 재구성입니다.",
+      "process": "휴대폰 사진을 참조 이미지로 넣고 Blender에서 모델링하게 했습니다.",
+      "outcome": "30분 안에 완료했습니다. 다만 다른 보고에서는 사진 재구성 시 원본에 없는 요소를 지어내는 사례도 지적되었습니다.",
+      "urls": [
+        "https://x.com/badxstudio/status/2095982983379653113",
+        "https://aimatters.co.kr/news-report/51830/"
+      ]
+    },
+    {
+      "title": "Opus 5.5 + Higgsfield: 오브젝트 5,112개 신칸센 / 15분 풍차 / 사진 한 장 → 붕괴 시뮬레이션",
+      "who": "Higgsfield AI",
+      "date": "2026-09-22~24",
+      "ai_model": "Claude Opus 5.5",
+      "tools": "Blender, Higgsfield 도구",
+      "what_was_made": "좌석 430개까지 개별 오브젝트로 만든 신칸센(오브젝트 5,112개), 모델링·리깅·텍스처링·애니메이션까지 한 풍차(15분), 사진 한 장으로 재구성해 구조 붕괴 시뮬레이션을 돌린 건물, 목탄 드로잉 질감을 유지한 3D 씬입니다.",
+      "process": "Claude Opus 5.5가 Higgsfield 연동 환경에서 Blender를 조작했습니다.",
+      "outcome": "하드서피스 대량 반복 구조와 전체 파이프라인(리깅·애니메이션 포함)을 처리할 수 있음을 보였습니다. 홍보성 게시물이므로 선별 편향이 있을 수 있습니다.",
+      "urls": [
+        "https://x.com/higgsfield_ai/status/2102507018372436264",
+        "https://x.com/higgsfield_ai/status/2102453658889953717",
+        "https://github.com/magiccreator-ai/awesome-claude-opus-5-5-demos"
+      ]
+    },
+    {
+      "title": "Opus 5.5 vs GPT-6 Astra: Unreal Engine + Blender 게임 제작 비교",
+      "who": "Brendan Jowett (YouTube)",
+      "date": "2026-09-24~25 보도",
+      "ai_model": "Claude Opus 5.5, GPT-6 Astra",
+      "tools": "Unreal Engine, Blender (MCP)",
+      "what_was_made": "단일 프롬프트로 만든 인디 게임 수준의 게임 씬입니다.",
+      "process": "60~120분 동안 AI가 Blender에서 3D 모델을 스스로 만들고 UE로 게임을 구성했습니다.",
+      "outcome": "Opus 5.5가 모든 테스트에서 우세했다고 보고되었습니다. 제작자 발언은 'Opus delivers results a million times better than Astra'입니다. Opus 5.5 두 시간 사용 비용은 API 기준 약 $60~70입니다. 2차 보도(ixbt, se7en.ws) 기반이라 원본 영상은 확인하지 못했습니다.",
+      "urls": [
+        "https://ixbt.games/en/news/2026/09/25/438160-ii-claude-opus-55-obosel-gpt-6-astra-v-sozdanii-igr-na-unreal-engine.html",
+        "https://se7en.ws/ai-claude-opus-5-5-surpasses-gpt-6-astra-in-unreal-engine-game-development/?lang=en"
+      ]
+    },
+    {
+      "title": "Opus 5.5 vs GPT-6 Astra 12개 실사용 과제 비교",
+      "who": "Nate Herk",
+      "date": "2026-09-23~24",
+      "ai_model": "Claude Opus 5.5, GPT-6 Astra",
+      "tools": "각 앱과 하네스(웹사이트, 영상 편집, 3D 플레이어블 게임, 3D 몰입형 여행 플래너 등)",
+      "what_was_made": "웹사이트, 영상 편집, 비즈니스 산출물, 러닝 월드, 애니메이션 스토리, 박물관 게임, 여행 플래너 등 12개 결과물입니다.",
+      "process": "같은 과제를 두 모델에 주고 결과, 시간, API 추정 비용을 비교했습니다.",
+      "outcome": "Opus 8 대 Astra 4였습니다. Astra는 박물관 게임, 여행 플래너, 코딩 챌린지, 인스타그램 캐러셀에서 이겼습니다. Astra는 총시간 약 45%, 비용 약 38%가 적었습니다. 결론은 창작 감각은 Opus, 속도와 비용은 Astra입니다.",
+      "urls": [
+        "https://x.com/nateherk/article/2102904721698599231",
+        "https://www.geeky-gadgets.com/opus-5-5-vs-gpt-6-astra/"
+      ]
+    },
+    {
+      "title": "Claude Fable 5.1: 부동산 주소 하나 → Blender 시네마틱 워크스루 영상",
+      "who": "MindStudio 소개 사례(원 제작자 영상: 'Claude Just Built A Full 3D House In Blender From One Prompt')",
+      "date": "2026-09",
+      "ai_model": "Claude Fable 5.1",
+      "tools": "Blender MCP",
+      "what_was_made": "시애틀 주택의 37초짜리 워크스루입니다. 외부에서 시작해 현관, 거실을 지나 천장을 뚫고 올라가 부지 상공에서 끝납니다.",
+      "process": "지오메트리, 지형, 인테리어, 조명, 조경을 코드로 만들고 카메라 경로를 계획했습니다. 프리뷰 스틸을 렌더해 스스로 점검하고 수정한 뒤, 저해상도 모션 프리뷰를 확인하고 최종 렌더를 했습니다.",
+      "outcome": "편집, 재조명, 재촬영이 가능한 실제 3D 씬이 나왔습니다. 빠른 시각 프로토타입일 뿐 시공 가능한 수준이나 프로덕션 품질의 증거는 아니라는 단서가 붙었습니다.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-fable-5-1-blender-video-generation",
+        "https://www.youtube.com/watch?v=TIEq5vmfYT8"
+      ]
+    },
+    {
+      "title": "Claude + Blender MCP 도넛 튜토리얼 비용 실측",
+      "who": "MindStudio",
+      "date": "2026 (Opus 5.5 이전 Claude 모델로 추정)",
+      "ai_model": "Claude (모델 버전 미상)",
+      "tools": "Blender MCP, Claude Max 5x 플랜",
+      "what_was_made": "Blender 도넛 튜토리얼 씬입니다.",
+      "process": "2시간 동안 대화를 주고받으며 반복 수정했습니다.",
+      "outcome": "Max 5x($200/월) 세션 토큰의 약 60%를 썼습니다. 스프링클이 접시를 뚫고, 컵이 도넛과 겹치고, 카메라 각도가 틀리고, 화면이 마젠타로 물드는 문제가 남았습니다. 마젠타 원인은 텍스처 누락 가능성이 큽니다. 대화형 반복만으로는 비효율적이어서 검증 루프와 체크리스트가 필요하다는 교훈을 줍니다.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-60-percent-tokens-donut-test-results"
+      ]
+    },
+    {
+      "title": "GPT-6 Astra + Blender MCP + Tripo P2.0: 생성 → 조립 → 리깅 → 애니메이션",
+      "who": "Stefan 3D AI",
+      "date": "2026-09 초",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP, Tripo P2.0 (생성형 3D)",
+      "what_was_made": "최적화된 3D 부품을 생성해 조립하고 리깅·애니메이션까지 한 캐릭터 또는 씬입니다.",
+      "process": "Tripo로 부품 메시를 생성한 뒤 Astra가 Blender MCP로 배치, 조립, 리깅, 애니메이션을 처리했습니다.",
+      "outcome": "제작자는 Astra의 3D 공간 탐색 능력에 놀랐다고 평했습니다. 유기체는 생성형 3D, 조립과 리깅은 LLM이 맡는 분업의 대표 사례입니다.",
+      "urls": [
+        "https://x.com/Stefan_3D_AI/status/2096481425050743048"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Claude for Creative Work (Anthropic, 9종 커넥터 발표)",
+      "url": "https://www.anthropic.com/news/claude-for-creative-work",
+      "source_type": "공식 발표",
+      "date": "2026-04-28",
+      "why_useful": "Blender, SketchUp, Fusion을 포함한 9종 커넥터 목록과 3D 활용 문구를 담은 1차 자료"
+    },
+    {
+      "title": "Claude Opus 5.5 모델 개요 (Claude Platform Docs)",
+      "url": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+      "source_type": "공식 문서",
+      "date": "2026-09-22",
+      "why_useful": "Fable 5.1, Opus 5.5, Sonnet 5, Haiku 4.5의 컨텍스트, 가격, effort 기본값 비교표"
+    },
+    {
+      "title": "What's new in Claude Opus 5.5",
+      "url": "https://platform.claude.com/docs/en/models/opus-5-5/whats-new-opus-5-5",
+      "source_type": "공식 문서",
+      "date": "2026-09-22",
+      "why_useful": "스크린샷·다이어그램 판독 개선, 컴퓨터 사용 도구 버전, forced tool use 불가 등 연동 주의점"
+    },
+    {
+      "title": "Prompting Claude Opus 5.5",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5",
+      "source_type": "공식 문서",
+      "date": "2026-09",
+      "why_useful": "effort 보정, 무인 실행 프롬프트, 복잡한 시각 입력용 crop 도구, 디자인 기본값 회피법"
+    },
+    {
+      "title": "Introducing Claude Opus 5.5",
+      "url": "https://www.anthropic.com/claude-opus-5-5",
+      "source_type": "공식 발표",
+      "date": "2026-09-22",
+      "why_useful": "Terminal-Bench 4.0, OSWorld 2.0, FrontierCode(Astra 53.3% 대비 54.4%) 수치"
+    },
+    {
+      "title": "Claude Fable 5.1 개요 / 발표",
+      "url": "https://platform.claude.com/docs/en/models/fable-5-1/overview",
+      "source_type": "공식 문서",
+      "date": "2026-09-01",
+      "why_useful": "가격, 컨텍스트, 출시일, Mythos 5.1 관계"
+    },
+    {
+      "title": "Introducing Claude Fable 5.1 and Claude Mythos 5.1",
+      "url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+      "source_type": "공식 발표",
+      "date": "2026-09-01",
+      "why_useful": "캐시 가격 인하와 벤치마크"
+    },
+    {
+      "title": "Claude Vision 문서",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/vision",
+      "source_type": "공식 문서",
+      "date": "2026-09",
+      "why_useful": "고해상도 티어 2576px/4784토큰, 이미지 토큰 공식, 20장 초과 시 2000px 제한"
+    },
+    {
+      "title": "Optimizing for cost and intelligence",
+      "url": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+      "source_type": "공식 문서",
+      "date": "2026-09",
+      "why_useful": "어드바이저와 오케스트레이터 패턴 실측, effort별 비용 대비 성능"
+    },
+    {
+      "title": "Choosing the right model",
+      "url": "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+      "source_type": "공식 문서",
+      "date": "2026-09",
+      "why_useful": "Anthropic이 공식으로 권하는 모델 선택 매트릭스"
+    },
+    {
+      "title": "Claude Code MCP 문서",
+      "url": "https://code.claude.com/docs/en/mcp",
+      "source_type": "공식 문서",
+      "date": "2026-09",
+      "why_useful": "claude mcp add 문법, MAX_MCP_OUTPUT_TOKENS, 타임아웃, 이미지 결과 처리"
+    },
+    {
+      "title": "Claude Code computer use",
+      "url": "https://code.claude.com/docs/en/computer-use",
+      "source_type": "공식 문서",
+      "date": "2026-09",
+      "why_useful": "GUI 전용 앱 제어 조건(macOS, Pro/Max)과 스크린샷 자동 축소 규칙"
+    },
+    {
+      "title": "Claude Fable models on your plan",
+      "url": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+      "source_type": "공식 헬프센터",
+      "date": "2026-09",
+      "why_useful": "플랜별 Fable 과금 방식(Pro 크레딧, Max 50%)"
+    },
+    {
+      "title": "Claude 커넥터 페이지: Blender / SketchUp / Autodesk Fusion",
+      "url": "https://claude.com/connectors/blender",
+      "source_type": "공식 디렉터리",
+      "date": "2026-04~05",
+      "why_useful": "제작 주체(Blender Lab, Trimble, Autodesk), 도구 목록, 요구 사항"
+    },
+    {
+      "title": "GPT-6 Astra: A new generation of intelligence (OpenAI)",
+      "url": "https://openai.com/index/gpt-6-astra/",
+      "source_type": "공식 발표 (직접 열람 불가, 검색 요약으로 확인)",
+      "date": "2026-09-03",
+      "why_useful": "Astra 1차 발표문. Blender, KiCad, UE 데모와 BenchCAD 수치의 출처"
+    },
+    {
+      "title": "GPT-6 Astra vs Claude Fable 5.1: Benchmarks and Pricing (DataCamp)",
+      "url": "https://www.datacamp.com/blog/gpt-6-astra-vs-claude-fable-5-1",
+      "source_type": "2차 분석 기사",
+      "date": "2026-09",
+      "why_useful": "BenchCAD, Terminal-Bench, OSWorld 비교와 비교 조건 차이 설명"
+    },
+    {
+      "title": "BenchCAD LEADERBOARD.md",
+      "url": "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md",
+      "source_type": "벤치마크 (GitHub)",
+      "date": "2026-06",
+      "why_useful": "재채점된 독립 수치. 벤더 보고와 조건 차이 확인용"
+    },
+    {
+      "title": "3DCodeBench (GitHub, arXiv 2606.01057)",
+      "url": "https://github.com/gaoypeng/3dcodebench",
+      "source_type": "벤치마크 / 논문",
+      "date": "2026-06-01",
+      "why_useful": "Blender 5.0 bpy 절차적 모델링 평가. 에러 피드백 효과와 하네스 비교"
+    },
+    {
+      "title": "3DHarnessBench (GitHub, arXiv 2609.06535)",
+      "url": "https://github.com/llada60/3DHarnessBench",
+      "source_type": "벤치마크 / 논문",
+      "date": "2026-09",
+      "why_useful": "Astra, Kimi K3, Opus 5, Fable 5, Qwen3.8, Gemini 3.1 Pro의 에이전트형 3D→코드 평가 설계"
+    },
+    {
+      "title": "BlenderGym (arXiv 2504.01786)",
+      "url": "https://arxiv.org/abs/2504.01786",
+      "source_type": "논문",
+      "date": "2025-04",
+      "why_useful": "배치, 조명, 머티리얼 등 5개 편집 과제와 검증 연산 배분 인사이트"
+    },
+    {
+      "title": "awesome-gpt-6-astra (데모 큐레이션)",
+      "url": "https://github.com/magiccreator-ai/awesome-gpt-6-astra",
+      "source_type": "GitHub 큐레이션",
+      "date": "2026-09",
+      "why_useful": "Blender·3D 사례 24건의 원문 X 링크와 제작자"
+    },
+    {
+      "title": "awesome-claude-opus-5-5-demos",
+      "url": "https://github.com/magiccreator-ai/awesome-claude-opus-5-5-demos",
+      "source_type": "GitHub 큐레이션",
+      "date": "2026-09",
+      "why_useful": "Opus 5.5의 Blender와 게임 사례"
+    },
+    {
+      "title": "Codex-and-Blender (Astra + Blender 재현 가능한 워크플로)",
+      "url": "https://github.com/danielsobrado/Codex-and-Blender",
+      "source_type": "GitHub 템플릿",
+      "date": "2026-09",
+      "why_useful": "YAML→bpy→CLI 정본 구조, 시각 평가기, 합격 기준 게이트"
+    },
+    {
+      "title": "claude-3d-harness",
+      "url": "https://github.com/MAX-786/claude-3d-harness",
+      "source_type": "GitHub 템플릿",
+      "date": "2026",
+      "why_useful": "Claude Code 스킬 58개 기반 렌더-검증 파이프라인"
+    },
+    {
+      "title": "Gemini CLI → Antigravity CLI 전환 공지",
+      "url": "https://github.com/google-gemini/gemini-cli/discussions/27274",
+      "source_type": "공식 공지 (GitHub)",
+      "date": "2026-05-19",
+      "why_useful": "2026-06-18 소비자 티어 서비스 종료 사실"
+    },
+    {
+      "title": "Google releases three new Gemini models — but no 3.5 Pro (TechCrunch)",
+      "url": "https://techcrunch.com/2026/07/21/google-releases-three-new-gemini-models-but-no-3-5-pro/",
+      "source_type": "뉴스",
+      "date": "2026-07-21",
+      "why_useful": "Gemini 3.5 Pro 지연과 3.6 Flash 출시"
+    },
+    {
+      "title": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/",
+      "source_type": "공식 발표 (검색 요약으로 확인)",
+      "date": "2026-09-02",
+      "why_useful": "최신 Gemini 워크호스 모델 정보"
+    },
+    {
+      "title": "Kimi K3 (GitHub)",
+      "url": "https://github.com/MoonshotAI/Kimi-K3",
+      "source_type": "공식 저장소",
+      "date": "2026-07",
+      "why_useful": "사양, 비전 지원, 라이선스, 벤더 벤치마크"
+    },
+    {
+      "title": "Stefan 3D AI: Opus 5.5 vs GPT-6 Astra 첫 3D 테스트",
+      "url": "https://x.com/Stefan_3D_AI/status/2102471841046786153",
+      "source_type": "X 게시물 (실측)",
+      "date": "2026-09",
+      "why_useful": "같은 프롬프트에서 시간, 토큰, 비용을 직접 비교한 수치"
+    },
+    {
+      "title": "Hierarchy Agency: GPT-6 Astra vs Claude Fable 5.1 Blender 테스트",
+      "url": "https://hierarchy.ch/en/news/gpt-6-astra-vs-claude-fable-5-1",
+      "source_type": "에이전시 블로그 (검색 요약으로 확인)",
+      "date": "2026-09",
+      "why_useful": "실사용 1주일 결론(공간은 Astra, 소프트웨어는 Fable)"
+    },
+    {
+      "title": "I Tested GPT Astra for 3D Modeling (SketchUp 농가 테스트)",
+      "url": "https://www.youtube.com/watch?v=SsBLhNgqTqQ",
+      "source_type": "YouTube (요약은 daily.dev로 확인)",
+      "date": "2026-09",
+      "why_useful": "건축 모델링의 치수 오차와 토큰 소모 한계"
+    },
+    {
+      "title": "GPT-6 Astra vs Meshy 7 (HackerNoon)",
+      "url": "https://hackernoon.com/gpt-6-astra-vs-meshy-7-for-3d-creation-what-three-creator-workflows-reveal",
+      "source_type": "2차 기사",
+      "date": "2026-09",
+      "why_useful": "캐릭터·유기체 한계와 생성형 3D 분업 워크플로"
+    },
+    {
+      "title": "Claude's Blender MCP Burned 60% of a $200/Month Plan on One Donut (MindStudio)",
+      "url": "https://www.mindstudio.ai/blog/claude-blender-mcp-60-percent-tokens-donut-test-results",
+      "source_type": "블로그 실측",
+      "date": "2026",
+      "why_useful": "구독 한도 소진 실측과 실패 유형"
+    },
+    {
+      "title": "Blender AI Arena 리더보드",
+      "url": "https://blenderai.org/leaderboard",
+      "source_type": "커뮤니티 아레나",
+      "date": "2026-09",
+      "why_useful": "블라인드 투표 결과(시즌 3 5자 동률)"
+    },
+    {
+      "title": "Opus 5.5 vs GPT-6 Astra 12 use cases (Geeky Gadgets 요약)",
+      "url": "https://www.geeky-gadgets.com/opus-5-5-vs-gpt-6-astra/",
+      "source_type": "2차 기사",
+      "date": "2026-09",
+      "why_useful": "Nate Herk의 8-4 결과와 시간·비용 차이"
+    },
+    {
+      "title": "GPT-6 아스트라 vs 클로드 페이블 5.1, 성능표만 보면 놓치는 차이 (AI매터스)",
+      "url": "https://aimatters.co.kr/news-report/51830/",
+      "source_type": "국내 기사",
+      "date": "2026-09",
+      "why_useful": "한국어 자료. 컴퓨터 사용 성공률의 의미와 사진 재구성 환각 지적"
+    },
+    {
+      "title": "Developer mode and MCP apps in ChatGPT (OpenAI Help)",
+      "url": "https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta",
+      "source_type": "공식 헬프센터 (검색 요약으로 확인)",
+      "date": "2026",
+      "why_useful": "ChatGPT 웹은 원격 MCP만 지원한다는 점과 지원 플랜"
+    },
+    {
+      "title": "Blender Lab MCP 서버 저장소",
+      "url": "https://projects.blender.org/lab/blender_mcp",
+      "source_type": "공식 저장소 (검색 요약으로 확인)",
+      "date": "2026",
+      "why_useful": "Blender 5.1 이상 요구 사항과 공식 서버 구조"
+    }
+  ],
+  "claims_to_verify": [
+    {
+      "claim": "GPT-6 Astra는 2026-09-03에 제한 프리뷰로 출시되었고, API 가격은 $10/$50(1M토큰), 컨텍스트는 약 1.05M, reasoning effort는 low~max 5단계입니다.",
+      "url": "https://openai.com/index/gpt-6-astra/"
+    },
+    {
+      "claim": "GPT-6 Astra는 BenchCAD mean voxel IoU 95.9%로, GPT-5.6 Sol 83.3%와 Claude Fable 5.1 84.3%보다 높습니다. 도구 사용 에이전트 조건의 벤더 자체 보고입니다.",
+      "url": "https://www.datacamp.com/blog/gpt-6-astra-vs-claude-fable-5-1"
+    },
+    {
+      "claim": "BenchCAD 공식 재채점 Vision2Code(도구 없음)의 최고점은 Gemini 3.1 Pro IoU 0.289이며, GPT-6 Astra, Fable 5.1, Opus 5.5는 공식 표에 없습니다(2026-06 기준).",
+      "url": "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md"
+    },
+    {
+      "claim": "Anthropic은 2026-04-28 Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice 9종 커넥터를 발표했습니다.",
+      "url": "https://www.anthropic.com/news/claude-for-creative-work"
+    },
+    {
+      "claim": "Claude의 Blender 커넥터는 Blender Lab이 만든 것이며 별도 애드온 설치가 필요합니다. 공식 서버는 Blender 5.1 이상을 요구합니다.",
+      "url": "https://claude.com/connectors/blender"
+    },
+    {
+      "claim": "Claude Opus 5.5는 2026-09-22에 출시되었고 $4/$20, 1M 컨텍스트, 기본 effort medium입니다. FrontierCode v1.1에서 54.4%로 GPT-6 Astra(53.3%)보다 높습니다.",
+      "url": "https://www.anthropic.com/claude-opus-5-5"
+    },
+    {
+      "claim": "Claude Fable 5.1은 2026-09-01에 출시되었고 $10/$50이며 캐시 읽기는 $0.25입니다. Pro 플랜에서는 크레딧 과금, Max에서는 주간 한도 50%까지 포함됩니다.",
+      "url": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan"
+    },
+    {
+      "claim": "Claude 4.7 이후 모델의 이미지 고해상도 티어는 긴 변 2576px, 최대 4784 비주얼 토큰입니다.",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/vision"
+    },
+    {
+      "claim": "Gemini CLI는 2026-06-18부터 무료, Google AI Pro, Ultra 사용자 요청 처리를 중단하고 Antigravity CLI로 전환되었습니다.",
+      "url": "https://github.com/google-gemini/gemini-cli/discussions/27274"
+    },
+    {
+      "claim": "Gemini 3.5 Pro는 2026-05 I/O에서 발표되었지만 9월 말까지 출시되지 않았고, 2026-07-21에 3.6 Flash 등이 대신 나왔습니다.",
+      "url": "https://techcrunch.com/2026/07/21/google-releases-three-new-gemini-models-but-no-3-5-pro/"
+    },
+    {
+      "claim": "3DCodeBench에서 멀티턴 에러 피드백이 평균 실행 가능률을 0.69에서 0.97로 올렸습니다.",
+      "url": "https://arxiv.org/html/2606.01057v1"
+    },
+    {
+      "claim": "같은 단일 프롬프트 Blender 테스트에서 Opus 5.5는 35분, 출력 199.6k토큰, 약 $13.3, GPT-6 Astra는 28분, 56.6k토큰, 약 $14.5였습니다.",
+      "url": "https://x.com/Stefan_3D_AI/status/2102471841046786153"
+    },
+    {
+      "claim": "ChatGPT Plus에서 GPT-6 Astra는 채팅이 아닌 ChatGPT Work와 Codex에서만 제한적으로 제공되고, 채팅 안에서는 'GPT-6 Pro'로 Pro, Business, Enterprise에 제공됩니다.",
+      "url": "https://www.notebookcheck.net/GPT-6-Astra-is-on-ChatGPT-Plus-but-only-in-Work-and-Codex.1391574.0.html"
+    },
+    {
+      "claim": "Blender AI Arena 시즌 3에서 3D-Agent, GPT-6 Astra, Claude Opus 5, Claude Fable 5.1, Grok 4.6이 1,687표 기준 오차범위 내 5자 동률이었습니다.",
+      "url": "https://blenderai.org/leaderboard"
+    },
+    {
+      "claim": "OpenAI는 2026-09-22에 GPT-6 Sol($2/$10)과 Luna($0.10/$0.50)를 출시했습니다.",
+      "url": "https://venturebeat.com/technology/openai-releases-gpt-6-sol-and-luna-models-slashing-api-costs-50-or-more"
+    }
+  ],
+  "gaps": [
+    "네트워크 이그레스 제한으로 openai.com, YouTube, arXiv, Hugging Face, blog.google, 대부분의 블로그와 뉴스(MindStudio, 9to5Mac, VoxelMatters 등) 본문을 직접 열람하지 못했습니다. GPT-6 Astra의 공식 수치(가격, 컨텍스트, BenchCAD, OSWorld)는 검색 결과 요약과 2차 기사로만 교차 확인했습니다. Anthropic, Claude 문서, GitHub 자료는 직접 확인했습니다.",
+    "동일 하네스와 동일 MCP 서버로 GPT-6 Astra, Opus 5.5, Fable 5.1, Gemini 3.8 Flash, Grok 4.7, Kimi K3를 비교한 통제된 3D 벤치마크 수치는 찾지 못했습니다. 현존 비교는 개인 테스트(Stefan, Brendan Jowett, Nate Herk, Hierarchy)와 투표 아레나뿐이고 결과도 엇갈립니다.",
+    "3DCodeBench(3DCodeArena Elo)와 3DHarnessBench의 최신 모델별 수치표(특히 Astra와 Opus 5.5)는 확보하지 못했습니다. BlenderGym 리더보드는 2025년 모델에 머물러 있습니다.",
+    "하위 작업별(머티리얼 노드 그래프, 유기체, 레이아웃) 모델 간 정량 비교 자료가 없습니다. 머티리얼 노드는 'Principled BSDF 수준은 가능하나 복잡한 절차적 노드는 약함'이라는 정성 평가만 있습니다.",
+    "'Opus 5.5 몬스터 리깅 40분 vs Astra 65분' 주장은 하나의 검색 요약에만 나오고 원출처로 확인되지 않았습니다.",
+    "OpenAI 발표의 Astra 3D 기능 목록(분해도, 리깅, 사진→3D)이 '공식 기능'인지 '커뮤니티 데모'인지 1차 문서로 구분하지 못했습니다. REMAP(미공개)과 StationeryBench 공간 추론 수치도 연구자 발언 수준입니다.",
+    "Gemini 3.8 Flash와 Grok 4.7의 Blender·3D 전용 테스트가 거의 없고, Gemini 3.8 Flash의 OSWorld 수치(59%)와 3.6 Flash의 OSWorld-Verified(83.0%)의 측정 버전 차이를 확인하지 못했습니다.",
+    "GLM-5.x의 비전 지원과 라이선스, Qwen3.8 오픈웨이트 체크포인트별 비전 지원 여부, DeepSeek V4 계열 라이선스를 1차 자료로 확인하지 못했습니다.",
+    "Windsurf, Cline, Antigravity CLI가 MCP 도구 결과 이미지(뷰포트 스크린샷)를 모델에 전달하는 방식을 1차 문서로 확인하지 못했습니다. Cursor 이미지 지원도 MCPJam 요약 기준입니다.",
+    "ChatGPT 앱 디렉터리에 공식 Blender나 SketchUp 앱이 있는지, Trimble SketchUp 커넥터가 Claude 외 클라이언트에서도 공식 지원되는지는 확인하지 못했습니다.",
+    "MineBench, MC-Bench의 2026-09 현재 순위와 EASI 공간지능 리더보드의 최신 프런티어 모델 수치를 확보하지 못했습니다."
+  ]
+}

@@ -1,0 +1,1122 @@
+{
+  "topic": "[보완] 유기물·자연·조형물 도구 (2026-09-27)",
+  "method_note": "읽기 전용 조사. WebSearch(세션 한도 200회 소진)와 WebFetch만 사용했고, 설치·다운로드·클론·실행은 하지 않음(릴리스 에셋 미열람). GitHub 저장소 페이지(README, releases, pyproject, docs)는 직접 열어 1차 검증함. extensions.blender.org, projects.blender.org, docs.blender.org, code.blender.org, blender.org, superhivemarket.com, thegrove3d.com, cgchannel.com, digitalproduction.com, arxiv.org, huggingface.co(3D Arena 포함), blenderartists.org, medium.com, polyhaven.com, support.fab.com, pixazo/sloyd/strayspark/mindstudio 등은 이그레스 프록시가 차단해서, 이 도메인에서 나온 사실은 검색 결과 요약에만 기댐. 이런 항목에는 '(검색 요약)'을 붙임. GitHub 릴리스 날짜 중 연도가 표시되지 않은 것은 '연도 미표기'로 적음. 파일을 쓴 뒤 로컬 python json.tool로 JSON 문법만 검증함.",
+  "summary_ko": [
+    "나무는 LLM이 원기둥을 직접 쌓게 하지 말 것. 파라메트릭 생성기의 연산자·노드를 호출하게 하는 쪽이 품질과 안정성이 가장 높음. 무료는 Sapling Tree Gen(공식 Extensions, GPL, 순수 Python)과 Modular Tree(노드 기반, C++ 네이티브 코어 포함), 유료 최고급은 The Grove 2.3(2026-03, Blender 5 지원), 업계 표준은 SpeedTree(Unity 구독, 로그인이 2026-01-01부로 Unity.com으로 이전)임.",
+    "Infinigen 함정: main 브랜치(2.0, procfunc 기반 재작성, bpy 4.2.0)에는 아직 자연 에셋이 없음. 나무·바위·산호·생물·지형은 nature-stable 브랜치(bpy 3.6.0, Python 3.10)에서만 생성됨. 그래서 별도 환경에서 '에셋 공장'으로 돌려 OBJ/USD/FBX로 export한 뒤 Blender 5.x로 가져오는 방식이 현실적임.",
+    "유기 조형은 Blender 5.0/5.1에 새로 들어온 Volume Grid·SDF 노드(Mesh/Points to SDF Grid, SDF Grid Boolean, SDF Fillet, Laplacian/Mean/Median, Grid to Mesh)로 바이너리 없이 비파괴 SDF 파이프라인을 짤 수 있음. 기존 KB의 '스무스 유니온→복셀 리메시'를 노드 안으로 옮길 수 있다는 뜻. 유료 SDF 애드온(SDF.R, Chisel)은 강력하지만 폐쇄형 네이티브 바이너리이고 불법 사본이 넘쳐나서 주의가 필요함.",
+    "AI 에이전트가 만든 자연 씬의 1순위 실패 모드는 '떠 있거나 분리된 부품'임. 3DCodeBench(2026-06, Blender 5.0, 212 카테고리, 식물·산호·해양생물 포함)는 '실행 가능성'보다 물리적 타당성이 병목이라고 보고함. Claude+MCP 숲 사례에서도 나무가 공중에 떠 보이는 문제를 레이캐스트 검증으로 원인(두께 0인 지면)까지 추적함(검색 요약). 스캐터는 반드시 표면 분포 + 레이캐스트/접촉 검증으로 처리할 것.",
+    "이미지→3D의 오픈 웨이트는 TRELLIS.2(MIT, 4B, 24GB+ VRAM, Linux, CUDA 확장 컴파일 필요)가 중심. 지역 제한이 없는 대안은 TripoSG(MIT, 8GB), Direct3D-S2(MIT), Step1X-3D(Apache-2.0). Hunyuan3D 2.x 라이선스는 EU·영국·한국을 제외하므로 한국 사용자는 쓸 수 없음. Hunyuan3D-2.1의 거친 메시를 입력으로 쓰는 UltraShape 1.0 같은 파생 파이프라인과 BlenderMCP의 Hunyuan3D 연동도 사실상 같은 제약을 받음.",
+    "상용 클라우드 중 유기물 디테일은 Rodin Gen-2.5(2026-05-26, 원본 10M+ 폴리, 쿼드·Smart Low-Poly 출력, 검색 요약)와 Meshy-6가 강하고, Tripo 3.1은 속도가 강함. 공개 리더보드는 방법론(VLM 심사 vs 인간 투표)과 벤더 편향에 따라 순위가 크게 흔들림. HF 3D Arena의 실시간 순위는 차단으로 확인하지 못함.",
+    "지형: Gaea 2.x(영구 라이선스 $99/$199/$299, 커뮤니티판은 비상업용, 3.0은 2026년 7월 얼리액세스 후 9~10월 정식 목표)와 World Creator 2026.4(무료 Community Edition은 export 불가, Indie 영구 $99)는 모두 검색 요약 기준. 무료로 Blender 안에서 끝내려면 A.N.T. Landscape(Extensions, Eroder 포함)나 GN/SDF 노드를 쓰면 됨.",
+    "스캐터: 무료 OpenScatter는 2026-08-23에 아카이브되어 유지보수가 중단됨(v1.0.7에서 Blender 5.0 대응). 유료는 Geo-Scatter 5.6(Biome-Reader 무료), Botaniq 7.3(2026-08-28, 검색 요약), Arborea가 주력임. Blender 5.0 기본 'Scatter on Surface' 에셋만으로도 에이전트가 쓸 기본 분포는 충분함.",
+    "레드 플래그: vfxmed, aeblender, gfx-hub, downloadpirate, filecr, psdly, gfxplugin, unityunreal 같은 사이트가 SDF.R, Chisel, Botaniq, Quad Remesher, Nature Generator의 크랙판을 배포 중이어서 악성코드 위험이 가장 큼. 소규모 포크가 배포하는 네이티브 바이너리(Modular Tree 포크, QRemeshify의 QuadWild)는 원 저장소나 공식 스토어에서만 받아야 함. BlenderMCP에는 임의 Python 실행 도구가 있고 텔레메트리가 기본으로 켜져 있음.",
+    "MCP 쪽 변화: Blender 개발진의 공식 Blender Lab MCP(projects.blender.org/lab/blender_mcp, 2026-04-28 Claude 커넥터로 공개, 검색 요약)가 생겼음. 커뮤니티 BlenderMCP(29.5k★, PyPI 이름이 mcp-for-blender로 바뀜)는 Poly Haven, Sketchfab, Rodin, Hunyuan3D, Tripo를 연동함. 자연 전용 MCP 도구는 드묾. 접촉 검증 도구(blender-ai-mcp의 scene_assert_contact)나 식생 스킬(blender-skills의 vegetation-artist)을 조합하는 형태가 현실적임."
+  ],
+  "items": [
+    {
+      "name": "Sapling Tree Gen (공식 Extension)",
+      "category": "나무·식물 (절차적 생성)",
+      "what_it_is": "Blender 4.1까지 번들되던 파라메트릭 나무 생성 애드온(Weber & Penn 방식). 4.2부터 공식 Extensions 플랫폼으로 옮겨져 커뮤니티가 '있는 그대로, 제한적 지원'으로 유지함(검색 요약).",
+      "how_to_use": "Edit > Preferences > Extensions에서 'Sapling Tree Gen'을 설치한 뒤 Shift+A > Curve > Sapling Tree Gen을 누름. 에이전트는 커브 추가 연산자에 levels·branches·curve·leaves 파라미터를 넘겨 수치로 조작하고, 커브를 메시로 변환한 다음 수피·잎 재질을 입힘. 연산자 이름과 인자는 애드온 소스에서 확인할 것. 더 많은 옵션이 필요하면 improved-sapling(abpy)의 sapling_4를 참고하되, 이전 프리셋과 호환되지 않음.",
+      "strengths": "무료(GPL), 순수 Python이라 바이너리 없음. 수치 파라미터 중심이라 LLM이 다루기 쉽고, 커브 기반이라 가볍고 빠름.",
+      "weaknesses": "알고리즘이 오래돼서 가지 구조의 사실감이 The Grove나 SpeedTree보다 떨어짐. 잎 텍스처와 수피 재질은 따로 만들어야 하고 지원도 제한적임.",
+      "license": "GPL-3.0-or-later (검색 요약: Extensions 페이지)",
+      "popularity": "Extensions 다운로드 278,094회 (검색 요약)",
+      "last_update": "v0.3.7, Blender 4.4 이상 호환 (검색 요약)",
+      "distribution": "extensions.blender.org(공식), 소스는 projects.blender.org/extensions/add_curve_sapling",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(순수 Python)",
+        "red_flags": "없음. cgdive 등 제3자 '사전설치' 재배포판 대신 공식 Extensions에서 받을 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://extensions.blender.org/add-ons/sapling-tree-gen/",
+        "https://projects.blender.org/extensions/add_curve_sapling",
+        "https://github.com/abpy/improved-sapling-tree-generator"
+      ]
+    },
+    {
+      "name": "Modular Tree (MTree, GoodPie 유지 포크)",
+      "category": "나무·식물 (노드 기반)",
+      "what_it_is": "MaximeHerpin의 MTree를 GoodPie가 이어받아 유지하는 노드 기반 나무 생성기. C++ 코어(MIT)와 Blender 애드온(GPLv3)으로 나뉨. L-system 성장, apical dominance, 8종 식물학적 envelope, superformula·space colonization 기반 잎, UE5 바람용 Pivot Painter 2.0 export를 지원함(GitHub에서 확인).",
+      "how_to_use": "Blender 4.3 이상에서 extensions.blender.org 또는 GoodPie GitHub 릴리스로 설치함. Quick Generate 프리셋(Oak, Pine, Willow)으로 시작한 뒤 노드 파라미터를 조정함. 에이전트는 노드를 새로 짜기보다 프리셋을 불러와 수치만 바꾸는 편이 안정적임.",
+      "strengths": "무료이고 노드로 실시간 편집이 됨. 게임 엔진용 바람 데이터 export를 지원하고 개발이 활발함(605 커밋).",
+      "weaknesses": "포크 저장소가 34★로 커뮤니티가 작음. 플랫폼별 네이티브 코어가 필요하고, 과거 'Quick Generation이 일부 플랫폼에서 동작 안 함' 문제가 있었음(v5.3.2에서 수정).",
+      "license": "GPLv3(애드온) / MIT(코어 라이브러리) (GitHub에서 확인)",
+      "popularity": "GitHub 34★ (GoodPie 포크), 원작 MaximeHerpin 저장소는 별도",
+      "last_update": "GitHub V5.5.2 'May 13'(연도 미표기), Extensions 2026-01-27 업데이트 (검색 요약)",
+      "distribution": "extensions.blender.org, github.com/GoodPie/modular_tree releases",
+      "safety": {
+        "source_visible": true,
+        "binaries": "C++ 코어를 플랫폼별로 빌드한 네이티브 모듈(.pyd/.so)이 들어 있는 것으로 보임. 빌드 스크립트(build_mtree.bat/.sh/.osx)가 있고, 릴리스 에셋 수가 3~14개임. 대형 벤더가 아니라 개인 포크가 배포함.",
+        "red_flags": "이름이 비슷한 포크가 여럿 있음(JTippetts, rnithin133, steven-ray, berkeisaodbs 등). 공식 Extensions나 GoodPie 원 저장소 외의 zip은 받지 말 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/GoodPie/modular_tree",
+        "https://github.com/GoodPie/modular_tree/releases",
+        "https://extensions.blender.org/add-ons/modular-tree/",
+        "https://github.com/MaximeHerpin/modular_tree"
+      ]
+    },
+    {
+      "name": "The Grove 2.3 (F12)",
+      "category": "나무·식물 (생물학적 성장 시뮬레이션, 유료)",
+      "what_it_is": "나무를 해마다 자라게 하는 생물학 기반 성장 시뮬레이터로 Blender와 Houdini용임. apical dominance, 굴성(tropism), 환경 요인, 자기 가지치기를 반영함. 2.3에서는 씬에 직접 그려 나무를 심는 기능, 메시 export 개선, Houdini Indie 지원, 저장공간·메모리 대폭 절감이 들어감(검색 요약).",
+      "how_to_use": "공식 사이트에서 구매해 설치함. 성장 파라미터를 설정해 몇 년치를 시뮬레이션한 뒤 메시로 굽거나 export함. 에이전트용 공식 Python API는 확인하지 못했으므로, 에이전트는 프리셋 선택과 결과 검증(스크린샷)에 쓰는 편이 현실적임.",
+      "strengths": "가지 구조의 사실감이 업계 최상급이고 비파괴 재성장이 됨. Blender 5를 지원하고 4.5까지 하위 호환됨(검색 요약).",
+      "weaknesses": "유료이고 시뮬레이션에 시간이 듦. 자동화 API 문서를 확인하지 못함(공식 사이트 차단). 웹 버전은 아직 개발 중.",
+      "license": "상용 (가격 미확인: thegrove3d.com/buy 접근 차단)",
+      "popularity": "오랜 기간 Blender 대표 나무 도구로 쓰임. BlenderNation Bazaar에 등재.",
+      "last_update": "2.3 (DIGITAL PRODUCTION 2026-03-02 보도, 검색 요약)",
+      "distribution": "thegrove3d.com 직접 판매",
+      "safety": {
+        "source_visible": false,
+        "binaries": "미확인(공식 사이트 차단으로 패키지 구성 확인 불가)",
+        "red_flags": "공식 판매처 외 배포본은 쓰지 말 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://www.thegrove3d.com/releases/23/",
+        "https://digitalproduction.com/2026/03/02/the-grove-2-3/",
+        "https://www.thegrove3d.com/buy/",
+        "https://bazaar.blendernation.com/listing/the-grove-3d-tree-growing-software/"
+      ]
+    },
+    {
+      "name": "Spacetree (Space colonization tree generator)",
+      "category": "나무·식물 (Space Colonization)",
+      "what_it_is": "Runions·Lane·Prusinkiewicz의 Space Colonization Algorithm으로 나무를 만드는 애드온(Michel Anders/varkenvarken). IvyGen처럼 주변 지오메트리를 감지해 상호작용할 수 있음.",
+      "how_to_use": "Add > Mesh > Add tree to scene으로 추가함. 옵션을 바꾼 뒤 'update tree'를 눌러야 다시 생성됨. 공식 Extensions에 'Space colonization tree generator'로 올라와 있음(검색 요약).",
+      "strengths": "무료이고 순수 Python임. 볼륨(수관 형태)을 주면 그 안을 채우는 가지 구조가 자연스럽게 나옴.",
+      "weaknesses": "생성이 느리고 실시간이 아님. 59★로 작은 프로젝트이며 최신 유지보수 상태는 확인하지 못함.",
+      "license": "미확인(GitHub 페이지에 표시 안 됨). 상용 버전은 별도 판매.",
+      "popularity": "GitHub 59★ / 19 forks",
+      "last_update": "미확인",
+      "distribution": "extensions.blender.org, GitHub(release 폴더), 상용판은 Blender Market",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음으로 보임(Python 애드온)",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/varkenvarken/spacetree",
+        "https://extensions.blender.org/add-ons/space-colonization-tree-generator/"
+      ]
+    },
+    {
+      "name": "SpeedTree (Unity)",
+      "category": "나무·식물 (업계 표준, 상용)",
+      "what_it_is": "AAA 게임과 VFX에서 표준으로 쓰는 절차적 식생 모델러. Unity가 소유함.",
+      "how_to_use": "SpeedTree Modeler에서 만든 뒤 FBX/OBJ로 내보내 Blender로 가져옴. GUI 중심이라 에이전트 자동화는 어렵고, 결과 에셋을 스캐터하는 쪽에 에이전트를 씀.",
+      "strengths": "최고 수준의 식생 품질, LOD, 바람, 게임 엔진 연동.",
+      "weaknesses": "라이선스가 복잡하고 구독형임. Learning Edition은 에셋 export가 불가하고, Indie는 매출 $200K 미만·1대·인터넷 필요 조건임. SpeedTree 로그인이 2026-01-01에 Unity.com으로 넘어갔고, 2026년 5월부터 SpeedTree Library는 연 $999 구독임(검색 요약). Unity 포럼에 구매 가능 여부를 묻는 스레드가 있어 공급이 불확실함.",
+      "license": "상용: Learning(무료, 매출 $1M 미만, export 불가) / Indie($200K 미만, 월 구독) / Pro($200K~$1M) / Enterprise($1M 초과, 프로젝트별) (Unity 지원 문서, 검색 요약)",
+      "popularity": "업계 표준",
+      "last_update": "2026년 라이선스·Library 판매 방식 변경 (검색 요약)",
+      "distribution": "store.speedtree.com / Unity",
+      "safety": {
+        "source_visible": false,
+        "binaries": "상용 폐쇄 바이너리(대형 벤더 Unity)",
+        "red_flags": "공식 스토어 외 배포본은 모두 불법·위험",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://support.unity.com/hc/en-us/articles/15723241438228-What-s-the-difference-between-SpeedTree-Learning-Edition-Indie-Pro-and-Enterprise",
+        "https://support.unity.com/hc/en-us/articles/49699142648980-How-do-I-receive-my-SpeedTree-Library-purchase",
+        "https://discussions.unity.com/t/should-we-expect-speedtree-to-be-availabe-ever-again/1704715",
+        "https://store.speedtree.com/buy-try/"
+      ]
+    },
+    {
+      "name": "지오메트리 노드 나무 생성기군 (Easy Tree, Geo Nodes Tree Generator, Blender Studio 예제 등)",
+      "category": "나무·식물 (Geometry Nodes)",
+      "what_it_is": "GN만으로 나무를 만드는 도구와 예제들. Easy Tree(공식 Extensions, 원클릭 프리셋), Geo Nodes Tree Generator(Superhive, 유료), Blender Studio 'Geometry Nodes from Scratch'의 Tree Generator 예제, IRCSS의 오픈소스 예제 등이 있음.",
+      "how_to_use": "에이전트가 GN 트리를 처음부터 짜게 하지 말 것. 검증된 노드 그룹을 append/링크하고 modifier 입력 소켓(높이, 분기 수, 굽힘, seed)만 바꾸게 함. 필요하면 ProcFunc 트랜스파일러로 GN을 Python으로 바꿔 편집함.",
+      "strengths": "비파괴이고 seed로 무한 변형이 됨. 바이너리가 없고 Blender 5.x 네이티브임.",
+      "weaknesses": "노드가 몇 개를 넘는 그래프는 LLM이 연결 오류를 많이 냄(검색 요약: MindStudio). 실사 수준 잎·수피는 별도 작업이 필요함.",
+      "license": "제품마다 다름(Easy Tree는 Extensions 등록이므로 GPL 계열로 추정, 미확인)",
+      "popularity": "미확인",
+      "last_update": "Blender 5.1 대응 커뮤니티 예제 다수 (검색 요약)",
+      "distribution": "extensions.blender.org, Superhive, Blender Studio, GitHub",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(.blend 노드 에셋이나 Python)",
+        "red_flags": ".blend 에셋은 열기 전에 'Auto Run Python Scripts'를 꺼 둘 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://extensions.blender.org/add-ons/easy-tree/",
+        "https://superhivemarket.com/products/geo-nodes-tree-generator",
+        "https://studio.blender.org/training/geometry-nodes-from-scratch/example-tree-generator/",
+        "https://github.com/IRCSS/Trees-With-Geometry-Nodes-Blender"
+      ]
+    },
+    {
+      "name": "L-Py (OpenAlea) + Lindenmaker (L-system)",
+      "category": "나무·식물 (L-system 라이브러리)",
+      "what_it_is": "L-Py는 L-system에 Python을 결합한 식물 구조 시뮬레이션 프레임워크임(C++ 코어와 Python 바인딩, 개발자 Frédéric Boudon). Lindenmaker는 L-Py로 얻은 L-string을 Blender에서 turtle 해석해 오브젝트 계층으로 만드는 애드온(TU Wien 학사 논문)임.",
+      "how_to_use": "conda로 설치함(conda create -n lpy openalea.lpy -c openalea3 -c conda-forge). LLM이 .lpy 생성 규칙을 텍스트로 쓰면, 결과 L-string이나 스켈레톤을 Blender 커브·스킨 모디파이어로 메시화함.",
+      "strengths": "식물학 문헌의 규칙을 그대로 쓸 수 있고, 텍스트 규칙이라 LLM 친화적임.",
+      "weaknesses": "conda 환경이 Blender 내장 Python과 따로 놀아서 연동이 번거로움. Lindenmaker는 오래된 프로젝트임(최신 호환성 미확인).",
+      "license": "L-Py: CeCILL(GPL 호환) (GitHub에서 확인)",
+      "popularity": "L-Py GitHub 99★",
+      "last_update": "미확인",
+      "distribution": "conda(openalea3, conda-forge), GitHub",
+      "safety": {
+        "source_visible": true,
+        "binaries": "C++ 확장이 있으며 conda 채널 빌드로 배포됨",
+        "red_flags": "없음. 별도 conda 환경에 격리할 것을 권장함.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/openalea/lpy",
+        "https://github.com/themangosteen/lpy-lsystems-blender-addon"
+      ]
+    },
+    {
+      "name": "Infinigen (Nature, 1.x nature-stable)",
+      "category": "절차적 생성 연구 코드 (지형·식물·바위·생물)",
+      "what_it_is": "Princeton VL의 Blender 기반 절차적 3D 세계 생성기(BSD-3, 7.3k★). 자연 메시 팩토리 목록(list_nature_meshes.txt)에는 선인장, 구름, 산호 10종, 생물(Beetle, Bird, Carnivore, Fish, FlyingBird), 과일, 풀·꽃, 잎, 연체동물, 외떡잎식물, 버섯, 이끼·지의류, 바위(BlenderRock, Boulder, GlowingRocks), 고사리, 다육식물, 관목, 해초, 성게 등이 있음.",
+      "how_to_use": "python -m infinigen_examples.generate_individual_assets --output_folder outputs/x -f BoulderFactory -n 4 --export obj 식으로 실행함. usd·fbx export도 가능하고, 결과를 Blender 5.x로 가져옴. 자연 에셋은 nature-stable 브랜치(bpy==3.6.0, Python 3.10)를 써야 하고 main(2.0)에는 없음.",
+      "strengths": "무료·오픈소스이고 팩토리 종류가 매우 넓음. seed로 무한 변형되며 지형·재질·스캐터까지 통합돼 있음.",
+      "weaknesses": "자연 버전이 Blender 3.6에 고정돼 있음. 지형은 C++ 로컬 컴파일이 필요하고 Windows에서는 지형을 쓸 수 없음(Minimal Install은 실험적). 합성 데이터 목적이라 게임용 토폴로지·UV·리깅은 추가 작업이 필요함.",
+      "license": "BSD-3-Clause (GitHub에서 확인)",
+      "popularity": "GitHub 7.3k★ / 613 forks",
+      "last_update": "main은 v2.0.0a2까지(CHANGELOG, 날짜 표기 없음). nature-stable은 1,692 커밋.",
+      "distribution": "GitHub(princeton-vl/infinigen), 소스에서 설치하거나 Docker 사용",
+      "safety": {
+        "source_visible": true,
+        "binaries": "미리 빌드된 바이너리 배포 없음. 지형(C++), marching cubes, OpenGL annotator는 로컬에서 컴파일함.",
+        "red_flags": "없음. 버전이 고정돼 있으므로 전용 conda 환경에 격리할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/princeton-vl/infinigen",
+        "https://github.com/princeton-vl/infinigen/blob/main/docs/source/GeneratingIndividualAssets.md",
+        "https://github.com/princeton-vl/infinigen/blob/main/docs/source/Installation.md",
+        "https://github.com/princeton-vl/infinigen/blob/main/docs/source/Infinigen2.md",
+        "https://github.com/princeton-vl/infinigen/blob/main/tests/infinigen/assets/list_nature_meshes.txt",
+        "https://github.com/princeton-vl/infinigen/tree/nature-stable",
+        "https://github.com/princeton-vl/infinigen/blob/nature-stable/pyproject.toml"
+      ]
+    },
+    {
+      "name": "ProcFunc + Infinigen 2.0",
+      "category": "절차적 생성 연구 코드 (에이전트 친화 API)",
+      "what_it_is": "Blender 절차 생성을 Python 함수 497개로 추상화한 라이브러리(arXiv 2604.26943, 2026-04-29, Raistrick 외, 검색 요약). GN 노드 트리를 procfunc Python 코드로 바꾸는 트랜스파일러와 트레이서가 들어 있음. Infinigen 2.0은 이 위에서 전면 재작성됐지만 현재는 실내 재질·오브젝트 중심임.",
+      "how_to_use": "uv pip install procfunc로 설치함(bpy==4.2.0, Python 3.11 필요). 자연 GN 에셋을 procfunc 코드로 트랜스파일한 뒤 LLM이 파라미터와 구조를 편집하게 함. 논문은 VLM이 절차 코드를 편집·생성할 때 오류가 크게 준다고 보고함(검색 요약).",
+      "strengths": "GN을 읽을 수 있는 Python으로 다룰 수 있어 에이전트 편집에 적합함. 순수 Python임.",
+      "weaknesses": "사전 제작 생성기('coming soon')는 아직 포함되지 않음. bpy 4.2 고정이라 Blender 5.x 네이티브가 아님. 49★로 초기 단계임.",
+      "license": "BSD-3-Clause (GitHub에서 확인)",
+      "popularity": "GitHub 49★",
+      "last_update": "2026년(논문 2026-04, 142 커밋)",
+      "distribution": "GitHub(princeton-vl/procfunc), PyPI 'procfunc'(piwheels 목록 확인)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(순수 Python, bpy 휠 의존)",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/princeton-vl/procfunc",
+        "https://arxiv.org/abs/2604.26943"
+      ]
+    },
+    {
+      "name": "AI 나무 생성 연구 (Autoregressive Trees, Foliager, CLIP 텍스트→나무)",
+      "category": "나무·식물 (AI 연구)",
+      "what_it_is": "SIGGRAPH Asia 2025 'Autoregressive Generation of Static and Growing Trees'(Wang 외)는 모래시계형 다해상도 트랜스포머로 나무 스켈레톤을 생성함. 성장, 완성, 점군→나무, 스케치→나무를 지원하고 잎은 절차적으로 붙임. Foliager(SIGGRAPH 2025 포스터)는 LLM을 생태 서술과 절차 생성 사이의 인터페이스로 써서 숲을 만듦. CASA 2025 논문은 CLIP 최적화로 텍스트 기반 나무 파라미터를 추정함(모두 검색 요약).",
+      "how_to_use": "코드 공개는 확인하지 못함. 개념 측면에서 'LLM은 생태·종 서술을 기존 생성기의 파라미터로 번역한다'는 Foliager식 설계를 에이전트 프롬프트 설계에 적용할 수 있음.",
+      "strengths": "스켈레톤 수준으로 생성해서 메시 스프에서 생기는 문제를 피함.",
+      "weaknesses": "실사용 가능한 공개 코드나 Blender 애드온은 확인하지 못함.",
+      "license": "미확인",
+      "popularity": "학술",
+      "last_update": "2025년(arXiv 2502.04762 → SIGGRAPH Asia 2025)",
+      "distribution": "논문",
+      "safety": {
+        "source_visible": false,
+        "binaries": "해당 없음",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://arxiv.org/abs/2502.04762",
+        "https://dl.acm.org/doi/10.1145/3757377.3763818",
+        "https://dl.acm.org/doi/10.1145/3721250.3743024",
+        "https://link.springer.com/chapter/10.1007/978-981-95-0100-7_8"
+      ]
+    },
+    {
+      "name": "A.N.T. Landscape (+ TXA_ant 포크)",
+      "category": "지형",
+      "what_it_is": "노이즈 기반 지형·행성 생성과 Landscape Eroder(침식)를 갖춘 애드온. 4.1까지 번들됐고 지금은 공식 Extensions에서 제한적으로 지원됨(검색 요약). TXA_ant는 height·normal 맵을 쓰는 텍스처 기반 포크임(v4.00.2, Blender 4.1).",
+      "how_to_use": "Add > Mesh > Landscape에서 노이즈 타입, 높이, 해상도를 정한 뒤 Eroder로 수력·열 침식을 적용함. 에이전트는 랜드스케이프 추가 연산자를 파라미터와 함께 호출하고, 결과 메시에 GN 스캐터를 얹음.",
+      "strengths": "무료이고 순수 Python이며 Blender 안에서 끝남. 에이전트가 수치로 제어하기 쉬움.",
+      "weaknesses": "침식 품질이 Gaea나 World Creator에 못 미침. 번들 재질은 4.0 기준이고 Blender 5 호환성은 Extensions 페이지에서 확인하지 못함(차단).",
+      "license": "GPL 계열(Blender 번들 애드온 출신, 세부 미확인)",
+      "popularity": "TXA_ant GitHub 140★",
+      "last_update": "미확인(Extensions 버전 기록 페이지 차단)",
+      "distribution": "extensions.blender.org, projects.blender.org/extensions/ant_landscape, TXA_ant는 GitHub",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://extensions.blender.org/add-ons/antlandscape/",
+        "https://projects.blender.org/extensions/ant_landscape",
+        "https://github.com/nerk987/txa_ant"
+      ]
+    },
+    {
+      "name": "Gaea 2.x / 3.0 (QuadSpinner)",
+      "category": "지형 (외부 전용 툴)",
+      "what_it_is": "노드 기반 지형 생성과 침식 시뮬레이션용 독립 앱. 2.3이 2026년 6월에 나왔고(CG Channel 제목), 3.0은 world-space 워크플로(TOR Engine 3.0), 새 열 침식, 모래·눈 시뮬레이션, 하천 도구를 담음. 2026년 7월 얼리액세스, 9월 Production Ready, 10월경 퍼블릭 베타가 목표임(검색 요약: QuadSpinner 블로그).",
+      "how_to_use": "Gaea에서 heightmap(16비트 이상)과 마스크(flow, erosion, slope)를 export한 뒤, Blender에서 displacement나 GN으로 지형을 만들고 마스크를 스캐터 밀도로 씀.",
+      "strengths": "침식 품질이 업계 최상급임. 영구 라이선스이며 무료 Community Edition이 있음.",
+      "weaknesses": "Community Edition은 비상업용임. Blender 직접 연동이 약하고, 3.0의 실제 출시 상태(2026-09 기준)는 확인하지 못함.",
+      "license": "상용 영구: Indie $99 / Professional $199 / Enterprise $299. Community는 무료·비상업 (검색 요약)",
+      "popularity": "지형 툴 양대 산맥",
+      "last_update": "2.3(2026-06), 3.0 개발·얼리액세스 중 (검색 요약)",
+      "distribution": "quadspinner.com",
+      "safety": {
+        "source_visible": false,
+        "binaries": "상용 폐쇄 바이너리(알려진 벤더)",
+        "red_flags": "공식 사이트 외 배포본은 쓰지 말 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://quadspinner.com/compare",
+        "https://docs.quadspinner.com/KB/FAQ/Licensing.html",
+        "https://www.cgchannel.com/2026/06/quadspinner-releases-gaea-2-3/",
+        "https://blog.quadspinner.com/gaea-3-0-development-update/",
+        "https://help.quadspinner.com/article/124-when-will-gaea-3-be-released"
+      ]
+    },
+    {
+      "name": "World Creator 2026.x (BiteTheBytes)",
+      "category": "지형 (외부 전용 툴, GPU 실시간)",
+      "what_it_is": "GPU 실시간 지형·랜드스케이프 생성기. 2026.4에서 expressions와 decals가 추가됐고 무료 Community Edition이 나옴(검색 요약). Blender, C4D, Godot, Houdini, Unity, Unreal용 공식 Bridge가 있음.",
+      "how_to_use": "지형을 만든 뒤 Blender Bridge로 가져옴. Community Edition은 export가 막혀 있어서 파이프라인용으로는 쓸 수 없고 학습용임.",
+      "strengths": "실시간 피드백이 가능하고 Blender Bridge가 공식 지원됨. 가격을 내림.",
+      "weaknesses": "무료판은 export가 불가하고 Sandbox 해상도 한도가 4096²임(검색 요약).",
+      "license": "상용: Indie 영구 $99 또는 $49/년, Enterprise 영구 $1,499 또는 $799/년, Community 무료(export 불가) (검색 요약)",
+      "popularity": "지형 툴 양대 산맥",
+      "last_update": "2026.4 (2026-04, 검색 요약)",
+      "distribution": "world-creator.com",
+      "safety": {
+        "source_visible": false,
+        "binaries": "상용 폐쇄 바이너리(알려진 벤더)",
+        "red_flags": "updatestar 같은 제3자 다운로드 사이트는 피할 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://www.cgchannel.com/2026/04/world-creator-2026-4-is-out-with-a-new-free-community-edition/",
+        "https://digitalproduction.com/2026/04/30/world-creator-2026-4-adds-expressions-and-decals/",
+        "https://docs.world-creator.com/reference/export/bridge-tools/blender-bridge",
+        "https://www.world-creator.com/en/buy.phtml"
+      ]
+    },
+    {
+      "name": "Blender 5.0/5.1 Volume Grid·SDF 노드 (내장)",
+      "category": "유기 조형·바위 (내장 SDF)",
+      "what_it_is": "Blender 5.0이 geometry nodes에 OpenVDB volume grid 데이터 타입과 grid 소켓, 새 노드 27개를 넣었음. Mesh to SDF Grid, Points to SDF Grid, SDF Grid Boolean, SDF Grid Laplacian/Median, Grid to Mesh, advection, curl·gradient 등이 있고, 5.1에서 SDF Fillet, SDF Grid Mean, raycast 노드가 추가됨(검색 요약: code.blender.org, CG Channel, 매뉴얼).",
+      "how_to_use": "에이전트용 파이프라인: 메타볼·프리미티브·포인트(뼈대 곡선에 반경 속성) → Mesh/Points to SDF Grid → SDF Grid Boolean(Union)으로 합치기 → SDF Offset(팽창)·Fillet(오목 모서리 둥글게) → Laplacian/Mean으로 스무딩 → Grid to Mesh → QRemeshify나 Quad Remesher로 리토폴로지. 바위는 SDF에 노이즈 변위를 주고 Boolean Difference로 파쇄 면을 만듦.",
+      "strengths": "내장이고 무료이며 바이너리가 없음. 비파괴이고, 기존 KB의 '스무스 유니온→복셀 리메시'를 노드 안에서 재현할 수 있음.",
+      "weaknesses": "복셀 크기에 따라 메모리가 급증함. 5.0 이상이 필수이고, 스무스 유니온의 파라미터 감각이 전용 SDF 애드온과 다름. 노드 그래프가 길어지면 LLM 오류가 늘어남.",
+      "license": "GPL (Blender 본체)",
+      "popularity": "Blender 5.x 표준 기능",
+      "last_update": "5.0(2025-11), 5.1(2026), 5.2 LTS 매뉴얼 존재 (검색 요약)",
+      "distribution": "Blender 본체",
+      "safety": {
+        "source_visible": true,
+        "binaries": "Blender 공식 빌드",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://code.blender.org/2025/10/volume-grids-in-geometry-nodes/",
+        "https://www.cgchannel.com/2025/11/blender-5-0-is-out-check-out-its-5-key-features/",
+        "https://projects.blender.org/blender/blender/pulls/147224",
+        "https://academany.fabcloud.io/fabacademy/2026/bootcamp-instructors/workshops/Blender_5.0_Geometry_Nodes/",
+        "https://www.strayspark.studio/blog/blender-51-sdf-volume-nodes-game-assets"
+      ]
+    },
+    {
+      "name": "The Nature Generator (Cinematic Cookie)",
+      "category": "절차적 자연 에셋 (바위·지형·식물·물)",
+      "what_it_is": "Asset Browser와 N-패널로 동작하는 절차적 자연 에셋 애드온. 바위, 지형, 식물, 물 등을 편집 가능한 생성형 에셋으로 넣어 줌. v1.2(2026-04)에서 새 스캐터 시스템, 바람 애니메이션, 나무, terrain steps, 프리셋이 추가됨(검색 요약).",
+      "how_to_use": "Asset Browser에서 드래그하면 N-패널에 해당 에셋의 컨트롤이 나타남. 에이전트는 에셋을 append한 뒤 modifier 입력만 조작함.",
+      "strengths": "바위·지형·강을 한 도구로 처리하고 모든 에셋이 절차적임.",
+      "weaknesses": "유료이고 Blender 4.1 이상, 최신 GPU가 필요함. 에이전트용 API는 확인하지 못함.",
+      "license": "상용(Superhive, 가격 미확인)",
+      "popularity": "미확인",
+      "last_update": "v1.2 (DIGITAL PRODUCTION 2026-04-09, 검색 요약)",
+      "distribution": "Superhive(구 Blender Market)",
+      "safety": {
+        "source_visible": false,
+        "binaries": "미확인(GN 에셋 중심으로 보임)",
+        "red_flags": "gfx-hub에 불법 배포본이 있음. 절대 쓰지 말 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://digitalproduction.com/2026/04/09/nature-generator-update-brings-procedural-nature-to-blender/",
+        "https://superhivemarket.com/products/the-nature-generator",
+        "https://80.lv/articles/create-3d-worlds-easily-with-this-procedural-nature-assets-for-blender"
+      ]
+    },
+    {
+      "name": "Poly Haven (CC0 스캔 에셋)",
+      "category": "포토그래메트리 에셋 라이브러리",
+      "what_it_is": "CC0 HDRI, 텍스처, 모델 라이브러리(약 2,300~2,400개 이상, 모델 약 520개, 검색 요약). 2024년에 Namaqualand 스캔 컬렉션(바위 10점, 가지·지면 잔해, 여러 성장 단계의 사막 식물 10세트 이상)이 추가됨.",
+      "how_to_use": "API는 무료이고 키가 필요 없음(User-Agent 헤더는 필수). BlenderMCP의 Poly Haven 도구로 에이전트가 직접 검색하고 불러옴. 바위와 식물은 스캐터 소스로 씀.",
+      "strengths": "CC0라 상업적으로 쓸 수 있고 출처 표기도 필요 없음. 에이전트 연동이 가장 쉬움.",
+      "weaknesses": "식생 종류가 적음(특히 나무). 규모는 Megascans보다 작음.",
+      "license": "CC0 (검색 요약)",
+      "popularity": "Blender 커뮤니티 표준 무료 소스",
+      "last_update": "상시 추가",
+      "distribution": "polyhaven.com, API",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(에셋 파일)",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://polyhaven.com/license",
+        "https://polyhaven.com/our-api",
+        "https://www.cgchannel.com/2024/10/download-poly-havens-free-namaqualand-3d-scan-library/"
+      ]
+    },
+    {
+      "name": "Quixel Megascans / Megaplants on Fab",
+      "category": "포토그래메트리 에셋 라이브러리 (상용·일부 무료)",
+      "what_it_is": "Epic의 스캔 에셋 라이브러리. 2024년 말까지는 누구나 무료였고, 2025년부터 Fab에서 유료로 판매됨(개별 에셋 $0.99부터, 절차 키트 $4.99, 팩 $24.99). 일부는 계속 무료이고, 2026년 1분기 신규 Megascans 팩과 Megaplants 업데이트는 Fab Standard License로 무료 제공됨(검색 요약).",
+      "how_to_use": "Fab에서 라이선스를 받은 뒤 Blender로 가져옴(Standard License는 엔진·툴에 제한이 없다는 것이 Fab 전환 FAQ의 내용임, 검색 요약). 에셋마다 NoAI 태그를 확인할 것.",
+      "strengths": "업계 최고 수준의 스캔 품질이고 Megaplants가 있음.",
+      "weaknesses": "무료 무제한 시대가 끝나 에셋별 비용과 라이선스를 관리해야 함. NoAI 태그는 계약상 구속력이 있음(검색 요약).",
+      "license": "Fab Standard License(에셋별), NoAI 태그 가능 (검색 요약)",
+      "popularity": "업계 표준",
+      "last_update": "2026년 1분기 신규 팩 (검색 요약)",
+      "distribution": "fab.com (Epic)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(에셋)",
+        "red_flags": "무료 시절에 받아 둔 에셋의 재배포나 '무료 팩' 미러 사이트는 쓰지 말 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://support.fab.com/s/article/Fab-Transition-FAQs?language=en_US",
+        "https://quixel.com/news/quixel-on-fab-new-megascans-and-megaplants",
+        "https://www.cgchannel.com/2024/10/epic-games-has-made-megascans-free-to-all-but-only-until-the-end-of-2024/",
+        "https://support.fab.com/s/article/Generative-Artificial-Intelligence-AI?language=en_US"
+      ]
+    },
+    {
+      "name": "Geo-Scatter 5.6 + Biome-Reader (무료)",
+      "category": "스캐터·생태계",
+      "what_it_is": "Blender의 대표 유료 스캐터 엔진. 바이옴(프리셋 생태계) 시스템이 있고, 무료 Biome-Reader로 바이옴을 설치·읽기·스캐터할 수 있음. 최신 Biome-Reader는 Geo-Scatter 5.6으로 만든 바이옴을 지원함(검색 요약).",
+      "how_to_use": "Blender 5.2 LTS를 권장하고 5.1.0은 피할 것(5.1.x나 5.2는 가능, 검색 요약). 에이전트는 바이옴 프리셋을 적용하고 밀도·마스크 파라미터만 조절하는 방식으로 씀.",
+      "strengths": "대규모 스캐터 성능, 바이옴 생태계, 무료 리더.",
+      "weaknesses": "유료이고, 에이전트용 Python API 문서는 확인하지 못함.",
+      "license": "상용 영구(개인, 팀, 스튜디오). 구독 없음 (검색 요약: geoscatter.com)",
+      "popularity": "Blender 스캐터 시장 선두",
+      "last_update": "5.6 (검색 요약)",
+      "distribution": "geoscatter.com, Superhive",
+      "safety": {
+        "source_visible": false,
+        "binaries": "미확인",
+        "red_flags": "공식 판매처 외 배포본은 쓰지 말 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://superhivemarket.com/products/scatter",
+        "https://www.geoscatter.com/",
+        "https://www.geoscatter.com/biomes.html",
+        "https://www.geoscatter.com/docs-changelogs.html"
+      ]
+    },
+    {
+      "name": "OpenScatter (무료·오픈소스, 아카이브됨)",
+      "category": "스캐터·생태계",
+      "what_it_is": "레이어 기반 비파괴 스캐터 애드온. 경사·고도·텍스처 마스크, 가이드 커브, 바람 애니메이션, 오브젝트 충돌, Quick Scatter, Master Seed, 프록시를 지원함. 개발자 건강 문제로 개발이 중단됐고 저장소는 2026-08-23에 아카이브됨(GitHub에서 확인).",
+      "how_to_use": "마지막 릴리스 v1.0.7(Blender 5.0 호환, 2026년 1월로 추정)을 GitHub 원 저장소에서 받음. 앞으로 5.x 호환이 깨질 수 있으니 핵심 로직만 참고하고, 기본 Scatter on Surface나 자체 GN으로 대체할 것을 권장함.",
+      "strengths": "무료 GPL이고, 자연 성장 패턴을 흉내 내는 옵션(경사, 고도, 충돌)이 풍부함.",
+      "weaknesses": "유지보수가 끝났고, 앞으로 나올 포크는 출처를 검증해야 함.",
+      "license": "GPL-3.0 (GitHub에서 확인)",
+      "popularity": "GitHub 178★ / 14 forks",
+      "last_update": "v1.0.7(Blender 5.0 대응), 저장소 2026-08-23 아카이브",
+      "distribution": "GitHub releases(원 저장소), Superhive(후원용 유료 버전)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "릴리스마다 에셋 3개(애드온과 에셋 zip으로 보임, 미열람)",
+        "red_flags": "아카이브되어 유지보수가 없음. aeblender 같은 재배포 사이트가 v1.0.7을 올려 두었으니 쓰지 말 것. 새 포크는 코드를 검토한 뒤에만 쓸 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/GitMay3D/OpenScatter",
+        "https://github.com/GitMay3D/OpenScatter/releases",
+        "https://superhivemarket.com/products/openscatter",
+        "https://www.blendernation.com/2025/03/01/openscatter-free-and-open-source-scattering/"
+      ]
+    },
+    {
+      "name": "Botaniq 7.3 (polygoniq) / Arborea (Sweeper3D)",
+      "category": "식생 에셋 라이브러리 + 스캐터 (상용)",
+      "what_it_is": "Botaniq은 나무, 풀, 꽃, 고사리, 아이비, 야자, 다육, 바위 등 대형 식생 라이브러리임. 7.3.0(2026-08-28)에서 974개 에셋에 가지 마스킹, 679개 에셋에 잎 마스킹이 추가되고 커브 스캐터가 개선됨(검색 요약). Arborea는 약 800개 자연 에셋과 스캐터, 덩굴·아이비·눈 GN 도구, v1.4 User Library, Hanging Vine Generator를 제공함(검색 요약).",
+      "how_to_use": "라이브러리 에셋을 스캐터 소스로 씀. 에이전트는 에셋 이름을 검색해 append한 뒤 GN이나 스캐터 시스템에 연결함.",
+      "strengths": "바로 쓸 수 있는 사실적 식생, 바람 애니메이션, 계절 변형.",
+      "weaknesses": "유료이고 용량이 큼. 에이전트용 API 문서는 확인하지 못함.",
+      "license": "상용. Botaniq 개인 라이선스 $129 (검색 요약), Arborea 가격 미확인",
+      "popularity": "Botaniq는 Blender 식생 라이브러리 대표 제품",
+      "last_update": "Botaniq 7.3.0(2026-08-28), Arborea v1.4 (검색 요약)",
+      "distribution": "polygoniq.com, Superhive, Gumroad(polygoniq, sweeper3d), sweeper3d.com",
+      "safety": {
+        "source_visible": false,
+        "binaries": "미확인",
+        "red_flags": "vfxmed, aeblender 등에 Botaniq 7.2·7.3 크랙판이 돌고 있음. 악성코드 위험이 큼.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://polygoniq.com/3d/botaniq/",
+        "https://superhivemarket.com/products/botaniq-trees",
+        "https://www.cgchannel.com/2025/08/polygoniq-releases-botaniq-7-1-for-blender/",
+        "https://www.sweeper3d.com/arborea-addon",
+        "https://superhivemarket.com/products/arborea"
+      ]
+    },
+    {
+      "name": "Blender 5.0 기본 스캐터 에셋 (Scatter on Surface 등)",
+      "category": "스캐터 (내장)",
+      "what_it_is": "Blender 5.0 Essentials에 들어간 GN 에셋 modifier·노드 그룹. Scatter on Surface(무작위 분포 또는 최소 간격의 균일 분포), Instance on Elements, Randomize Instances 등이 있음(검색 요약).",
+      "how_to_use": "에이전트는 지면 메시에 Scatter on Surface modifier를 추가하고 인스턴스 컬렉션, 밀도, seed, 최소 간격을 설정한 뒤 Randomize Instances로 회전·스케일에 변화를 줌. 표면에서 분포하므로 떠 있는 문제가 원천적으로 줄어듦.",
+      "strengths": "내장이고 무료이며 바이너리가 없음. 에이전트가 가장 적은 노드로 호출할 수 있음.",
+      "weaknesses": "경사·고도 마스크나 충돌 회피 같은 생태 규칙은 직접 추가해야 함.",
+      "license": "GPL (Blender 본체)",
+      "popularity": "표준",
+      "last_update": "5.0(2025-11) 이후, 5.2 LTS 매뉴얼",
+      "distribution": "Blender 본체",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://docs.blender.org/manual/en/latest/modeling/geometry_nodes/generate/scatter_on_surface.html",
+        "https://projects.blender.org/blender/blender/pulls/145645",
+        "https://devtalk.blender.org/t/geometry-nodes-assets-blender-5-0/42334"
+      ]
+    },
+    {
+      "name": "SDF.R (Rust·GPU SDF 모델러)",
+      "category": "유기 조형 (SDF 애드온, 유료)",
+      "what_it_is": "Rust 백엔드와 GPU 가속을 쓰는 실시간 SDF '디지털 점토' 모델러. 레이마칭 고스트 셰이더로 뷰포트를 표시하고 Marching Cubes와 GPU Dual Contouring으로 메시를 추출함. v16.2.1(2026-09-09)에서 다중 SDF 트리, Tree Reference, Mirror Blend가 추가됐고 v16.2.2(2026-09-12)가 뒤를 이음(검색 요약).",
+      "how_to_use": "N-패널에서 SDF 프리미티브와 블렌드를 구성하고 MC(유기형)나 DC(각진 형태)로 메시를 뽑음. 에이전트 자동화 API는 확인하지 못함.",
+      "strengths": "빠른 속도, 수밀(watertight) 메시, 유기형에 적합한 MC.",
+      "weaknesses": "폐쇄형 네이티브 바이너리이고 가격을 확인하지 못함. Windows x64, macOS Apple Silicon, Linux x64만 지원함.",
+      "license": "상용(Superhive)",
+      "popularity": "Blender Artists WIP 스레드, 불법 배포가 매우 많음(인기의 반증)",
+      "last_update": "v16.2.2 (2026-09-12, 검색 요약)",
+      "distribution": "Superhive(공식)",
+      "safety": {
+        "source_visible": false,
+        "binaries": "Rust로 컴파일된 네이티브 라이브러리(플랫폼별), 개인·소규모 벤더 제작",
+        "red_flags": "vfxmed, aeblender, gfx-hub, downloadpirate, filecr, psdly, gfxplugin 등이 크랙판을 배포 중임. 네이티브 바이너리를 품은 크랙판은 악성코드 위험이 가장 큼. Superhive 정품만 쓸 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://superhivemarket.com/products/sdfr",
+        "https://blenderartists.org/t/wip-sdf-r-high-performance-sdf-modeling-tool-rust-gpu-sparse-mc/1639945"
+      ]
+    },
+    {
+      "name": "Chisel / ConjureSDF / Arcane SDF (기타 SDF 애드온)",
+      "category": "유기 조형 (SDF 애드온)",
+      "what_it_is": "Chisel은 자체 레이마칭 렌더러를 쓰는 SDF 모델러로, 거리장 위에서 바로 불리언을 계산해 항상 단일 수밀 표면을 만듦(2026-03 Blender Artists 스레드, 검색 요약). ConjureSDF는 비파괴 스무스 불리언 SDF 에디터이고, Arcane SDF는 itch.io에서 파는 SDF 툴킷임.",
+      "how_to_use": "프리미티브와 스무스 블렌드로 형태를 잡은 뒤 메시로 변환하고 리토폴로지함. 에이전트 파이프라인에는 내장 SDF 노드가 더 투명함.",
+      "strengths": "뷰포트에서 최종 결과를 실시간으로 보여 주고 불리언 오류가 없음.",
+      "weaknesses": "유료이거나 소규모 벤더임. 코드 공개와 API 여부를 확인하지 못함.",
+      "license": "상용(Chisel은 Superhive, Arcane은 itch.io)",
+      "popularity": "미확인",
+      "last_update": "Chisel v4.1.0 언급(2026-09, 불법 사이트 제목으로만 확인)",
+      "distribution": "Superhive, chisel.ezelar.com, itch.io",
+      "safety": {
+        "source_visible": false,
+        "binaries": "미확인",
+        "red_flags": "vfxmed에 Chisel v4.1.0 크랙판이 있음. itch.io 소규모 벤더는 코드 검토를 권장함.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://superhivemarket.com/products/chisel",
+        "https://chisel.ezelar.com/v2/",
+        "https://blenderartists.org/t/chisel-sdf-modeling-for-blender/1633234",
+        "https://blenderartists.org/t/conjuresdf-smooth-non-destructive-booleans/1478671",
+        "https://pixonixstudio.itch.io/arcane-sdf"
+      ]
+    },
+    {
+      "name": "TRELLIS.2 (Microsoft)",
+      "category": "AI 이미지→3D (오픈 웨이트)",
+      "what_it_is": "4B 파라미터 이미지→3D 모델로 O-Voxel이라는 희소 복셀 구조를 씀. 복잡한 위상과 PBR(베이스컬러, 러프니스, 메탈릭, 투명도)을 생성하고 최대 1536³ 해상도를 냄. H100 기준 512³는 약 3초, 1024³는 약 17초, 1536³는 약 60초 걸림.",
+      "how_to_use": "Linux와 NVIDIA 24GB 이상 GPU 환경에서 CUDA 12.4 기준으로 FlexGEMM, CuMesh, O-Voxel, nvdiffrast 확장을 컴파일함. GLB 출력을 Blender로 가져온 뒤 리토폴로지·UV·데시메이트를 거침. 유기형 생물·바위·그루터기 원본 생성에 적합함.",
+      "strengths": "MIT이고 지역 제한이 없으며 PBR과 투명도를 지원함. 오픈 모델 중 최상위권임(TRELLIS 1이 2025-01 3D Arena 오픈소스 1위, 검색 요약).",
+      "weaknesses": "하드웨어 요구가 높고 Linux 전용임. 원본 메시는 고밀도 삼각형이라 후처리가 필수임.",
+      "license": "MIT(코드·모델). 의존성(nvdiffrast 등)은 라이선스가 따로 있음 (GitHub에서 확인)",
+      "popularity": "GitHub 11.4k★ / 1.4k forks",
+      "last_update": "2025년 말 공개(학습 코드 포함)",
+      "distribution": "GitHub microsoft/TRELLIS.2, HF microsoft/TRELLIS.2-4B",
+      "safety": {
+        "source_visible": true,
+        "binaries": "CUDA 확장을 로컬에서 컴파일함. 가중치는 HF 공식 저장소에서 받음.",
+        "red_flags": "'trellis2.app' 같은 비공식 래퍼·데모 사이트나 제3자 포크 설치 스크립트는 피할 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/microsoft/TRELLIS.2",
+        "https://huggingface.co/microsoft/TRELLIS.2-4B",
+        "https://huggingface.co/posts/dylanebert/600222040158881"
+      ]
+    },
+    {
+      "name": "Hunyuan3D 2.1 / 2.5 / 3.x (Tencent)",
+      "category": "AI 이미지→3D (오픈 웨이트와 API)",
+      "what_it_is": "2.1은 2025-06-13에 공개됐고 Shape 3.3B와 Paint 2B로 PBR 텍스처까지 만듦. VRAM은 형상만 10GB, 텍스처 21GB, 둘 다 29GB가 필요함(GitHub에서 확인). 3.1은 Tencent 호스팅과 API로만 제공되고 공개 가중치가 없음(검색 요약: 제3자 블로그). Pixazo VLM 심사 리더보드에서는 Hunyuan3D-2.5가 1325로 1위였음(검색 요약).",
+      "how_to_use": "한국 사용자는 커뮤니티 라이선스 대상 지역에서 빠지므로 오픈 가중치를 쓸 수 없음. 3.x API 약관의 한국 적용 여부는 따로 확인해야 함(미확인).",
+      "strengths": "형상 품질이 최상위권이고 PBR 페인트 모델이 있음.",
+      "weaknesses": "라이선스가 EU, 영국, 한국을 제외함. 월간 활성 사용자 100만 명을 넘으면 별도 라이선스가 필요하고, 출력물로 다른 AI를 개선하는 것도 금지됨(검색 요약). custom_rasterizer와 DifferentiableRenderer를 컴파일해야 함.",
+      "license": "Tencent Hunyuan 3D 2.1 Community License. Territory에서 EU·UK·South Korea 제외 (GitHub와 LICENSE에서 확인)",
+      "popularity": "Hunyuan3D-2.1 GitHub 4.1k★",
+      "last_update": "2.1 오픈(2025-06), 3.1 API 전용 (검색 요약)",
+      "distribution": "GitHub Tencent-Hunyuan, HF tencent, Tencent Cloud API",
+      "safety": {
+        "source_visible": true,
+        "binaries": "로컬 컴파일 모듈 2개와 RealESRGAN 가중치를 별도로 받아야 함",
+        "red_flags": "라이선스상 한국 사용 불가(악성코드 신호가 아니라 법적 위험). 파생 파이프라인(UltraShape, BlenderMCP의 Hunyuan 연동, 제3자 웹 래퍼)에도 사실상 같은 제약이 전이됨.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://triposr.org/blog/hunyuan3d-versions",
+        "https://www.tencentcloud.com/techpedia/148273?lang=en",
+        "https://www.pixazo.ai/leaderboard/ai-3d-model-generation"
+      ]
+    },
+    {
+      "name": "지역 제한 없는 기타 오픈 형상 모델 (TripoSG, Direct3D-S2, Step1X-3D, UltraShape 1.0, Sparc3D)",
+      "category": "AI 이미지→3D (오픈 웨이트)",
+      "what_it_is": "TripoSG(VAST): rectified flow 기반 형상 모델, MIT, 8GB VRAM 이상, GLB 출력, 2025-03 공개. Direct3D-S2(NeurIPS 2025): 희소 볼륨과 Spatial Sparse Attention 사용, MIT, 추론 VRAM 10GB(512)/24GB(1024), torchsparse 필요, v1.1(2025-05-30) 속도 2배, OBJ 출력. Step1X-3D(StepFun): Apache-2.0, 27~29GB VRAM, 형상과 텍스처 2단계, 2025-05-13. UltraShape 1.0(PKU): Hunyuan3D-2.1의 거친 메시를 복셀로 정제함, GitHub 표기는 MIT(검색 요약은 Apache-2.0으로 상충), 2025-12-26 가중치 공개. Sparc3D: 1024³ 희소 표현, 1.4k★, 라이선스는 GitHub에서 확인 못함(HF는 'other').",
+      "how_to_use": "한국 사용자에게는 TripoSG, Direct3D-S2, Step1X-3D가 법적으로 가장 깔끔한 로컬 선택지임. UltraShape는 입력 단계에서 Hunyuan3D-2.1을 쓰므로 한국 제외 제약을 그대로 물려받음. 생성 후 리토폴로지를 거쳐 Blender로 가져옴.",
+      "strengths": "대부분 MIT나 Apache로 상업적 사용이 가능하고 문서에 지역 제한이 없음.",
+      "weaknesses": "대부분 형상만 만들거나 텍스처가 약함. CUDA 확장 컴파일이 필요하고 Linux 중심임.",
+      "license": "TripoSG MIT / Direct3D-S2 MIT / Step1X-3D Apache-2.0 / UltraShape MIT(GitHub 표기, Hunyuan 의존) / Sparc3D 미확인 (GitHub에서 확인)",
+      "popularity": "TripoSG 1.8k★, Direct3D-S2 1.3k★, Sparc3D 1.4k★, Step1X-3D 892★, UltraShape 853★",
+      "last_update": "2025-03 ~ 2025-12",
+      "distribution": "GitHub 공식 저장소와 HF 가중치",
+      "safety": {
+        "source_visible": true,
+        "binaries": "CUDA·C++ 확장을 로컬에서 컴파일함(torchsparse, custom rasterizer 등)",
+        "red_flags": "UltraShape는 Hunyuan 라이선스가 전이됨. Sparc3D는 라이선스가 불명확함.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/VAST-AI-Research/TripoSG",
+        "https://github.com/DreamTechAI/Direct3D-S2",
+        "https://github.com/stepfun-ai/Step1X-3D",
+        "https://github.com/PKU-YuanGroup/UltraShape-1.0",
+        "https://github.com/lizhihao6/Sparc3D"
+      ]
+    },
+    {
+      "name": "Rodin Gen-2 / Gen-2.5 (Hyper3D, Deemos)",
+      "category": "AI 이미지·텍스트→3D (상용 클라우드)",
+      "what_it_is": "Gen-2.5는 2026-05-26에 발표됨. 원본 1,000만 폴리곤 이상의 '스컬프트급' 디테일(피부 모공, 직물 결)을 내고, 원본 삼각형, 쿼드, Smart Low-Poly 세 가지 토폴로지를 출력함. 약 4초 드래프트부터 9·20·40·80초 품질 모드까지 고를 수 있음(검색 요약: 보도자료, 80.lv).",
+      "how_to_use": "BlenderMCP의 Hyper3D 도구로 호출함(무료 체험 키는 하루 생성량 제한, 초과 시 hyper3d.ai나 fal.ai 키 필요). 유기 생물과 바위는 쿼드나 Smart Low-Poly 옵션으로 받아 리토폴로지 부담을 줄임.",
+      "strengths": "유기물 표면 디테일과 토폴로지 선택지가 넓고 Blender MCP와 공식 연동됨.",
+      "weaknesses": "유료 클라우드라 입력 이미지가 외부로 전송됨. 공개 리더보드에서의 독립 검증은 제한적임.",
+      "license": "상용 API (약관 미확인)",
+      "popularity": "BlenderMCP 기본 연동 제공자",
+      "last_update": "Gen-2.5 (2026-05-26, 검색 요약)",
+      "distribution": "hyper3d.ai, API, fal.ai",
+      "safety": {
+        "source_visible": false,
+        "binaries": "없음(클라우드)",
+        "red_flags": "DeemosTech/blender-mcp-rodin-integration은 ahujasid 저장소의 포크이고 5★임. 벤더 조직이긴 하지만 원 저장소를 쓰는 편을 권장함.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://80.lv/articles/how-hyper3d-rodin-gen-2-5-is-bringing-production-level-control-to-ai-3d-generation",
+        "https://www.aspendailynews.com/features/article_9b3afc8b-cb82-5a03-be74-dd36fe6564f1-cf1114da",
+        "https://hyper3d.ai/blog/rodin-gen-2",
+        "https://github.com/DeemosTech/blender-mcp-rodin-integration"
+      ]
+    },
+    {
+      "name": "Meshy-6 / Tripo 3.1 (상용 클라우드)",
+      "category": "AI 이미지·텍스트→3D (상용 클라우드)",
+      "what_it_is": "Meshy-6는 수밀 메시, 선명한 하드서피스 엣지, Low Poly Mode를 제공하고, 500종 이상의 애니메이션 프리셋과 자동 리깅이 있음. Tripo 3.1은 Smart Mesh P1.0으로 약 2~10초 만에 쿼드 토폴로지를 만들고, PBR이 기본으로 켜져 있으며 네거티브 프롬프트를 지원함(검색 요약).",
+      "how_to_use": "생물·캐릭터 초안 생성에 쓰고, 얼굴·손가락·비율은 반드시 검수함(왜곡 사례 보고 있음, 검색 요약). 반복 탐색은 Tripo, 최종 디테일은 Meshy나 Rodin으로 나누어 씀.",
+      "strengths": "속도(Tripo), 파이프라인 연동과 리깅(Meshy), 두 서비스 모두 MCP 연동이 있음.",
+      "weaknesses": "Meshy 측이 내세운 '1,331명 아티스트 중 63.8%가 Meshy-6 선호'는 벤더 자체 비교라 편향 가능성이 있음. 캐릭터의 얼굴과 손가락이 깨지는 사례가 보고됨.",
+      "license": "상용 SaaS (플랜별 상이, 미확인)",
+      "popularity": "상용 시장 상위",
+      "last_update": "2026 (검색 요약)",
+      "distribution": "meshy.ai, tripo3d.ai",
+      "safety": {
+        "source_visible": false,
+        "binaries": "없음(클라우드)",
+        "red_flags": "비교 수치는 벤더 자료이므로 독립 검증이 필요함",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://www.meshy.ai/compare/meshy-vs-tripo",
+        "https://www.tripo3d.ai/compare/tripo-vs-meshy",
+        "https://z.tools/blog/meshy-6-vs-tripo-v3-1-3d",
+        "https://www.sloyd.ai/blog/ai-3d-model-generator-rankings"
+      ]
+    },
+    {
+      "name": "Quad Remesher (Exoside)",
+      "category": "리토폴로지",
+      "what_it_is": "상용 자동 쿼드 리토폴로지 엔진으로 Blender를 비롯한 여러 DCC에서 쓰임. 유기형 AI 메시와 스컬프트를 쿼드로 바꾸는 사실상의 표준임.",
+      "how_to_use": "AI로 생성하거나 SDF로 만든 유기 메시를 적절히 데시메이트한 뒤 목표 쿼드 수와 적응형 크기를 정해 실행함. 엣지 루프 가이드가 필요하면 재질과 페이스셋 경계를 씀.",
+      "strengths": "유기형 엣지 플로 품질이 가장 안정적이고 Windows, macOS, Linux를 지원함.",
+      "weaknesses": "유료이고 폐쇄형 엔진임.",
+      "license": "상용: Perpetual Pro $139.90 또는 3개월 구독 $22.99(VAT 별도) (검색 요약)",
+      "popularity": "업계 표준급",
+      "last_update": "v1.4.1이 2026-07 커뮤니티에서 최신으로 언급됨(Blender 5.0→5.2) (검색 요약)",
+      "distribution": "exoside.com",
+      "safety": {
+        "source_visible": false,
+        "binaries": "폐쇄형 네이티브 엔진(알려진 벤더 Exoside)",
+        "red_flags": "gfx-hub, unityunreal 등에 크랙판이 있음. 정품은 exoside.com에서만 받을 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://exoside.com/quadremesher/quadremesher-buy/",
+        "https://exoside.com/quadremesher/",
+        "https://blenderartists.org/t/quad-remesher-add-on-update/1647735"
+      ]
+    },
+    {
+      "name": "QRemeshify (QuadWild Bi-MDF 기반, 무료)",
+      "category": "리토폴로지",
+      "what_it_is": "QuadWild(Bi-MDF 솔버)를 감싼 Blender용 무료 쿼드 리메셔. v1.1.0에서 성능이 개선되고 재질·페이스셋 경계로 엣지 플로를 유도할 수 있게 됨(GitHub에서 확인).",
+      "how_to_use": "1k 이상 100k 미만 삼각형 메시에 쓰는 것을 권장함. 떨어져 있는 조각은 별도 오브젝트로 나누고, sharp 엣지와 페이스셋으로 루프를 유도함. SDF 노드나 AI 생성 결과의 후처리 단계에 넣음.",
+      "strengths": "무료 GPL이고 품질이 좋음(1.2k★).",
+      "weaknesses": "Windows 중심이고 Linux와 macOS는 테스트 중임. 옷 주름처럼 복잡한 형상에서는 느림.",
+      "license": "GPL-3.0 (GitHub에서 확인)",
+      "popularity": "GitHub 1.2k★",
+      "last_update": "v1.1.0 'Oct 8'(연도 미표기)",
+      "distribution": "GitHub releases(ksami), Gumroad(ksami). Superhive 목록은 동일 저자인지 확인 못함.",
+      "safety": {
+        "source_visible": true,
+        "binaries": "OS별 zip에 QuadWild·Bi-MDF 컴파일 바이너리가 들어 있음(학술 오픈소스 기반, 개인 빌드)",
+        "red_flags": "이름이 같은 포크가 여럿 있음(athersic64, RobertBeckebans 등). 포크 배포본의 바이너리는 검증할 수 없으니 ksami 원 저장소나 Gumroad만 쓸 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/ksami/QRemeshify",
+        "https://github.com/ksami/QRemeshify/releases",
+        "https://ksami.gumroad.com/l/QRemeshify",
+        "https://superhivemarket.com/products/qremeshify"
+      ]
+    },
+    {
+      "name": "Instant Meshes",
+      "category": "리토폴로지 (독립 실행형)",
+      "what_it_is": "SIGGRAPH Asia 2015 'Instant Field-Aligned Meshes'의 구현(Wenzel Jakob). 필드 정렬 쿼드·삼각 리메셔이며 Modo에도 통합됨.",
+      "how_to_use": "OBJ로 export해 GUI나 CLI로 리메시한 뒤 다시 가져옴. 가능하면 소스에서 직접 빌드할 것(CMake).",
+      "strengths": "무료이고 빠르며 오랜 기간 검증됨.",
+      "weaknesses": "사실상 유지보수가 끝났고 결과 품질이 QRemeshify나 Quad Remesher보다 거침.",
+      "license": "LICENSE.txt 있음(BSD 계열로 알려져 있으나 이번에 미확인)",
+      "popularity": "GitHub 6.2k★",
+      "last_update": "46 커밋(오래됨)",
+      "distribution": "GitHub. 미리 빌드된 바이너리는 저장소 README가 링크하는 AWS S3에 있고, CI가 최신 리비전으로 자동 빌드함.",
+      "safety": {
+        "source_visible": true,
+        "binaries": "S3에 호스팅된 CI 빌드(README 링크)",
+        "red_flags": "제3자 'Instant Meshes Blender 애드온' 재패키징은 바이너리 출처를 확인할 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/wjakob/instant-meshes"
+      ]
+    },
+    {
+      "name": "BlenderMCP (ahujasid → PyPI mcp-for-blender)",
+      "category": "MCP 서버 (에셋 소싱·AI 생성 연동)",
+      "what_it_is": "가장 널리 쓰이는 커뮤니티 Blender MCP. Poly Haven(2,400개 이상 CC0), Sketchfab, Poly Pizza(약 10,600개 로우폴리), Hyper3D Rodin, Hunyuan3D, Tripo 연동을 제공함(GitHub에서 확인). PyPI 패키지 이름이 mcp-for-blender로 바뀜.",
+      "how_to_use": "uvx mcp-for-blender로 실행하고 'uvx mcp-for-blender install-addon'으로 애드온을 설치함. 자연 씬에서는 Poly Haven 바위·식물 검색, 생물·그루터기는 Rodin이나 Tripo로 생성, 배치는 execute_blender_code로 GN 스캐터를 설정하는 식으로 씀.",
+      "strengths": "에셋 소싱과 AI 생성 연동이 가장 폭넓고 커뮤니티가 가장 큼.",
+      "weaknesses": "자연 전용 도구(지형, 나무, 스캐터 규칙)는 없음. Hunyuan3D 연동은 한국 라이선스 문제가 있음.",
+      "license": "MIT (GitHub에서 확인)",
+      "popularity": "GitHub 29.5k★",
+      "last_update": "PyPI 1.9.0 2026-08-30 (검색 요약). GitHub releases 페이지는 비어 있음.",
+      "distribution": "PyPI(mcp-for-blender), GitHub",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(Python)",
+        "red_flags": "execute_blender_code로 임의 Python을 실행할 수 있음. 익명 텔레메트리가 기본으로 켜져 있어 DISABLE_TELEMETRY=true로 꺼야 함. '자체 API 키 없이 생성'할 경우 입력이 제3자 프록시를 거칠 가능성이 있음(검색 요약). 이름이 비슷한 blender-mcp 포크와 사칭 사이트가 많으니 원 저장소나 PyPI만 쓸 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://lobehub.com/mcp/ahujasid-blender-mcp"
+      ]
+    },
+    {
+      "name": "Blender Lab 공식 MCP 서버 (blender_mcp)",
+      "category": "MCP 서버 (공식)",
+      "what_it_is": "Blender 개발진(Blender Lab)이 만든 경량 MCP 서버. Blender 안의 애드온이 TCP로 독립 MCP 서버와 통신하며 Python API 실행, datablock 인벤토리, 누락 파일과 링크 라이브러리 보고, 뷰포트 스크린샷, 썸네일 렌더, API 레퍼런스와 매뉴얼 검색을 제공함. 2026-04-28 Anthropic 크리에이티브 커넥터 발표에 포함됨. 문서에는 조약돌 3종을 밀도 마스크별로 흩뿌리는 'Pebble Scattering Nodes' 예제가 실려 있음(모두 검색 요약).",
+      "how_to_use": "projects.blender.org/lab/blender_mcp에서 받음. 에이전트가 API와 매뉴얼을 검색해 정확한 노드·연산자 이름을 확인한 뒤 코드를 실행하게 하면, GN 연결 오류가 줄어들 것으로 기대됨.",
+      "strengths": "출처가 가장 신뢰할 만하고, 문서 검색과 스크린샷 피드백 루프가 내장됨.",
+      "weaknesses": "자연 전용 도구는 없음. 기능 세부와 라이선스는 차단 때문에 1차 확인하지 못함.",
+      "license": "미확인(Blender 프로젝트이므로 GPL 계열로 추정)",
+      "popularity": "공식 채널",
+      "last_update": "2026-04 공개 (검색 요약)",
+      "distribution": "projects.blender.org/lab/blender_mcp, blender.org/lab/mcp-server",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음으로 보임",
+        "red_flags": "없음. Python 실행 권한 자체는 모든 Blender MCP의 공통 위험임.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://projects.blender.org/lab/blender_mcp",
+        "https://www.blender.org/lab/mcp-server/",
+        "https://www.cgchannel.com/2026/04/ai-developer-anthropic-becomes-blenders-latest-corporate-patron/",
+        "https://mcp.film/mcps/blender-lab-mcp/"
+      ]
+    },
+    {
+      "name": "blender-ai-mcp (PatrykIti) — 접촉·간격 검증 도구",
+      "category": "MCP 서버 (검증 중심)",
+      "what_it_is": "'truth-first' 결정적 검증을 내세운 MCP. scene_measure_distance, scene_measure_gap, scene_assert_contact, macro_attach_part_to_surface 같은 측정·단언 도구와, 로컬 Qwen VL이나 외부 Gemini·OpenRouter를 쓰는 비전 비교 루프를 제공함(GitHub에서 확인).",
+      "how_to_use": "스캐터나 배치가 끝난 뒤 나무 밑동과 바위 바닥의 지면 접촉을 scene_assert_contact로, 공중 부양 여부를 measure_gap으로 자동 단언함. 스컬프트나 스캐터 도구는 없으므로 다른 MCP와 조합해서 씀.",
+      "strengths": "'떠 있는 부품' 문제를 결정적으로 잡아낼 수 있음.",
+      "weaknesses": "59★로 작음. 유기 모델링 도구는 없고, 외부 비전 제공자를 쓰면 이미지가 외부로 전송됨.",
+      "license": "Apache-2.0 (GitHub에서 확인)",
+      "popularity": "GitHub 59★",
+      "last_update": "64 커밋(날짜 미표기)",
+      "distribution": "GitHub",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음으로 보임(로컬 MLX 모델은 별도로 받음)",
+        "red_flags": "소규모 프로젝트이니 코드 검토 후 쓸 것",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/PatrykIti/blender-ai-mcp",
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ]
+    },
+    {
+      "name": "blender-skills (arjun988) — vegetation/creature/environment 스킬",
+      "category": "에이전트 스킬",
+      "what_it_is": "MCP로 실행되는 Blender 에이전트 스킬 94개. vegetation-artist, creature-artist, environment-artist, geometry-nodes, procedural-modeling, lod-pipeline 등이 들어 있음(GitHub에서 확인).",
+      "how_to_use": "Claude Code 같은 에이전트에 스킬을 로드한 뒤 Blender MCP로 실행함. 쓰기 전에 스킬 본문을 읽고 KB의 SDF·스캐터 검증 규칙과 합쳐서 씀.",
+      "strengths": "MIT이고 식생·생물 역할 프롬프트를 바로 재사용할 수 있음.",
+      "weaknesses": "품질 검증 데이터가 없음(232★). 스킬이 MCP를 통해 코드를 실행하므로 내용 검토가 필요함.",
+      "license": "MIT (GitHub에서 확인)",
+      "popularity": "GitHub 232★",
+      "last_update": "최근 활동 있음(15 커밋)",
+      "distribution": "GitHub, blender-skills.vercel.app",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(텍스트 스킬)",
+        "red_flags": "스킬 안의 코드 스니펫은 실행 전에 검토할 것",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/arjun988/blender-skills"
+      ]
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "스캐터는 공중 좌표에 무작위로 놓지 말고, 반드시 표면 분포(Distribute Points on Faces 또는 5.0 Scatter on Surface)로 만든 뒤 법선 정렬과 크기 비례 매몰 오프셋(뿌리·바닥을 지면 아래로 살짝)을 줄 것.",
+      "why": "3DCodeBench에서 렌더에 성공한 결과물도 '분리되거나 떠 있는 부품'이 주요 실패로 보고됨(검색 요약). 표면 기반 분포는 이 문제를 구조적으로 차단함.",
+      "urls": [
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://arxiv.org/abs/2606.01057",
+        "https://docs.blender.org/manual/en/latest/modeling/geometry_nodes/generate/scatter_on_surface.html"
+      ]
+    },
+    {
+      "tip": "배치 후에는 결정적으로 검증할 것. 모든 인스턴스에서 아래 방향으로 지면에 레이캐스트해 접촉 거리를 표로 보고하게 하거나, scene_assert_contact 같은 도구로 단언함. 스크린샷에서 떠 보인다면 지면이 두께 0인 면이거나 카메라가 너무 낮지 않은지도 의심할 것.",
+      "why": "Claude와 Blender MCP로 만든 숲 사례에서, 에이전트가 70그루를 레이캐스트해 모두 0.05m 박혀 있음을 확인했고, 실제 원인이 두께 0인 지면의 시각적 착시였음을 재현해 냄(검색 요약).",
+      "urls": [
+        "https://medium.com/@developer.rizasghari/how-i-used-claude-to-model-in-blender-and-build-a-3d-unity-game-25914ffee262",
+        "https://github.com/PatrykIti/blender-ai-mcp"
+      ]
+    },
+    {
+      "tip": "겹침 방지에는 Poisson(최소 간격) 분포를 쓰고, 큰 오브젝트(나무, 바위)는 먼저 배치한 뒤 그 주변을 밀도 마스크에서 빼는 계층 스캐터를 쓸 것. 생태 규칙(경사, 고도, 물가)은 마스크로 표현함.",
+      "why": "OpenScatter와 Geo-Scatter 같은 전용 도구가 경사·고도·충돌 규칙을 핵심 기능으로 두는 이유임. 에이전트도 같은 규칙을 GN 속성으로 재현하면 '균일하게 뿌린 잔디' 느낌을 피할 수 있음.",
+      "urls": [
+        "https://github.com/GitMay3D/OpenScatter",
+        "https://www.geoscatter.com/biomes.html"
+      ]
+    },
+    {
+      "tip": "유기물은 프리미티브를 join하지 말고 SDF로 만들 것. Blender 5.x에서는 Mesh/Points to SDF Grid → SDF Grid Boolean(Union) → SDF Fillet/Offset → Laplacian/Mean → Grid to Mesh → QRemeshify나 Quad Remesher 순서가 바이너리 없이 가능함. 메타볼은 빠른 덩어리 스케치용으로만 쓰고 결국 SDF나 리메시로 넘김.",
+      "why": "프리미티브를 겹쳐 두기만 하면 이음새가 보여 '울퉁불퉁한 프리미티브' 느낌이 남. SDF 결합은 단일 수밀 표면과 자연스러운 필렛을 보장함.",
+      "urls": [
+        "https://code.blender.org/2025/10/volume-grids-in-geometry-nodes/",
+        "https://projects.blender.org/blender/blender/pulls/147224",
+        "https://github.com/ksami/QRemeshify"
+      ]
+    },
+    {
+      "tip": "나무와 식물은 LLM이 원기둥과 구를 쌓게 하지 말고, 파라메트릭 생성기(Sapling, Modular Tree, Spacetree, Infinigen 팩토리)를 호출하고 파라미터만 조정하게 할 것. 수종 서술을 파라미터로 옮기는 일이 LLM의 역할임(Foliager 방식).",
+      "why": "Claude는 '기하를 코드로 짓기' 때문에 서랍장은 잘 만들지만 옹이 진 그루터기는 어렵다는 실사용 평가가 있음(검색 요약). 생성기는 분기 각도와 굵기 감쇠 같은 식물학적 규칙을 이미 담고 있음.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance",
+        "https://dl.acm.org/doi/10.1145/3721250.3743024",
+        "https://extensions.blender.org/add-ons/sapling-tree-gen/"
+      ]
+    },
+    {
+      "tip": "Geometry Nodes는 에이전트가 처음부터 큰 그래프를 짜게 하지 말 것. 검증된 노드 그룹이나 에셋을 append하고 입력 소켓만 바꾸게 함. 구조를 바꿔야 하면 ProcFunc 트랜스파일러로 GN을 Python으로 바꿔 편집하고, 공식 Blender Lab MCP의 API·매뉴얼 검색으로 노드 이름을 확인시킴.",
+      "why": "노드 몇 개를 넘는 GN 그래프에서는 연결 오류가 흔하다는 보고가 있고(검색 요약), ProcFunc 논문은 VLM이 절차 코드를 다룰 때 오류가 줄어든다고 보고함(검색 요약).",
+      "urls": [
+        "https://github.com/princeton-vl/procfunc",
+        "https://arxiv.org/abs/2604.26943",
+        "https://projects.blender.org/lab/blender_mcp"
+      ]
+    },
+    {
+      "tip": "Infinigen은 '에셋 공장'으로만 분리해서 쓸 것. nature-stable(bpy 3.6.0, Python 3.10)을 전용 conda 환경에서 돌려 generate_individual_assets --export obj|usd|fbx로 뽑고, Blender 5.x 작업 씬으로 가져옴. main(2.0) 브랜치에서 자연 팩토리를 찾지 말 것.",
+      "why": "Infinigen 2.0 문서에는 자연 에셋이 아직 없다고 명시돼 있고, 브랜치마다 bpy 버전이 고정돼 있어 섞어 쓰면 설치가 깨짐.",
+      "urls": [
+        "https://github.com/princeton-vl/infinigen/blob/main/docs/source/Infinigen2.md",
+        "https://github.com/princeton-vl/infinigen/blob/nature-stable/pyproject.toml",
+        "https://github.com/princeton-vl/infinigen/blob/main/docs/source/GeneratingIndividualAssets.md"
+      ]
+    },
+    {
+      "tip": "AI로 생성한 유기 메시는 '원본'일 뿐임. 데시메이트 → 쿼드 리토폴로지 → UV → 노멀·디스플레이스 베이크를 표준 후처리로 둘 것. 생물이나 캐릭터는 얼굴, 손가락, 대칭을 따로 점검하게 함.",
+      "why": "Rodin Gen-2.5 원본은 1,000만 폴리곤을 넘고, Meshy와 Tripo 캐릭터에서는 얼굴 왜곡이나 손가락 추가 사례가 보고됨(검색 요약).",
+      "urls": [
+        "https://80.lv/articles/how-hyper3d-rodin-gen-2-5-is-bringing-production-level-control-to-ai-3d-generation",
+        "https://z.tools/blog/meshy-6-vs-tripo-v3-1-3d",
+        "https://exoside.com/quadremesher/"
+      ]
+    },
+    {
+      "tip": "한국 사용자는 이미지→3D 모델을 고를 때 라이선스 지역부터 확인할 것. Hunyuan3D 2.x(Community License)와 그 파생(UltraShape 1.0, BlenderMCP의 Hunyuan 연동)은 쓰지 말고, TRELLIS.2(MIT), TripoSG(MIT), Direct3D-S2(MIT), Step1X-3D(Apache-2.0)를 우선함.",
+      "why": "Hunyuan3D-2.1 라이선스의 Territory는 EU, 영국, 한국을 제외하고, 그 밖의 사용은 '무허가'로 규정함. UltraShape는 Hunyuan3D-2.1의 거친 메시를 입력으로 씀.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE",
+        "https://github.com/PKU-YuanGroup/UltraShape-1.0",
+        "https://github.com/microsoft/TRELLIS.2"
+      ]
+    },
+    {
+      "tip": "에이전트 루프에 오류 피드백과 다각도 시각 피드백을 반드시 넣을 것. 실행 오류를 돌려주고 여러 시점에서 스크린샷을 찍게 하며, 가능하면 대상과 결과를 MCP로 직접 조회하게 함.",
+      "why": "3DCodeBench에서는 다중 턴 오류 피드백으로 평균 실행 가능성이 0.69에서 0.97로 올랐고(검색 요약), 3DHarnessBench에서는 함수 호출 접근이 풍부할수록 모든 모델의 3D 복원이 크게 개선됨.",
+      "urls": [
+        "https://benchmarklist.com/benchmarks/3dcodebench_benchmarking_agentic_procedural_3d_modeling_via_code/",
+        "https://github.com/llada60/3DHarnessBench"
+      ]
+    },
+    {
+      "tip": "지형은 전용 툴(Gaea, World Creator)에서 heightmap과 마스크(flow, slope, deposition)를 export하고, 그 마스크를 Blender 스캐터 밀도와 재질 블렌드에 그대로 재활용할 것. 무료판 제약(Gaea Community는 비상업, World Creator CE는 export 불가)을 먼저 확인함.",
+      "why": "침식 마스크가 식생 분포(물길, 퇴적지)와 재질 전이의 가장 사실적인 근거이기 때문임.",
+      "urls": [
+        "https://quadspinner.com/compare",
+        "https://www.cgchannel.com/2026/04/world-creator-2026-4-is-out-with-a-new-free-community-edition/"
+      ]
+    },
+    {
+      "tip": "보안 원칙: 유료 애드온은 Superhive나 벤더 공식 사이트에서만 사고, 'Full Download' 류 사이트(vfxmed, aeblender, gfx-hub, downloadpirate, filecr, psdly, gfxplugin, unityunreal)는 절대 쓰지 말 것. 네이티브 바이너리가 든 애드온(SDF.R, Modular Tree, QRemeshify)은 원 저장소나 스토어에서만 받음. .blend 에셋은 Auto Run Scripts를 끈 상태로 엶. MCP는 텔레메트리를 끄고, 가능하면 샌드박스 실행을 지원하는 서버(예: blend-ai는 os와 subprocess 차단, 텔레메트리 없음)나 공식 Blender Lab MCP를 씀.",
+      "why": "이번 조사에서 SDF.R, Chisel, Botaniq, Quad Remesher, Nature Generator의 크랙판이 2026-08~09 날짜로 다수 확인됨. 네이티브 바이너리가 들어간 크랙 애드온은 악성코드의 전형적인 통로임.",
+      "urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai",
+        "https://github.com/ahujasid/blender-mcp",
+        "https://superhivemarket.com/products/sdfr"
+      ]
+    },
+    {
+      "tip": "Megascans·Fab 에셋을 AI 파이프라인(학습, 데이터 수집)에 넣기 전에 에셋별 NoAI 태그와 라이선스를 확인할 것. 에이전트 씬에 배치해 렌더하는 용도와 학습 데이터 용도를 구분함.",
+      "why": "Fab의 NoAI 태그는 다운로드 후에도 계약상 구속력이 있음(검색 요약).",
+      "urls": [
+        "https://support.fab.com/s/article/Generative-Artificial-Intelligence-AI?language=en_US",
+        "https://sketchfab.com/blogs/community/restricting-generative-ai-use-of-free-models/"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Claude + Blender MCP로 로우폴리 숲·연못 씬을 만들어 Unity 게임에 사용",
+      "who": "Reza Asghari (Medium, 2026-09)",
+      "ai_model": "Claude (정확한 버전은 확인 못함)",
+      "tools": "Blender MCP, Blender, Unity",
+      "what_was_made": "로우폴리 나무에서 시작해 지면, 여러 수종의 숲, 솎아내기, 공터의 연못, 갈대, 연잎, 길, 안개, 풀, 동물 굴까지 대화로 확장한 씬",
+      "process": "대화로 점진 확장함. 사용자가 나무 밑동이 떠 보이는 스크린샷을 보내자, 에이전트는 추측하지 않고 70그루 모두를 지면에 레이캐스트해 전부 0.05m 박혀 있음을 보고함. 이어 낮은 카메라에서 현상을 재현해 원인이 두께 0인 지면임을 증명함(검색 요약).",
+      "outcome": "성공 요인은 '에이전트가 자기 출력을 보고 측정한 것'. 시각적 부유 문제의 원인이 배치가 아니라 지면 기하였음을 결정적 측정으로 가려냄. 원문은 차단되어 검색 요약만 확인함.",
+      "urls": [
+        "https://medium.com/@developer.rizasghari/how-i-used-claude-to-model-in-blender-and-build-a-3d-unity-game-25914ffee262"
+      ]
+    },
+    {
+      "title": "3DCodeBench: VLM 12종의 Blender 5.0 절차적 모델링 벤치마크 (식물·산호·해양생물 포함)",
+      "who": "gaoypeng 외 (arXiv 2606.01057, 2026-06)",
+      "ai_model": "12개 VLM. 에이전트 하네스는 Claude Code, Codex, Gemini CLI, Antigravity",
+      "tools": "Blender 5.0 Python, Infinigen 팩토리를 변환한 레퍼런스 212개, 3DCodeArena(인간 쌍대 선호)",
+      "what_was_made": "텍스트나 이미지를 입력받아 절차적 Blender 코드로 212개 카테고리(의자, 식물, 해양생물, 산호, 주방 하드웨어 등)를 생성함. 3DCodeData 12,720개 인스턴스와 82,042개 trial 로그를 공개함.",
+      "process": "단일 샷, 이미지 조건, 3회 재시도 오류 피드백, 완전 에이전트 하네스의 네 설정으로 실행함. 실행 가능성, SigLIP-2·DINOv3 이미지 유사도, Chamfer·Uni3D, LLM 심사로 채점함.",
+      "outcome": "실패는 주로 API 불일치에서 나옴. 렌더에 성공해도 떠 있거나 분리된 부품과 구조 정렬 오류가 남아, 물리적 타당성이 최대 병목임. 오류 피드백으로 평균 실행 가능성이 0.69에서 0.97로 오름. Elo는 GPT-5.5가 1163으로 선두이고 Gemini 3.1 Pro가 16점 차로 뒤짐. 에이전트 하네스에서는 Fable 5 · Claude Code가 형상 점수 1위, GPT-5.5 · Codex가 이미지 유사도 1위(순위는 모두 검색 요약, README에는 없음).",
+      "urls": [
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://arxiv.org/abs/2606.01057",
+        "https://benchmarklist.com/benchmarks/3dcodebench_benchmarking_agentic_procedural_3d_modeling_via_code/"
+      ]
+    },
+    {
+      "title": "3DHarnessBench: Blender MCP 접근 수준별 3D→코드 복원 능력",
+      "who": "llada60 외 (arXiv 2609.06535, 2026-09)",
+      "ai_model": "GPT-6 Astra, GPT-5.5/5.6 Sol, Claude Opus 5, Claude Fable 5, Kimi K3, Qwen 3.8 Max Preview, Gemini 3.1 Pro, MiniMax M3",
+      "tools": "Blender Python, BlenderMCP(MIT 코드 번들), 100개 인스턴스(텍스처 GLB와 회색 GLB)",
+      "what_was_made": "대상 3D 오브젝트를 실행 가능한 Blender Python 코드로 복원함",
+      "process": "4단계 하네스로 실험함: 단일 뷰, 멀티 뷰(4장), Active Visual(제한된 참조 Blender와 편집 Blender 분리), Full 3D Interaction(MCP로 대상을 완전히 조회).",
+      "outcome": "함수 호출 접근이 풍부할수록 모든 모델의 복원이 크게 좋아졌지만, 향상 폭은 모델마다 크게 달라 에이전트형 3D→코드 능력이 고르지 않음. 모델별 수치는 README에 없어 확인하지 못함.",
+      "urls": [
+        "https://github.com/llada60/3DHarnessBench",
+        "https://arxiv.org/abs/2609.06535"
+      ]
+    },
+    {
+      "title": "Claude + Blender MCP 실사용 평가: 하드서피스는 되고 옹이 진 그루터기는 어려움",
+      "who": "MindStudio 블로그 (2026, 검색 요약)",
+      "ai_model": "Claude",
+      "tools": "Blender MCP",
+      "what_was_made": "여러 오브젝트와 씬 조작 시험",
+      "process": "씬 조회, 생성·삭제·수정, Python 실행, 에셋 불러오기를 시험하고, GN 그래프 생성도 시험함",
+      "outcome": "Claude는 기하를 코드로 짓기 때문에 서랍장이나 나선 계단은 쉽게 만들지만 옹이 진 나무 그루터기는 어려움. GN은 기본 그래프까지는 되지만 노드가 몇 개를 넘으면 오류나 잘못된 연결이 생김(검색 요약). 이 결과가 유기물은 생성기, SDF, AI 생성으로 우회해야 한다는 근거가 됨.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance"
+      ]
+    },
+    {
+      "title": "Foliager: 자연어로 절차적 숲 생성",
+      "who": "SIGGRAPH 2025 Posters (검색 요약)",
+      "ai_model": "LLM (세부 미확인)",
+      "tools": "절차적 숲 생성기와 과학적 생태 데이터",
+      "what_was_made": "문장으로 서술한 생태계를 절차적 숲으로 생성함",
+      "process": "LLM이 생태 서술을 과학 데이터에 근거한 절차 생성 파라미터로 변환하는 인터페이스 역할을 함",
+      "outcome": "LLM에게 형태를 직접 만들게 하지 않고 서술을 파라미터로 번역하게 하는 설계의 사례임. 코드 공개 여부는 확인하지 못함.",
+      "urls": [
+        "https://dl.acm.org/doi/10.1145/3721250.3743024"
+      ]
+    },
+    {
+      "title": "Blender Lab 공식 MCP와 Pebble Scattering Nodes 예제",
+      "who": "Blender Lab (Blender 개발진), 2026-04 Claude 커넥터 발표 (검색 요약)",
+      "ai_model": "Claude",
+      "tools": "Blender Lab MCP 서버(TCP 애드온과 독립 서버), Geometry Nodes",
+      "what_was_made": "크기별 조약돌 3종을 각자의 밀도 마스크와 전역 Factor로 지면 면에 흩뿌리고, 세 인스턴스 레이어를 원래 지면과 합치는 노드 그룹",
+      "process": "공식 MCP 문서가 소개하는 GN 스캐터 예제임. 에이전트가 API와 매뉴얼을 검색하고 스크린샷을 보면서 노드를 구성함.",
+      "outcome": "공식 채널이 자연 스캐터(크기 계층과 마스크) 패턴을 예제로 제시했다는 점이 의미 있음. 세부는 원문 차단으로 확인하지 못함.",
+      "urls": [
+        "https://www.blender.org/lab/mcp-server/",
+        "https://projects.blender.org/lab/blender_mcp"
+      ]
+    },
+    {
+      "title": "Hunyuan3D-WorldClaw: 에이전트형 대규모 3D 오픈월드 생성",
+      "who": "Tencent Hunyuan (2026-08-07 논문과 프로젝트 페이지)",
+      "ai_model": "미확인",
+      "tools": "미확인(GitHub에는 README와 assets만 있음)",
+      "what_was_made": "에이전트 기반 오픈월드 3D 생성",
+      "process": "arXiv 2608.05248. 저장소에 코드는 아직 없음(GitHub에서 확인).",
+      "outcome": "자연 오픈월드를 에이전트로 만드는 흐름의 최신 사례이지만 코드와 라이선스가 공개되지 않았음. Tencent 계열이라 한국 라이선스 제외 여부를 반드시 확인해야 함.",
+      "urls": [
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw"
+      ]
+    }
+  ],
+  "sources": [
+    {"title": "Sapling Tree Gen — Blender Extensions", "url": "https://extensions.blender.org/add-ons/sapling-tree-gen/", "source_type": "공식 확장 플랫폼 (검색 요약)", "date": "2026", "why_useful": "버전, 다운로드 수, 라이선스"},
+    {"title": "GoodPie/modular_tree", "url": "https://github.com/GoodPie/modular_tree", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "기능, 라이선스, 빌드 구조"},
+    {"title": "GoodPie/modular_tree releases", "url": "https://github.com/GoodPie/modular_tree/releases", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "V5.5.2와 플랫폼 이슈"},
+    {"title": "The Grove 2.3", "url": "https://www.thegrove3d.com/releases/23/", "source_type": "벤더 (검색 요약)", "date": "2026-02~03", "why_useful": "2.3 기능과 Blender 5 지원"},
+    {"title": "The Grove 2.3 | DIGITAL PRODUCTION", "url": "https://digitalproduction.com/2026/03/02/the-grove-2-3/", "source_type": "업계 뉴스 (검색 요약)", "date": "2026-03-02", "why_useful": "릴리스 요약"},
+    {"title": "varkenvarken/spacetree", "url": "https://github.com/varkenvarken/spacetree", "source_type": "GitHub(1차)", "date": "미상", "why_useful": "SCA 나무 생성기"},
+    {"title": "SpeedTree 라이선스 비교 (Unity Support)", "url": "https://support.unity.com/hc/en-us/articles/15723241438228-What-s-the-difference-between-SpeedTree-Learning-Edition-Indie-Pro-and-Enterprise", "source_type": "벤더 지원 문서 (검색 요약)", "date": "2026", "why_useful": "에디션별 조건"},
+    {"title": "SpeedTree Library 구매 안내 (Unity Support)", "url": "https://support.unity.com/hc/en-us/articles/49699142648980-How-do-I-receive-my-SpeedTree-Library-purchase", "source_type": "벤더 지원 문서 (검색 요약)", "date": "2026-05~", "why_useful": "Library 연 $999 구독"},
+    {"title": "princeton-vl/infinigen", "url": "https://github.com/princeton-vl/infinigen", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "별 수, 라이선스, 문서 구조"},
+    {"title": "Infinigen Infinigen2.md", "url": "https://github.com/princeton-vl/infinigen/blob/main/docs/source/Infinigen2.md", "source_type": "GitHub 문서(1차)", "date": "2026", "why_useful": "2.0에는 자연 에셋이 없다는 명시"},
+    {"title": "Infinigen nature-stable pyproject.toml", "url": "https://github.com/princeton-vl/infinigen/blob/nature-stable/pyproject.toml", "source_type": "GitHub(1차)", "date": "미상", "why_useful": "bpy 3.6.0과 Python 3.10 고정"},
+    {"title": "Infinigen list_nature_meshes.txt", "url": "https://github.com/princeton-vl/infinigen/blob/main/tests/infinigen/assets/list_nature_meshes.txt", "source_type": "GitHub(1차)", "date": "미상", "why_useful": "자연 팩토리 전체 목록"},
+    {"title": "Infinigen GeneratingIndividualAssets.md", "url": "https://github.com/princeton-vl/infinigen/blob/main/docs/source/GeneratingIndividualAssets.md", "source_type": "GitHub 문서(1차)", "date": "미상", "why_useful": "개별 에셋 생성과 export 명령"},
+    {"title": "Infinigen Installation.md", "url": "https://github.com/princeton-vl/infinigen/blob/main/docs/source/Installation.md", "source_type": "GitHub 문서(1차)", "date": "미상", "why_useful": "OS 지원표와 네이티브 컴파일 부분"},
+    {"title": "princeton-vl/procfunc", "url": "https://github.com/princeton-vl/procfunc", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "GN→Python 트랜스파일러, bpy 4.2"},
+    {"title": "ProcFunc arXiv 2604.26943", "url": "https://arxiv.org/abs/2604.26943", "source_type": "논문 (검색 요약)", "date": "2026-04-29", "why_useful": "VLM 절차 코드 편집 오류 감소"},
+    {"title": "3DCodeBench GitHub", "url": "https://github.com/gaoypeng/3dcodebench", "source_type": "GitHub(1차)", "date": "2026-06", "why_useful": "Blender 5.0 절차적 모델링 벤치 구성"},
+    {"title": "3DCodeBench arXiv 2606.01057", "url": "https://arxiv.org/abs/2606.01057", "source_type": "논문 (검색 요약)", "date": "2026-06-01", "why_useful": "떠 있는 부품이 최대 실패라는 결과"},
+    {"title": "3DCodeBench 리더보드 요약 (BenchmarkList)", "url": "https://benchmarklist.com/benchmarks/3dcodebench_benchmarking_agentic_procedural_3d_modeling_via_code/", "source_type": "집계 사이트 (검색 요약)", "date": "2026", "why_useful": "Elo, 에이전트 하네스 순위, 실행 가능성 향상 수치"},
+    {"title": "3DHarnessBench GitHub", "url": "https://github.com/llada60/3DHarnessBench", "source_type": "GitHub(1차)", "date": "2026-09", "why_useful": "MCP 접근 수준별 평가와 평가 모델 목록"},
+    {"title": "microsoft/TRELLIS.2", "url": "https://github.com/microsoft/TRELLIS.2", "source_type": "GitHub(1차)", "date": "2025-12~", "why_useful": "MIT, 하드웨어 요구, CUDA 확장"},
+    {"title": "Tencent-Hunyuan/Hunyuan3D-2.1", "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1", "source_type": "GitHub(1차)", "date": "2025-06-13", "why_useful": "VRAM, 컴파일 모듈, 지역 제외"},
+    {"title": "Hunyuan3D-2.1 LICENSE", "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE", "source_type": "라이선스 원문 (검색 요약과 GitHub 교차 확인)", "date": "2025", "why_useful": "EU, UK, 한국 제외"},
+    {"title": "PKU-YuanGroup/UltraShape-1.0", "url": "https://github.com/PKU-YuanGroup/UltraShape-1.0", "source_type": "GitHub(1차)", "date": "2025-12", "why_useful": "Hunyuan3D-2.1 의존으로 라이선스가 전이됨"},
+    {"title": "VAST-AI-Research/TripoSG", "url": "https://github.com/VAST-AI-Research/TripoSG", "source_type": "GitHub(1차)", "date": "2025-03", "why_useful": "MIT, 8GB"},
+    {"title": "DreamTechAI/Direct3D-S2", "url": "https://github.com/DreamTechAI/Direct3D-S2", "source_type": "GitHub(1차)", "date": "2025-05", "why_useful": "MIT, VRAM, torchsparse"},
+    {"title": "stepfun-ai/Step1X-3D", "url": "https://github.com/stepfun-ai/Step1X-3D", "source_type": "GitHub(1차)", "date": "2025-05-13", "why_useful": "Apache-2.0, VRAM"},
+    {"title": "lizhihao6/Sparc3D", "url": "https://github.com/lizhihao6/Sparc3D", "source_type": "GitHub(1차)", "date": "2025", "why_useful": "1024³ 희소 표현, 라이선스 불명"},
+    {"title": "Hyper3D Rodin Gen-2.5 (80.lv)", "url": "https://80.lv/articles/how-hyper3d-rodin-gen-2-5-is-bringing-production-level-control-to-ai-3d-generation", "source_type": "업계 뉴스 (검색 요약)", "date": "2026-05", "why_useful": "토폴로지 옵션, 폴리 수, 모드"},
+    {"title": "Meshy-6 vs Tripo v3.1 (Z.Tools)", "url": "https://z.tools/blog/meshy-6-vs-tripo-v3-1-3d", "source_type": "제3자 비교 (검색 요약)", "date": "2026", "why_useful": "속도와 품질 비교, 벤더 설문 인용"},
+    {"title": "Pixazo 3D 생성 리더보드", "url": "https://www.pixazo.ai/leaderboard/ai-3d-model-generation", "source_type": "VLM 심사 리더보드 (검색 요약)", "date": "2026", "why_useful": "Hunyuan3D-2.5 1325, TRELLIS 1290, Meshy 5 1280"},
+    {"title": "3D Arena (HF Space)", "url": "https://huggingface.co/spaces/dylanebert/3d-arena", "source_type": "인간 투표 리더보드 (접근 차단, 검색 결과로만 확인)", "date": "상시", "why_useful": "실시간 순위(이번에 미확인)"},
+    {"title": "ksami/QRemeshify", "url": "https://github.com/ksami/QRemeshify", "source_type": "GitHub(1차)", "date": "미상", "why_useful": "GPL-3.0, 바이너리, 한계"},
+    {"title": "Quad Remesher 구매 (Exoside)", "url": "https://exoside.com/quadremesher/quadremesher-buy/", "source_type": "벤더 (검색 요약)", "date": "2026", "why_useful": "가격"},
+    {"title": "wjakob/instant-meshes", "url": "https://github.com/wjakob/instant-meshes", "source_type": "GitHub(1차)", "date": "오래됨", "why_useful": "바이너리 배포 경로"},
+    {"title": "GitMay3D/OpenScatter", "url": "https://github.com/GitMay3D/OpenScatter", "source_type": "GitHub(1차)", "date": "2026-08-23 아카이브", "why_useful": "개발 중단과 버전 이력"},
+    {"title": "Geo-Scatter", "url": "https://www.geoscatter.com/", "source_type": "벤더 (검색 요약)", "date": "2026", "why_useful": "Biome-Reader와 Blender 5.2 권장"},
+    {"title": "botaniq | polygoniq", "url": "https://polygoniq.com/3d/botaniq/", "source_type": "벤더 (검색 요약)", "date": "2026-08", "why_useful": "7.3 업데이트"},
+    {"title": "Arborea — Sweeper3D", "url": "https://www.sweeper3d.com/arborea-addon", "source_type": "벤더 (검색 요약)", "date": "2025~2026", "why_useful": "에셋 수와 GN 도구"},
+    {"title": "Volume Grids in Geometry Nodes (Blender Developers Blog)", "url": "https://code.blender.org/2025/10/volume-grids-in-geometry-nodes/", "source_type": "공식 개발 블로그 (검색 요약)", "date": "2025-10", "why_useful": "5.0 grid 노드 27종"},
+    {"title": "Geometry Nodes: SDF Grid filtering nodes (PR #147224)", "url": "https://projects.blender.org/blender/blender/pulls/147224", "source_type": "공식 개발 PR (검색 결과)", "date": "2025", "why_useful": "SDF 필터 노드"},
+    {"title": "Gaea 3.0 Development Update", "url": "https://blog.quadspinner.com/gaea-3-0-development-update/", "source_type": "벤더 블로그 (검색 요약)", "date": "2026", "why_useful": "3.0 일정과 기능"},
+    {"title": "World Creator 2026.4 Community Edition (CG Channel)", "url": "https://www.cgchannel.com/2026/04/world-creator-2026-4-is-out-with-a-new-free-community-edition/", "source_type": "업계 뉴스 (검색 요약)", "date": "2026-04", "why_useful": "가격 인하와 무료판"},
+    {"title": "Nature Generator update (DIGITAL PRODUCTION)", "url": "https://digitalproduction.com/2026/04/09/nature-generator-update-brings-procedural-nature-to-blender/", "source_type": "업계 뉴스 (검색 요약)", "date": "2026-04-09", "why_useful": "v1.2 기능"},
+    {"title": "Megascans 무료 종료 (CG Channel)", "url": "https://www.cgchannel.com/2024/10/epic-games-has-made-megascans-free-to-all-but-only-until-the-end-of-2024/", "source_type": "업계 뉴스 (검색 요약)", "date": "2024-10", "why_useful": "2025년 유료 전환 배경"},
+    {"title": "Fab Generative AI 정책", "url": "https://support.fab.com/s/article/Generative-Artificial-Intelligence-AI?language=en_US", "source_type": "공식 지원 문서 (검색 결과)", "date": "미상", "why_useful": "NoAI 태그"},
+    {"title": "Poly Haven License", "url": "https://polyhaven.com/license", "source_type": "공식 (검색 요약)", "date": "상시", "why_useful": "CC0"},
+    {"title": "ahujasid/blender-mcp (mcp-for-blender)", "url": "https://github.com/ahujasid/blender-mcp", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "연동 목록, 보안 경고, 텔레메트리"},
+    {"title": "Blender Lab blender_mcp", "url": "https://projects.blender.org/lab/blender_mcp", "source_type": "공식 저장소 (검색 요약)", "date": "2026-04", "why_useful": "공식 MCP"},
+    {"title": "Anthropic becomes Blender Corporate Patron (CG Channel)", "url": "https://www.cgchannel.com/2026/04/ai-developer-anthropic-becomes-blenders-latest-corporate-patron/", "source_type": "업계 뉴스 (검색 결과)", "date": "2026-04", "why_useful": "공식 MCP 배경"},
+    {"title": "PatrykIti/blender-ai-mcp", "url": "https://github.com/PatrykIti/blender-ai-mcp", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "접촉·간격 단언 도구"},
+    {"title": "HoldMyBeer-gg/blend-ai", "url": "https://github.com/HoldMyBeer-gg/blend-ai", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "샌드박스 코드 실행 사례"},
+    {"title": "arjun988/blender-skills", "url": "https://github.com/arjun988/blender-skills", "source_type": "GitHub(1차)", "date": "2026", "why_useful": "vegetation·creature 스킬"},
+    {"title": "How I Used Claude to Model in Blender and Build a 3D Unity Game", "url": "https://medium.com/@developer.rizasghari/how-i-used-claude-to-model-in-blender-and-build-a-3d-unity-game-25914ffee262", "source_type": "개인 블로그 (검색 요약)", "date": "2026-09", "why_useful": "숲 씬 부유 디버깅 사례"},
+    {"title": "Claude + Blender MCP real-world performance (MindStudio)", "url": "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance", "source_type": "블로그 (검색 요약)", "date": "2026", "why_useful": "유기물과 GN의 한계"},
+    {"title": "Autoregressive Generation of Static and Growing Trees", "url": "https://arxiv.org/abs/2502.04762", "source_type": "논문 (검색 요약)", "date": "2025 (SIGGRAPH Asia 2025)", "why_useful": "AI 나무 스켈레톤 생성"},
+    {"title": "Foliager (SIGGRAPH 2025 Posters)", "url": "https://dl.acm.org/doi/10.1145/3721250.3743024", "source_type": "논문 포스터 (검색 요약)", "date": "2025-08", "why_useful": "LLM에서 절차적 숲으로 가는 설계"},
+    {"title": "openalea/lpy", "url": "https://github.com/openalea/lpy", "source_type": "GitHub(1차)", "date": "미상", "why_useful": "L-system 라이브러리"},
+    {"title": "nerk987/txa_ant", "url": "https://github.com/nerk987/txa_ant", "source_type": "GitHub(1차)", "date": "미상", "why_useful": "ANT 텍스처 포크"},
+    {"title": "Tencent-Hunyuan/Hunyuan3D-WorldClaw", "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-WorldClaw", "source_type": "GitHub(1차)", "date": "2026-08-07", "why_useful": "에이전트형 오픈월드 생성"},
+    {"title": "Hunyuan3D 2.1 vs 2.5 vs 3.0 (triposr.org)", "url": "https://triposr.org/blog/hunyuan3d-versions", "source_type": "제3자 블로그 (검색 요약)", "date": "2026", "why_useful": "3.1이 API 전용이라는 주장"}
+  ],
+  "gaps": [
+    "이그레스 프록시 때문에 extensions.blender.org, superhivemarket.com, thegrove3d.com, cgchannel.com, arxiv.org, huggingface.co, blenderartists.org, docs.blender.org, code.blender.org, blender.org, polyhaven.com, support.fab.com, medium.com 등을 열지 못함. 따라서 Sapling·ANT·Easy Tree의 정확한 버전과 호환성, 모든 Superhive 가격(Geo-Scatter, SDF.R, Chisel, Nature Generator, Arborea), The Grove 가격은 검색 요약 수준이거나 미확인임.",
+    "WebSearch 세션 한도(200회)를 다 써서 조사 후반부의 추가 교차 검색을 하지 못함.",
+    "HF 3D Arena의 2026-09 실시간 순위를 확인하지 못함. 제시한 리더보드 수치는 Pixazo(VLM 심사)와 Sloyd(벤더) 검색 요약뿐이라 신뢰도가 제한적임.",
+    "3DCodeBench와 3DHarnessBench의 모델별 세부 점수, 특히 식물·산호·생물 같은 유기 카테고리별 결과는 원문 차단으로 확인하지 못함.",
+    "Hunyuan3D 3.x(API)와 WorldClaw의 이용약관이 한국에도 적용되는지 확인하지 못함.",
+    "The Grove, Botaniq, Geo-Scatter, Nature Generator 패키지 안에 네이티브 바이너리(.pyd/.so/.dll)가 있는지, 코드 난독화 여부를 확인하지 못함(릴리스 에셋을 의도적으로 열지 않음).",
+    "Modular Tree(GoodPie)와 QRemeshify 릴리스 zip 안의 실제 바이너리 파일명과 서명 여부는 확인하지 못함(에셋 미열람 원칙).",
+    "Gaea 3.0이 2026-09 현재 실제로 Production Ready로 나왔는지 확인하지 못함.",
+    "Infinigen main(2.0)의 릴리스 날짜와 자연 에셋 이식 로드맵을 확인하지 못함.",
+    "Infinigen 생물(Carnivore 등)을 게임·애니메이션용으로 쓸 때의 품질(리깅, 토폴로지)에 대한 독립 평가를 찾지 못함.",
+    "자연 전용 도구(지형, 나무, 생태 스캐터 규칙)를 갖춘 MCP 서버는 찾지 못함. 대부분 범용 GN과 코드 실행에 기대고 있음."
+  ]
+}

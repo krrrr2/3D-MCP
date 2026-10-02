@@ -1,0 +1,412 @@
+{
+  "verdicts": [
+    {
+      "claim": "Anthropic의 공식 Claude 'Blender' 커넥터는 ahujasid 프로젝트가 아니라 Blender 개발자(Blender Lab)가 만든 MCP 서버이며, 2026-04-28 'Claude for Creative Work'에서 발표됐다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://claude.com/connectors/blender",
+        "https://github.com/ahujasid/blender-mcp"
+      ],
+      "note": "발표일 2026-04-28이고 원문은 'The Blender developers have created an MCP connector, which is now officially available for Claude.'입니다. Anthropic 글에는 'Blender Lab'이라는 이름이 없고 claude.com 커넥터 페이지에만 나옵니다. ahujasid README에도 'third-party integration and not made by Blender'라고 명시돼 있습니다. 발표된 커넥터는 Ableton, Adobe, Affinity, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice까지 9개로 셀 수 있지만 원문에 숫자가 적혀 있지는 않습니다."
+    },
+    {
+      "claim": "claude.com 커넥터 디렉터리의 Blender 커넥터 제공자는 'Blender Lab (Anthropic verified)'로 표시된다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://claude.com/connectors/blender"
+      ],
+      "note": "Provider는 'Blender Lab'이고, 'Anthropic verified' 배지는 커넥터 자체에 붙어 있습니다. 페이지에는 'An add-on is required to use the MCP Server'라는 안내만 있고 Blender 버전 요구 사항은 적혀 있지 않습니다."
+    },
+    {
+      "claim": "Blender는 Anthropic의 지원을 Blender Development Fund가 아니라 일회성 기부로 받기로 했다(2026-05-01 업데이트).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ],
+      "note": "원문: 'Blender has elected to receive Anthropic's contribution as a one-time donation rather than through the Blender Development Fund; the post has been revised to reflect this.' (2026-05-01 업데이트)"
+    },
+    {
+      "claim": "Blender Lab 공식 MCP 서버는 Blender 5.1 이상이 필요하고, v1.0.0은 2026-04-27에 릴리스됐다(v1.0.2 2026-09-08, v1.0.3 2026-09-11).",
+      "verdict": "partially",
+      "correction": "두 가지는 확인했습니다. 미러 저장소의 애드온 manifest에 blender_version_min = \"5.1.0\"과 version \"1.0.0\"이 있고, 2026-04-27에 dfelinto(Dalai Felinto)가 'Bump add-on version to match server' 등 버전 올림 커밋을 한 기록이 있습니다. 따라서 v1.0.0 = 2026-04-27은 정황상 맞습니다. 하지만 projects.blender.org가 차단돼 릴리스 페이지를 직접 볼 수 없었고, 미러는 2026-05-05 커밋에서 멈춰 있어 v1.0.2(09-08)와 v1.0.3(09-11)은 검증할 수 없습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/bpype/blender_mcp/main/addon/blender_mcp_addon/blender_manifest.toml",
+        "https://github.com/bpype/blender_mcp/commits/main"
+      ]
+    },
+    {
+      "claim": "Blender Lab blender_mcp 애드온의 라이선스는 GPL-3.0-or-later다(manifest 기준).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/bpype/blender_mcp/main/addon/blender_mcp_addon/blender_manifest.toml",
+        "https://github.com/scenario-labs/blender-plugin/issues/3"
+      ],
+      "note": "manifest에 license = SPDX:GPL-3.0-or-later, maintainer = 'Blender Lab'으로 적혀 있습니다. scenario-labs 이슈 #3에는 공식 애드온이 'online access가 켜져 있을 때만 시작된다'는 언급도 있습니다. 조사 결과의 gap 항목과 관련된 내용입니다."
+    },
+    {
+      "claim": "ahujasid의 PyPI 패키지가 blender-mcp에서 mcp-for-blender로 이름을 바꿨고, 최신 버전은 2.1.0(2026-09-25)이며 blender-mcp 2.0.0은 호환 래퍼다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://pypi.org/project/blender-mcp/"
+      ],
+      "note": "mcp-for-blender 버전 이력: 2.1.0(09-25), 2.0.4(09-24), 2.0.3/2.0.1(09-21), 2.0.0(09-16). blender-mcp 2.0.0(09-16) 설명: 'now a compatibility wrapper that installs mcp-for-blender'. 이름 변경은 2026-09-16 커밋에서 '공식이 아님을 분명히 하기 위해' 이뤄졌습니다."
+    },
+    {
+      "claim": "ahujasid/mcp-for-blender는 약 29.4k stars, 2.7k forks, MIT 라이선스이고 36개 MCP tool을 제공한다(Tripo는 Premium 전용).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py"
+      ],
+      "note": "server.py에서 @mcp.tool 36개와 prompt 1개(asset_creation_strategy)를 셌습니다. TRIPO_UNAVAILABLE 문구는 'Tripo is only available with MCP for Blender Premium'입니다. 소켓 타임아웃 180초도 확인했습니다."
+    },
+    {
+      "claim": "ahujasid 애드온의 get_scene_info는 씬 오브젝트를 최대 10개까지만 반환한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py"
+      ],
+      "note": "코드는 'for i, obj in enumerate(bpy.context.scene.objects): if i >= 10: break'입니다. addon.py에 undo_push 호출이 없다는 점, exec(code, {'bpy': bpy}), Poly Haven 다운로드를 동기식으로 처리한다는 점도 함께 확인했습니다."
+    },
+    {
+      "claim": "ahujasid 텔레메트리는 과거 기본 ON(consent default=True)이었다가 2026-09-21 커밋 'update: opt-in telemetry'로 opt-in이 됐고, BLENDER_MCP_SAFE_MODE=1 옵션이 추가됐다.",
+      "verdict": "partially",
+      "correction": "2026-09-21 'update: opt-in telemetry' 커밋은 확인했습니다. 다만 두 가지를 고쳐야 합니다. (1) opt-in이 된 것은 '콘텐츠'(프롬프트, 코드, 스크린샷, trajectory) 수집뿐입니다. install ID, session ID, tool 이름, 성공 여부, 소요 시간, 버전, OS, 타임스탬프 같은 최소 사용 텔레메트리는 여전히 기본 ON이고, 완전히 끄려면 DISABLE_TELEMETRY=true가 필요합니다. (2) Safe mode는 09-21이 아니라 2026-09-02 커밋 'feat: add safe mode for bounded code execution'에서 추가됐고, 09-21에는 safe mode 보강 fix가 있었습니다. 'consent default=True'는 이슈 #232(2026-04-20, 현재 closed) 작성자의 주장입니다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp/commits/main",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md",
+        "https://github.com/ahujasid/blender-mcp/issues/232"
+      ]
+    },
+    {
+      "claim": "CVE-2026-10661: ahujasid blender-mcp의 input_image_url 인자 주입 취약점(CVSS v4 2.1, Low), 패치 커밋 5b37be2.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/advisories/GHSA-qqw9-95ww-prfm",
+        "https://github.com/ahujasid/blender-mcp/issues/202"
+      ],
+      "note": "GHSA에 따르면 CWE-74, CVSS v4 2.1(Low)이고, 영향 범위는 커밋 7636d13까지, 패치 커밋은 5b37be25242e이며 NVD 게시일은 2026-06-02, GHSA는 06-03입니다. '임의 파일 읽기'라는 구체적 영향은 이슈 #202(2026-03-10, generate_hunyuan3d_model의 input_image_url이 http로 시작하지 않으면 open()으로 로컬 파일을 읽어 외부 API로 전송)에 근거합니다. 다만 GHSA 본문은 이 CVE와 #202를 명시적으로 연결하지 않습니다."
+    },
+    {
+      "claim": "ahujasid tool 스키마의 컨텍스트 비용이 2026-08-19부터 09-03 사이 5,462에서 6,928 토큰으로 26.8% 증가했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/347"
+      ],
+      "note": "측정 시점의 tool 수는 25개에서 28개였습니다. 현재 36개이므로 지금 비용은 6,928 토큰보다 클 가능성이 높습니다. 요약문처럼 '도구 스키마만 약 6.9k 토큰'을 현재 값으로 쓰면 과소 추정이 될 수 있습니다."
+    },
+    {
+      "claim": "Blender 5.0에서 scene.node_tree가 scene.compositing_node_group으로 바뀌어 기존 스크립트가 AttributeError를 낸다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/benrugg/AI-Render/issues/171",
+        "https://github.com/EverettFish/holo-card-studio/issues/172"
+      ],
+      "note": "AI-Render #171(2025-12-06, Blender 5.0.0)의 에러 메시지는 \"'Scene' object has no attribute 'node_tree'\"입니다. holo-card-studio #172(2026-09-25)는 compositing_node_group이 초기값 None이라는 점과 CompositorNodeFilter.filter_type이 제거된 점도 지적합니다."
+    },
+    {
+      "claim": "Blender 5.2 LTS에서 Geometry Nodes 모디파이어 입력 접근이 modifier['Socket_x'] 방식에서 modifier.properties.inputs.<id>.value 방식으로 바뀌었다.",
+      "verdict": "unverifiable",
+      "evidence_urls": [],
+      "note": "developer.blender.org, docs.blender.org, projects.blender.org가 모두 egress 차단이라 원문을 확인하지 못했습니다. 2차 출처(GitHub 이슈 등)도 찾지 못했습니다. 게시 전에 Blender 5.2에서 직접 실행해 확인하거나 원문 링크를 인용해야 합니다."
+    },
+    {
+      "claim": "StableGen은 Blender 4.2–4.5와 5.1+를 지원하고 5.0은 지원하지 않는다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/sakalond/StableGen",
+        "https://github.com/sakalond/stablegen/releases"
+      ],
+      "note": "README에 5.0 미지원(OSL projection 한계)이라고 적혀 있습니다. 929 stars, GPL-3.0이고, 최신 릴리스는 v0.3.1(2026-06-12)입니다. v0.2.0(2026-02-15) 릴리스에서 'Blender 5.1 Support'가 추가됐습니다. installer 용량 약 7.3~33GB, VRAM 8GB/16GB+ 요구도 확인했습니다."
+    },
+    {
+      "claim": "PyPI bpy 5.2.2(2026-09-15)는 Python 3.13 전용이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://pypi.org/project/bpy/",
+        "https://pypi.org/project/bpy/5.1.0/",
+        "https://pypi.org/project/bpy/5.0.0/"
+      ],
+      "note": "Requires-Python는 ==3.13.*입니다. bpy 5.1.0도 3.13이고 5.0.0은 3.11이라 '5.1부터 Python 3.13'이라는 설명도 맞습니다. 다만 본문의 '약 1.2GB'는 모든 플랫폼 wheel을 합친 크기입니다. 실제로 설치하는 wheel 하나는 210~402MB입니다. bpy 5.2.0이 2026-07-14에 나와 5.2 LTS 출시일과도 맞습니다."
+    },
+    {
+      "claim": "(추가 검증) Blender Lab 공식 서버 tool 목록에 get_runtime_python_api_docs가 포함되고, 공식 서버에서 search_api_docs, search_manual_docs, get_runtime_python_api_docs를 쓸 수 있다.",
+      "verdict": "partially",
+      "correction": "공식 미러(bpype/blender_mcp, 2026-05 기준) README에는 tool이 24개 있고 get_python_api_docs는 있지만 search_api_docs, search_manual_docs, get_runtime_python_api_docs는 없습니다. 이후 stefancrm 설치 키트는 26개로 집계했고, cc-blender-skill PR #1(2026-07)은 search_api_docs를 공식 tool로 언급합니다. 따라서 search_*는 이후에 추가됐을 가능성이 높습니다. 반면 get_runtime_python_api_docs(및 _for_cli)는 비공식 포크 bpy-dev/blender-mcp 문서에만 나오고, 조사 결과의 bpy-dev 항목도 이를 '런타임 API 조회 추가'로 설명합니다. 즉 포크 전용 tool을 공식 목록에 섞어 넣은 것으로 보입니다. 공식 tool 목록의 출처로 포크 문서(readme_tools.rst)를 쓰면 안 됩니다.",
+      "evidence_urls": [
+        "https://github.com/bpype/blender_mcp",
+        "https://github.com/bpy-dev/blender-mcp/blob/main/readme_tools.rst",
+        "https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit",
+        "https://github.com/RobLe3/cc-blender-skill/pull/1"
+      ]
+    },
+    {
+      "claim": "(추가 검증) RFingAdam/mcp-blender는 `pip install mcp-blender`로 설치한다.",
+      "verdict": "refuted",
+      "correction": "RFingAdam README는 `pip install mcp-blender`를 권장하지만, PyPI의 'mcp-blender'는 다른 사람(brnv/mcp-blender, Artem, v0.1.0, 2026-06-04 업로드)의 패키지입니다. RFingAdam의 pyproject 버전은 0.4.0(AGPL)입니다. 그대로 따라 하면 엉뚱한 서드파티 코드가 설치되므로(공급망 위험) 반드시 `git clone https://github.com/RFingAdam/mcp-blender && pip install -e .`로 소스에서 설치해야 합니다. 조사 결과의 'pakkio 명령명과 겹친다'는 설명도 부정확합니다. 실제 충돌 대상은 PyPI 이름을 선점한 brnv입니다.",
+      "evidence_urls": [
+        "https://pypi.org/pypi/mcp-blender/json",
+        "https://raw.githubusercontent.com/RFingAdam/mcp-blender/main/pyproject.toml",
+        "https://raw.githubusercontent.com/RFingAdam/mcp-blender/main/README.md"
+      ]
+    },
+    {
+      "claim": "(추가 검증) cc-blender-skill은 PR #1로 공식 Blender Lab MCP로 이전했다(사례 연구: 'ahujasid Blender MCP에서 공식 Blender Lab MCP로 이전').",
+      "verdict": "refuted",
+      "correction": "PR #1 'Adapt skills to the official Blender MCP add-on'은 제3자(fatalerrorist)가 2026-07-06에 올린 것이고 현재 Open 상태로 병합되지 않았습니다. main 브랜치의 스킬은 여전히 ahujasid BlenderMCP(포트 9876)를 대상으로 합니다. tool 이름 매핑과 Blender 5.1.2 관련 발견(compositing_node_group, Glare 옵션 소켓화, channelbag 경로, media_type='VIDEO', bmesh 수정 후 depsgraph 갱신)은 이 PR 작성자가 기여한 내용입니다.",
+      "evidence_urls": [
+        "https://github.com/RobLe3/cc-blender-skill/pull/1",
+        "https://github.com/RobLe3/cc-blender-skill"
+      ]
+    },
+    {
+      "claim": "(추가 검증) Blender MCP Pro는 GitHub에 커밋 이력이 없다(배포용 저장소).",
+      "verdict": "refuted",
+      "correction": "master 브랜치에 커밋 11개가 있습니다. $5/월(7일 체험, Gumroad), $15 일회성(itch.io), 애드온 MIT에 서버는 독점이라는 설명은 맞습니다. 추가로 README에 따르면 처음에는 핵심 tool 15개만 로드하고 나머지 카테고리는 필요할 때 켜는 lazy loading 방식이며, eager mode도 있습니다.",
+      "evidence_urls": [
+        "https://github.com/youichi-uda/blender-mcp-pro"
+      ]
+    },
+    {
+      "claim": "(추가 검증) 4.0 Principled BSDF 소켓 변경 중 'Coat'→'Coat Weight'.",
+      "verdict": "partially",
+      "correction": "3.x의 원래 소켓 이름은 'Coat'가 아니라 'Clearcoat'입니다. 4.0에서 'Clearcoat'가 'Coat Weight'로 바뀌었습니다. LLM이 3.x 코드에서 'Clearcoat'를 쓰는 경우가 많으므로 체크리스트에는 'Clearcoat'→'Coat Weight'로 적어야 합니다(모델 지식 기반, 원문 문서는 차단됨)."
+    },
+    {
+      "claim": "(추가 검증) Blender Lab 공식 서버는 stdio 전용 구조이고 로컬 LLM은 llama.cpp 가이드를 따른다.",
+      "verdict": "partially",
+      "correction": "미러의 readme_local_llm.rst에 따르면 공식 서버는 HTTP 전송도 지원합니다(`blender-mcp --transport http --port 9191`). 저장소에는 자체 chat_client(OpenAI 호환 API로 llama-server:8080에 연결)도 포함돼 있습니다. llama.cpp(빌드 8218 이상)의 `llama-server --jinja --hf-repo ... --hf-file ...` 사용은 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/bpype/blender_mcp/blob/main/readme_local_llm.rst"
+      ]
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "MCP for Blender (ahujasid/mcp-for-blender)",
+      "status": "ok",
+      "detail": "존재하고 매우 활발합니다(2026-09-25 커밋 'feat: integrate premium'). 29.4k stars / 2.7k forks, MIT, tool 36개, Tripo는 Premium 전용, Blender 3.0+ / Python 3.10+, `uvx mcp-for-blender install-addon`, Claude/Codex/Cursor(Windows) 설정, --port 9877 다중 인스턴스까지 모두 README와 일치합니다. 한 가지 수정이 필요합니다. 텔레메트리는 '콘텐츠만 opt-in'이고 최소 사용 텔레메트리는 기본 ON입니다. Premium 가격은 README에 없습니다. 이슈 #339(Windows 11, 5.1.1)와 #357(Windows, 5.2.1 LTS) 타임아웃 건은 둘 다 Open이며 프레이밍 불일치가 의심됩니다(확인됨).",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/README.md",
+        "https://github.com/ahujasid/blender-mcp/issues/339",
+        "https://github.com/ahujasid/blender-mcp/issues/357"
+      ]
+    },
+    {
+      "name": "Blender Lab 공식 MCP Server (lab/blender_mcp)",
+      "status": "issue",
+      "detail": "manifest 기준 blender_version_min 5.1.0, GPL-3.0-or-later, maintainer 'Blender Lab'은 맞습니다. 2026-04-27 dfelinto 버전 커밋, TCP 9876, null-byte 구분 JSON, 약 41개 PyPI 의존성, 절대경로 uv 설정(stefancrm 키트)도 확인했습니다. 문제는 tool 목록입니다. get_runtime_python_api_docs는 비공식 bpy-dev 포크 전용으로 보이고, search_api_docs와 search_manual_docs는 5월 미러에는 없고 이후 버전에서 추가된 것으로 추정됩니다. HTTP 전송(--transport http)과 chat_client도 빠져 있습니다. scenario-labs 이슈 #3에 따르면 'online access가 켜져 있을 때만 시작'되므로 설치 안내에 Allow Online Access를 넣어야 합니다. v1.0.2/v1.0.3 날짜, '2번 드래그' 설치, 'Anthropic & Partners' 섹션은 공식 페이지가 차단돼 검증하지 못했습니다(stefancrm 키트는 오히려 '두 경로로 중복 설치하면 같은 ID가 둘 생기는 문제'를 경고합니다).",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/bpype/blender_mcp/main/addon/blender_mcp_addon/blender_manifest.toml",
+        "https://github.com/bpype/blender_mcp",
+        "https://github.com/stefancrm/claude-blender-mcp-connector-setup-kit",
+        "https://github.com/scenario-labs/blender-plugin/issues/3"
+      ]
+    },
+    {
+      "name": "newo-ether/blender-mcp",
+      "status": "ok",
+      "detail": "8 stars, MIT입니다. v1.19.0(09-21, 6시간 heartbeat가 없으면 등록 만료)과 v1.18.0(09-15, 계층 레이아웃, simulation zone, link provenance)을 확인했습니다. v1.13.0 slim 뷰가 30노드를 62KB(semantic)에서 9.3KB로 줄였고, 4.2.22 LTS / 5.1.2 / 5.2 LTS RC(릴리스 노트상 5.2.0)에서 테스트됐으며, bootstrap.ps1 설치 방식도 사실입니다.",
+      "evidence_urls": [
+        "https://github.com/newo-ether/blender-mcp",
+        "https://github.com/newo-ether/blender-mcp/releases"
+      ]
+    },
+    {
+      "name": "blend-ai (HoldMyBeer-gg)",
+      "status": "ok",
+      "detail": "148 stars, AGPL-3.0-or-later, 186 tools/27 모듈, unit test 1,190개입니다. 위험 import 25종 차단, exec/eval/compile/open 제거, 127.0.0.1 전용, 텔레메트리 없음, Blender 4.2 LTS 이상(5.1까지 테스트)도 확인했습니다. 최신 릴리스는 v1.6.0이 아니라 v1.7.0(2026-09-26)입니다.",
+      "evidence_urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai",
+        "https://github.com/HoldMyBeer-gg/blend-ai/releases"
+      ]
+    },
+    {
+      "name": "RFingAdam/mcp-blender",
+      "status": "issue",
+      "detail": "218 tools, MSFS 파이프라인, 클라우드(Rodin/Meshy/Tripo) 및 로컬(TripoSR/SF3D/Hunyuan3D/ComfyUI) 생성, Ollama 비전 루프, Blender 4.2 LTS/5.0, 14 stars, 마지막 커밋 2026-09-10은 맞습니다. v0.4.0에서 MIT에서 AGPL로 라이선스를 바꿨습니다. 결정적 문제는 설치 명령입니다. PyPI의 'mcp-blender'는 brnv(Artem)의 다른 패키지(v0.1.0)라서 `pip install mcp-blender`를 하면 엉뚱한 코드가 설치됩니다. 소스 설치(git clone + pip install -e .)로 바꿔 안내해야 합니다. 로컬 Hunyuan3D 백엔드는 한국에서 라이선스 문제가 있습니다(누락 항목 참조).",
+      "evidence_urls": [
+        "https://github.com/RFingAdam/mcp-blender",
+        "https://pypi.org/pypi/mcp-blender/json",
+        "https://raw.githubusercontent.com/RFingAdam/mcp-blender/main/pyproject.toml"
+      ]
+    },
+    {
+      "name": "PatrykIti/blender-ai-mcp",
+      "status": "ok",
+      "detail": "59 stars, Apache-2.0, Python 3.11+, fastmcp 3.2.4, v3.3.0(2026-05-04)이고 이후 커밋이 없다는 점도 사실입니다. llm-guided 프로파일이 노출하는 tool은 router_set_goal, router_get_status, browse_workflows, reference_images, scene_scope_graph, scene_relation_graph, scene_view_diagnostics, search_tools, call_tool입니다. check_scene과 inspect_scene은 이 목록에서 확인하지 못했습니다. 'Vision assists but doesn't command'는 원문 인용이 아니라 의역입니다(원문: 'Vision assists interpretation, while deterministic measurement and assertions provide the final truth layer'). 애드온 최소 버전은 Blender 4.0+이고 E2E 테스트는 5.0에서 했습니다.",
+      "evidence_urls": [
+        "https://github.com/PatrykIti/blender-ai-mcp",
+        "https://github.com/PatrykIti/blender-ai-mcp/commits/main"
+      ]
+    },
+    {
+      "name": "dhakalnirajan/blender-open-mcp",
+      "status": "ok",
+      "detail": "120 stars, MIT입니다. Ollama, LM Studio, llama.cpp, OpenAI 호환 provider를 런타임에 전환할 수 있고 PolyHaven을 지원하며, 마지막 커밋은 2026-09-04입니다. 보충할 점: MCP 서버는 기본 localhost:8000(HTTP)에서 돌고 애드온만 9876을 씁니다.",
+      "evidence_urls": [
+        "https://github.com/dhakalnirajan/blender-open-mcp",
+        "https://github.com/dhakalnirajan/blender-open-mcp/commits/main"
+      ]
+    },
+    {
+      "name": "sandraschi/blender-mcp",
+      "status": "ok",
+      "detail": "48 stars, MIT입니다. 기본 모드는 blender --background 헤드리스이고, 선택적으로 GUI 브리지를 붙일 수 있습니다. portmanteau tool 41개(작업 150개 이상), VRM, Gaussian splat, USD, MP4, React 대시보드, .mcpb를 확인했고 마지막 커밋은 2026-09-18입니다. 보충할 점: Blender 3.0+ 지원, Tauri 데스크톱 앱이 있습니다.",
+      "evidence_urls": [
+        "https://github.com/sandraschi/blender-mcp",
+        "https://github.com/sandraschi/blender-mcp/commits/main"
+      ]
+    },
+    {
+      "name": "Blender MCP Pro (youichi-uda)",
+      "status": "issue",
+      "detail": "가격($5/월 7일 체험, $15 일회성), 120개 이상 tool/17 카테고리, 애드온 MIT에 서버 독점, Blender 4.0+(5.0 권장), 31 stars는 맞습니다. 'GitHub에 커밋 이력 없음'은 틀렸습니다(11 commits). lazy loading(핵심 15개부터 로드) 정보가 누락됐습니다.",
+      "evidence_urls": [
+        "https://github.com/youichi-uda/blender-mcp-pro"
+      ]
+    },
+    {
+      "name": "RobLe3/cc-blender-skill",
+      "status": "issue",
+      "detail": "70 stars, MIT, v1.3.0, 스킬 30개, E2E 검증 6종(검, 병, 의자, 비행사, 데스크램프, 방송 아바타, Blender 5.1.1)을 확인했습니다. Bevel 0.02m/3seg/30°, SubSurf 2/3, 모디파이어 순서, 5~15mm 겹침, EXACT boolean, remove_doubles 0.001, 5~20줄 청크와 180초 타임아웃, GEO-/MAT-/LGT-/CAM-/ARM- 접두사, 월드 (0.04,0.04,0.05)/0.4, QA 게이트 문구도 원문과 일치합니다. 대상 MCP는 ahujasid(9876)입니다. 공식 MCP로 '이전했다'는 서술은 틀렸고, PR #1은 제3자가 올린 Open PR입니다.",
+      "evidence_urls": [
+        "https://github.com/RobLe3/cc-blender-skill",
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/blender-modeling/SKILL.md",
+        "https://github.com/RobLe3/cc-blender-skill/blob/main/plugin/skills/text-to-blender/SKILL.md",
+        "https://github.com/RobLe3/cc-blender-skill/pull/1"
+      ]
+    },
+    {
+      "name": "ra100/blender-claude-plugin",
+      "status": "ok",
+      "detail": "v1.3.0, MIT, 전문 스킬 8개, 공식 Blender Lab MCP(5.1+) 대상입니다. GN 약 373 / 셰이더 약 95 / 컴포지팅 약 80 노드, Python 3.13, marketplace 설치 명령 모두 일치합니다(16 stars).",
+      "evidence_urls": [
+        "https://github.com/ra100/blender-claude-plugin"
+      ]
+    },
+    {
+      "name": "StableGen (sakalond)",
+      "status": "ok",
+      "detail": "929 stars, GPL-3.0입니다. v0.3.1(2026-06-12), 지원 버전 4.2–4.5와 5.1+(5.0 제외), 127.0.0.1:8188, VRAM 8GB/16GB+, 설치 용량 약 7.3~33GB, 지원 모델 SDXL, FLUX.1-dev, Qwen Image Edit, FLUX.2 Klein, TRELLIS.2를 확인했습니다.",
+      "evidence_urls": [
+        "https://github.com/sakalond/StableGen",
+        "https://github.com/sakalond/stablegen/releases"
+      ]
+    },
+    {
+      "name": "Scenario for Blender (scenario-labs/blender-plugin)",
+      "status": "issue",
+      "detail": "GPL-3.0-or-later, Blender 5.0+, 이미지·비디오·3D·PBR·오디오·Blockout 생성, GitHub Releases 배포, Allow Online Access 필요, CU 과금, 10 stars는 맞습니다(커밋은 238개). 두 가지가 누락됐습니다. 내장 MCP가 http://127.0.0.1:9876/mcp를 쓰므로 ahujasid, 공식 서버와 포트 9876이 3중으로 충돌할 수 있습니다. 또 MCP에서 임의 Python 실행이 기본적으로 꺼져 있다는 보안상 장점도 빠졌습니다.",
+      "evidence_urls": [
+        "https://github.com/scenario-labs/blender-plugin"
+      ]
+    },
+    {
+      "name": "BlenderGPT / Blender-Copilot",
+      "status": "ok",
+      "detail": "BlenderGPT는 약 5k stars, MIT이고 마지막 커밋이 2023-06-10('Update README.md')으로 레거시라는 평가가 맞습니다. Blender-Copilot은 2 stars, GPL-3.0, Blender 5.2.1 LTS 대상이고 undo_push, PENDING_APPROVAL(Y/N) 승인, Ollama/LM Studio/OpenRouter/OpenAI 지원까지 일치합니다.",
+      "evidence_urls": [
+        "https://github.com/gd3kr/BlenderGPT/commits/main",
+        "https://github.com/halilogia/Blender-Copilot"
+      ]
+    },
+    {
+      "name": "Meshy MCP (meshy-dev/meshy-mcp-server)",
+      "status": "ok",
+      "detail": "공식 저장소가 존재하고 npm 패키지는 @meshy-ai/meshy-mcp-server, MIT입니다. text/image-to-3D, retexture, auto-rig, 3D 프린트 분석을 지원합니다. Meshy Bridge 포트 5324는 docs.meshy.ai가 차단돼 확인하지 못했습니다.",
+      "evidence_urls": [
+        "https://github.com/meshy-dev/meshy-mcp-server"
+      ]
+    },
+    {
+      "name": "헤드리스: blender-agent-studio / PyPI bpy / --python-exit-code",
+      "status": "ok",
+      "detail": "ifBars/blender-agent-studio는 51 stars, MIT인 Codex 플러그인입니다. 헤드리스 방식, .blend와 Python 소스 보존, 실루엣 마스크, Poly Haven 1K–8K를 확인했습니다. 보충할 점: Blender 5.2 LTS와 Bun 1.3.5+가 필요하고 로컬 MCP 서버와 전문 스킬 11개가 포함됩니다. yardstake-ux #151은 예외가 나도 exit 0이 되므로 `--python-exit-code 1`을 써야 한다는 내용과 일치합니다. bpy 5.2.2는 Python 3.13 전용입니다.",
+      "evidence_urls": [
+        "https://github.com/ifBars/blender-agent-studio",
+        "https://github.com/captproton/yardstake-ux/issues/151",
+        "https://pypi.org/project/bpy/"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://www.mindstudio.ai/blog/claude-fable-5-1-blender-video-generation",
+      "reason": "AI 에이전트 플랫폼 업체의 대량 SEO 블로그입니다. 원문은 차단돼 열람하지 못했고, 조사 결과도 '검색 요약으로만 확인'했다고 밝힙니다. '37초 시애틀 주택 워크스루'의 서버 종류와 재현 절차가 없으니 사례로 싣지 말거나 '미검증 주장'으로 명시해야 합니다."
+    },
+    {
+      "url": "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance",
+      "reason": "같은 업체 SEO 블로그이고 원문 확인이 불가능했습니다. '2시간, Max 플랜 세션 토큰 60%' 같은 수치의 출처와 측정 조건을 알 수 없습니다."
+    },
+    {
+      "url": "https://gamedevacademy.org/gpt-astra-blender-mcp-tutorial/",
+      "reason": "egress가 차단돼 확인하지 못했습니다. 조사 결과는 모델명을 'GPT-6 Astra'로 적었지만, 1차 출처인 ahujasid 이슈 #351은 'GPT Astra'라고만 씁니다. 모델명과 사용 MCP(ahujasid 여부)는 검증되지 않았습니다."
+    },
+    {
+      "url": "https://3d-agent.com/",
+      "reason": "상용 제품의 자사 마케팅 사이트입니다(차단돼 열람 불가). 가격 정보가 서로 모순되고 조사자도 자사 SEO 비중이 크다고 지적했습니다. 독립적인 검증 전에는 추천 목록에서 빼는 편이 안전합니다."
+    },
+    {
+      "url": "https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106",
+      "reason": "제목부터 'Blender MCP에서 3D Agent로'라고 해서 공식 커넥터와 커뮤니티 MCP, 상용 제품을 뒤섞는 홍보성 글로 보입니다. 공식 커넥터는 Blender Lab이 만들었다는 1차 출처(anthropic.com, claude.com)와 어긋날 소지가 있습니다(차단돼 원문 미확인)."
+    },
+    {
+      "url": "https://github.com/bpy-dev/blender-mcp/blob/main/readme_tools.rst",
+      "reason": "비공식 포크(developer preview)의 문서인데 공식 Blender Lab 서버 tool 목록의 출처로 쓰였습니다. get_runtime_python_api_docs 같은 포크 전용 tool이 공식 목록에 섞여 들어간 원인으로 보입니다."
+    },
+    {
+      "url": "https://pypi.org/project/mcp-blender/",
+      "reason": "RFingAdam README가 이 PyPI 이름을 가리키지만 실제 소유자는 brnv(Artem)의 다른 프로젝트(v0.1.0)입니다. 설치 출처로 인용하면 공급망 혼동이 생깁니다."
+    },
+    {
+      "url": "https://github.com/ahujasid/blender-mcp/issues/339",
+      "reason": "이슈 자체는 믿을 만하지만, 이슈에서 언급된 blender-mcp.com(및 blendermcp.org) 같은 비공식 사이트는 비공식 애드온을 배포하는 곳입니다. 설치 출처로 쓰면 안 됩니다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Hunyuan3D 오픈 웨이트 라이선스가 한국을 적용 지역에서 제외",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2/blob/main/LICENSE",
+      "why_important": "'Tencent Hunyuan 3D 2.0 Community License'의 Territory는 'worldwide, excluding the European Union, United Kingdom and South Korea'입니다. 한국어 지식베이스라면 로컬 Hunyuan3D 백엔드(RFingAdam, ahujasid HUNYUAN3D_API_URL 로컬 모드 등)를 추천할 때 반드시 이 경고를 달아야 합니다. Tencent Cloud API 경유 사용은 별도 약관을 따릅니다."
+    },
+    {
+      "name": "Tripo 공식 MCP 서버 (VAST-AI-Research/tripo-mcp)",
+      "url": "https://github.com/VAST-AI-Research/tripo-mcp",
+      "why_important": "Tripo 개발사의 공식 MCP(MIT, 약 206 stars, alpha)로, Tripo Blender 애드온과 연동해 생성한 에셋을 Blender로 가져옵니다. ahujasid에서 Tripo가 Premium 전용이 된 상황에서 대안이 됩니다."
+    },
+    {
+      "name": "Hunyuan3D-2 공식 Blender 애드온",
+      "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2",
+      "why_important": "로컬 API 서버를 띄워 Blender 안에서 바로 생성하는 1st-party 애드온입니다(약 15k stars). 단, 위의 한국 제외 라이선스 문제가 그대로 적용됩니다."
+    },
+    {
+      "name": "pakkio/mcp-blender (146 tools, capture_multiview_audit)",
+      "url": "https://github.com/pakkio/mcp-blender",
+      "why_important": "know-how에서 '4방향 contact sheet'로만 인용됐고 항목으로는 빠졌습니다. 21개 도메인에 146개 tool, v2.3.5, 렌더·가림(occlusion) 진단, 바운딩박스 지표가 포함된 4뷰 감사 등 검증 중심 기능이 있습니다(1 star, 소규모)."
+    },
+    {
+      "name": "Blender Lab 공식 서버의 HTTP 전송 모드와 내장 chat_client (readme_local_llm.rst)",
+      "url": "https://github.com/bpype/blender_mcp/blob/main/readme_local_llm.rst",
+      "why_important": "공식 서버는 `blender-mcp --transport http --port 9191`로 HTTP 모드를 지원하고, 로컬 llama-server(OpenAI 호환, :8080)용 chat_client를 함께 제공합니다. '로컬 LLM만 쓰는 경우'라는 팁의 1차 근거입니다."
+    },
+    {
+      "name": "Scenario for Blender MCP의 포트 9876 사용",
+      "url": "https://github.com/scenario-labs/blender-plugin",
+      "why_important": "Scenario 내장 MCP도 http://127.0.0.1:9876/mcp를 씁니다. 공식 서버, ahujasid와 함께 쓰면 포트가 3중으로 충돌하므로 '포트 혼동 피하기' 팁에 추가해야 합니다. Scenario는 임의 Python 실행이 기본적으로 꺼져 있다는 점도 보안 비교에 쓸 만합니다."
+    },
+    {
+      "name": "ahujasid 이슈 #202 (generate_hunyuan3d_model 임의 파일 읽기, 외부 전송)",
+      "url": "https://github.com/ahujasid/blender-mcp/issues/202",
+      "why_important": "CVE-2026-10661의 실제 공격 시나리오를 구체적으로 적은 1차 자료입니다. input_image_url이 http로 시작하지 않으면 open()으로 로컬 파일을 읽어 base64로 외부 API에 보냅니다. 현재 know-how는 이 이슈를 번호만 언급하고 URL은 인용하지 않습니다."
+    },
+    {
+      "name": "claude-3d-harness 루프톱 데모 (449 오브젝트, 3시간 미만)",
+      "url": "https://github.com/MAX-786/claude-3d-harness",
+      "why_important": "사례 연구에는 '시네마틱 잡 1건'으로만 적혀 있습니다. 실제로는 '비 오는 밤 일본 도시 옥상의 작은 방' 씬(메시 오브젝트 449개)을 그레이 블록아웃에서 최종 프레임까지 3시간 안에 만든 구체 사례가 README에 있어, AAA급 환경 제작 사례로 더 가치가 큽니다."
+    }
+  ]
+}

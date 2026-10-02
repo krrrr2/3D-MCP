@@ -1,0 +1,1002 @@
+{
+  "topic": "최신 3D·CAD·공간지능 벤치마크와 프런티어 모델 정량 비교 (2026-09-27 기준)",
+  "summary_ko": [
+    "[결론] 2026-09 현재 같은 하네스와 같은 MCP 서버로 GPT-6 Astra, Claude Opus 5.5, Fable 5.1, Gemini, Grok 4.7, 오픈웨이트를 한꺼번에 비교한 통제 벤치마크는 없습니다. 독립 수치들은 과제마다 1위가 다릅니다. 벤더 발표 수치는 도구 사용 여부, effort 설정, 채점 척도가 서로 달라 한 표에 섞어 비교하면 안 됩니다.",
+    "[MCP 3D 조작·애니메이션] La Forge(ScoreIA)는 MCP 도구만으로 3D 기사를 조립하고 애니메이션하는 과제를 LLM 없이 프로그램이 채점합니다(2026-09-24 공개). 6개 캠페인 단순평균은 Opus 5.5 99.8, Fable 5.1 99.4, GPT-6 Astra 97.9, Grok 4.7 96.2, GPT-6 Sol 94.6, DeepSeek flash 91.3, Sonnet 5 81.1, Haiku 4.5 40.4입니다(평균은 본 조사가 계산). 정적 조형 점수는 상위권이 거의 만점입니다. 차이는 지정 프레임에 맞춰 움직이는 시간·공간 동시 제약 과제(taille-3)에서 벌어졌습니다(Opus 5.5 100, Astra 88.1, Sonnet 5 19.5). 다만 채점기를 Claude Opus로 작성했고 모델마다 하네스가 달라 편향 가능성이 있습니다.",
+    "[사람 투표 아레나] Arena(arena.ai) Code 보드(2026-09-25): Opus 5.5 max 1827±18, GPT-6 Astra max 1792±11, Fable 5.1 max 1751±10, Kimi K3 max 1660, Grok 4.7 xhigh 1629, GLM-5.3 max 1619 순입니다. Gemini는 상위 20위 안에 없습니다. Vision 보드(2026-09-13)는 상위 30개 모델이 35점 이내로 몰려 있어 변별력이 거의 없습니다. Design Arena 3D(Three.js/WebGL) 보드는 집계 사이트 기준 Astra 1464, Kimi K3 1417, Fable 5.1 1415입니다.",
+    "[Blender 전용] Blender AI Arena 시즌 3은 이전 수집 시점에는 5자 동률(1,687표)이었습니다. 이번 검색 요약에서는 Opus 5.5 1897±79, 3D-Agent 1658±70으로 나왔습니다. 시즌 번호와 기간도 출처마다 달라 신뢰도가 낮습니다. 3DCodeBench(2026-06)는 GPT-5.5 세대까지만 평가했고(Elo 1위 GPT-5.5 1163, Gemini 3.1 Pro보다 16점 높음), 멀티턴 오류 피드백으로 실행 가능률이 0.69에서 0.97로 올랐습니다. 3DHarnessBench(2026-09)에서는 Opus 5가 Active Visual과 Full 3D Interaction 두 조건 모두 1위였습니다.",
+    "[CAD] BenchCAD 공식 재채점(도구 없음, Vision2Code IoU)의 최고점은 여전히 Gemini 3.1 Pro 0.289입니다(2026-06 갱신, Astra·Opus 5.5·Fable 5.1은 미등재). OpenAI가 발표한 'Astra 95.9%'는 도구를 쓴 조건의 기하 중첩 점수로, 공식 표와 척도가 다릅니다. CADGenBench 제3자 비교(build123d-mcp)는 Opus 5 0.677, GPT-5.6 Sol 0.532, Gemini 3.7 Flash 0.508입니다. FreeCAD GUI로 장기 작업을 수행하는 CADWorld(2026-09)에서는 최고 에이전트도 성공률 17.5%(GPT-5.4)로, 전문가 87.0%에 크게 못 미칩니다.",
+    "[벤더 공식] Opus 5.5(2026-09-22)는 OSWorld 2.0 partial 81.8%(max effort), Terminal-Bench 4.0 66.4%(Astra 57.9%), GDPval-AA 1846(Astra 1542)입니다. 발표문에 비전·3D·CAD 지표는 없습니다. GPT-6 Astra(2026-09-03)는 OSWorld 2.0 72.6%(과제당 약 40분), ScreenSpot-Pro 92.7%, MMMU-Pro 86.9, BenchCAD 95.9%(도구 사용)입니다. Fable 5.1의 OSWorld 2.0 partial 점수는 자사 발표문에 77.9%, Opus 5.5 발표문에 80.7%로 서로 다릅니다.",
+    "[Gemini·Grok·오픈웨이트] Gemini 3.5 Pro는 아직 출시되지 않았고 Pro 최상위는 3.1 Pro(2026-02)입니다. Gemini 3.8 Flash(2026-09-02)는 속도(약 305 tok/s)와 코딩은 강하지만 OSWorld 2.0이 59.0%로 Opus 5(75.4%)보다 낮습니다. Grok 4.7(2026-09-21)은 3D 공식 수치가 없고, La Forge 평균 96.2, Arena Code 1629입니다. Kimi K3는 Design Arena 3D 2위(1417)이고 3DHarnessBench에서 2군에 들었습니다. Qwen3.8-Max는 Arena Vision 2위(1302)입니다. 오픈웨이트 모델만 따로 다룬 Blender 벤치마크는 없습니다.",
+    "[연구 논문 수치] VIGA는 원샷 대비 BlenderGym +35.32%, BlenderBench +124.70%입니다. CADCodeVerify(GPT-4)는 포인트클라우드 거리 7.30% 감소, 성공률 +5.0%입니다. CAD-Recode는 DeepCAD에서 평균 CD 0.30(이전 최고 3.43), IoU 92.0%입니다. LayoutVLM은 PSA 58.8로 I-Design보다 40.8점 높습니다. Holodeck은 ProcTHOR 대비 전체 선호 64.4%입니다. SceneSmith는 충돌 2% 미만, 물리 안정 96%, 사용자 연구 사실감 승률 92%입니다. BlenderGym에서 GPT-4o의 배치(Placement) 광도 손실은 11.89로 인간 0.423의 약 28배입니다. SceneCraft, LL3M, 3D-GPT, BlenderAlchemy의 정량 수치는 확보하지 못했습니다.",
+    "[실무 시사점] 벤치마크 전반에서 모델 교체보다 렌더→검증→수정 루프, 멀티턴 오류 피드백, 전용 MCP 도구가 성능을 더 크게 올립니다. 레이아웃은 LLM 단독보다 제약 최적화와 물리 검증을 결합해야 합니다. 과제별 1위는 잠정적으로 다음과 같습니다(모두 잠정). MCP 애니메이션·정밀 배치는 Opus 5.5·Fable 5.1, Three.js 3D 장면은 Astra, 도구 없는 CAD 비전→코드는 Gemini 3.1 Pro, 3D→코드 복원은 Opus 5입니다."
+  ],
+  "items": [
+    {
+      "name": "La Forge (ScoreIA) — MCP 전용 3D 기사 제작·애니메이션 벤치마크",
+      "category": "독립 벤치마크 (프로그램 채점, MCP 에이전트)",
+      "what_it_is": "ScoreIA가 운영하는 테스트 벤치입니다. 모델은 공용 무기고의 부품으로 3D 기사를 조립하고 걷기, 회전, 지정 프레임에 짚단 베기 같은 애니메이션을 MCP 도구만으로 만듭니다. LLM 심판 없이 바운딩박스, 관절 접촉, 각도, 칼날 궤적으로 100점 만점 채점합니다. 캠페인은 6개(taille-1~3, maitre-1~3)이고 각각 커미션 3개로 되어 있습니다. 결과는 오픈데이터로 공개됩니다(2026-09-24 export). [독립 수치이지만 주최 측이 편향 가능성을 스스로 밝혔습니다]",
+      "how_to_use": "공개 MCP 엔드포인트(https://scoreia.ai/forge/mcp, 레지스트리명 ai.scoreia/forge)에 자기 클라이언트를 연결합니다. enter_forge → forge_add(조립) → forge_keyframe(애니메이션) → seal_forge 순서로 제출하면 카드가 공개됩니다. 로컬 모델(Ollama, vLLM 등)은 forge_local.py로 참가합니다. 자사 3D 에이전트 파이프라인의 회귀 테스트로 쓸 수 있습니다.",
+      "strengths": "캠페인별 평균: taille-3(리듬: 지정 프레임에 3개 기둥을 cm·도 단위로, 움직이는 레일, 블라인드) Opus 5.5 100 / Fable 5.1 97.7 / Grok 4.7 90.4 / GPT-6 Astra 88.1 / GPT-6 Sol 81.7 / DeepSeek flash 72.2 / Sonnet 5 19.5 / Haiku 4.5 6.5. taille-2(이동 중 타격, 회전) Fable 5.1·Opus 5.5·Astra 100 / DeepSeek 94.1 / Grok 93.0 / Sol 90.6 / Sonnet 5 85.5 / Haiku 37.2. taille-1(베기) Opus 5.5 100 / Astra 99.9 / Fable 5.1 99.0 / Grok 98.6 / DeepSeek 98.2 / Sol 97.5 / Sonnet 5 92.0 / Haiku 54.3. maitre-3(블라인드, 호출 절약) Fable 5.1·Opus 5.5·Astra 99.9 / Sol 99.3 / Grok 96.9 / DeepSeek 95.6 / Sonnet 5 94.8 / Haiku 43.1. maitre-2(관절 팔, 3D 조준) 상위 5개 100 / Sol 99.8 / DeepSeek 96.7 / Haiku 39.0. maitre-1(갑옷 기사의 비율, 대칭, 문장) Fable 5.1 99.5 = Astra 99.5 / Opus 5.5 99.1 / Sol 98.9 / Grok 98.0 / Sonnet 5 95.0 / DeepSeek 90.8 / Haiku 62.3. 6개 캠페인 단순평균(본 조사 계산): Opus 5.5 99.8, Fable 5.1 99.4, Astra 97.9, Grok 4.7 96.2, GPT-6 Sol 94.6, DeepSeek flash 91.3, Sonnet 5 81.1, Haiku 4.5 40.4. 채점이 결정적이고, 카드마다 장면·키프레임·판정 상세 JSON이 공개되어 재검증할 수 있습니다.",
+      "weaknesses": "(1) 하네스가 모델마다 다릅니다: Claude는 Claude Code 서브에이전트, GPT(Astra, Sol)는 Codex CLI, Grok은 Grok CLI, DeepSeek은 API 최소 도구 루프. (2) 심판과 캠페인을 Claude Opus로 작성했고, 가장 어려운 캠페인에서 Opus가 100점이라 주최 측도 편향 가능성을 밝혔습니다. (3) 모델 신원은 자기 신고이고 카드에 서명이 없습니다. (4) 커미션당 최신 1회 시도만 반영합니다. (5) 부품 조립과 애니메이션을 재는 과제라 AAA 수준의 모델링, 텍스처, 머티리얼 품질은 측정하지 않습니다. (6) Gemini, Kimi, Qwen, GLM은 참가하지 않았습니다. 심판 결함이 발견되면 전체를 재채점하며, 초기 점수는 initial_score로 남습니다.",
+      "license_or_price": "데이터 CC BY 4.0, 참가 무료",
+      "status_date": "2026-09-24 (데이터 export)",
+      "language": "영어/프랑스어",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results",
+        "https://scoreia.ai/forge/en/",
+        "https://scoreia.ai/forge/en/method/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Arena (arena.ai, 구 LMArena) Code·Text 리더보드 스냅샷",
+      "category": "독립 사람 투표 Elo (일반 코딩/웹 생성)",
+      "what_it_is": "블라인드 쌍대 투표로 만든 Elo 순위입니다. 매일 스냅샷을 남기는 GitHub 미러(oolong-tea-2026/arena-ai-leaderboards)의 2026-09-26 수집본을 직접 읽었습니다. code 보드는 2026-09-25, text 보드는 2026-09-25에 갱신된 값입니다. 3D 전용 지표는 아니고, 웹과 앱 코드 생성 선호도를 보여 주는 대리 지표입니다. [독립 수치]",
+      "how_to_use": "3D 전용 벤치와 함께 '코드 생성 전반의 선호도' 참고값으로 씁니다. CI(±)가 겹치면 동률로 해석합니다. raw.githubusercontent.com의 data/<날짜>/code.json, vision.json, text.json으로 시계열을 추적할 수 있습니다.",
+      "strengths": "Code 보드 상위: 1 claude-opus-5.5-max 1827±18(1,607표), 2 gpt-6-astra-max 1792±11(4,908표), 3 claude-fable-5.1-max 1751±10, 4 claude-opus-5-max 1693, 5 gpt-6-sol-max 1681, 6 qwen3.8-max 1672, 9 kimi-k3-max 1660, 10 muse-spark-1.3-max 1656, 11 qwen3.8-flash-next(open) 1636, 12 hy4-preview(Tencent, open) 1631, 13 grok-4.7-xhigh 1629, 16 deepseek-v4.1-flash-max(open) 1621, 18 glm-5.3-max(open) 1619. Gemini 계열은 상위 20위 안에 없습니다. Text 보드: Opus 5.5 high 1509(1위), Fable 5.1 max 1501, Gemini 3.8 Flash high 1492, Kimi K3 max 1488, Gemini 3.1 Pro preview 1487, GPT-6 Astra max 1478. 'Opus 5.5가 출시 다음 날 WebDev에서 Astra를 추월했다'는 보도(remio)와 방향이 일치합니다.",
+      "weaknesses": "Opus 5.5는 표본이 1,607표뿐이라 CI가 ±18로 넓습니다. 3D 품질을 직접 재지 않습니다. 스냅샷에는 상위 20~30개만 있습니다. 제3자 미러를 거친 데이터입니다. 스냅샷의 라이선스 표기에서 kimi-k3-max와 qwen3.8-max가 'proprietary'로 되어 있어 오픈웨이트 여부 판단에는 쓰지 않는 것이 좋습니다.",
+      "license_or_price": "무료 열람",
+      "status_date": "2026-09-25 (code/text 보드 갱신일), 2026-09-26 수집",
+      "language": "영어",
+      "urls": [
+        "https://github.com/oolong-tea-2026/arena-ai-leaderboards",
+        "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/code.json",
+        "https://arena.ai/leaderboard/code",
+        "https://arena.ai/leaderboard",
+        "https://www.remio.ai/post/claude-opus-5-5-webdev-ranking-puts-anthropic-ahead-of-gpt-6-astra"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Arena Vision 리더보드 (이미지 이해 선호도)",
+      "category": "독립 사람 투표 Elo (비전)",
+      "what_it_is": "이미지·멀티모달 이해 과제의 블라인드 투표 순위입니다. 마지막 갱신은 2026-09-13로, Opus 5.5(09-22)와 Grok 4.7(09-21) 출시 전입니다. [독립 수치]",
+      "how_to_use": "뷰포트 스크린샷 판독 능력의 거친 대리 지표로만 씁니다. 상위권 점수 차가 작아 모델 선택 근거로는 약합니다.",
+      "strengths": "1 claude-fable-5-high 1310±8, 2 qwen3.8-max 1302, 3 claude-opus-4-7-high 1301, 6 muse-spark-1.3-max 1294, 10 claude-opus-5-high 1289, 11 claude-fable-5.1-max 1289±12, 12 gemini-3-pro 1289, 13 gpt-5.5 1287, 14 gpt-5.6-sol-xhigh 1286, 16 gpt-6-astra-max 1284±17(1,367표), 17 gemini-3.5-flash-high 1284, 21 gemini-3.6-flash-high 1283, 24 grok-4.5 1279, 26 gemini-3.1-pro-preview 1279, 30 glm-5.3-flash 1275.",
+      "weaknesses": "상위 30개 모델이 35점(1310~1275) 이내에 몰려 있어 사실상 변별력이 없습니다. Opus 5.5, Gemini 3.8 Flash, Grok 4.7이 아직 없습니다. 일반 사진·문서 이해 선호도라 3D 공간 추론이나 CAD 판독 능력과는 다릅니다.",
+      "status_date": "2026-09-13 (보드 갱신일)",
+      "urls": [
+        "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/vision.json",
+        "https://arena.ai/leaderboard/vision"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Design Arena 3D 보드 (Three.js/WebGL 3D 장면 코드)",
+      "category": "사람 투표 Elo (3D 코드 생성) — 집계 사이트 경유",
+      "what_it_is": "모델이 3D 장면과 지오메트리를 코드(Three.js, WebGL, 셰이더)로 생성하면 사람이 1대1로 투표하는 보드입니다. 공간, 조명, 카메라를 한꺼번에 다뤄야 해서 가장 어려운 카테고리로 소개됩니다. [독립 투표지만 원 사이트는 확인하지 못함]",
+      "how_to_use": "웹 3D(Three.js, R3F) 프로토타입용 모델을 고를 때 참고합니다. Blender/Unreal 파이프라인에는 간접 지표입니다.",
+      "strengths": "GPT-6 Astra 1464, Kimi K3 1417, Claude Fable 5.1 1415(modelgrep 2026-09 기준). 이전 스냅샷은 Astra 1481, Kimi K3 1426, Fable 5.1 1423이었습니다. 47점 차는 100번 대결에서 약 57승에 해당합니다. 오픈웨이트 Kimi K3가 2위라는 점이 눈에 띕니다.",
+      "weaknesses": "Design Arena 원 사이트를 직접 보지 못했고 SEO성 집계 사이트(modelgrep)의 요약에 의존했습니다. Opus 5.5 점수는 확인하지 못했습니다. 투표 수와 CI도 확인하지 못했습니다.",
+      "status_date": "2026-09",
+      "urls": [
+        "https://modelgrep.com/best/3d"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Blender AI Arena (blenderai.org) 시즌 3",
+      "category": "독립 사람 투표 (Blender 결과물, Glicko-2)",
+      "what_it_is": "Blender 결과물을 블라인드 투표로 비교하는 아레나입니다(Glicko-2). 에이전트 제품(3D-Agent)과 원시 모델이 함께 출전합니다. [독립 수치이지만 값이 계속 바뀜]",
+      "how_to_use": "Blender MCP 결과물의 체감 품질 비교에 참고합니다. ± 범위가 겹치면 동률로 봅니다.",
+      "strengths": "이번 검색 요약 기준(2026-09 말): 시즌 3은 2026-09-07 개막해 진행 중이고, 1위 Claude Opus 5.5 1897±79, 2위 3D-Agent 1658±70입니다. 이전 조사 시점 기준으로는 시즌 3이 3D-Agent, GPT-6 Astra, Opus 5, Fable 5.1, Grok 4.6의 5자 동률(1,687표)이었습니다.",
+      "weaknesses": "출처 간 상충이 큽니다. 한쪽 요약은 '시즌 1이 2026-08-13~09-07, 1,800표, 4자 동률', 기존 조사는 '시즌 2가 같은 기간'이라고 합니다. Opus 5.5는 09-22 출시 뒤 며칠 만에 올라온 점수라 불확실성 ±79가 큽니다. blenderai.org가 차단되어 원문을 확인하지 못했습니다.",
+      "status_date": "2026-09 (진행 중 시즌)",
+      "urls": [
+        "https://blenderai.org/leaderboard",
+        "https://blenderai.org/methodology"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "3DCodeBench / 3DCodeArena (Blender 절차적 모델링 코드)",
+      "category": "학술 벤치마크 (독립)",
+      "what_it_is": "Infinigen 기반의 212개 카테고리(의자, 식물, 해양생물, 산호, 주방 하드웨어 등) × 60 seed = 12,720개 인스턴스입니다. VLM이 텍스트나 이미지 참조로부터 Blender 5.0 bpy 절차적 코드를 생성합니다. 단발, 멀티턴, 에이전트 하네스(Claude Code, Codex, Gemini CLI) 조건에서 12개 VLM을 평가했습니다. 지표는 실행 가능률, SigLIP-2/DINOv3, Chamfer/Uni3D, LLM 심판, 사람 선호 Elo(3DCodeArena)입니다. 82,042회 시도에서 스크립트 81,605개가 생성되었습니다. [독립 수치]",
+      "how_to_use": "Blender 코드 생성 파이프라인 설계의 근거로 씁니다. 특히 멀티턴 오류 피드백과 사고 예산 증대 효과를 참고합니다.",
+      "strengths": "멀티턴 오류 피드백으로 평균 실행 가능률이 0.69에서 0.97로 올랐습니다. Claude Opus 4.7, GPT-5.5, GPT-5.4는 재시도 후 1.000에 도달했습니다. 3DCodeArena Elo 1위는 GPT-5.5 1163으로 Gemini 3.1 Pro보다 16점 높습니다. 실패는 주로 API 불일치에서 나오고, 렌더에 성공해도 떠 있거나 분리된 부품이 흔합니다. 테스트 시간 확장(사고 예산, 멀티턴)은 전반적으로 효과가 있었습니다.",
+      "weaknesses": "평가 모델이 2026-06 세대(GPT-5.5, Opus 4.7, Gemini 3.1 Pro)에서 멈춰 있고 Astra, Opus 5.5, Fable 5.1은 없습니다. 모델별 전체 수치표와 하네스 비교표는 arXiv와 사이트가 차단되어 확인하지 못했습니다(GitHub README에는 수치가 없음).",
+      "status_date": "2026-06-01 (arXiv 공개)",
+      "urls": [
+        "https://github.com/gaoypeng/3dcodebench",
+        "https://arxiv.org/abs/2606.01057",
+        "https://arxiv.org/html/2606.01057v1"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "3DHarnessBench (에이전트형 3D→Blender 코드 복원)",
+      "category": "학술 벤치마크 (독립)",
+      "what_it_is": "프런티어 VLM이 대상 3D 물체를 Blender Python 코드로 복원하는 능력을 네 가지 하네스 조건에서 잽니다. 조건은 Single-view, Multi-view, Active Visual(임의 시점 요청), Full 3D Interaction(Blender 함수 호출로 대상 물체에 완전 접근)이며, 뒤로 갈수록 접근 범위가 넓어집니다. Blender MCP 기능을 활용합니다. [독립 수치]",
+      "how_to_use": "MCP로 뷰포트 시점과 씬 조회 도구를 얼마나 열어 줄지 결정할 때 근거로 씁니다. 모델마다 추가 도구의 효과가 다르다는 점을 반영합니다.",
+      "strengths": "모든 모델이 함수 호출 접근이 늘수록 복원 정확도가 크게 올랐습니다. Opus 5가 Active Visual과 Full 3D Interaction 모두에서 가장 강했습니다. Fable 5, GPT-5.6 Sol, Kimi K3, Qwen3.8 Max가 경쟁적인 2군이고, Gemini 3.1 Pro와 MiniMax M3는 특히 Active Visual에서 약했습니다. Active Visual이 변별력이 가장 커서, 추가 시점 접근이 어떤 에이전트에는 도움이 되고 어떤 에이전트에는 오히려 해가 됐습니다. 기존 조사에서 확인한 최고 Uni3D는 0.927입니다.",
+      "weaknesses": "평가 모델 목록이 출처마다 다릅니다. arXiv v1 요약에는 fable-5, gemini-3-1-pro, gpt-5-6-sol, kimi-k3, minimax-m3, opus-5, qwen3-8-max-preview만 있고, 기존 조사(GitHub 설정)에는 gpt-6-astra도 있습니다. 모델×조건별 수치표는 README에 없고 arXiv/HF 차단으로 확보하지 못했습니다. Opus 5.5와 Fable 5.1은 평가되지 않았습니다.",
+      "status_date": "2026-09 (arXiv 2609.06535)",
+      "urls": [
+        "https://github.com/llada60/3DHarnessBench",
+        "https://arxiv.org/html/2609.06535v1",
+        "https://huggingface.co/datasets/lingada/3DHarnessBench"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "BenchCAD — 공식 재채점 리더보드 vs 벤더 보고 수치",
+      "category": "CAD 벤치마크 (공식 재채점 + 벤더 보고 혼재)",
+      "what_it_is": "106개 산업 부품군과 47개 표준에서 뽑은 실행 검증된 CadQuery 프로그램 17,900개로 구성됩니다. 과제는 Vision2Code(4뷰 렌더 → CadQuery, voxel IoU), Vision-QA, Code-QA입니다. 공식 리더보드는 '원시 출력으로 직접 재채점하며 자가 보고는 받지 않는다'가 원칙이고, Mythos 계열만 † 표시로 공급자 보고값을 싣습니다.",
+      "how_to_use": "도구 없이 비전→CAD 코드를 한 번에 내는 능력은 공식 표로, 도구를 쓰는 에이전트 능력은 벤더 발표로 따로 보고 섞지 않습니다.",
+      "strengths": "[독립: 공식 재채점, 도구 없음, 2026-06 갱신] Vision2Code IoU: Gemini 3.1 Pro 0.289, Claude Opus 4.7 0.269, Sonnet 4.6 0.222, GPT-5.3 0.179. [벤더 보고 †] Mythos 5 0.384, Opus 4.8 0.273. [벤더 보고: OpenAI, 도구 사용 조건] GPT-6 Astra 95.9%(기하 중첩 점수), GPT-5.6 Sol 83.3%, Claude Fable 5.1 84.3%(OpenAI 발표 표 기준).",
+      "weaknesses": "공식 표에 GPT-6 Astra, GPT-5.6 Sol, Fable 5.1, Opus 5/5.5, Gemini 3.5~3.8, Grok, Kimi K3, DeepSeek가 없습니다. '95.9%'는 도구(렌더→측정→수정)를 쓴 조건의 다른 척도라 공식 IoU(0~1, 최고 0.384)와 직접 비교할 수 없습니다. Anthropic의 Fable 5.1·Opus 5.5 발표문에는 BenchCAD 수치가 없어, 'Fable 5.1 84.3%'는 OpenAI가 측정·보고한 값입니다.",
+      "status_date": "공식 표 2026-06, 벤더 수치 2026-09-03",
+      "urls": [
+        "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md",
+        "https://www.datacamp.com/blog/gpt-6-astra",
+        "https://openai.com/index/gpt-6-astra/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CADGenBench — build123d-mcp를 붙인 3모델 비교",
+      "category": "CAD 벤치마크 (제3자 단일 저장소 비교)",
+      "what_it_is": "Hugging Face의 CADGenBench(81개 fixture, 생성 + 편집, STEP 유효성)에 build123d-mcp 도구를 붙인 제출물을 비교한 문서입니다. 종합 점수는 0~1 척도입니다. [독립 제3자 수치, 단일 출처]",
+      "how_to_use": "코드 CAD(build123d)와 MCP를 결합할 때 모델과 비용을 추정하는 데 씁니다.",
+      "strengths": "Opus 5(xhigh, MCP 0.3.81) 종합 0.6771(생성 0.6583 / 편집 0.7058), GPT-5.6 Sol(xhigh, Codex) 0.5319(0.4507 / 0.6562), Gemini 3.7 Flash(high, Antigravity) 0.5078(0.4108 / 0.6564), 셋 모두 80/81 valid. 토큰은 GPT 대비 Gemini +16%, Opus +44%였고, Opus 실행의 API 환산 비용은 약 $724.77입니다. build123d-mcp README는 도구만 붙여도 0.360에서 0.457로, validity가 88%에서 100%로 올랐다고 보고합니다.",
+      "weaknesses": "Astra, Opus 5.5, Fable 5.1은 없습니다. 하네스(Claude Code / Codex / Antigravity)와 MCP 버전이 서로 다릅니다. 저자는 비용 비교를 방향성 참고로만 보라고 명시합니다.",
+      "status_date": "2026-07~09 제출물",
+      "urls": [
+        "https://github.com/pzfreo/cadgenbench-build123d",
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+        "https://github.com/huggingface/cadgenbench",
+        "https://benchmarklist.com/benchmarks/cadgenbench/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CADWorld — FreeCAD 장기(long-horizon) 컴퓨터 사용 벤치마크",
+      "category": "학술 벤치마크 (독립, GUI 에이전트)",
+      "what_it_is": "FreeCAD GUI를 조작하는 200개 과제로, 스케치, 파트 모델링, 어셈블리, CAM, FEM, 측정, 메시 처리, 기술 도면 등 11개 기계 CAD 워크플로 범주를 다룹니다. [독립 수치]",
+      "how_to_use": "GUI 클릭 방식 CAD 에이전트의 한계를 설명하는 근거로 씁니다. 코드 CAD와 MCP 조합을 우선하는 이유가 됩니다.",
+      "strengths": "에이전트 7개 중 최고가 GPT-5.4 17.5%, 다음이 Opus 4.8 16.0%이고, 전문가 기준 통과율은 87.0%입니다. 상위 모델의 실패는 문서 구조, 형상, 모델링 과정 오류에서 나왔습니다. Qwen3.6, MiniMax M3, Holo 3.1, OpenCUA는 과제당 85.4~100.7회 행동하고도 성공률이 0~1.5%였고, 주로 실행 실패로 산출물을 만들지 못했습니다.",
+      "weaknesses": "GPT-6 Astra, Opus 5.5, Fable 5.1, Gemini 3.8 Flash는 평가하지 않았습니다. 수치는 검색 요약에만 기반합니다(arXiv 차단).",
+      "status_date": "2026-09 (arXiv 2609.16251 v2)",
+      "urls": [
+        "https://arxiv.org/abs/2609.16251",
+        "https://arxiv.org/html/2609.16251"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "OpenAI GPT-6 Astra 공식 발표 수치 (비전·컴퓨터 사용·CAD)",
+      "category": "벤더 보고 (OpenAI)",
+      "what_it_is": "2026-09-03 출시된 GPT-6 Astra의 발표 수치입니다. openai.com이 차단되어 2차 기사와 집계 사이트로 교차 확인했습니다. [벤더 보고]",
+      "how_to_use": "공간 추론, GUI 그라운딩, 도구 사용 CAD 성능의 상한 참고값으로 씁니다. 다른 벤더 수치와 비교할 때는 조건(effort, 도구, 시간)을 확인합니다.",
+      "strengths": "OSWorld 2.0 72.6%(과제당 약 40분; GPT-5.6 Sol 65.7%는 약 75분), ScreenSpot-Pro 92.7%(GPT-5.6 Sol 76.9%, Claude Fable 5 87.3%, BenchLM 표에서도 1위), MMMU-Pro 86.9, BenchCAD 95.9%(도구 사용), Terminal-Bench 4.0 57.7%, DeepSWE v1.1 74.1%(Gemini 3.8 Flash 73.8%).",
+      "weaknesses": "Anthropic의 Opus 5.5 표에는 Astra Terminal-Bench 4.0이 57.9%(high effort)로 나와 OpenAI 발표(57.7%)와 약간 다릅니다. MMMU-Pro 86.9는 집계 사이트 1곳에서만 확인했습니다. 한 요약에 나온 'Gemini 3.8 Flash Terminal-Bench 4.0 19.1%'는 3.8 Flash의 Terminal-Bench 2.1 90.8%와 크게 어긋나 신뢰하기 어렵습니다. OSWorld 2.0의 partial/strict 구분이 명시되지 않았습니다.",
+      "status_date": "2026-09-03",
+      "urls": [
+        "https://openai.com/index/gpt-6-astra/",
+        "https://www.datacamp.com/blog/gpt-6-astra",
+        "https://benchlm.ai/models/gpt-6-astra",
+        "https://benchlm.ai/benchmarks/screenspot-pro",
+        "https://www.datalearner.com/en/ai-models/pretrained-models/gpt-6-astra/analysis",
+        "https://www.vellum.ai/blog/gpt-6-astra-benchmarks-explained"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Anthropic Claude Opus 5.5 공식 발표 수치",
+      "category": "벤더 보고 (Anthropic, 원문 확인)",
+      "what_it_is": "2026-09-22 발표된 Claude 5.5 계열의 첫 모델입니다. anthropic.com 원문을 직접 확인했습니다. 결과는 adaptive thinking max effort 조건입니다. [벤더 보고]",
+      "how_to_use": "장기 에이전트 작업(컴퓨터 사용, 터미널) 능력의 참고값으로 씁니다. 3D·비전 성능은 발표문에 없으므로 독립 벤치(La Forge, Arena)로 보완합니다.",
+      "strengths": "OSWorld 2.0 partial 81.8%(Fable 5.1 80.7%, Opus 5 74.0%). Terminal-Bench 4.0 66.4%(Fable 5.1 55.8%, Opus 5 52.3%, GPT-6 Astra 57.9% high effort, GPT-5.6 Sol 37.3%). FrontierCode v1.1 54.4%(Astra 53.3%). CursorBench 4.0 57.8%. GDPval-AA v2.1 1846 Elo(Fable 5.1 1735, Astra 1542, Sol 1588). AutomationBench 40.0%(Astra 41.4%). HLE 도구 사용 67.7%(Astra 57.2%). Terminal-Bench-Science 0.1 58.7%(Astra 64.6%). Chartography(도구 사용) 89.0%. 가격 입력 $4 / 출력 $20 per 1M(Opus 5 대비 일반 작업 비용 40% 절감, 30% 빠름), fast mode $8/$40.",
+      "weaknesses": "발표문에 비전, 이미지 이해, 공간 추론, 3D, CAD, Blender, MCP 관련 벤치마크가 전혀 없습니다(MMMU, CharXiv, ScreenSpot도 없음). OSWorld 2.0 표에 Astra가 없어 컴퓨터 사용을 같은 표에서 비교할 수 없습니다. Astra의 72.6%는 OpenAI 측 수치이고 partial/strict 조건이 불분명합니다.",
+      "license_or_price": "$4 / $20 per 1M tokens",
+      "status_date": "2026-09-22",
+      "urls": [
+        "https://www.anthropic.com/claude-opus-5-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Anthropic Claude Fable 5.1 공식 발표 수치",
+      "category": "벤더 보고 (Anthropic, 원문 확인)",
+      "what_it_is": "2026-09(Astra와 같은 09-03 출시로 보도됨) 발표된 Fable 5.1과 Mythos 5.1의 벤치마크입니다. [벤더 보고]",
+      "how_to_use": "Fable 5.1과 Opus 5.5 중 비용·성능을 고를 때 참고합니다.",
+      "strengths": "OSWorld 2.0 partial 77.9%, strict 41.7%(Fable 5 72.9/36.1, Opus 5 75.4/39.6). Terminal-Bench 4.0 55.8%(Mythos 5.1 60.9%, GPT-5.6 Sol 37.3%). GDPval-AA v2 1853. HLE 도구 없음 60.9%, 도구 사용 65.0%. AutomationBench 31.4%. CursorBench 3.2.0 73.4%. Terminal-Bench-Science 52.6%. 가격 $10/$50 per 1M(Fable 5 대비 약 25%, 에이전트 작업에서는 최대 약 45% 비용 절감).",
+      "weaknesses": "같은 Fable 5.1의 OSWorld 2.0 partial이 자사 발표문 77.9%, Opus 5.5 발표문 80.7%로 다릅니다(재측정이나 effort 차이로 추정). GDPval-AA도 v2 1853(Fable 페이지)과 v2.1 1735(Opus 5.5 페이지)로 버전이 다릅니다. 3D·CAD 지표는 없습니다.",
+      "license_or_price": "$10 / $50 per 1M tokens",
+      "status_date": "2026-09",
+      "urls": [
+        "https://www.anthropic.com/claude-fable-and-mythos-5-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Google Gemini 3.x 상태 (3.1 Pro / 3.5 Pro 미출시 / 3.8 Flash)",
+      "category": "벤더 보고 + 2차 기사",
+      "what_it_is": "Gemini 3.5 Pro는 6월 예정이었지만 API 변경 로그에 아직 없고, 3.5 Pro나 3.6 Pro는 존재하지 않습니다. Pro 최상위는 2026-02의 Gemini 3.1 Pro입니다. Gemini 3.8 Flash는 2026-09-02 출시되었습니다. [벤더 보고와 2차 기사 혼재]",
+      "how_to_use": "빠르고 저렴한 반복 루프나 서브에이전트에는 3.8 Flash를, 도구 없는 CAD 비전→코드에는 3.1 Pro(BenchCAD 공식 1위)를 검토합니다.",
+      "strengths": "3.8 Flash: Artificial Analysis 측정 출력 약 305 tok/s(측정 최고), Terminal-Bench 2.1 90.8%(3.7 Flash 81.6%), DeepSWE v1.1 73.8%. Arena Text 1492(10위). Gemini 3.1 Pro는 BenchCAD 공식 Vision2Code IoU 0.289로 1위이고, 3DCodeArena에서 GPT-5.5에 16점 뒤진 2위권입니다.",
+      "weaknesses": "3.8 Flash는 OSWorld 2.0 59.0%로 Opus 5(75.4%)보다 낮고, GDPval-AA v2 1545로 Opus 5(1824)보다 낮습니다(검색 요약의 비교 방향을 해석한 값). Arena Code 상위 20위와 Design Arena 3D 상위 3위에 Gemini가 없습니다. 3DHarnessBench에서 3.1 Pro는 약체군이었습니다. blog.google이 차단되어 원문을 확인하지 못했습니다.",
+      "status_date": "2026-09-02 (3.8 Flash), 3.1 Pro 2026-02",
+      "urls": [
+        "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/",
+        "https://www.vellum.ai/blog/gemini-3-8-flash-benchmarks-explained",
+        "https://felloai.com/gemini-3-8-flash/",
+        "https://www.datacamp.com/blog/gemini-3-8-flash-cyber"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "xAI Grok 4.7",
+      "category": "벤더 보고 + 독립 벤치 결과",
+      "what_it_is": "2026-09-21 출시되었습니다. 더 큰 새 베이스 모델에 강화학습을 더 길게 적용했고, 몇 시간이 걸리는 어려운 과제에 비중을 둔 학습이라고 발표했습니다. 컨텍스트 500k, 입력은 텍스트와 이미지, 출력은 텍스트입니다. [벤더 보고]",
+      "how_to_use": "저가($2/$6) 에이전트로 MCP 애니메이션과 조립 과제의 보조 모델로 검토합니다.",
+      "strengths": "[벤더] CursorBench 4.0 46.3%(4.6: 40.4%), DeepSWE v1.1 71.0% high(4.6: 65.2%). [독립] La Forge 6개 캠페인 평균 96.2(taille-1 98.6, maitre-2 100), Arena Code 1629±14(13위).",
+      "weaknesses": "3D, 비전, OSWorld 공식 수치를 찾지 못했습니다. La Forge 블라인드 캠페인 C3에서 91.0으로 흔들렸고, taille-3은 90.4였습니다.",
+      "license_or_price": "$2 / $6 per 1M tokens",
+      "status_date": "2026-09-21",
+      "urls": [
+        "https://llm-stats.com/blog/research/grok-4-7-launch",
+        "https://llm-stats.com/models/grok-4.7",
+        "https://sqmagazine.co.uk/xai-launches-grok-4-7-coding-model/",
+        "https://evolink.ai/blog/grok-4-7-release-date"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "오픈웨이트·중국계 모델(Kimi K3, Qwen3.8, GLM-5.3, DeepSeek V4.x)의 3D 관련 지표",
+      "category": "독립 벤치 결과 모음",
+      "what_it_is": "오픈웨이트 모델만 다룬 Blender/3D 벤치마크는 없습니다. 3D와 관련된 독립 지표를 모았습니다. [독립 수치 모음]",
+      "how_to_use": "로컬 실행이나 비용 절감이 필요한 서브태스크(코드 생성, 1차 초안)에 쓰고, 최종 검증은 프런티어 모델에 맡기는 구성을 검토합니다.",
+      "strengths": "Kimi K3: Design Arena 3D 1417(2위, Fable 5.1 1415보다 근소하게 높음), Arena Code 1660, 3DHarnessBench 2군. Qwen3.8-Max: Arena Vision 1302(2위), Code 1672, 3DHarnessBench 2군(preview). Qwen3.8-flash-next(open) Code 1636. DeepSeek: V4.1 flash max(open) Code 1621, La Forge 'deepseek-flash' 평균 91.3. GLM-5.3: max(open) Code 1619, flash Vision 1275. 일반 비교 기사(2026-08) 기준 Kimi K3가 종합 1위, DeepSeek V4 Pro가 비용 1위입니다.",
+      "weaknesses": "CADWorld에서 Qwen3.6과 MiniMax M3는 성공률 0~1.5%였습니다. Arena 스냅샷의 라이선스 표기(kimi-k3-max, qwen3.8-max가 proprietary)와 체크포인트별 오픈 여부가 섞여 있습니다. Blender MCP 전용 비교는 없습니다.",
+      "status_date": "2026-08~09",
+      "urls": [
+        "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/code.json",
+        "https://modelgrep.com/best/3d",
+        "https://kingy.ai/blog/glm-5-3-vs-kimi-k3-vs-deepseek-v4-pro/",
+        "https://diaryfolio.com/2026/08/glm-kimi-deepseek-qwen-comparison-august-2026.html",
+        "https://the-decoder.com/kimis-open-model-k3-nears-gpt-5-6-sol-and-fable-5-while-signaling-the-end-of-super-cheap-chinese-ai/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "MineBench (복셀 건축 아레나)",
+      "category": "독립 사람 투표 (Bradley-Terry)",
+      "what_it_is": "자연어 프롬프트(예: 탑 4개가 있는 중세 성)를 받아 3D 블록 좌표 JSON을 출력하거나, voxel.exec 도구(block/box/line 기본형)로 큰 건축물을 만드는 벤치입니다. 블라인드 1대1 투표를 전역 Bradley-Terry 모델과 불확실성 구간으로 순위화합니다.",
+      "how_to_use": "공간 구성과 대칭, 비율 감각의 거친 비교에 씁니다. 도구 모드의 비용과 시간 데이터는 에이전트 예산 추정에 유용합니다.",
+      "strengths": "GPT-6 Astra Pro가 2026-09-04~05 추가되었습니다(PR #152, Responses Pro 모드, max reasoning, 출력 상한 128k). 15개 프롬프트를 모두 완료했고, 평균 생성 시간 25분 53.5초, 총 추정 비용 $34.71, 평균 JSON 128.53 MiB(최대 316.39 MiB)였습니다.",
+      "weaknesses": "현재 순위와 점수는 minebench.ai가 차단되어 확인하지 못했습니다. Opus 5.5 등재 여부도 불명입니다. 복셀 과제라 메시, 텍스처 품질과는 거리가 있습니다.",
+      "status_date": "2026-09-05 (Astra Pro 추가)",
+      "urls": [
+        "https://github.com/Ammaar-Alam/minebench/pull/152",
+        "https://github.com/Ammaar-Alam/minebench",
+        "https://minebench.ai/leaderboard/gpt-6-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "BlenderGym 리더보드 (CVPR 2025 Highlight)",
+      "category": "학술 벤치마크 (독립, 2025 모델 기준)",
+      "what_it_is": "손으로 만든 Blender 씬 245개로 5개 편집 과제(블렌드셰이프, 오브젝트 배치, 절차적 지오메트리, 조명, 절차적 머티리얼)를 평가합니다. 시작 씬을 목표 씬으로 재구성하는 과제이고, 지표는 광도 손실(PL), N-CLIP(1-CLIP 유사도), Chamfer 거리(CD)이며 모두 낮을수록 좋습니다.",
+      "how_to_use": "배치, 조명, 머티리얼 등 하위 작업별 난이도를 파악하고 인간과의 격차를 설명하는 데 씁니다. 자체 평가셋의 지표 설계 참고로도 씁니다.",
+      "strengths": "GPT-4o(2024-08-06) 대 인간: 블렌드셰이프 PL 9.140 vs 0.934, 배치 PL 11.89 vs 0.423(약 28배), 배치 CD 11.22 vs 1.532, 지오메트리 PL 6.747 vs 1.269, 조명 PL 2.410 vs 1.239, 머티리얼 PL 3.653 vs 0.629. Claude 3.5 Sonnet은 배치 N-CLIP 51.76으로 GPT-4o(30.38)보다 나빴습니다. 검증기(verifier)에 연산을 더 쓰는 inference scaling이 효과적이고, 전체 예산이 클수록 검증 비중(VeriRatio)을 높이는 편이 유리했습니다.",
+      "weaknesses": "리더보드가 2025년 모델(GPT-4o, Claude 3.5, Gemini 1.5 Flash, Qwen2-VL 등)에 머물러 있고 2026년 프런티어 모델 수치가 없습니다.",
+      "status_date": "2025-04 (리더보드 갱신 정지)",
+      "urls": [
+        "https://blendergym.github.io/",
+        "https://github.com/richard-guyunqi/BlenderGym-Open",
+        "https://arxiv.org/abs/2504.01786"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "VIGA — Vision-as-Inverse-Graphics Agent",
+      "category": "연구 논문 (ECCV 2026)",
+      "what_it_is": "하나의 자기성찰 에이전트가 생성자와 검증자 역할을 번갈아 맡는 분석-합성 코드 에이전트입니다. 생성자는 도구로 계획, 코드 실행, 에셋 검색, 씬 조회를 하고, 검증자는 여러 시점의 렌더에서 차이를 찾아 다음 반복에 피드백합니다. 계획, 코드 diff, 렌더 이력을 담는 진화형 멀티모달 메모리를 쓰며 파인튜닝은 필요 없습니다. 멀티스텝 3D 편집 벤치 BlenderBench도 함께 제안했습니다.",
+      "how_to_use": "Blender MCP 에이전트에 렌더 → 다시점 검증 → 수정 루프와 작업 메모리를 넣는 설계의 근거로 씁니다.",
+      "strengths": "원샷 기준선 대비 정확도가 BlenderGym +35.32%, SlideBench +117.17%, BlenderBench +124.70% 향상했습니다. MIT 라이선스이고 코드가 공개되어 있습니다.",
+      "weaknesses": "사용한 백본 모델별 수치와 절대 점수는 검색 요약에 없어 확인하지 못했습니다.",
+      "license_or_price": "MIT",
+      "status_date": "2026-01 (arXiv 2601.11109), ECCV 2026",
+      "urls": [
+        "https://arxiv.org/abs/2601.11109",
+        "https://github.com/Fugtemypt123/VIGA",
+        "https://eccv.ecva.net/virtual/2026/poster/3599"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CADCodeVerify + CADPrompt",
+      "category": "연구 논문 (ICLR 2025)",
+      "what_it_is": "VLM이 생성한 CAD 코드 결과물에 대해, VLM 스스로 검증 질문을 만들고 답하게 해서 수정 피드백을 얻는 반복 검증 기법입니다. CADPrompt는 자연어 프롬프트 200개와 전문가가 주석한 CAD 스크립트로 구성된 CAD 코드 생성 벤치마크입니다.",
+      "how_to_use": "CAD MCP 파이프라인에 '체크리스트형 자기 검증 질문' 단계를 추가할 때 참고합니다.",
+      "strengths": "GPT-4 적용 시 기존 방법 대비 포인트클라우드 거리 7.30% 감소, 성공률 5.0% 향상.",
+      "weaknesses": "향상 폭이 크지 않고, GPT-4 세대 결과입니다.",
+      "status_date": "2024-10 (arXiv 2410.05340), ICLR 2025",
+      "urls": [
+        "https://arxiv.org/abs/2410.05340",
+        "https://proceedings.iclr.cc/paper_files/paper/2025/file/81a934cd364e18ea6fdeaf57a93c17d4-Paper-Conference.pdf"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "CAD-Recode — 포인트클라우드 → CadQuery 코드 역설계",
+      "category": "연구 논문 (ICCV 2025)",
+      "what_it_is": "포인트클라우드를 CadQuery Python 코드로 변환하는 경량 LLM 기반 모델입니다. 절차적으로 생성한 100만 개 데이터셋으로 학습했고, v1.5와 후속 cadrille(ICLR 2026)이 있습니다.",
+      "how_to_use": "스캔이나 메시에서 편집 가능한 파라메트릭 CAD를 얻는 전처리 단계에 씁니다. 범용 LLM은 이후 편집에 씁니다.",
+      "strengths": "DeepCAD 평균 Chamfer 거리 0.30(×10³)으로 이전 최고 3.43보다 약 10배 낮고, IoU 92.0%로 이전 SOTA보다 10%p 이상 높습니다. 모든 벤치(DeepCAD, Fusion360, CC3D)에서 무효율이 1% 미만입니다.",
+      "weaknesses": "스케치-압출 계열 형상에 특화되어 있어 자유곡면이나 복잡한 어셈블리에는 한계가 있습니다(일반적 한계로 추정).",
+      "status_date": "2024-12 (arXiv 2412.14042), ICCV 2025",
+      "urls": [
+        "https://arxiv.org/pdf/2412.14042",
+        "https://openaccess.thecvf.com/content/ICCV2025/papers/Rukhovich_CAD-Recode_Reverse_Engineering_CAD_Code_from_Point_Clouds_ICCV_2025_paper.pdf",
+        "https://github.com/col14m/cadrille"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "LayoutVLM — VLM + 미분 가능 최적화 3D 레이아웃",
+      "category": "연구 논문 (CVPR 2025)",
+      "what_it_is": "VLM이 에셋의 초기 배치와 공간 관계 제약을 만들고, 미분 가능 최적화로 충돌과 경계 조건을 풀어 3D 레이아웃을 산출합니다.",
+      "how_to_use": "LLM이 좌표를 직접 찍게 하지 말고 '관계 제약 생성 → 최적화기' 구조로 가구 배치를 설계할 때 근거로 씁니다.",
+      "strengths": "11개 방 유형 평균 PSA(Physically-Grounded Semantic Alignment) 58.8로, 최고 기준선 I-Design보다 40.8점 높습니다. 물리적 타당성은 충돌 없음(CF)과 경계 내(IB) 점수로 측정합니다. 사용자 평가 평균 순위(낮을수록 좋음)는 위치 1.79, 회전 1.73, PSA 1.50으로, LayoutGPT(2.00/1.82/2.83)와 Holodeck(3.44/3.50/3.10)보다 좋았습니다.",
+      "weaknesses": "GPT-4o 세대 결과이며 최신 모델로 다시 평가한 결과는 없습니다.",
+      "status_date": "2024-12 (arXiv 2412.02193), CVPR 2025",
+      "urls": [
+        "https://arxiv.org/html/2412.02193",
+        "https://cs.stanford.edu/~sunfanyun/layoutvlm/",
+        "https://openaccess.thecvf.com/content/CVPR2025/papers/Sun_LayoutVLM_Differentiable_Optimization_of_3D_Layout_via_Vision-Language_Models_CVPR_2025_paper.pdf"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Holodeck — 언어 기반 3D 실내 환경 생성",
+      "category": "연구 논문 (CVPR 2024)",
+      "what_it_is": "LLM(GPT-4)이 공간 관계 제약을 만들고 솔버와 Objaverse 에셋 검색으로 AI2-THOR 실내 환경을 생성합니다.",
+      "how_to_use": "제약 기반 배치의 기준선으로 씁니다. 사람 선호 평가 항목(에셋 선택, 레이아웃 일관성, 전체 선호) 설계에도 참고합니다.",
+      "strengths": "ProcTHOR와의 사람 비교 평가에서 에셋 선택 59.8%, 레이아웃 일관성 56.9%, 전체 선호 64.4%가 Holodeck을 선호했습니다. 다양한 씬 52개 중 28개에서 더 높은 선호를 받았습니다.",
+      "weaknesses": "후속 연구(LayoutVLM)의 사용자 평가에서는 하위권(PSA 순위 3.10)이었습니다.",
+      "status_date": "2023-12 (arXiv 2312.09067), CVPR 2024",
+      "urls": [
+        "https://arxiv.org/html/2312.09067v2",
+        "https://yueyang1996.github.io/holodeck/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneSmith — 시뮬레이션 준비형 실내 씬 에이전트 생성",
+      "category": "연구 논문 (ICML 2026 Spotlight)",
+      "what_it_is": "에이전트가 물리 시뮬레이션에 바로 쓸 수 있는 실내 씬을 생성합니다(오브젝트 밀도, 충돌 없음, 물리 안정성 중시).",
+      "how_to_use": "AAA 수준의 '잡동사니 밀도'와 물리 타당성을 목표로 할 때 에이전트 설계의 참고 기준선으로 씁니다.",
+      "strengths": "기존 방법보다 3~6배 많은 오브젝트를 배치하면서 오브젝트 간 충돌 2% 미만, 물리 시뮬레이션에서 96%가 안정적이었습니다. 205명 사용자 연구에서 기준선 대비 평균 사실감 승률 92%, 프롬프트 충실도 승률 91%였습니다.",
+      "weaknesses": "사용한 LLM과 VLM의 종류별 성능 차이는 확인하지 못했습니다.",
+      "status_date": "2026-02 (arXiv 2602.09153), ICML 2026",
+      "urls": [
+        "https://arxiv.org/abs/2602.09153",
+        "https://github.com/nepfaff/scenesmith",
+        "https://scenesmith.github.io/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "SceneCraft / LL3M (정량 수치 미확보, 정성 결과)",
+      "category": "연구 논문 (ICML 2024 Oral / 2025)",
+      "what_it_is": "SceneCraft는 씬 그래프를 청사진으로 삼아 Blender Python을 작성하고, 관계를 수치 제약으로 바꾼 뒤 GPT-V로 렌더를 비평하며 반복 수정합니다. 공통 함수는 라이브러리로 학습합니다. 최대 약 100개 에셋의 씬을 다룹니다. LL3M은 Blender API 문서 RAG(BlenderRAG)를 쓰는 다중 에이전트 코드 기반 3D 에셋 생성기입니다.",
+      "how_to_use": "씬 그래프 → 제약 → 코드 → 시각 비평 루프(SceneCraft), 역할 분담 멀티에이전트와 API 문서 RAG(LL3M) 설계를 참고합니다.",
+      "strengths": "SceneCraft는 CLIP 텍스트-이미지 유사도, 제약 준수, 사람 평가에서 기존 LLM 에이전트(BlenderGPT 등)보다 우수하다고 보고했습니다. LL3M은 가장 비슷한 기준선인 BlenderMCP보다 디테일(고양이 수염, 딸기 씨 패턴 등)이 좋고, 연속 편집에서 정체성을 유지한다고 보고했습니다(정성 비교).",
+      "weaknesses": "구체 수치(CLIP 점수, 제약 만족률, LL3M 정량 지표)는 검색 요약에 없어 확보하지 못했습니다.",
+      "status_date": "SceneCraft 2024-03 (arXiv 2403.01248), LL3M 2025-08 (arXiv 2508.08228)",
+      "urls": [
+        "https://arxiv.org/abs/2403.01248",
+        "https://icml.cc/virtual/2024/oral/35488",
+        "https://arxiv.org/abs/2508.08228",
+        "https://threedle.github.io/ll3m/"
+      ],
+      "confidence": "low"
+    }
+  ],
+  "measurements": [
+    {
+      "item": "La Forge 6개 캠페인 단순평균 (본 조사 계산)",
+      "dimension": "MCP 3D 조립·애니메이션 점수",
+      "typical_value": "Opus 5.5 99.8 / Fable 5.1 99.4 / GPT-6 Astra 97.9 / Grok 4.7 96.2 / GPT-6 Sol 94.6 / DeepSeek flash 91.3 / Sonnet 5 81.1 / Haiku 4.5 40.4",
+      "unit": "점(100점 만점)",
+      "range": "40.4–99.8",
+      "note": "독립(프로그램 채점). 하네스가 서로 다르고 심판을 Opus로 작성해 편향 가능성 있음",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "La Forge taille-3 (시간·공간 동시 제약)",
+      "dimension": "캠페인 평균",
+      "typical_value": "Opus 5.5 100 / Fable 5.1 97.7 / Grok 4.7 90.4 / Astra 88.1 / GPT-6 Sol 81.7 / DeepSeek 72.2 / Sonnet 5 19.5 / Haiku 6.5",
+      "unit": "점",
+      "note": "가장 변별력이 큰 캠페인",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Arena Code 보드",
+      "dimension": "Elo",
+      "typical_value": "Opus 5.5 max 1827±18 / Astra max 1792±11 / Fable 5.1 max 1751±10 / Kimi K3 max 1660 / Grok 4.7 xhigh 1629 / GLM-5.3 max 1619",
+      "unit": "Elo",
+      "note": "2026-09-25 갱신, 독립 사람 투표, 3D 전용 아님",
+      "urls": [
+        "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/code.json"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Arena Vision 보드 상위 30 점수 폭",
+      "dimension": "Elo 범위",
+      "typical_value": "1310(Fable 5 high) ~ 1275(GLM-5.3 flash); Astra max 1284±17, Fable 5.1 max 1289±12",
+      "unit": "Elo",
+      "note": "2026-09-13 갱신, 변별력 낮음",
+      "urls": [
+        "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/vision.json"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Design Arena 3D (Three.js/WebGL)",
+      "dimension": "Elo",
+      "typical_value": "GPT-6 Astra 1464 / Kimi K3 1417 / Fable 5.1 1415",
+      "unit": "Elo",
+      "note": "집계 사이트 경유, 이전 스냅샷 1481/1426/1423",
+      "urls": [
+        "https://modelgrep.com/best/3d"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "3DCodeBench 멀티턴 오류 피드백 효과",
+      "dimension": "평균 실행 가능률",
+      "typical_value": "0.69 → 0.97",
+      "unit": "비율",
+      "note": "Opus 4.7, GPT-5.5, GPT-5.4는 1.000 도달; Elo 1위 GPT-5.5 1163",
+      "urls": [
+        "https://arxiv.org/abs/2606.01057",
+        "https://github.com/gaoypeng/3dcodebench"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "BenchCAD 공식 Vision2Code (도구 없음)",
+      "dimension": "voxel IoU",
+      "typical_value": "Gemini 3.1 Pro 0.289 / Opus 4.7 0.269 / Sonnet 4.6 0.222 / GPT-5.3 0.179",
+      "unit": "IoU (0–1)",
+      "note": "독립 재채점, 2026-06 갱신; 벤더 † Mythos 5 0.384",
+      "urls": [
+        "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "BenchCAD (OpenAI 발표, 도구 사용)",
+      "dimension": "기하 중첩 점수",
+      "typical_value": "GPT-6 Astra 95.9 / Fable 5.1 84.3 / GPT-5.6 Sol 83.3",
+      "unit": "%",
+      "note": "벤더 보고. 공식 IoU 척도와 비교 불가",
+      "urls": [
+        "https://www.datacamp.com/blog/gpt-6-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "CADGenBench + build123d-mcp",
+      "dimension": "종합 CAD 점수",
+      "typical_value": "Opus 5 0.6771 / GPT-5.6 Sol 0.5319 / Gemini 3.7 Flash 0.5078",
+      "unit": "점 (0–1)",
+      "note": "제3자 단일 저장소; 81 fixtures 중 80 valid",
+      "urls": [
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "CADWorld (FreeCAD GUI 200 과제)",
+      "dimension": "성공률",
+      "typical_value": "GPT-5.4 17.5 / Opus 4.8 16.0 / 전문가 87.0 / Qwen3.6 등 0–1.5",
+      "unit": "%",
+      "note": "독립 학술, 최신 세대 미평가",
+      "urls": [
+        "https://arxiv.org/abs/2609.16251"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "OSWorld 2.0 (partial)",
+      "dimension": "컴퓨터 사용 성공률",
+      "typical_value": "Opus 5.5 81.8 / Fable 5.1 80.7(Opus 5.5 발표) 또는 77.9(Fable 발표) / Opus 5 74.0~75.4 / GPT-6 Astra 72.6(OpenAI, 조건 불명) / Gemini 3.8 Flash 59.0",
+      "unit": "%",
+      "note": "벤더 보고, effort와 partial/strict 조건 상이. Fable 5.1 strict 41.7",
+      "urls": [
+        "https://www.anthropic.com/claude-opus-5-5",
+        "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+        "https://www.datacamp.com/blog/gpt-6-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "ScreenSpot-Pro (GUI 그라운딩, 도구 없음)",
+      "dimension": "정확도",
+      "typical_value": "GPT-6 Astra 92.7 / Opus 4.8 87.9 / Fable 5 87.3 / GPT-5.6 Sol 76.9",
+      "unit": "%",
+      "note": "벤더 보고 + 집계 사이트",
+      "urls": [
+        "https://benchlm.ai/benchmarks/screenspot-pro",
+        "https://www.datacamp.com/blog/gpt-6-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "BlenderGym 배치(Placement) 과제",
+      "dimension": "광도 손실 PL / Chamfer CD (낮을수록 좋음)",
+      "typical_value": "GPT-4o PL 11.89, CD 11.22 / 인간 PL 0.423, CD 1.532",
+      "unit": "지표값",
+      "note": "2025 모델 기준, 인간 대비 PL 약 28배 격차",
+      "urls": [
+        "https://blendergym.github.io/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "VIGA 원샷 대비 향상",
+      "dimension": "정확도 향상률",
+      "typical_value": "BlenderGym +35.32 / BlenderBench +124.70 / SlideBench +117.17",
+      "unit": "%",
+      "urls": [
+        "https://arxiv.org/abs/2601.11109"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "CAD-Recode (DeepCAD)",
+      "dimension": "평균 Chamfer 거리 / IoU / 무효율",
+      "typical_value": "CD 0.30(이전 3.43) / IoU 92.0% / IR <1%",
+      "unit": "CD×10³, %",
+      "urls": [
+        "https://arxiv.org/pdf/2412.14042"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "LayoutVLM",
+      "dimension": "PSA (11개 방 유형 평균)",
+      "typical_value": "58.8 (I-Design 대비 +40.8)",
+      "unit": "점",
+      "urls": [
+        "https://arxiv.org/html/2412.02193"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "SceneSmith",
+      "dimension": "충돌률 / 물리 안정 / 사실감 승률",
+      "typical_value": "<2% / 96% / 92% (충실도 91%, n=205)",
+      "unit": "%",
+      "urls": [
+        "https://arxiv.org/abs/2602.09153"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "MineBench GPT-6 Astra Pro 실행 비용",
+      "dimension": "프롬프트당 생성 시간 / 15개 총비용",
+      "typical_value": "25분 53.5초 / $34.71",
+      "unit": "분, USD",
+      "note": "평균 JSON 128.53 MiB",
+      "urls": [
+        "https://github.com/Ammaar-Alam/minebench/pull/152"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "벤더 발표 수치와 독립 재채점 수치를 한 표에서 같은 열에 두지 마세요. 도구 사용 여부와 척도가 같은지 먼저 확인해야 합니다.",
+      "why": "같은 BenchCAD라는 이름 아래 OpenAI는 도구를 쓴 조건의 '95.9%'를 발표했고, 공식 리더보드는 도구 없는 IoU 0~1 척도(최고 0.289, 벤더 † 0.384)를 씁니다. 척도와 조건이 달라 직접 비교가 불가능합니다.",
+      "example": "보고서에는 'Astra 95.9%(OpenAI 보고, 도구 사용)'와 'Gemini 3.1 Pro 0.289(공식 재채점, 도구 없음)'를 서로 다른 열에 둡니다.",
+      "urls": [
+        "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md",
+        "https://www.datacamp.com/blog/gpt-6-astra"
+      ]
+    },
+    {
+      "tip": "OSWorld 2.0은 partial과 strict, effort 설정, 과제당 소요 시간을 함께 적으세요.",
+      "why": "같은 Fable 5.1의 partial 점수가 두 Anthropic 페이지에서 77.9%와 80.7%로 다르고, strict는 41.7%에 불과합니다. Astra의 72.6%는 조건이 명시되지 않은 채 과제당 약 40분이 걸린 값입니다.",
+      "example": "Opus 5.5 81.8%(partial, adaptive thinking max effort)",
+      "urls": [
+        "https://www.anthropic.com/claude-opus-5-5",
+        "https://www.anthropic.com/claude-fable-and-mythos-5-1"
+      ]
+    },
+    {
+      "tip": "아레나 Elo는 CI(±)가 겹치면 동률로 보세요. 표본이 적은 신규 모델 순위는 1~2주 뒤 다시 확인합니다.",
+      "why": "Arena Vision 보드는 상위 30개가 35점 안에 몰려 있습니다. Blender AI Arena의 Opus 5.5 1897±79와 Arena Code의 Opus 5.5 1827±18(1,607표)은 출시 직후 값이라 변동폭이 큽니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/vision.json",
+        "https://blenderai.org/leaderboard"
+      ]
+    },
+    {
+      "tip": "모델을 바꾸기 전에 하네스를 먼저 개선하세요: 멀티턴 오류 피드백, 렌더→다시점 검증→수정 루프, 전용 MCP 도구.",
+      "why": "3DCodeBench에서는 멀티턴 피드백만으로 실행 가능률이 0.69에서 0.97로 올랐습니다. VIGA는 원샷 대비 BlenderGym +35%, BlenderBench +125%입니다. CADGenBench는 build123d-mcp만 붙여도 0.360에서 0.457로 올랐습니다. 3DHarnessBench에서도 함수 호출 접근이 늘수록 모든 모델이 개선됐습니다.",
+      "urls": [
+        "https://arxiv.org/abs/2606.01057",
+        "https://arxiv.org/abs/2601.11109",
+        "https://github.com/pzfreo/cadgenbench-build123d",
+        "https://github.com/llada60/3DHarnessBench"
+      ]
+    },
+    {
+      "tip": "추가 시점과 뷰포트 도구가 모든 모델에 도움이 되지는 않습니다. 모델별로 A/B 테스트해서 켤지 결정하세요.",
+      "why": "3DHarnessBench의 Active Visual 조건에서는 추가 접근이 어떤 에이전트에는 도움이 되고 어떤 에이전트(Gemini 3.1 Pro, MiniMax M3)에는 오히려 해가 됐습니다. 시각 증거를 복원 업데이트로 바꾸는 능력이 모델마다 다르기 때문입니다.",
+      "urls": [
+        "https://arxiv.org/html/2609.06535v1"
+      ]
+    },
+    {
+      "tip": "가구·소품 배치는 LLM이 좌표를 직접 찍게 하지 말고 '관계 제약 생성 → 최적화/솔버 → 물리 검증' 구조로 만드세요.",
+      "why": "BlenderGym에서 GPT-4o의 배치 광도 손실은 인간의 약 28배였습니다. 반면 제약 최적화를 쓴 LayoutVLM은 PSA 58.8로 기준선보다 40.8점 높았고, SceneSmith는 충돌 2% 미만과 물리 안정 96%를 달성했습니다.",
+      "urls": [
+        "https://blendergym.github.io/",
+        "https://arxiv.org/html/2412.02193",
+        "https://arxiv.org/abs/2602.09153"
+      ]
+    },
+    {
+      "tip": "CAD는 GUI 클릭 에이전트보다 코드 CAD(build123d/CadQuery)와 MCP 조합을 우선하세요.",
+      "why": "FreeCAD GUI 장기 작업을 재는 CADWorld에서는 최고 에이전트도 성공률 17.5%로 전문가 87.0%에 크게 못 미쳤습니다. 반면 코드 CAD와 MCP로 CADGenBench를 수행하면 81개 fixture 중 80개가 유효했습니다.",
+      "urls": [
+        "https://arxiv.org/abs/2609.16251",
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md"
+      ]
+    },
+    {
+      "tip": "과제별로 모델을 다르게 배치하세요. 단, 아래 순위는 모두 잠정적입니다.",
+      "why": "독립 지표마다 1위가 다릅니다. MCP 애니메이션과 정밀 시간·공간 제약은 Opus 5.5·Fable 5.1(La Forge taille-3), Three.js 3D 장면은 Astra(Design Arena 3D), 도구 없는 CAD 비전→코드는 Gemini 3.1 Pro(BenchCAD 공식), 3D→코드 복원은 Opus 5(3DHarnessBench), 도구를 쓰는 CAD 재구성은 Astra(벤더 보고)가 앞섰습니다.",
+      "example": "Opus 5.5가 전체 계획과 애니메이션 타이밍을 맡고, Astra 서브에이전트가 형상과 CAD 재구성을, Flash급 모델이 반복 렌더 확인을 맡는 구성",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results",
+        "https://modelgrep.com/best/3d",
+        "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md"
+      ]
+    },
+    {
+      "tip": "하위 티어 모델(Sonnet 5, Haiku 4.5)은 정밀 제약이 없는 보조 작업에만 쓰세요.",
+      "why": "La Forge taille-3(지정 프레임에서 cm·도 단위 정밀 동작)에서 Sonnet 5는 19.5, Haiku 4.5는 6.5로 급락했습니다. 반면 정적 조형(maitre-2)에서는 Sonnet 5도 100점이었습니다.",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results"
+      ]
+    },
+    {
+      "tip": "3D 에이전트 작업의 시간·비용 예산을 미리 잡으세요.",
+      "why": "Astra는 OSWorld 2.0 과제당 약 40분, MineBench Pro 모드에서 프롬프트당 약 26분이 걸렸습니다(15개에 $34.71). CADGenBench에서 Opus 5는 GPT-5.6 Sol보다 토큰을 44% 더 썼고, API 환산 비용은 약 $725였습니다.",
+      "urls": [
+        "https://github.com/Ammaar-Alam/minebench/pull/152",
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+        "https://www.datacamp.com/blog/gpt-6-astra"
+      ]
+    },
+    {
+      "tip": "자사 파이프라인 회귀 테스트에는 LLM 심판 대신 프로그램 채점기를 쓰세요(바운딩박스, 관절 접촉, 각도, 궤적).",
+      "why": "La Forge처럼 결정적 채점기를 쓰면 모델이나 프롬프트를 바꿀 때 재현 가능한 비교가 됩니다. 공개 MCP 엔드포인트가 있어 바로 연결할 수 있습니다. 다만 채점기를 만든 모델에 유리한 편향이 생길 수 있으니, 채점 규칙은 사람이 검토해야 합니다.",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results",
+        "https://scoreia.ai/forge/en/method/"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "La Forge 2026-09 캠페인 — 8개 모델의 MCP 전용 3D 기사 조립·애니메이션",
+      "who": "ScoreIA 팀(위탁 테스터로 각 모델 실행)",
+      "date": "2026-09 (2026-09-24 export)",
+      "ai_model": "Claude Opus 5.5, Fable 5.1, Sonnet 5, Haiku 4.5, GPT-6 Astra, GPT-6 Sol, Grok 4.7, DeepSeek flash",
+      "tools": "La Forge MCP(forge_add, forge_keyframe, seal_forge), Claude Code 서브에이전트, Codex CLI, Grok CLI, DeepSeek API",
+      "what_was_made": "공용 무기고 부품으로 조립한 3D 기사(갑옷, 방패 문장, 투구, 망토)와 걷기·회전·짚단 베기 애니메이션",
+      "process": "모든 모델에 같은 프롬프트로 6개 캠페인×3 커미션을 같은 순서로 수행하게 했습니다. 로컬 연산과 파일 접근은 금지하고 MCP 도구만 허용했습니다. 프로그램 심판이 cm·도 단위로 채점했고, 심판 결함이 발견되면 전체 카드를 재채점했습니다.",
+      "outcome": "평균 Opus 5.5 99.8 > Fable 5.1 99.4 > Astra 97.9 > Grok 4.7 96.2 > GPT-6 Sol 94.6 > DeepSeek 91.3 > Sonnet 5 81.1 > Haiku 40.4. 정적 조형은 상위권이 포화했고, 타이밍 제약 과제에서 격차가 컸습니다. 심판을 Opus로 작성해 편향 가능성이 있다고 주최 측이 밝혔습니다.",
+      "urls": [
+        "https://github.com/drakkB/scoreia-forge-results",
+        "https://scoreia.ai/forge/en/"
+      ]
+    },
+    {
+      "title": "MineBench에 GPT-6 Astra Pro 등록 실행",
+      "who": "MineBench 유지관리자(Ammaar-Alam)",
+      "date": "2026-09-04~05",
+      "ai_model": "GPT-6 Astra Pro (Responses Pro 모드, max reasoning)",
+      "tools": "MineBench 복셀 도구 모드(voxel.exec: block/box/line), OpenRouter 대체 경로",
+      "what_was_made": "벤치 프롬프트 15개에 대한 복셀 건축물",
+      "process": "출력 상한을 128k 토큰으로 두고 구조화 출력을 켰습니다. 15개 프롬프트를 모두 생성했고, 체크섬과 프롬프트 해시를 검증한 뒤 CI와 알파 배포를 거쳤습니다.",
+      "outcome": "15/15 채택, 평균 생성 25분 53.5초, 총 추정 비용 $34.71, 평균 JSON 128.53 MiB(최대 316.39 MiB). 순위 점수는 확인하지 못했습니다.",
+      "urls": [
+        "https://github.com/Ammaar-Alam/minebench/pull/152"
+      ]
+    },
+    {
+      "title": "CADGenBench에서 build123d-mcp로 Opus 5 / GPT-5.6 Sol / Gemini 3.7 Flash 비교",
+      "who": "pzfreo (build123d-mcp 작성자)",
+      "date": "2026-07~09",
+      "ai_model": "Claude Opus 5 (xhigh), GPT-5.6 Sol (xhigh, Codex), Gemini 3.7 Flash (high, Antigravity)",
+      "tools": "build123d-mcp 0.3.79~0.3.83, CADGenBench(Hugging Face)",
+      "what_was_made": "81개 fixture의 파라메트릭 CAD 생성·편집 결과(STEP)",
+      "process": "모델마다 각자의 하네스로 MCP를 붙여 제출했고, 벤치 서버에서 종합, 생성, 편집, 유효성 점수를 받았습니다. 토큰 사용량은 하네스 로그로 비교했습니다.",
+      "outcome": "Opus 5 0.6771 > GPT-5.6 Sol 0.5319 > Gemini 3.7 Flash 0.5078, 셋 모두 80/81 valid. 편집 점수는 거의 같았고 차이는 생성 점수에서 났습니다. Opus는 토큰 +44%, 비용 약 $724.77이었습니다.",
+      "urls": [
+        "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+        "https://github.com/pzfreo/cadgenbench-build123d"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "ScoreIA La Forge results (open data, 2026-09-24)",
+      "url": "https://github.com/drakkB/scoreia-forge-results",
+      "source_type": "GitHub 데이터 저장소 (직접 확인)",
+      "date": "2026-09-24",
+      "why_useful": "MCP 전용 3D 과제의 최신 모델 8종 프로그램 채점 결과"
+    },
+    {
+      "title": "arena-ai-leaderboards daily snapshots",
+      "url": "https://github.com/oolong-tea-2026/arena-ai-leaderboards",
+      "source_type": "GitHub 미러 (직접 확인)",
+      "date": "2026-09-26",
+      "why_useful": "arena.ai Code, Vision, Text 보드의 최신 Elo와 CI, 투표 수"
+    },
+    {
+      "title": "Arena code.json snapshot 2026-09-26",
+      "url": "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/code.json",
+      "source_type": "데이터 파일 (직접 확인)",
+      "date": "2026-09-25 갱신"
+    },
+    {
+      "title": "Arena vision.json snapshot 2026-09-26",
+      "url": "https://raw.githubusercontent.com/oolong-tea-2026/arena-ai-leaderboards/main/data/2026-09-26/vision.json",
+      "source_type": "데이터 파일 (직접 확인)",
+      "date": "2026-09-13 갱신"
+    },
+    {
+      "title": "Introducing Claude Opus 5.5",
+      "url": "https://www.anthropic.com/claude-opus-5-5",
+      "source_type": "벤더 공식 발표 (직접 확인)",
+      "date": "2026-09-22",
+      "why_useful": "OSWorld 2.0, Terminal-Bench 4.0 등 Astra 비교를 포함한 공식 표와 가격"
+    },
+    {
+      "title": "Claude Fable 5.1 and Mythos 5.1",
+      "url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+      "source_type": "벤더 공식 발표 (직접 확인)",
+      "date": "2026-09",
+      "why_useful": "OSWorld 2.0 partial/strict 등 공식 수치"
+    },
+    {
+      "title": "Claude Sonnet 5",
+      "url": "https://www.anthropic.com/news/claude-sonnet-5",
+      "source_type": "벤더 공식 발표 (직접 확인)",
+      "date": "2026-06-30",
+      "why_useful": "Sonnet 5 수치는 차트 이미지뿐이라는 점 확인, 가격 $2/$10"
+    },
+    {
+      "title": "GPT-6 Astra: A new generation of intelligence",
+      "url": "https://openai.com/index/gpt-6-astra/",
+      "source_type": "벤더 공식 발표 (차단, 검색 결과로만 확인)",
+      "date": "2026-09-03"
+    },
+    {
+      "title": "GPT-6 Astra: Features, Benchmarks, and Pricing (DataCamp)",
+      "url": "https://www.datacamp.com/blog/gpt-6-astra",
+      "source_type": "2차 기사",
+      "why_useful": "OSWorld 2.0 72.6%, ScreenSpot-Pro 92.7%, BenchCAD 95.9% 조건 설명"
+    },
+    {
+      "title": "ScreenSpot Pro Leaderboard (BenchLM)",
+      "url": "https://benchlm.ai/benchmarks/screenspot-pro",
+      "source_type": "집계 사이트",
+      "date": "2026-09"
+    },
+    {
+      "title": "GPT-6 Astra Benchmark Results Analysis (DataLearnerAI)",
+      "url": "https://www.datalearner.com/en/ai-models/pretrained-models/gpt-6-astra/analysis",
+      "source_type": "집계 사이트",
+      "why_useful": "MMMU-Pro 86.9"
+    },
+    {
+      "title": "Best LLMs for 3D (modelgrep)",
+      "url": "https://modelgrep.com/best/3d",
+      "source_type": "집계 사이트",
+      "date": "2026-09",
+      "why_useful": "Design Arena 3D Elo"
+    },
+    {
+      "title": "Blender AI Leaderboard",
+      "url": "https://blenderai.org/leaderboard",
+      "source_type": "투표 아레나 (차단, 검색 요약)",
+      "date": "2026-09"
+    },
+    {
+      "title": "Blender AI Arena Methodology",
+      "url": "https://blenderai.org/methodology",
+      "source_type": "아레나 방법론 (차단, 검색 결과)"
+    },
+    {
+      "title": "3DCodeBench GitHub",
+      "url": "https://github.com/gaoypeng/3dcodebench",
+      "source_type": "GitHub (직접 확인)",
+      "date": "2026-06-01"
+    },
+    {
+      "title": "3DCodeBench arXiv 2606.01057",
+      "url": "https://arxiv.org/abs/2606.01057",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2026-06"
+    },
+    {
+      "title": "3DHarnessBench arXiv 2609.06535",
+      "url": "https://arxiv.org/html/2609.06535v1",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2026-09"
+    },
+    {
+      "title": "3DHarnessBench GitHub",
+      "url": "https://github.com/llada60/3DHarnessBench",
+      "source_type": "GitHub (직접 확인)"
+    },
+    {
+      "title": "BenchCAD LEADERBOARD.md",
+      "url": "https://github.com/BenchCAD/BenchCAD-main/blob/main/LEADERBOARD.md",
+      "source_type": "공식 리더보드 (직접 확인)",
+      "date": "2026-06"
+    },
+    {
+      "title": "CADGenBench build123d-mcp comparison",
+      "url": "https://raw.githubusercontent.com/pzfreo/cadgenbench-build123d/main/GEMINI_OPUS_GPT56_MCP_COMPARISON.md",
+      "source_type": "제3자 비교 문서 (직접 확인)",
+      "date": "2026-09"
+    },
+    {
+      "title": "CADWorld: Computer-Use Benchmark for Long-Horizon CAD",
+      "url": "https://arxiv.org/abs/2609.16251",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2026-09"
+    },
+    {
+      "title": "Gemini 3.8 Flash Benchmarks Explained (Vellum)",
+      "url": "https://www.vellum.ai/blog/gemini-3-8-flash-benchmarks-explained",
+      "source_type": "2차 기사",
+      "date": "2026-09"
+    },
+    {
+      "title": "Introducing Gemini 3.8 Flash and 3.8 Flash Cyber",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/",
+      "source_type": "벤더 공식 (차단)",
+      "date": "2026-09-02"
+    },
+    {
+      "title": "Gemini 3.8 Flash: Benchmarks, Pricing and the Real Numbers (Fello AI)",
+      "url": "https://felloai.com/gemini-3-8-flash/",
+      "source_type": "2차 기사",
+      "why_useful": "3.5 Pro 미출시 상태, OSWorld 2.0 59.0%"
+    },
+    {
+      "title": "Grok 4.7 Release: Same Price, Longer Horizons (llm-stats)",
+      "url": "https://llm-stats.com/blog/research/grok-4-7-launch",
+      "source_type": "2차 기사",
+      "date": "2026-09-21"
+    },
+    {
+      "title": "xAI Launches Grok 4.7 (SQ Magazine)",
+      "url": "https://sqmagazine.co.uk/xai-launches-grok-4-7-coding-model/",
+      "source_type": "2차 기사",
+      "date": "2026-09"
+    },
+    {
+      "title": "GLM-5.3 vs Kimi K3 vs DeepSeek V4 Pro (Kingy AI)",
+      "url": "https://kingy.ai/blog/glm-5-3-vs-kimi-k3-vs-deepseek-v4-pro/",
+      "source_type": "2차 기사",
+      "date": "2026-08"
+    },
+    {
+      "title": "MineBench PR #152 (GPT-6 Astra Pro)",
+      "url": "https://github.com/Ammaar-Alam/minebench/pull/152",
+      "source_type": "GitHub PR (직접 확인)",
+      "date": "2026-09-05"
+    },
+    {
+      "title": "EASI issue #39 (GPT6 Astra)",
+      "url": "https://github.com/EvolvingLMMs-Lab/EASI/issues/39",
+      "source_type": "GitHub 이슈",
+      "date": "2026-09-12",
+      "why_useful": "EASI에 Astra 평가 결과가 아직 없음"
+    },
+    {
+      "title": "BlenderGym project page / leaderboard",
+      "url": "https://blendergym.github.io/",
+      "source_type": "학술 프로젝트 페이지 (이전 세션 수집본 확인)",
+      "date": "2025"
+    },
+    {
+      "title": "VIGA arXiv 2601.11109",
+      "url": "https://arxiv.org/abs/2601.11109",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2026-01"
+    },
+    {
+      "title": "Generating CAD Code with Vision-Language Models for 3D Designs (CADCodeVerify)",
+      "url": "https://arxiv.org/abs/2410.05340",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2024-10"
+    },
+    {
+      "title": "CAD-Recode arXiv 2412.14042",
+      "url": "https://arxiv.org/pdf/2412.14042",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2024-12"
+    },
+    {
+      "title": "LayoutVLM arXiv 2412.02193",
+      "url": "https://arxiv.org/html/2412.02193",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2024-12"
+    },
+    {
+      "title": "Holodeck arXiv 2312.09067",
+      "url": "https://arxiv.org/html/2312.09067v2",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2023-12"
+    },
+    {
+      "title": "SceneSmith arXiv 2602.09153",
+      "url": "https://arxiv.org/abs/2602.09153",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2026-02"
+    },
+    {
+      "title": "SceneCraft arXiv 2403.01248",
+      "url": "https://arxiv.org/abs/2403.01248",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2024-03"
+    },
+    {
+      "title": "LL3M arXiv 2508.08228",
+      "url": "https://arxiv.org/abs/2508.08228",
+      "source_type": "학술 논문 (검색 요약)",
+      "date": "2025-08"
+    },
+    {
+      "title": "Claude Opus 5.5 WebDev Ranking Puts Anthropic Ahead of GPT-6 Astra (remio)",
+      "url": "https://www.remio.ai/post/claude-opus-5-5-webdev-ranking-puts-anthropic-ahead-of-gpt-6-astra",
+      "source_type": "2차 기사",
+      "date": "2026-09-23"
+    },
+    {
+      "title": "I Tried Claude Opus 5.5 vs GPT Astra in Blender (YouTube)",
+      "url": "https://www.youtube.com/watch?v=gr1v3ddUr7A",
+      "source_type": "영상 (내용 미확인, 존재만 확인)",
+      "date": "2026-09"
+    }
+  ],
+  "gaps": [
+    "WebSearch 18회를 모두 사용했습니다. arxiv, huggingface, openai.com, blog.google, blenderai.org, minebench.ai, easi.lmms-lab.com이 차단되어 논문 표와 리더보드 원문 대부분을 검색 요약으로만 확인했습니다.",
+    "같은 하네스와 같은 MCP 서버로 GPT-6 Astra, Opus 5.5, Fable 5.1, Gemini 3.8 Flash, Grok 4.7, 오픈웨이트 모델을 비교한 통제 3D 벤치마크는 여전히 없습니다. La Forge가 가장 가깝지만 하네스가 다르고 Gemini, Kimi, Qwen, GLM이 빠져 있습니다.",
+    "3DCodeArena의 최신 Elo(Astra, Opus 5.5 포함)와 3DHarnessBench의 모델×조건별 수치표를 확보하지 못했습니다. 3DHarnessBench에 GPT-6 Astra가 포함됐는지도 출처마다 다릅니다(arXiv v1 요약에는 없고 GitHub 설정에는 있음).",
+    "Blender AI Arena는 시즌 번호, 기간, 결과가 출처마다 다릅니다(5자 동률 대 Opus 5.5 1897±79). 원문 확인이 필요합니다.",
+    "MineBench와 MC-Bench의 현재 순위와 점수를 확보하지 못했습니다. MC-Bench 관련 최신 자료는 검색되지 않았습니다.",
+    "EASI 공간지능 리더보드에는 GPT-6 Astra, Opus 5.5, Gemini 3.8 Flash 결과가 없고(Astra는 issue #39 평가 요청만 있음), SpatialBench 자료는 찾지 못했습니다.",
+    "'CADArena'라는 이름의 벤치마크는 확인하지 못했습니다. 대신 2026년 신규 CAD 벤치 RealCADBench(arXiv 2609.03773), P3D-Bench(2606.11152), MUSE(2605.28579), CADENA(2608.00799), 검증기 없는 CAD 테스트 시간 확장(2608.09706)의 존재만 확인했고 모델별 수치는 확보하지 못했습니다.",
+    "Design Arena 3D 수치는 집계 사이트(modelgrep)에서만 확인했고 Opus 5.5 점수와 투표 수는 없습니다.",
+    "Opus 5.5 발표문에는 비전, 공간, 3D, CAD 벤치가 없고, Sonnet 5 수치는 차트 이미지로만 제공됩니다. GPT-6 Astra 공식 페이지는 차단되어 MMMU-Pro 86.9 등은 집계 사이트 1곳에만 기반합니다.",
+    "Gemini 3.8 Flash의 'Terminal-Bench 4.0 19.1%'는 Terminal-Bench 2.1 90.8%와 크게 어긋나 신뢰하기 어렵습니다. OSWorld 2.0 59.0%도 비교 문장을 해석해서 얻은 값입니다.",
+    "Grok 4.7과 오픈웨이트(Kimi K3, Qwen3.8, GLM-5.3, DeepSeek V4.x)의 Blender, CAD 전용 공식 수치가 없습니다. Arena 스냅샷에서 kimi-k3-max가 'proprietary'로 표기되어 오픈웨이트 여부 표기가 상충합니다.",
+    "SceneCraft(CLIP, 제약 점수), LL3M, 3D-GPT, BlenderAlchemy의 정량 수치를 확보하지 못했습니다. VIGA의 백본별 절대 점수도 확보하지 못했습니다.",
+    "Opus 5.5와 Astra의 Blender MCP 비교 YouTube 영상 3건은 존재만 확인했고 내용과 결과는 보지 못했습니다.",
+    "arena.ai 스냅샷에 GPT-6 Sol(gpt-6-sol-max)이 등장하고 La Forge에도 gpt-6-sol이 있지만, 이 모델의 공식 발표 정보(출시일, 포지션)는 조사하지 못했습니다."
+  ]
+}

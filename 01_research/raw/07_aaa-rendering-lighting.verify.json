@@ -1,0 +1,387 @@
+{
+  "verdicts": [
+    {
+      "claim": "Blender 5.2.0은 2026-07-13에, 5.2.2는 2026-09-14에 태그됐다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/blender/blender/tags"
+      ],
+      "note": "태그 페이지에서 v5.2.0 2026-07-13, v5.2.1 2026-08-24, v5.2.2 2026-09-14로 확인했습니다. 4.5.14와 4.2.23도 같은 시기에 나왔으므로 4.5 LTS와 4.2 LTS가 병행 유지되고 있습니다. 주의할 점이 있습니다. 조사자가 인용한 blender/blender의 main 브랜치는 BKE_blender_version.h 기준 BLENDER_VERSION 503, 즉 5.3 alpha입니다. 5.2.x 문서를 쓴다면 v5.2.2 태그 URL을 인용해야 합니다. 이번에 대조해 보니 OCIO, Cycles 기본값, 라이트 UI, Glare 노드는 v5.2.2와 main이 같았습니다."
+    },
+    {
+      "claim": "Blender main의 OCIO config(profile 2.5)에 ACES 1.3, ACES 2.0, Khronos PBR Neutral, AgX, Filmic 뷰와 Rec.2100-PQ/HLG HDR 뷰(최대 4000 nits)가 포함되어 있다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/main/release/datafiles/colormanagement/config.ocio",
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/release/datafiles/colormanagement/config.ocio"
+      ],
+      "note": "ocio_profile_version 2.5, default_view_transform Standard입니다. sRGB 디스플레이 뷰는 Standard, ACES 1.3, ACES 2.0, Khronos PBR Neutral, AgX, Filmic, Filmic Log, False Color, Raw입니다. 4000 nits까지 있는 것은 Rec.2100-PQ(ACES 1.3은 1000/2000/4000, ACES 2.0은 500/1000/2000/4000)입니다. Rec.2100-HLG에는 ACES 1.3/2.0 HDR 1000 nits만 있습니다. AgX HDR 뷰는 두 디스플레이 모두 1000 nits 하나입니다. False Color 뷰는 'AgX False Color Rec.709' 변환을 씁니다. v5.2.2 태그의 해당 구간도 같습니다."
+    },
+    {
+      "claim": "Blender 5.x UI 코드에서 EEVEE 엔진 식별자는 'BLENDER_EEVEE'이며, use_bloom, use_ssr, use_gtao 속성은 존재하지 않는다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/scripts/startup/bl_ui/properties_render.py",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/makesrna/intern/rna_scene.cc"
+      ],
+      "note": "UI 코드뿐 아니라 RNA 정의(rna_scene.cc)에도 use_bloom, use_ssr, use_gtao, use_soft_shadows가 없습니다. 따라서 스크립트에서 이 속성을 쓰면 AttributeError가 납니다. 식별자는 4.2.0과 4.5.0의 UI 코드에서 'BLENDER_EEVEE_NEXT'였다가 5.0.0부터 'BLENDER_EEVEE'로 돌아왔습니다. 스킬에 '4.2–4.5는 EEVEE_NEXT, 5.0+는 EEVEE'로 버전 분기를 적어 두는 편이 정확합니다."
+    },
+    {
+      "claim": "Cycles 기본값은 samples 4096, adaptive_threshold 0.01, max_bounces 12, glossy 4, transmission 12, volume 0, clamp indirect 10, OIDN + RGB_ALBEDO_NORMAL이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/intern/cycles/blender/addon/properties.py",
+        "https://raw.githubusercontent.com/blender/blender/main/intern/cycles/blender/addon/properties.py"
+      ],
+      "note": "v5.2.2와 main 모두 값이 같습니다. denoiser 기본값은 정수 4이고, enum에서 OPENIMAGEDENOISE=4에 해당합니다. volume_biased=False의 설명문은 '기본은 null scattering(비편향, 아티팩트 적음, 노이즈 가능), Biased는 ray marching'입니다. 조사자가 '미확인'이라 적은 볼륨 알고리즘 동작을 이 설명문으로 확인할 수 있습니다. 참고로 main(5.3 alpha)에는 뷰포트 디노이저로 DLSS Ray Reconstruction이 추가됐고, v5.2.2에는 없습니다."
+    },
+    {
+      "claim": "Blender 5.x 라이트에 use_temperature/temperature(켈빈) 속성이 있다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/scripts/startup/bl_ui/properties_data_light.py",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/makesdna/DNA_light_types.h"
+      ],
+      "note": "DNA 기본값은 temperature 6500K, energy 10, radius 0, sun_angle 0.526°입니다. use_temperature를 켜면 color 속성이 'Tint'(곱셈 틴트)로 바뀝니다. 에이전트가 켈빈을 지정할 때는 color를 흰색(1,1,1)으로 되돌려야 의도한 색이 나옵니다. DNA에서 radius 기본값이 0이므로, bpy로 새로 만든 라이트는 칼같이 딱딱한 그림자를 낸다는 조사 내용과도 맞습니다."
+    },
+    {
+      "claim": "AgX는 16.5 stop 노출 범위를 제공하며 Blender 4.0 main에 병합되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/EaryChow/AgX",
+        "https://raw.githubusercontent.com/blender/blender/v4.0.0/source/blender/blenloader/intern/versioning_defaults.cc"
+      ],
+      "note": "README에 '16.5 stops of exposure range'와 'merged to Blender 4.0 main'이 적혀 있습니다. v4.0.0의 versioning_defaults.cc에는 새 씬 기본값을 'AgX'로 지정하는 코드('Default to AgX view transform')가 있어 교차 확인됩니다. 단 know_how의 비교 문장('Filmic 약 25 stop, AgX 16.5 stop')은 오해를 부릅니다. Blender config.ocio 설명문에 따르면 Filmic Log는 '16.5 stops of latitude, and 25 stops of dynamic range'이고, AgX Log도 '25 Stops of Dynamic Range'입니다. 두 변환은 같은 로그 범위(-12.47~+12.53 stop)를 쓰므로 AgX의 범위가 Filmic보다 좁은 것이 아닙니다."
+    },
+    {
+      "claim": "UE 5.7에서 MegaLights는 Beta, Substrate와 PCG는 Production-Ready, Nanite Foliage는 Experimental이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/unreal-engine-5-7-release-notes.md",
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/overview-of-substrate-materials-in-unreal-engine.md"
+      ],
+      "note": "릴리스 노트 미러에 'MegaLights (Beta)', 'Substrate materials, which are production-ready and enabled by default as of UE 5.7', 'PCG Framework is Production Ready', 'Nanite Foliage and Skinning (Experimental)', Heterogeneous Volumes Beta, SMAA Experimental이 그대로 있습니다. Substrate 개요 문서 본문도 새 프로젝트는 기본 활성(Blendable GBuffer), 기존 프로젝트는 opt-in이라고 적고 있습니다. 다만 같은 문서 하단 제한사항 절에는 여전히 'Substrates is a Beta feature'와 'Beta support for Path Tracer'가 남아 있어, 조사자가 지적한 표기 충돌은 실제로 존재합니다. dev.epicgames.com이 차단되어 원문과 직접 대조하지는 못했고 미러로만 확인했습니다."
+    },
+    {
+      "claim": "MegaLights 최고 품질 설정은 r.MegaLights.DownsampleMode 0과 r.MegaLights.NumSamplesPerPixel 16이며, directional light는 기본적으로 꺼져 있다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/megalights-in-unreal-engine.md"
+      ],
+      "note": "문서 원문은 'you can try to use the command r.MegaLights.DownsampleMode 0 and r.MegaLights.NumSamplesPerPixel 16 to achieve the best quality'와 'By default, directional lights are disabled ... r.MegaLights.DirectionalLights 1'입니다. Forward Renderer 비호환, 모바일·Switch·PS4/XB1 미지원, 구름 그림자 미지원도 확인했습니다. 5.7 릴리스 노트에 따르면 downsample factor와 checkerboard CVar가 DownsampleMode 하나로 합쳐졌습니다."
+    },
+    {
+      "claim": "Lumen 누광 방지를 위해 벽 두께는 최소 10 cm여야 하고, 작은 발광체는 Emissive Light Source를 켜야 한다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/lumen-technical-details-in-unreal-engine.md"
+      ],
+      "note": "원문은 'Walls should be no thinner than 10 centimeters (cm) to avoid light leaking'와 'Small objects are culled from Lumen Scene ... Set the Level instances Emissive Light Source'입니다. 모듈식 메시 요구(Software RT), Lumen Scene 200 m(최대 800 m), HWRT 인스턴스 10만 개 기준도 확인했습니다. 10 cm 규칙은 Software Ray Tracing(Distance Field) 문맥의 권고입니다."
+    },
+    {
+      "claim": "UE 5.8에 공식 MCP 플러그인이 실험 기능으로 포함되었고(5.7에는 없음), Epic이 Claude Code용 공식 플러그인을 공개했다.",
+      "verdict": "partially",
+      "correction": "Epic 공식 플러그인이 claude-plugins-official 마켓에 있다는 점, MCP 서버 플러그인이 Engine/Plugins/Experimental/ModelContextProtocol 경로에 있는 실험 기능이라는 점은 맞습니다. 하지만 Epic의 README와 setup.md에는 필요한 UE 버전이 적혀 있지 않습니다. '5.8부터'라는 버전 정보는 커뮤니티 자료(VibeUE는 'Unreal Engine 5.8+' 요구, ue-mcp는 'UE 5.8+ 830 official tools', ibrews는 '5.8 experimental')에서만 나옵니다. Epic 1차 출처가 아니라 커뮤니티 근거라고 표기해야 합니다.",
+      "evidence_urls": [
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+        "https://raw.githubusercontent.com/EpicGames/unreal-engine-skills-for-claude-code-plugin/main/skills/unreal-mcp/references/setup.md",
+        "https://github.com/kevinpbuckley/VibeUE",
+        "https://github.com/db-lyon/ue-mcp"
+      ],
+      "note": "Epic 플러그인은 MIT, 스타 약 308개, 커밋 53개입니다. 도구는 기본적으로 list_toolsets, describe_toolset, call_tool 세 메타 도구로만 노출됩니다(tool search). ModelContextProtocol과 AllToolsets 플러그인을 둘 다 켜야 도구가 보입니다."
+    },
+    {
+      "claim": "UE에서 emissive가 1.0을 넘어야 bloom이 발생하고, Lumen GI는 Movable 라이트만 반영한다(커뮤니티 스킬 주장).",
+      "verdict": "refuted",
+      "correction": "Epic 문서('Lumen GI and Reflections')는 'Lights with their Mobility set to Static are not supported'라고만 적고, 모든 라이트 타입을 지원한다고 합니다. 즉 Stationary 라이트도 Lumen GI에 반영됩니다. ibrews의 'Static and Stationary lights contribute nothing to Lumen GI'는 공식 문서와 모순됩니다. Bloom은 PPV의 Threshold로 제어되고 -1로 두면 모든 색이 bloom에 기여한다고 문서에 적혀 있습니다. '1.0 초과'는 노출과 threshold 설정에 따라 달라지는 경험칙이지 엔진 규칙이 아닙니다. 같은 스킬의 'MovieRenderGraph is 5.8-only'도 틀렸습니다. UE 5.7 릴리스 노트에 Movie Render Graph 기능 개선이 여러 건 실려 있습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/lumen-global-illumination-and-reflections-in-unreal-engine.md",
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/bloom-in-unreal-engine.md",
+        "https://raw.githubusercontent.com/ibrews/ue5-mcp/main/SKILL.md",
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/unreal-engine-5-7-release-notes.md"
+      ],
+      "note": "에이전트가 만든 라이트를 Movable로 두는 것 자체는 무해한 실무 관행입니다. 다만 know_how의 이유(Movable이 아니면 GI가 사라진다)는 틀렸으므로 문장을 고쳐야 합니다. Nanite와 Stationary 라이트를 함께 쓰는 경우는 VSM 문서가 Movable이나 VSM을 쓰라고 권합니다."
+    },
+    {
+      "claim": "mcp-for-blender 2.1.0이 2026-09-25에 PyPI에 릴리스되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://github.com/ahujasid/blender-mcp"
+      ],
+      "note": "릴리스 이력은 2.0.0(09-16), 2.0.1과 2.0.3(09-21), 2.0.4(09-24), 2.1.0(09-25)입니다. GitHub 저장소 이름도 ahujasid/mcp-for-blender로 바뀌었고(기존 URL은 리다이렉트), uvx blender-mcp도 계속 동작합니다. MIT, 스타 약 29.4k입니다."
+    },
+    {
+      "claim": "blender-mcp에는 MCP 렌더 도구가 없으며, 관련 기능 요청 #61은 not planned로 닫혔다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/61",
+        "https://raw.githubusercontent.com/ahujasid/mcp-for-blender/main/README.md"
+      ],
+      "note": "#61('Feature request: teach server to render', @sygi)은 2025-03-18에 열렸고 'Closed as not planned' 상태입니다. 현재 README의 Capabilities에도 전용 렌더 도구는 없습니다. 대신 BLENDER_MCP_SAFE_MODE=1에서도 'rendering, saving' 같은 일반 작업은 허용된다고 적혀 있어, execute_blender_code로 렌더하는 우회책은 안전 모드에서도 쓸 수 있습니다. #187(Windows Blender + WSL에서 스크린샷 실패)도 not planned로 닫혔습니다(2026-02-15)."
+    },
+    {
+      "claim": "마이크로 bevel 기본값은 최대 치수의 0.5% 폭, 렌더 3 segments, Harden Normals이며, Auto Smooth는 4.1에서 제거되어 Smooth by Angle로 대체되었다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/dcc/blender/scenario-blender-hard-surface/SKILL.md",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/dcc/blender/scenario-blender-expert/SKILL.md"
+      ],
+      "note": "'if unknown, micro width 0.5% of the largest dimension [added]'라는 문장에서 [added] 표시는 튜토리얼 출처가 아니라 스킬 저자가 덧붙인 기본값이라는 뜻입니다. 이 점을 함께 밝혀야 합니다. 원문에는 angle 30°, Miter Outer Arc, Weighted Normal을 스택 맨 아래에 두라는 내용도 있습니다. Auto Smooth 제거(4.1)와 shade_auto_smooth가 pinned Smooth by Angle을 추가한다는 내용은 hard-surface와 expert 두 스킬에 모두 있습니다."
+    },
+    {
+      "claim": "OIDN 최신 릴리스는 v2.5.1(8월 18일)이다. 연도 표기가 없어 2026년으로 추정했다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/RenderKit/oidn/releases.atom",
+        "https://github.com/RenderKit/oidn/releases"
+      ],
+      "note": "releases.atom 피드의 타임스탬프에서 연도를 확인했습니다. v2.5.1은 2026-08-18T17:04Z, v2.5.0은 2026-06-02, v2.4.1은 2026-01-13, v2.4.0은 2026-01-09입니다. 따라서 '추정'이라는 표현은 빼도 됩니다. v2.5.1은 정수 오버플로(OOB read/write) 등 보안 수정, v2.5.0은 XMX/AMX-FP16 성능 개선, CUDA/HIP external semaphore, Apple M5 출력 손상 수정입니다."
+    },
+    {
+      "claim": "(know_how/Glare 항목) Fog Glow는 Size 8–9 두 겹을 mix 약 -0.7로 섞고, Streaks는 iterations 5–16, Ghost는 mix 약 -0.96으로 한다.",
+      "verdict": "refuted",
+      "correction": "이 값들은 구버전(4.3 이하) Glare 노드의 'Mix(-1~1)'와 정수 'Size(6~9)' 기준입니다. 4.4부터, 그리고 5.2.2와 main에서도 Glare는 소켓 방식입니다. 범위는 Strength 0–1(기본 1), Size 0–1(기본 0.5), Iterations 2–5(기본 3), Streaks 1–16(기본 4), Fade 0.75–1입니다. 'Size 8–9', 'mix -0.7/-0.96'은 5.x에서 입력할 수 없고, 'iterations 16'도 범위를 벗어납니다. 16은 Streaks(줄기 개수)의 최대값입니다. 5.x용 규칙은 Strength와 Size 0–1 기준으로 다시 써야 합니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/source/blender/nodes/composite/nodes/node_composite_glare.cc",
+        "https://raw.githubusercontent.com/blender/blender/v4.4.0/source/blender/nodes/composite/nodes/node_composite_glare.cc",
+        "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/07-post-compositing.md"
+      ]
+    },
+    {
+      "claim": "(know_how/Cycles 프리셋) 유리가 많으면 transmission 16 이상, 겹친 판유리는 208까지 사례 있음.",
+      "verdict": "refuted",
+      "correction": "hyperrealism 06장에 나오는 'Transmission ~208+'는 Zircron45의 물리 렌즈 시뮬레이션(겹친 렌즈 소자) 사례입니다. 판유리 사례가 아닙니다. 같은 장에서 겹친 창유리에 권하는 방법은 Light Path ray-depth가 10을 넘으면 Transparent로 전환하는 것과, 추가 깊이마다 Fresnel × 0.1–0.2를 주는 것입니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/06-color-management-render.md",
+        "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/02-materials.md"
+      ]
+    },
+    {
+      "claim": "(Path Tracer 항목) MRQ에서 Spatial × Temporal 샘플 합이 8을 넘으면 r.TemporalAASamples(기본 8)를 맞추거나 AA를 None으로 둔다.",
+      "verdict": "partially",
+      "correction": "'합'이 아니라 곱(Spatial Count × Temporal Count)입니다. 문서는 TAA를 켠 상태에서 샘플이 8을 넘으면 Override Anti-Aliasing을 None으로 하거나, r.TemporalAASamples를 곱한 값에 맞추라고 합니다. 같은 문서군(Path Tracer)에는 diffuse Base Color를 0.8 미만으로 유지하라는 권고도 있으니 알베도 규칙에 함께 넣는 것이 좋습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/cinematic-rendering-image-quality-settings-in-unreal-engine.md",
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/path-tracer-in-unreal-engine.md"
+      ]
+    },
+    {
+      "claim": "(items 라이선스) scenario-labs/skills 라이선스 미확인, arjun988/blender-skills 라이선스 종류 미확인, ue5-docs-mcp 라이선스 미확인.",
+      "verdict": "refuted",
+      "correction": "scenario-labs/skills는 MIT(Copyright 2026 Scenario), arjun988/blender-skills도 MIT입니다. ue5-docs-mcp는 스크래퍼, 빌더, MCP 서버 코드만 MIT입니다. docs-md-py 안의 문서 본문은 Epic Games의 IP이며 README가 '개인·교육 목적 오프라인 접근용'으로 한정합니다. 지식베이스에서 추천할 때 이 제한을 명시해야 합니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/LICENSE",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/LICENSE",
+        "https://github.com/CharlieCardenasToledo/ue5-docs-mcp"
+      ]
+    },
+    {
+      "claim": "(gaps) Blender light linking의 5.x UI 위치와 EEVEE 지원 범위는 확인하지 못했다.",
+      "verdict": "refuted",
+      "correction": "확인할 수 있습니다. v5.2.2 properties_object.py에서 OBJECT_PT_light_linking은 Object Properties > Shading 패널의 하위 패널이고, 부모 패널 COMPAT_ENGINES에 'BLENDER_EEVEE'가 들어 있습니다. 데이터는 Light 데이터블록이 아니라 오브젝트(obj.light_linking.receiver_collection, blocker_collection)에 있습니다. scenario 스킬도 'Linking lives on the light OBJECT'라고 적고 있습니다. Light Group(렌더 패스)은 Cycles UI(CYCLES_RENDER_PT_passes_lightgroups)에만 있습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/scripts/startup/bl_ui/properties_object.py",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/dcc/blender/scenario-blender-lighting-rendering/SKILL.md",
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/intern/cycles/blender/addon/ui.py"
+      ]
+    },
+    {
+      "claim": "(VSM) SMRT RayCountLocal/Directional은 Epic 기본 8 rays, NormalBias 기본 0.5, 로컬 라이트 Source Radius 기본 0, directional clipmap 64 cm~약 40 km.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/virtual-shadow-maps-in-unreal-engine.md"
+      ],
+      "note": "'both local and Directional Lights use eight rays by default when scalability for Shadows is set to Epic', 'r.Shadow.Virtual.NormalBias (default 0.5)', 'Local lights have no Source Radius by default', 'clipmap levels 6 through 22 ... 64 cm ... about 40 kilometers'가 모두 문서에 있습니다. SamplesPerRay 4–8 권장도 원문과 같습니다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "mcp-for-blender (구 blender-mcp, ahujasid)",
+      "status": "issue",
+      "detail": "존재 여부, 2.1.0(2026-09-25), MIT, 스타 약 29.4k, 전용 render 도구 부재는 모두 맞습니다. 다만 다음 내용이 빠졌거나 부정확합니다. (1) 저장소 이름이 ahujasid/mcp-for-blender로 바뀌었으므로 대표 URL을 교체해야 합니다. (2) README에 'Premium' 유료 티어가 있습니다. 자기 API 키 없이 Hunyuan3D, Tripo, Hyper3D Rodin으로 생성하는 기능이라 '무료'라고만 쓰면 부정확합니다. (3) BLENDER_MCP_SAFE_MODE=1 안전 모드가 생겼습니다. 파일·네트워크·프로세스 접근을 차단하고, 렌더와 저장은 허용합니다. (4) export_scene(GLB/FBX)와 노드 스키마·bpy API 참조 조회 기능이 추가됐습니다. 에이전트가 소켓 순서나 enum을 추측하지 않게 해 주므로 렌더 품질 작업에 직접 도움이 됩니다. (5) 텔레메트리는 기본적으로 최소한의 익명 사용 기록만 모으고, 콘텐츠 수집은 opt-in입니다. opt-in 데이터는 AI 학습에 쓰일 수 있고 DISABLE_TELEMETRY=true로 끌 수 있습니다. (6) Tripo 연동을 누락했습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ahujasid/mcp-for-blender/main/README.md",
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://github.com/ahujasid/blender-mcp"
+      ]
+    },
+    {
+      "name": "Bartindigital/blender-hyperrealism-skill",
+      "status": "issue",
+      "detail": "존재 여부, MIT, 스타 0, 57개 영상 트랜스크립트 기반이라는 설명, 11장이 코퍼스 밖 내용이라는 점은 맞습니다. 다만 커밋이 1개뿐이고, 11장은 README상 'techniques beyond the research corpus (marked, verify per version)'입니다. 'Claude 자체 지식'이라고 명시한 문구는 README에서 확인하지 못했습니다. 조사자가 짚은 것 외에도 구버전 값이 많습니다. Glare의 Mix -0.7/-0.96과 Size 8–9는 4.4 이후 입력할 수 없고, 'Branched Path Tracing'은 Cycles X(3.0)에서 제거됐으며, Bevel 레시피에 'Auto Smooth'가 들어 있고, 'Poly Haven HDRI strength ~1000'도 있습니다. 수치를 그대로 에이전트 규칙에 넣지 말고 5.2 기준으로 걸러야 합니다.",
+      "evidence_urls": [
+        "https://github.com/Bartindigital/blender-hyperrealism-skill",
+        "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/07-post-compositing.md",
+        "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/06-color-management-render.md",
+        "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/references/04-geometry-scale.md"
+      ]
+    },
+    {
+      "name": "scenario-labs/skills (scenario-blender-lighting-rendering 등)",
+      "status": "issue",
+      "detail": "존재 여부, bx_light.py가 5.2.1에서 테스트됐다는 명시, 게이트 수치(surround ≥0.10, edge merge ≤35%, clay ≥2.5, value range ≥0.30, clip ≤0.5%, World <10%, frontal key <20°), 키광 40°/35°/반경 3배, AgX 표시값(선형 4.0 → 0.910), white furnace 비교(Khronos 3.8, AgX 27–42, Standard 33), EEVEE 파이널 설정은 원문과 일치합니다. 고칠 점: 라이선스는 MIT입니다('미확인' 아님). 스타는 약 584개입니다. Blender 스킬은 lead 1개와 specialist 13개입니다(12종 아님). DCC 스킬은 Scenario MCP나 API 없이 동작합니다(README 명시). 게이트 수치 다수가 [added]로 표시되어 있어 저자 자체 보정값이라는 조사자의 지적은 맞습니다.",
+      "evidence_urls": [
+        "https://github.com/scenario-labs/skills",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/LICENSE",
+        "https://raw.githubusercontent.com/scenario-labs/skills/main/skills/dcc/blender/scenario-blender-lighting-rendering/SKILL.md"
+      ]
+    },
+    {
+      "name": "arjun988/blender-skills",
+      "status": "issue",
+      "detail": "스킬 94개, 참조 파일 175개 이상, Claude Code·Cursor·Kiro·Codex 지원, BlenderMCP 필요, 스타 약 229개는 맞습니다. 켈빈 표(1800/3200/5500/6500/8000K+), 필 1/2–1/4, 초점거리 표, 문 높이 2.03–2.13 m, 눈높이 1.6–1.7 m, SHIP / SHIP WITH NOTES / NO-SHIP도 원문과 같습니다. 고칠 점: 라이선스는 MIT입니다. 커밋은 15개뿐이라 성숙도가 낮습니다. rendering 스킬에 'Eevee Next'와 AO On, Bloom 토글이 남아 있어 5.x와 맞지 않는다는 지적은 맞습니다.",
+      "evidence_urls": [
+        "https://github.com/arjun988/blender-skills",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/LICENSE",
+        "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/rendering/SKILL.md"
+      ]
+    },
+    {
+      "name": "RobLe3/cc-blender-skill",
+      "status": "ok",
+      "detail": "MIT, 스타 70개, v1.3.0(CHANGELOG 2026-05-01), 스킬 30개, 재질별 key:fill:rim 비율(금속 4:1:2, 유리 3:1:1.2, 나무 4:1:1.5, 패브릭 3:1:0.5, 피부 4:1:1, 제품 5:1:1.5), base_energy = 100·(dist/1.5)², World 0.10–0.20, 전구 emission 800–3000 모두 원문과 같습니다. rendering 스킬에 scene.eevee.use_gtao, use_bloom, use_ssr, use_ssr_refraction이 남아 있는 것도 확인했습니다. 5.x에서는 오류가 납니다. 참고로 README는 Blender 5.1.1에서 검증했다고 적고 있습니다.",
+      "evidence_urls": [
+        "https://github.com/RobLe3/cc-blender-skill",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/CHANGELOG.md",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-rendering/SKILL.md"
+      ]
+    },
+    {
+      "name": "Epic 공식 unreal-engine-skills-for-claude-code-plugin",
+      "status": "ok",
+      "detail": "실재하며 MIT, 스타 약 308개입니다. 설치 명령, ModelContextProtocol.StartServer(기본 포트 8000), 30개 이상의 toolset, '저장 후 변경' 지침, AgentSkillToolset은 모두 확인했습니다. 추가할 내용: 기본적으로 tool search 방식이라 list_toolsets, describe_toolset, call_tool 세 메타 도구만 노출됩니다. AllToolsets 플러그인을 켜지 않으면 도구가 0개입니다. ModelContextProtocol.GenerateClientConfig ClaudeCode로 클라이언트 설정을 만들 수 있습니다. UE 버전 요구사항은 README에 없습니다.",
+      "evidence_urls": [
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+        "https://raw.githubusercontent.com/EpicGames/unreal-engine-skills-for-claude-code-plugin/main/skills/unreal-mcp/SKILL.md",
+        "https://raw.githubusercontent.com/EpicGames/unreal-engine-skills-for-claude-code-plugin/main/skills/unreal-mcp/references/setup.md"
+      ]
+    },
+    {
+      "name": "ue5-docs-mcp (CharlieCardenasToledo)",
+      "status": "issue",
+      "detail": "3,444쪽, UE 5.7, search_docs/get_doc/list_sections, 설치 명령, 스타 1개는 맞습니다. 라이선스는 도구 코드만 MIT이고 문서 본문은 Epic IP입니다. README가 개인·교육 목적 오프라인 접근으로 한정하므로 지식베이스에서 '추천 MCP'로 소개할 때 이 제한을 반드시 적어야 합니다. 비공식 미러라 변환 누락이 있을 수 있고(조사자도 지적), Substrate 문서처럼 본문과 제한사항 절이 서로 다른 버전 상태를 담은 경우가 있습니다.",
+      "evidence_urls": [
+        "https://github.com/CharlieCardenasToledo/ue5-docs-mcp"
+      ]
+    },
+    {
+      "name": "ibrews/ue5-mcp",
+      "status": "issue",
+      "detail": "실재하며 MIT, 스타 39개, 커밋 23개입니다. 핵심 주장 두 가지가 Epic 문서와 모순됩니다. (1) 'Static and Stationary lights contribute nothing to Lumen GI'는 틀렸습니다. Epic 문서는 Static만 미지원이라고 합니다. (2) 'MovieRenderGraph is 5.8-only'도 틀렸습니다. UE 5.7 릴리스 노트에 MRG 개선 사항이 있습니다. know_how의 'Movable 필수' 근거와 5.7/5.8 차이 서술에 이 스킬을 쓰면 안 됩니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ibrews/ue5-mcp/main/SKILL.md",
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/lumen-global-illumination-and-reflections-in-unreal-engine.md"
+      ]
+    },
+    {
+      "name": "Blender 컴포지터 Glare 노드 (5.x)",
+      "status": "issue",
+      "detail": "7가지 타입(Bloom, Ghosts, Streaks, Fog Glow, Simple Star, Sun Beams, Kernel)과 소켓 기본값(Threshold 1.0, Smoothness 0.1, Maximum 10, Strength 1, Saturation 1, Size 0.5, Streaks 4(1–16), Iterations 3(2–5), Fade 0.9)은 v5.2.2 소스와 같습니다. 그러나 how_to_use에 적은 '실무 수치'(Size 8–9, mix -0.7, iterations 5–16, Ghost mix -0.96)는 4.3 이하 방식이라 5.x 소켓 범위(Size와 Strength 0–1, Iterations 2–5)와 맞지 않습니다. 5.x용으로 다시 써야 합니다. 기본 Type이 Streaks라는 점(Bloom 아님)도 에이전트 규칙에 적어 두는 것이 좋습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/source/blender/nodes/composite/nodes/node_composite_glare.cc"
+      ]
+    },
+    {
+      "name": "Blender 5.x 색관리 / Cycles / EEVEE / 라이트 (공식 소스)",
+      "status": "ok",
+      "detail": "조사자가 인용한 main 브랜치는 5.3 alpha(BLENDER_VERSION 503)입니다. 그래도 v5.2.2 태그와 대조했을 때 OCIO 뷰 목록, working_space와 white balance UI, Cycles 기본값, 라이트 temperature UI, EEVEE 식별자가 모두 같았습니다. 새 씬 기본 AgX는 v4.0.0 versioning_defaults.cc에서 확인했습니다. compositing_node_group은 v5.0.0 RNA에서 처음 나타나고 v4.5.0에는 없습니다. 인용 URL은 main 대신 v5.2.2 태그로 바꾸기를 권합니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/release/datafiles/colormanagement/config.ocio",
+        "https://raw.githubusercontent.com/blender/blender/v5.2.2/intern/cycles/blender/addon/properties.py",
+        "https://raw.githubusercontent.com/blender/blender/main/source/blender/blenkernel/BKE_blender_version.h"
+      ]
+    },
+    {
+      "name": "Intel Open Image Denoise 2.5.x",
+      "status": "ok",
+      "detail": "v2.5.1은 2026-08-18, v2.5.0은 2026-06-02로 releases.atom에서 연도까지 확인했습니다. 릴리스 노트 요약(보안 수정, XMX/AMX-FP16, CUDA/HIP semaphore, Apple M5)도 맞습니다. Apache 2.0 라이선스는 이번 페치로 확인하지 못했지만 널리 알려진 사실입니다. UE Path Tracer의 기본 디노이저인 NNE Denoiser도 OIDN과 같은 네트워크를 GPU에서 돌린다고 UE 문서에 적혀 있습니다.",
+      "evidence_urls": [
+        "https://github.com/RenderKit/oidn/releases.atom",
+        "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/path-tracer-in-unreal-engine.md"
+      ]
+    },
+    {
+      "name": "Khronos PBR Neutral / AgX(EaryChow)",
+      "status": "ok",
+      "detail": "Khronos는 0.08 ≤ RGB ≤ 0.8 범위의 base color를 정확히 재현하고, 색상 이동이 없으며, 해석적으로 역변환할 수 있습니다. Ks = 0.8 - 0.04, Kd = 0.15입니다. 구현은 GLSL과 OCIO로 제공되고 3ds Max, Maya, Substance Painter 연동 문서가 있습니다. AgX는 16.5 stop과 Blender 4.0 병합을 확인했습니다. 단 README에 Troy Sobotka의 이름은 없고 'forked from sobotka/AgX'로만 나옵니다.",
+      "evidence_urls": [
+        "https://github.com/KhronosGroup/ToneMapping/tree/main/PBR_Neutral",
+        "https://github.com/EaryChow/AgX"
+      ]
+    },
+    {
+      "name": "Tencent-Hunyuan/Hunyuan3D-2.1 (know_how와 mcp-for-blender 연동에서 인용)",
+      "status": "issue",
+      "detail": "RGB 텍스처에서 PBR로 전환했다는 설명과 2025-06-13 릴리스는 맞습니다. 그러나 한국어 지식베이스라면 반드시 경고해야 할 점이 빠졌습니다. LICENSE 첫 줄이 'THIS LICENSE AGREEMENT DOES NOT APPLY IN THE EUROPEAN UNION, UNITED KINGDOM AND SOUTH KOREA'이고, Territory에서 한국을 제외하며, 3(c)는 Territory 밖에서의 사용이나 출력물 사용을 '무허가'로 규정합니다. 한국 사용자에게 Hunyuan3D 2.1 로컬 모델이나 산출물 사용을 추천하면 라이선스 위반 소지가 있습니다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE",
+        "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/ibrews/ue5-mcp/main/SKILL.md",
+      "reason": "커뮤니티 스킬(스타 39개)이 Epic 공식 문서와 정면으로 모순되는 주장을 '확인됨'처럼 적고 있습니다. 'Lumen GI는 Movable만 반영, Stationary는 기여 0'과 'MovieRenderGraph는 5.8 전용'이 그 예입니다. UE 사실관계의 근거로 쓰면 안 되고, 크래시 패턴이나 API 함정 참고용으로만 쓰는 편이 안전합니다."
+    },
+    {
+      "url": "https://github.com/Bartindigital/blender-hyperrealism-skill",
+      "reason": "커밋 1개, 스타 0개이고, 유튜브 트랜스크립트를 LLM으로 요약해 만든 것으로 보이는 규칙집입니다. 버전이 섞인 수치가 많습니다. 4.3 이하 Glare Mix/Size, Cycles X에서 제거된 Branched Path Tracing, 4.1에서 제거된 Auto Smooth, 'HDRI strength ~1000' 등입니다. 출처가 표기돼 있어 유용하지만 수치는 5.x 소스로 한 번 더 걸러야 합니다."
+    },
+    {
+      "url": "https://github.com/CharlieCardenasToledo/ue5-docs-mcp",
+      "reason": "비공식 스크랩 미러입니다(스타 1개). 문서 본문은 Epic IP이고 개인·교육 목적으로 한정되어 있습니다. 변환 과정에서 표나 기본값이 빠지며, 같은 페이지 안에 버전 상태가 섞여 있습니다(Substrate가 본문은 Production-Ready, 제한사항 절은 Beta). 사실 확인 보조 자료로는 쓸 만하지만 '공식 출처'로 표기하면 안 됩니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/blender-rendering/SKILL.md",
+      "reason": "Blender 5.x 대상이라고 하면서 scene.eevee.use_gtao, use_bloom, use_ssr, use_ssr_refraction 코드가 남아 있습니다. 5.x RNA에 없는 속성이라 실행하면 오류가 납니다. 조명 레시피 부분은 신뢰할 만합니다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/arjun988/blender-skills/main/.claude/skills/rendering/SKILL.md",
+      "reason": "'Eevee Next', AO On, Bloom처럼 4.1 이전이나 4.2–4.5 기준 개념이 섞여 있어 5.x 에이전트 규칙으로 바로 쓰기 어렵습니다(커밋 15개)."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Hunyuan3D 2.1 라이선스의 한국 제외 조항",
+      "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/Hunyuan3D-2.1/main/LICENSE",
+      "why_important": "한국어 사용자 대상 지식베이스인데 Tencent Hunyuan 3D 2.1 Community License가 EU, 영국, 한국을 적용 지역(Territory)에서 명시적으로 빼고, 그 지역에서의 사용과 출력물 사용을 무허가로 규정합니다. mcp-for-blender의 Hunyuan3D 연동이나 know_how의 PBR 생성 추천에 이 경고가 꼭 들어가야 합니다."
+    },
+    {
+      "name": "mcp-for-blender 안전 모드(BLENDER_MCP_SAFE_MODE=1), API 참조 조회, export_scene, Premium, 텔레메트리",
+      "url": "https://raw.githubusercontent.com/ahujasid/mcp-for-blender/main/README.md",
+      "why_important": "임의 코드 실행 위험을 줄이면서도 렌더와 저장은 허용하는 안전 모드는 에이전트 렌더 루프에 바로 쓸 수 있습니다. 노드 스키마·bpy API 조회 기능은 레거시 속성 오류를 줄여 줍니다. 유료 Premium 티어와 텔레메트리(opt-in 데이터의 AI 학습 사용 가능)는 '무료, MIT'라는 서술을 보완해야 할 사실입니다."
+    },
+    {
+      "name": "Blender main = 5.3 alpha (및 Cycles DLSS Ray Reconstruction 뷰포트 디노이저)",
+      "url": "https://raw.githubusercontent.com/blender/blender/main/source/blender/blenkernel/BKE_blender_version.h",
+      "why_important": "조사자가 '5.x 최신'으로 인용한 main 브랜치는 5.3 alpha입니다. main에는 5.2.2에 없는 DLSS 뷰포트 디노이저 같은 기능이 있으므로, 5.2 사용자용 규칙은 v5.2.2 태그를 근거로 삼아야 합니다."
+    },
+    {
+      "name": "Blender OCIO의 Filmic/AgX 동적 범위 설명(둘 다 25 stop 로그 범위, 16.5 stop latitude)",
+      "url": "https://raw.githubusercontent.com/blender/blender/v5.2.2/release/datafiles/colormanagement/config.ocio",
+      "why_important": "know_how 1번의 'Filmic 25 stop 대 AgX 16.5 stop' 비교는 AgX가 더 좁다는 오해를 낳습니다. 공식 config 설명문이 이를 바로잡습니다."
+    },
+    {
+      "name": "UE Path Tracer 문서의 'diffuse Base Color 0.8 미만' 권고와 NNE/NFOR 디노이저",
+      "url": "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/path-tracer-in-unreal-engine.md",
+      "why_important": "알베도 상한에 대한 Epic 1차 권고입니다. scenario의 sRGB 30–240 규칙과 비교해 에이전트 알베도 게이트를 보정할 근거가 됩니다. 애니메이션용 NFOR 디노이저(시간 안정성)도 파이널 렌더 규칙에 필요합니다."
+    },
+    {
+      "name": "Lumen Max Reflection Bounces(PPV 최대 8, r.Lumen.Reflections.MaxBounces로 64까지)",
+      "url": "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/lumen-global-illumination-and-reflections-in-unreal-engine.md",
+      "why_important": "거울이나 크롬이 서로 비치는 AAA 실내·제품 샷에서 반사 속 검은 영역을 없애는 설정입니다. 기본값이 1이라 에이전트가 모르면 품질 차이가 큽니다. HWRT Hit Lighting이 필요합니다."
+    },
+    {
+      "name": "Blender Light Linking 위치(Object > Shading > Light Linking, EEVEE 지원)와 Light Group의 Cycles 전용",
+      "url": "https://raw.githubusercontent.com/blender/blender/v5.2.2/scripts/startup/bl_ui/properties_object.py",
+      "why_important": "조사자가 gaps로 남긴 항목으로, 소스에서 바로 확인됩니다. 에이전트가 Light 데이터블록에서 linking을 찾다가 실패하는 일을 막아 줍니다."
+    },
+    {
+      "name": "Substrate 새 프로젝트 기본 GBuffer = Blendable(Automotive/Arch 템플릿은 Adaptive)",
+      "url": "https://raw.githubusercontent.com/CharlieCardenasToledo/ue5-docs-mcp/main/docs-md-py/en-us/unreal-engine/overview-of-substrate-materials-in-unreal-engine.md",
+      "why_important": "Substrate를 켜도 새 프로젝트는 속도를 우선한 Blendable GBuffer라서 다층 재질이 단일 closure로 단순화됩니다. AAA급 다층 재질이 목적이면 Adaptive GBuffer로 바꾸라는 규칙이 필요합니다."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+ "_source": "2026-09-27 이 저장소 작업 환경(리눅스 컨테이너, GPU 없음)에서 직접 실행한 결과의 원문 발췌",
+ "environment": {
+  "blender": "pip bpy 5.2.2 LTS (Python 3.13), bpy.app.background = True",
+  "official_source": "GitHub 미러 https://github.com/bpype/blender_mcp 커밋 98b0e49 (2026-05-05, 'docs: fix MCP Server install command (#25)'), pyproject name blender-mcp 1.0.0, addon manifest id 'mcp' 1.0.0 blender_version_min 5.1.0",
+  "mcp_sdk": [
+   "mcp 2.2.0 (제약 없이 설치했을 때 받아지는 최신)",
+   "mcp 1.30.0 ('mcp[cli]<2' 로 고정)"
+  ],
+  "blender_binary": "없음(blender.org 차단) → *_for_cli 는 BLENDER_PATH 에 fakeblender.sh 를 지정해 검증"
+ },
+ "online_access_gate": [
+  "version 5.2.2 LTS background True online False",
+  "Error: Online access must be enabled in the system preferences",
+  "  Use --online-mode to enable online access from the command line",
+  "cli rc (offline) = 1 | autostart_error: Online access must be enabled in the system preferences",
+  "set pref ok; online_access now True   (preferences.system.use_online_access = True 후)",
+  "MCP server started on localhost:9876, press Ctrl+C to exit."
+ ],
+ "mcp_sdk_2_crash": [
+  "$ blender-mcp   (mcp 2.2.0)",
+  "  File \".../blmcp/__init__.py\", line 22, in <module>",
+  "    from mcp.server.fastmcp import FastMCP",
+  "ModuleNotFoundError: No module named 'mcp.server.fastmcp'. This is mcp 2.x, where FastMCP was renamed to MCPServer (from mcp.server.mcpserver import MCPServer) and other APIs changed; see the migration guide at https://py.sdk.modelcontextprotocol.io/v2/migration/#fastmcp-renamed-to-mcpserver or pin 'mcp<2' to keep running v1 code.",
+  "MCP 클라이언트 쪽에서는 initialize 단계에서 'MCPError: Connection closed' 로만 보임",
+  "uvx --from <mirror>/mcp blender-mcp --help            → 같은 ModuleNotFoundError",
+  "uvx --with 'mcp[cli]<2' --from <mirror>/mcp blender-mcp --help → 정상(도움말 출력)"
+ ],
+ "mcp_sdk_release_dates_pypi": {
+  "1.27.0": "2026-04-02",
+  "2.0.0": "2026-07-28",
+  "1.29.0": "2026-07-28",
+  "2.1.0": "2026-08-24",
+  "1.30.0": "2026-09-07",
+  "2.2.0": "2026-09-07",
+  "_url": "https://pypi.org/pypi/mcp/json"
+ },
+ "official_unit_tests": {
+  "cmd": "python -m pytest -q tests/test_tool_listing.py tests/test_mcp_server.py tests/test_rst_parse.py tests/test_rst_search.py",
+  "mcp_1.30.0": "102 passed in 77.36s",
+  "mcp_2.2.0": "test_tool_listing.py + test_mcp_server.py: 19 failed, 7 passed, 16 errors (MCPError: Connection closed)",
+  "not_run": "tests/test_blender_mcp_with_blender.py(실제 blender 실행 파일로 확장 빌드·설치 필요), tests/integration/test_blender_mcp_with_llm.py(LLM API 키 필요)"
+ },
+ "eevee_headless": [
+  "render_thumbnail_to_path (scene.render.engine = BLENDER_EEVEE, 카메라 있음)",
+  "Couldn't open libEGL.so.1: libEGL.so.1: cannot open shared object file: No such file or directory",
+  "→ Blender 프로세스 종료(exit 134). MCP 쪽 응답: 'Empty response from Blender', 이후 호출은 'Cannot connect to Blender at localhost:9876'"
+ ],
+ "system_exit": [
+  "execute_blender_code: import sys; sys.exit(0)        → status error, RuntimeError('sys.exit() is not allowed in LLM-generated code')",
+  "execute_blender_code: bpy.ops.wm.quit_blender()      → status error (weak_sandbox 가 막음)",
+  "execute_blender_code: bpy.ops.wm.read_factory_settings() → status error (weak_sandbox 가 막음)",
+  "execute_blender_code: raise SystemExit(0)            → 'Empty response from Blender', 백그라운드 서버 프로세스 종료(exit 0). _execute_code 가 Exception 만 잡고 BaseException 은 못 잡음",
+  "execute_blender_code: os.getcwd()/os.listdir('/home/user') → 정상 실행(파일·OS 접근 제한 없음)"
+ ],
+ "render_output_path": [
+  "render_thumbnail_to_path(output_path='/anything/ignored/thumb.png') → filepath '<bpy.app.tempdir>/blender_mcp/thumb.png'",
+  "Blender 종료 뒤 해당 임시 폴더는 사라짐(ls: No such file or directory)"
+ ],
+ "http_transport": {
+  "cmd": "blender-mcp --transport http   → 'Uvicorn running on http://127.0.0.1:8000'",
+  "preflight": "OPTIONS / , Origin: https://evil.example → 200, access-control-allow-origin: *, allow-methods: DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, QUERY",
+  "cross_origin_call": "POST / , Origin: https://evil.example, initialize 없이 tools/call execute_blender_code → 200, 코드 실행 결과(pid, 열린 파일 경로) 반환, access-control-allow-origin: *",
+  "host_header": "Host: attacker.example:8000 으로 tools/list → 200 (DNS 리바인딩 보호 꺼짐: enable_dns_rebinding_protection=False)",
+  "note": "curl 로 헤더를 흉내 낸 HTTP 수준 확인. 실제 브라우저에서 공격 페이지로 재현하지는 않았음(최신 브라우저의 로컬 네트워크 접근 제한 여부는 미확인)"
+ },
+ "pypi_name_collision": "https://pypi.org/pypi/blender-mcp/json → name blender-mcp, version 2.0.0, summary 'Renamed to mcp-for-blender. Installing this package installs it for you.' (ahujasid). 공식 서버 pyproject 의 name 도 blender-mcp 라 PyPI 로는 공식 서버를 받을 수 없음",
+ "outbound_network_in_source": "mcp/blmcp, addon 에 urllib·requests·httpx 등 외부 호출 코드 없음(chat_client 만 LLM API 호출)",
+ "bundled_docs": {
+  "api": "blmcp/data/api 2,173 파일 15 MB, index.rst 'Blender 5.1 Python API Documentation'",
+  "manual": "blmcp/data/manual 2,217 파일 13 MB"
+ },
+ "context_size": {
+  "instructions_chars": 5896,
+  "tools_json_chars_name_desc_schema": 14729,
+  "tools_json_chars_with_output_schema_annotations": 19713
+ }
+}

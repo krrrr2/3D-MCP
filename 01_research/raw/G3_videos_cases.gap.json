@@ -1,0 +1,1917 @@
+{
+  "topic": "영상 튜토리얼·소셜 사례·공식 벤더 워크스루 (영어/일본어/중국어): GPT-6 Astra, Claude Opus 5.5 / Fable 5.1, Gemini × Blender·Unreal·Unity·Roblox·SketchUp MCP",
+  "summary_ko": [
+    "공식 워크스루의 뼈대는 네 갈래다. (1) Anthropic 'Claude for Creative Work'(2026-04-28): Blender, Autodesk Fusion, SketchUp, Adobe, Affinity, Ableton, Splice, Resolume(Arena/Wire) 등 공식 커넥터 9개. (2) Claude Academy의 Blender 커넥터 튜토리얼. (3) OpenAI Developers 블로그의 'Architectural visualization with Astra'와 'Building games with Astra'. (4) 엔진 벤더 자료: Unity 공식 블로그·문서·Claude Code 플러그인, Epic 커뮤니티 튜토리얼, Roblox Studio 내장 MCP.",
+    "Blender Lab 공식 MCP(Blender 5.1+, 실험적)는 도구를 일부러 적게 둔다. execute_blender_code, .blend 요약, 문서 검색, 스크린샷/렌더 저장만 있고 Poly Haven 연동이나 구조화된 노드 도구는 없다(claude-3d-harness 이슈 #7, 2026-09-20). 그래서 에셋 조달과 노드 작업에는 커뮤니티 blender-mcp나 Meshy·Rodin 같은 생성 MCP를 함께 쓰는 구성이 실사용에서 흔하다.",
+    "claude.com 커넥터 페이지로 확인한 사실: Blender 커넥터는 Blender Lab이 만들었고 v1.0.1, Anthropic 검증, 2026년 4월 추가다. SketchUp 커넥터 도구는 build_model, get_docs, save_model 세 개다. Anthropic 발표문은 2026-05-01 업데이트에서 기부 방식을 정정했다. Blender가 Development Fund가 아닌 일회성 기부로 받기로 했다는 내용이다. HN에는 원래 제목 'Anthropic Joins the Blender Development Fund as Corporate Patron'으로 토론이 남아 있다.",
+    "UE 5.8 공식 MCP 영상 튜토리얼은 2026년 5월 Preview 시기부터 8월까지 꾸준히 나왔다. 확인된 것만 5월 14일, 5월 28일, 6월 18일, 7월 1일, 8월 18일 업로드다. Epic 개발자 커뮤니티에는 스페인어 입문 튜토리얼과 'Fab 환경 팩 + Third Person 템플릿 → 플레이 가능한 가을 숲 레벨' 튜토리얼이 올라와 있다.",
+    "Unity는 공식 MCP(AI Assistant 2.0 패키지, relay 바이너리, AI Gateway 연결은 자동 승인·직접 연결은 사용자 승인)와 별도로 공식 플러그인 'unity-agent-plugin'(v0.1.6-beta, Unity 6+, Claude Code·Codex용 스킬 묶음)을 냈다. Roblox는 2026년 2월 Studio에 MCP 서버를 내장했고, 기존 studio-rust-mcp-server는 2026-04-03에 deprecated·archive됐다.",
+    "소셜·영상 사례는 출시 직후 몰려 나왔다. GPT-6 Astra는 2026-09-03 출시 뒤 9월 5일 X 트렌딩에 '1시간 이내 3D 게임 프로토타입'이 올랐다. Opus 5.5는 2026-09-22 출시 뒤 23일 데모 스레드(클레이메이션, 3D 게임, 광학 실험실, Unreal 도시 전체)가 나왔다. 다만 YouTube 비교 영상 제목('KING', '5x faster', 'beats Astra')은 과장이 많다. 검색 요약만으로는 프롬프트·시간·비용이 공개됐는지 확인할 수 없어 신뢰도를 낮게 매겼다.",
+    "일본어권: zenn의 'Astra時代のコードファースト3Dモデリング', note.com의 Astra×Blender 체험기(복숭아 모델링, Codex+Blender MCP 오브젝트 제작, npaka의 능력 평가)가 대표적이다. 중국어권: bilibili에 Claude+Blender MCP 튜토리얼 여러 편(26분 완전 튜토리얼, 공식 MCP로 씬 정리·머티리얼 수리·지오메트리 노드·애니메이션 자동화, Claude Code 중국어 더빙)이 있고, zhihu에는 Blender 씬을 읽어 three.js 페이지로 재구성한 사례가 있다.",
+    "Gemini 경로: Gemini CLI에서는 streamable HTTP에 httpUrl 키를 써야 한다(url은 구 SSE 전송). Gemini의 무료 티어와 이미지 이해력을 렌더 피드백 루프에 쓰라는 가이드가 있다. 'Gemini 3.8 Flash + Antigravity로 Blender 테스트' 영상도 있다.",
+    "이번 라운드의 한계: Reddit은 검색 API가 도메인 자체를 거부했다. YouTube·X·HN·Blender Artists·OpenAI 개발자 블로그·Claude Academy는 본문을 가져오지 못해 제목·날짜·검색 요약에 의존했다. 80.lv, CG Channel, BlenderNation의 관련 기사는 검색에 나오지 않았다."
+  ],
+  "items": [
+    {
+      "name": "Anthropic 'Claude for Creative Work' 발표",
+      "category": "공식 발표/벤더 워크스루",
+      "what_it_is": "2026-04-28 Anthropic 발표. Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice 등 공식 커넥터 9개를 공개했다. Blender 커넥터는 Python API에 자연어 인터페이스를 제공해 씬 분석·디버깅, 여러 오브젝트 일괄 수정 스크립트, Blender UI에 새 도구 추가를 지원한다. Fusion은 대화로 3D 모델 생성·수정, SketchUp은 방·가구·사이트 컨셉 생성이 가능하다. 2026-05-01 업데이트로 Blender가 기부를 Development Fund가 아닌 일회성 기부로 받기로 했다고 정정했다.",
+      "how_to_use": "Claude Desktop에서 커넥터를 추가하고 각 앱 쪽 add-on/로그인을 설정한다. 3D 가구·건축 매싱은 SketchUp/Fusion, 씬 디버깅·스크립팅은 Blender 커넥터로 역할을 나눈다.",
+      "language": "English",
+      "license_or_price": "커넥터는 무료 추가. Claude 요금제와 각 앱 구독(Fusion 등)은 별도",
+      "status_date": "2026-04-28 발표 / 2026-05-01 업데이트",
+      "strengths": "벤더가 직접 만든 공식 커넥터라 설치 경로가 표준화돼 있다",
+      "weaknesses": "발표문에 구체적 고객·아티스트 사례가 없다. 품질 벤치마크도 제시하지 않는다",
+      "urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Claude Academy: Using the Blender Connector in Claude",
+      "category": "공식 튜토리얼",
+      "what_it_is": "Anthropic 공식 Blender 커넥터 튜토리얼. Claude Desktop에 Blender 커넥터를 추가하고 Blender 안에 add-on을 설치한 뒤, 작업할 때마다 Blender 쪽에서 연결을 시작하는 흐름이다. 노드·모디파이어 설정 읽기와 설명, 여러 오브젝트 일괄 변경, 미사용 데이터 정리, Blender UI에 도구를 추가하는 Python 작성을 예시로 든다.",
+      "how_to_use": "브라우저 claude.ai에서는 동작하지 않는다. Claude Desktop과 Blender를 같은 머신에서 실행해야 한다. 세션마다 Blender add-on 패널에서 연결을 시작한다.",
+      "language": "English(구글 번역본 스페인어 존재)",
+      "license_or_price": "무료(Claude Desktop 필요)",
+      "status_date": "2026년 (커넥터 출시 2026-04 이후)",
+      "strengths": "공식 절차. 모델링보다 '씬 이해·디버깅·자동화'에 초점을 맞춘 현실적인 예시",
+      "weaknesses": "프록시 차단으로 본문을 직접 확인하지 못했다. 검색 요약에 근거한다",
+      "urls": [
+        "https://academy.claude.com/tutorials/using-the-blender-connector-in-claude",
+        "https://claude-com.translate.goog/resources/tutorials/using-the-blender-connector-in-claude?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Claude 커넥터 디렉터리: Blender (Blender Lab 제작, v1.0.1)",
+      "category": "공식 커넥터 페이지",
+      "what_it_is": "claude.com의 Blender 커넥터 페이지. 제작자 Blender Lab, Anthropic verified, 2026년 4월 추가, 버전 1.0.1. add-on이 필요하고 설치 절차는 Blender Lab MCP Server 문서를 따르라고 안내한다.",
+      "how_to_use": "Claude 마켓플레이스에서 추가한 뒤 blender.org/lab/mcp-server 안내대로 add-on과 서버 패키지를 설치한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-04 추가, v1.0.1 (2026-09 확인)",
+      "strengths": "버전 번호로 변화를 추적할 수 있다",
+      "weaknesses": "예시 프롬프트가 없다",
+      "urls": [
+        "https://claude.com/connectors/blender"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Blender Lab 공식 MCP 서버 (blender_mcp)",
+      "category": "공식 MCP 서버",
+      "what_it_is": "Blender Foundation의 실험 프로그램 Blender Lab이 만든 경량 MCP 서버다. Blender 5.1 이상이 필요하고 add-on과 서버 패키지로 설치한다. 공식이지만 실험적이며 현재 Blender 로드맵 밖에 있다. 도구는 execute_blender_code, .blend 파일 요약, 문서 검색, 스크린샷/렌더 파일 저장 정도로 최소한이다. 커뮤니티 커넥터에 있는 구조화된 노드 도구와 Poly Haven 연동은 없다.",
+      "how_to_use": "코드 실행과 문서 검색 위주로 쓴다. 에셋 조달(Poly Haven, Sketchfab, Hyper3D)이 필요하면 커뮤니티 blender-mcp나 Meshy MCP 등을 병행한다.",
+      "language": "English",
+      "license_or_price": "오픈소스(Blender 프로젝트)",
+      "status_date": "2026-04-28 발표, 2026-09 기준 실험 단계",
+      "strengths": "Blender 개발팀이 유지한다. 문서 검색 도구가 있어 bpy API 환각이 줄어든다",
+      "weaknesses": "도구가 적어 에셋 파이프라인에는 추가 서버가 필요하다. 로드맵 밖 프로젝트",
+      "urls": [
+        "https://projects.blender.org/lab/blender_mcp",
+        "https://projects.blender.org/lab/blender_mcp/wiki/Home",
+        "https://www.blender.org/lab/",
+        "https://github.com/MAX-786/claude-3d-harness/issues/7",
+        "https://mcp.film/mcps/blender-lab-mcp/",
+        "https://mcpservers.org/servers/blender-mcp"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Claude 커넥터: Trimble SketchUp (build_model / get_docs / save_model)",
+      "category": "공식 커넥터 (건축·가구)",
+      "what_it_is": "대화, 이미지 등을 입력으로 받아 SketchUp 3D 모델을 만든다. 결과를 Claude 안에서 미리 보고 SketchUp에서 열어 다듬는 반복 루프를 지원한다. 도구는 build_model, get_docs, save_model 세 개다. 방 증축, 가구, 사이트 컨셉을 용도로 명시한다.",
+      "how_to_use": "SketchUp 계정으로 로그인하고 커넥터를 추가한다. 매싱과 가구 초안은 SketchUp으로 만들고 필요하면 Blender/UE로 넘겨 룩뎁한다.",
+      "language": "English",
+      "license_or_price": "로그인 필요(SketchUp 구독 조건은 페이지에 명시 없음)",
+      "status_date": "2026-04 마켓플레이스 추가",
+      "strengths": "모델링 경험 없이도 치수 있는 건축·가구 형태를 빠르게 만든다",
+      "weaknesses": "도구가 3개뿐이라 세밀한 제어는 제한될 수 있다(추정)",
+      "urls": [
+        "https://claude.com/connectors/sketchup"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "OpenAI Developers: Architectural visualization with Astra",
+      "category": "공식 워크스루 (OpenAI)",
+      "what_it_is": "GPT-6 Astra가 Codex에서 Blender Python API(bpy)로 편집 가능한 Blender 씬을 만드는 워크플로. 코드 작성·실행 → 결과 검사 → 프리뷰 렌더 → 문제 식별 → 수정 루프를 돈다. 설계 브리프에서 가구가 배치된 가족 주택을 만들고, Unreal Engine 5에서 걸어 다닐 수 있게 한 뒤 카메라 투어까지 연출한다. 건축, 가구, 식재, 머티리얼, 조명, 카메라를 모두 다룬다.",
+      "how_to_use": "Codex에서 Astra를 쓰고, 같은 컴퓨터에 Blender를 두고, 둘 다 접근하는 프로젝트 폴더를 준비하는 구성이 가장 실용적이라고 한다.",
+      "language": "English",
+      "license_or_price": "Codex/ChatGPT 요금제",
+      "status_date": "2026-09 (Astra 출시 2026-09-03 전후)",
+      "strengths": "공식 엔드투엔드 사례(Blender → UE5 워크스루)",
+      "weaknesses": "본문 접근이 차단돼 세부 수치(시간·토큰)를 확인하지 못했다",
+      "urls": [
+        "https://developers.openai.com/blog/architectural-visualization-with-astra"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "OpenAI Developers: Building games with Astra",
+      "category": "공식 워크스루 (OpenAI)",
+      "what_it_is": "Astra를 Codex에서 써서 3D 게임 환경·캐릭터·메커닉을 만드는 공식 블로그. 컨셉 아트 생성 → Blender 3D 모델링 → 애니메이션 → 엔진 임포트 → 오디오 → 플레이테스트를 사람이 도구를 직접 조작하지 않고 연결할 수 있다고 설명한다.",
+      "how_to_use": "게임 프로토타입의 파이프라인 설계 참고용. 에셋을 모두 직접 모델링하지 말고 이미지 생성을 그래픽 수단으로 섞는 트릭이 소개된다.",
+      "language": "English",
+      "license_or_price": "Codex 요금제",
+      "status_date": "2026-09",
+      "strengths": "도구 체인 전체를 보여 준다",
+      "weaknesses": "검색 요약 기반. 'AAA 품질'보다는 프로토타입 속도에 초점",
+      "urls": [
+        "https://developers.openai.com/blog/how-to-build-games-with-astra",
+        "https://www.mindstudio.ai/blog/gpt6-astra-codex-3d-game-development",
+        "https://www.mindstudio.ai/blog/gpt-6-astra-video-game-development"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "OpenAI: GPT-6 Astra 출시 글",
+      "category": "공식 발표",
+      "what_it_is": "GPT-6 Astra 출시 발표(2026-09-03). 3D 공간 추론과 Blender 활용 역량이 서드파티 튜토리얼 붐을 이끌었다. 서드파티 글은 컨텍스트 창을 1,050,000 토큰으로 적는다(단일 출처).",
+      "how_to_use": "모델 사양은 공식 글로 확인하고 3D 활용법은 개발자 블로그 두 편을 참조한다.",
+      "language": "English",
+      "license_or_price": "ChatGPT/Codex/API 유료",
+      "status_date": "2026-09-03",
+      "strengths": "공식 1차 출처",
+      "weaknesses": "본문 접근 불가. 출시일은 서드파티 두 곳에서 교차 확인",
+      "urls": [
+        "https://openai.com/index/gpt-6-astra/",
+        "https://acecloud.ai/blog/connect-blender-astra-gemini-claude/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Epic 커뮤니티 튜토리얼: Build a Playable Unreal Engine 5 Level with AI (MCP + Claude Code)",
+      "category": "엔진 튜토리얼 (Epic Developer Community)",
+      "what_it_is": "UE 5.8 내장 Unreal MCP 서버에 Claude Code를 연결한다. Fab 환경 팩을 임포트하고, AI 에이전트가 Third Person 템플릿을 플레이 가능한 가을 숲 레벨로 바꾸는 단계별 튜토리얼이다. 포럼 토론 스레드도 있다.",
+      "how_to_use": "에셋 품질은 Fab 팩(사람이 만든 AAA급 에셋)으로 확보하고 배치·레벨 조립·게임플레이만 에이전트에게 맡기는 분업 모델로 따라 한다.",
+      "language": "English",
+      "license_or_price": "무료(UE, Fab 에셋 라이선스 별도)",
+      "status_date": "2026 (UE 5.8 이후)",
+      "strengths": "'생성 에셋 대신 검증된 에셋 + AI 배치' 구조라 결과 품질을 예측하기 쉽다",
+      "weaknesses": "본문 세부(시간·토큰)는 미확인",
+      "urls": [
+        "https://dev.epicgames.com/community/learning/tutorials/bnJ0/build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code",
+        "https://forums.unrealengine.com/t/community-tutorial-build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code/2747422"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Epic 커뮤니티 튜토리얼(스페인어): Unreal Engine 5.8 + Claude (MCP) 입문",
+      "category": "엔진 튜토리얼 (스페인어)",
+      "what_it_is": "UE 5.8과 Claude Code를 MCP로 연결하는 스페인어 입문 튜토리얼. 'crear sin límites' 편과 포럼의 'desde CERO(처음부터)' 완전 튜토리얼 두 편이 있다. 에디터 안에서 자연어 지시로 제작하는 파이프라인 변화를 다룬다.",
+      "how_to_use": "비영어권 팀 온보딩 자료로 쓴다.",
+      "language": "Spanish",
+      "license_or_price": "무료",
+      "status_date": "2026",
+      "strengths": "처음부터 따라 할 수 있는 구성",
+      "weaknesses": "결과물 품질 정보가 없다",
+      "urls": [
+        "https://dev.epicgames.com/community/learning/tutorials/39oR/unreal-engine-5-8-claude-mcp-crear-sin-limites",
+        "https://forums.unrealengine.com/t/community-tutorial-unreal-engine-5-8-claude-code-con-mcp-desde-cero-tutorial-completo/2729874"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "YouTube: UE 5.8 Preview 시기 MCP 셋업 영상 (2026년 5월)",
+      "category": "영상 튜토리얼 (Unreal)",
+      "what_it_is": "'Unreal Engine 5.8 Preview: MCP Configuration and Testing with Claude and Kilo'(2026-05-14, Claude와 Kilo Code로 설정·테스트)와 'Easy MCP Server Setup For Unreal Engine 5.8 And Claude AI'(2026-05-28, VS Code 기반 초보자용) 두 편. UE 5.8 Preview 단계의 MCP 구성 방법을 보여 준다.",
+      "how_to_use": "Preview 기준 영상이라 정식 버전과 메뉴·설정이 다를 수 있다. 최신 영상과 교차 확인한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-05-14 / 2026-05-28",
+      "strengths": "공식 MCP 초기 동작을 기록한 영상",
+      "weaknesses": "Preview 기반. 채널명은 검색 결과에 나오지 않았다",
+      "urls": [
+        "https://www.youtube.com/watch?v=dKzyTiitRIA",
+        "https://www.youtube.com/watch?v=z-nMc1BYW4Q"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "YouTube: UE 5.8 공식 MCP + Claude Code 셋업 영상 (2026년 6~8월)",
+      "category": "영상 튜토리얼 (Unreal)",
+      "what_it_is": "'UE5.8 MCP Server Setup & Test — Unreal Engine 58 Official MCP with Claude Code'(2026-06-18), 'How to Connect Claude Code to Unreal Engine 5.8 with MCP'(2026-07-01), 'Claude Code + Unreal Engine 5.8: Complete MCP Setup & Tutorial'(2026-08-18), Shorts 'Unreal Engine 5.8 MCP + Claude Code: Full Breakdown'. 정식 UE 5.8 공식 MCP 서버를 Claude Code에 연결하는 방법을 다룬다.",
+      "how_to_use": "가장 최근 영상(8월)을 기준으로 설정한다. Unreal이 Codex, Claude Code, Cursor, Gemini, VS Code용 클라이언트 설정을 생성해 주는 기능을 활용한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-06-18 ~ 2026-08-18",
+      "strengths": "공식 MCP 흐름을 순서대로 보여 준다",
+      "weaknesses": "대부분 셋업 위주라 AAA급 결과물 시연은 적을 수 있다(제목 기준 추정)",
+      "urls": [
+        "https://www.youtube.com/watch?v=Ko3dy_G75-s",
+        "https://www.youtube.com/watch?v=kP9d-Bv32SU",
+        "https://www.youtube.com/watch?v=hUNTOltVTpQ",
+        "https://www.youtube.com/shorts/oAaZmJQKiu8"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Unity 공식 블로그: Unity MCP Server – Connect Claude Code, Cursor, and other AI Agents",
+      "category": "공식 워크스루 (Unity)",
+      "what_it_is": "2026년 5월 Unity 공식 블로그. MCP 서버로 Claude Code 등 에이전트를 Unity Editor에 직접 연결해 씬 검사, 콘솔 출력 읽기, 스크립트 편집, 에디터 액션 실행을 복사·붙여넣기 없이 하게 한다.",
+      "how_to_use": "Unity CLI의 `unity mcp configure claude-code`로 클라이언트 설정을 자동 구성한다(서드파티 가이드 기재).",
+      "language": "English",
+      "license_or_price": "Unity AI 요금 정책 적용(세부 미확인)",
+      "status_date": "2026-05",
+      "strengths": "공식 1차 출처",
+      "weaknesses": "3D 모델링·텍스처링 품질보다 에디터 자동화 중심",
+      "urls": [
+        "https://unity.com/blog/unity-ai-mcp-how-to-get-started",
+        "https://gamedevllm.com/en/unity-mcp-claude-codex-gemini-cursorcomplete-guide-en/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Unity 문서: Unity MCP (com.unity.ai.assistant 2.0.0-pre.1)",
+      "category": "공식 문서 (Unity)",
+      "what_it_is": "Unity MCP 아키텍처 문서. MCP 프로토콜, relay 바이너리, IPC 연결, 연결 보안을 다룬다. AI Gateway 경유 연결은 자동 승인되고 직접 연결은 사용자 승인이 필요하다.",
+      "how_to_use": "팀 환경에서는 AI Gateway 경유와 직접 연결 중 무엇을 쓸지 정하고, 승인 정책을 사전에 정리한다.",
+      "language": "English",
+      "license_or_price": "Unity 패키지(프리릴리스)",
+      "status_date": "2026 (2.0.0-pre.1)",
+      "strengths": "보안·연결 모델이 명확하다",
+      "weaknesses": "프리릴리스 버전",
+      "urls": [
+        "https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.0/manual/unity-mcp-overview.html"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Unity 공식 에이전트 플러그인 (unity-agent-plugin, Claude Code·Codex)",
+      "category": "공식 플러그인 (Unity)",
+      "what_it_is": "Unity Technologies가 배포하는 Claude Code/Codex용 게임 개발 플러그인. 인앱 결제, UI/설정 화면, 카메라·렌더링 최적화, 동영상 광고, 레벨 디자인(육각 타일 팔레트), 텍스트 렌더링, Render Graph 디버깅, Shader Graph 등 Unity 문서화 관행에 기반한 스킬을 담았다. v0.1.6-beta, Unity 6 이상, Unity CLI가 필요하다. 서드파티 가이드는 2026-09-10에 Claude 플러그인 디렉터리로 배포됐다고 적는다.",
+      "how_to_use": "`/plugin marketplace add Unity-Technologies/unity-agent-plugin` 후 `/plugin install unity@unity-agent-plugin`(Codex는 `codex plugin marketplace add ...` 후 `codex plugin add unity@unity-agent-plugin`). 에디터 제어는 Unity MCP, 지식은 플러그인 스킬로 나눈다.",
+      "language": "English",
+      "license_or_price": "무료(베타)",
+      "status_date": "v0.1.6-beta, 2026-09",
+      "strengths": "벤더 공식 스킬이라 Unity 관행(Render Graph, Shader Graph) 오류가 줄어든다",
+      "weaknesses": "README에 MCP 서버 구성 언급이 없다. 3D 에셋 제작 스킬은 제한적",
+      "urls": [
+        "https://github.com/Unity-Technologies/unity-agent-plugin",
+        "https://claude.com/plugins/unity"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "YouTube: Unity MCP + Claude 셋업 영상",
+      "category": "영상 튜토리얼 (Unity)",
+      "what_it_is": "'Claude AI + MCP in Unity: The Complete Setup & Workflow (2026)'(2026년 7월): Claude Code가 프로젝트 안에서 스크립트를 읽고 컴포넌트를 편집하고 빌드하는 과정을 다룬다. 'How to Set Up Claude with Unity MCP in 3 Minutes'도 있다.",
+      "how_to_use": "빠른 셋업 확인용.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-07 외",
+      "strengths": "짧고 실용적",
+      "weaknesses": "결과물 품질 정보 없음",
+      "urls": [
+        "https://www.youtube.com/watch?v=UZCekUCWgGc",
+        "https://www.youtube.com/watch?v=oCqyOvcWf5M"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "서드파티 Unity MCP 가이드 모음 (explainx, andrew.ooo, CGVista, gamedevllm)",
+      "category": "블로그 가이드 (Unity)",
+      "what_it_is": "Claude Code, Codex, Gemini, Cursor를 Unity Editor에 연결하는 가이드들. 공식 Unity MCP와 커뮤니티 CoplayDev/unity-mcp(13,800+ stars, Unity 2021.3 LTS~Unity 6, 도구 25개 이상)를 비교한다.",
+      "how_to_use": "Unity 2021/2022 LTS처럼 공식 MCP가 지원하지 않는 버전에서는 CoplayDev 서버를 쓴다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026",
+      "strengths": "여러 클라이언트 설정을 한곳에서 볼 수 있다",
+      "weaknesses": "SEO성 글이 섞여 있다",
+      "urls": [
+        "https://www.explainx.ai/blog/claude-code-unity-mcp-guide-2026",
+        "https://andrew.ooo/posts/unity-mcp-ai-game-development-bridge/",
+        "https://cgvista.com/unity-claude-mcp/",
+        "https://github.com/CoplayDev/unity-mcp"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Roblox Studio 내장 MCP 서버",
+      "category": "공식 MCP (Roblox)",
+      "what_it_is": "2026년 2월부터 Roblox Studio에 MCP 서버가 내장됐다. File → Studio Settings → Beta Features에서 MCP Server를 켜면 기본적으로 localhost:3004에서 대기한다. Claude Desktop/Claude Code 빠른 연결을 공식 지원한다. DataModel, 스크립트, Luau 실행, 플레이테스트, 콘솔, 스크린샷, 입력 시뮬레이션 등을 노출한다.",
+      "how_to_use": "구 studio-rust-mcp-server 대신 내장 서버를 쓴다. 스크린샷 도구로 레이아웃을 시각적으로 검증한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-02 도입, 2026-08 가이드 기준 Beta",
+      "strengths": "설치가 필요 없고 스크린샷·입력 시뮬레이션이 있어 시각 검증 루프를 만들 수 있다",
+      "weaknesses": "포트·메뉴 경로는 서드파티 가이드 기준이라 변경될 수 있다",
+      "urls": [
+        "https://useloadout.com/blog/roblox-mcp-server-setup/",
+        "https://backyarddrunkard.com/game-guides/connect-claude-to-roblox-studio-mcp-guide/",
+        "https://www.obby.fun/blog/claude-ai-roblox-studio"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Roblox/studio-rust-mcp-server (deprecated)",
+      "category": "공식 MCP (구버전)",
+      "what_it_is": "Roblox의 독립형 Rust MCP 서버. 2026-04-03에 deprecated되어 archive됐다. 도구는 run_code, insert_model(Creator Store 모델 삽입), get_console_output, start_stop_play, run_script_in_play_mode, get_studio_mode 6개. axum 웹 서버를 Studio 플러그인이 폴링하는 구조다.",
+      "how_to_use": "신규 프로젝트에는 쓰지 않는다. 튜토리얼 영상이 이 서버 기준인지 확인하는 용도로 참고한다.",
+      "language": "English",
+      "license_or_price": "오픈소스",
+      "status_date": "2026-04-03 deprecated",
+      "strengths": "insert_model로 Creator Store 에셋을 배치하는 흐름을 보여 준 원형",
+      "weaknesses": "지원 종료",
+      "urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "커뮤니티 Roblox Studio MCP (robloxstudio-mcp 등)",
+      "category": "커뮤니티 MCP (Roblox)",
+      "what_it_is": "HTTP 폴링으로 Studio 세션에 접근한다. 계층 탐색, 스크립트 읽기·편집, 속성 조작, 인스턴스 생성, 지형 빌드, 플레이테스트를 지원하는 커뮤니티 서버이며, robloxstudio-mcp는 도구 54개를 제공한다고 한다. 'Claude for Roblox Studio' 등 변형도 있다.",
+      "how_to_use": "내장 서버에 없는 지형 빌드 같은 기능이 필요할 때 보조로 쓴다.",
+      "language": "English",
+      "license_or_price": "오픈소스",
+      "status_date": "2026",
+      "strengths": "도구 수가 많다",
+      "weaknesses": "도구 수는 리스팅 사이트 기준이며 유지보수 상태를 확인하지 못했다",
+      "urls": [
+        "https://lobehub.com/mcp/drgost1-robloxstudio-mcp",
+        "https://lobehub.com/mcp/tonyd365-claude-for-roblox-studio",
+        "https://claudemarketplaces.com/mcp/justice219/roblox-studio-mcp"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "YouTube: How To Connect Claude To Blender - Tutorial",
+      "category": "영상 튜토리얼 (Blender)",
+      "what_it_is": "Claude와 Blender 연결 방법을 다루는 YouTube 튜토리얼. 공식 커넥터 가이드 검색 결과에 함께 노출됐다.",
+      "how_to_use": "공식 Academy 문서와 병행해 화면 흐름을 확인한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026 (추정)",
+      "strengths": "시각적 셋업 안내",
+      "weaknesses": "채널명·업로드일 미확인",
+      "urls": [
+        "https://www.youtube.com/watch?v=Zo4JBa2r2WI"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "서드파티 Claude Blender 커넥터 가이드 (MCP.Directory, Eigent, INCRYPTED, Creative AI News, Build This Now)",
+      "category": "블로그 가이드 (Blender)",
+      "what_it_is": "공식 Blender 커넥터 단계별 설정과 워크플로를 정리한 글들. 요점: Blender 개발자가 만든 커넥터이고, bpy API 전체와 문서를 도구로 노출하며, 브라우저가 아닌 Desktop에서만 동작한다.",
+      "how_to_use": "공식 문서가 막힐 때 문제 해결용으로 참고한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026",
+      "strengths": "다양한 관점의 설정 팁",
+      "weaknesses": "내용이 서로 비슷하고 일부는 SEO성",
+      "urls": [
+        "https://mcp.directory/blog/claude-blender-connector-guide",
+        "https://www.eigent.ai/blog/claude-blender-mcp",
+        "https://incrypted.com/en/how-connect-blender-3d-claude/",
+        "https://www.creativeainews.com/articles/claude-blender-connector-official-setup-workflow/",
+        "https://www.buildthisnow.com/blog/tools/mcp/claude-for-creative-work-connectors"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Astra × Blender 서드파티 가이드 (Kingy AI 스타터 파일, AceCloud 3경로 비교, Neural4D 6단계, Top3D, u7buy)",
+      "category": "블로그 가이드 (Astra)",
+      "what_it_is": "GPT-6 Astra를 Blender와 연결하는 가이드들. AceCloud는 세 경로를 비교한다. Astra는 bpy 코드를 실행 전에 검사할 수 있는 Python-first, Gemini CLI는 MCP 직접 구성·진단, Claude는 가이드형 커넥터와 Cowork 멀티스텝이다. Kingy AI는 스타터 파일을 제공한다.",
+      "how_to_use": "코드 검토가 중요한 프로덕션에서는 Astra Python-first, 라이브 조작이 필요하면 MCP 경로를 고른다.",
+      "language": "English",
+      "license_or_price": "무료 글",
+      "status_date": "2026-09",
+      "strengths": "경로별 장단점을 정리했다",
+      "weaknesses": "SEO성 글이 많고 실측이 적다",
+      "urls": [
+        "https://kingy.ai/blog/blender-openai-astra-complete-guide/",
+        "https://acecloud.ai/blog/connect-blender-astra-gemini-claude/",
+        "https://blog.neural4d.com/user-guide/gpt-6-astra-blender-mcp/",
+        "https://www.top3d.ai/learn/best-gpt-6-astra-setup-for-3d",
+        "https://www.u7buy.com/blog/gpt-6-astra-blender-tutorial/",
+        "https://www.u7buy.com/blog/gpt-6-astra-blender-tutorial-3d-models/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "blendermcp.org: Claude Opus 5.5 + Blender MCP – Setup & What Changed",
+      "category": "블로그 가이드 (Claude)",
+      "what_it_is": "Opus 5.5(2026-09-22 출시)를 Blender MCP와 함께 쓰는 설정과 변경점을 다룬 가이드. 'Fable 5.1 수준 성능에 Opus 5 대비 운영비 40% 절감'이라는 문구를 인용한다.",
+      "how_to_use": "모델을 Opus 5.5로 바꿀 때 체크리스트로 쓴다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-09",
+      "strengths": "최신 모델 반영",
+      "weaknesses": "비용 수치는 단일 출처(공식 발표문 원문 확인 필요)",
+      "urls": [
+        "https://blendermcp.org/guides/claude-opus-5-5-blender",
+        "https://blenderai.org/models/claude"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Gemini × Blender 가이드 (blenderai.org, StraySpark, blendermcp.org Gemini CLI, Gemini CLI 확장)",
+      "category": "블로그 가이드 (Gemini)",
+      "what_it_is": "Gemini가 bpy 스크립트를 쓰거나 MCP로 라이브 씬을 조작하는 방법. Gemini CLI에서는 streamable HTTP에 httpUrl을 써야 한다(url은 구 SSE). 넉넉한 무료 티어와 강한 이미지 이해력으로 렌더·뷰포트 스크린샷 피드백 루프를 만들라고 권한다.",
+      "how_to_use": "mcpServers 설정에서 httpUrl을 쓰고, Gemini CLI의 add/list 명령으로 진단한다. JosephKu의 Gemini CLI 확장으로 간편 설치할 수 있다.",
+      "language": "English",
+      "license_or_price": "무료 티어 있음",
+      "status_date": "2026",
+      "strengths": "비용 대비 비전 피드백이 좋다",
+      "weaknesses": "결과물 품질 비교 데이터가 부족하다",
+      "urls": [
+        "https://blenderai.org/models/gemini",
+        "https://www.strayspark.studio/blog/blender-mcp-setup-codex-cursor-gemini-vscode-2026",
+        "https://blendermcp.org/setup/gemini",
+        "https://blender-mcp.com/blog/gemini-cli-blender-mcp-setup.html",
+        "https://github.com/JosephKu/blender-mcp-gemini-cli-extension"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "zenn: Astra時代のコードファースト3Dモデリング (koher)",
+      "category": "일본어 기술 글",
+      "what_it_is": "GPT-6 Astra 출시 뒤 X에 MCP로 만든 고품질 3D 씬이 쏟아진 상황을 짚고, MCP 대신 코드만으로 3D 씬을 만드는 '코드 퍼스트 3D 모델링' 가능성을 탐구한다.",
+      "how_to_use": "재현성과 버전 관리를 위해 DCC 조작 대신 코드 생성 방식을 검토할 때 참고한다.",
+      "language": "Japanese",
+      "license_or_price": "무료",
+      "status_date": "2026-09",
+      "strengths": "MCP 대안을 개념적으로 비교한다",
+      "weaknesses": "결과 세부는 미확인",
+      "urls": [
+        "https://zenn.dev/koher/articles/code-first-3d-modeling"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "note.com Astra × Blender 체험기 모음 (季和, npaka, Criet)",
+      "category": "일본어 체험기",
+      "what_it_is": "'GPT-6 AstraでBlenderを操作して桃をつくってみた'(季和), 'Dramatically Improved Blender Production Capabilities with GPT-6 Astra'(npaka), 'GPT-6 Astra + Codex + Blender MCPで3Dオブジェクトを作ってみた'(Criet/snapreplica). 'Interface: MCP for Blender' add-on 활성화, ChatGPT Desktop 연결, Codex로 무대·바닥·배경 오브젝트 추가, 형태·머티리얼·조명·카메라·렌더링 조작을 다룬다.",
+      "how_to_use": "일본어 사용자 입문용. 단일 오브젝트(과일 등) 연습에서 시작해 씬 구성으로 확장하는 순서를 따른다.",
+      "language": "Japanese",
+      "license_or_price": "무료",
+      "status_date": "2026-09",
+      "strengths": "실제 시행착오 기록",
+      "weaknesses": "검색 요약에서 글별 내용이 섞여 있어 귀속이 불확실하다",
+      "urls": [
+        "https://note.com/ekazu_10/n/n31ffbf2e0646",
+        "https://note.com/npaka/n/n9635d06c377f?hl=en",
+        "https://note.com/snapreplica/n/n77a3c9fae946?hl=en"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "chatgpt-consulting.jp: GPT-6 AstraでBlenderの3D制作はどこまでできる？",
+      "category": "일본어 가이드",
+      "what_it_is": "2026년 9월 기준 Astra로 Blender 3D 제작을 어디까지 할 수 있는지를 사용법, 실례, 요령 중심으로 해설한 일본어 글.",
+      "how_to_use": "일본어 팀 교육 자료로 쓴다.",
+      "language": "Japanese",
+      "license_or_price": "무료",
+      "status_date": "2026-09",
+      "strengths": "최신 정리",
+      "weaknesses": "컨설팅사 마케팅 성격",
+      "urls": [
+        "https://chatgpt-consulting.jp/how-much-can-you-do-with-blender-3d-creation-using-gpt-6-astra/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "bilibili: Claude + Blender MCP 중국어 튜토리얼 모음",
+      "category": "중국어 영상 튜토리얼",
+      "what_it_is": "'使用 Blender MCP 使用 Claude AI 创建 3D - 完整 26 分钟教程'(Blender Tutorial 채널, 26분), 'Claude + Blender 联动教程 - 利用 MCP 实现 AI 自动化 3D 工作流'(공식 MCP로 씬 정리, 머티리얼 자동 수리, 지오메트리 노드 생성, 애니메이션 자동화), 'AI操控电脑自主构建3D场景！BlenderMCP', '中文配音-Claude Code + Blender MCP：零基础一键生成 3D 环境', 'Blender将永远改变：Claude AI的到来', '3D建模终结者？Blender + MCP打造极致3D建模场景，效果究竟如何？'.",
+      "how_to_use": "중국어권 팀 교육. 공식 MCP 활용 편은 '모델링'보다 '씬 정비·자동화' 용도로 참고한다.",
+      "language": "Chinese",
+      "license_or_price": "무료",
+      "status_date": "2025~2026 (편마다 다름)",
+      "strengths": "중국어 더빙·자막으로 접근성이 높다",
+      "weaknesses": "상당수가 2025년 BlenderMCP 기준이고 일부는 영어 영상 재업로드로 보인다",
+      "urls": [
+        "https://www.bilibili.com/video/BV1SrXrY6E8D/",
+        "https://www.bilibili.com/video/BV1PBLS6sEEA/",
+        "https://www.bilibili.com/video/BV1BVQBYuEPg/",
+        "https://www.bilibili.com/video/BV1RKXNBMEDX/",
+        "https://www.bilibili.com/video/BV1JZVu6aEXh/",
+        "https://www.bilibili.com/video/BV1JTQ4YyE2N/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Hacker News 토론 스레드 (Show HN Blender MCP / Anthropic의 Blender 후원 / Fable 5.1 World Modeling)",
+      "category": "커뮤니티 토론",
+      "what_it_is": "(1) 'Show HN: MCP server for Blender that builds 3D scenes via natural language'(2025-07-20 전후, ChatGPT·Claude 등 도구 호출 가능한 모든 LLM 지원). (2) 'Anthropic Joins the Blender Development Fund as Corporate Patron'(2026-04). 이후 Anthropic이 일회성 기부로 정정했다. (3) 'Fable 5.1 World Modeling'.",
+      "how_to_use": "개발자 커뮤니티의 회의론과 기대를 파악하는 용도. 본문은 직접 확인해야 한다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2025-07 / 2026-04 / 2026",
+      "strengths": "기술적 비판이 활발한 커뮤니티",
+      "weaknesses": "프록시 차단으로 댓글 내용을 확인하지 못했다",
+      "urls": [
+        "https://news.ycombinator.com/item?id=44622374",
+        "https://news.ycombinator.com/item?id=47936370",
+        "https://news.ycombinator.com/item?id=49541458",
+        "https://x.com/betterhn50/status/1946916019571765289"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Blender Artists 스레드: From Blender MCP to 3D-Agent... Anthropic partners with Blender",
+      "category": "커뮤니티 토론 (Blender 아티스트)",
+      "what_it_is": "공식 Claude 커넥터 발표 뒤 Blender 아티스트 커뮤니티의 대형 토론 스레드. 257번째 글과 10페이지 이상이 확인돼 반응 규모가 크다.",
+      "how_to_use": "아티스트 측 반발과 수용 논점(창작 윤리, 실사용성)을 확인하는 용도.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026-04 이후",
+      "strengths": "실제 Blender 사용자 여론",
+      "weaknesses": "본문 접근 불가. 내용 요약 없음",
+      "urls": [
+        "https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106",
+        "https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106?page=10"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Blender Developer Forum: Blender MCP Server after Claude – MCP security for Blender scripting (3D-Agent notes)",
+      "category": "개발자 토론 (보안)",
+      "what_it_is": "공식 Claude 커넥터 이후 Blender 스크립팅에서의 MCP 보안을 다룬 devtalk 스레드.",
+      "how_to_use": "임의 Python 실행 도구(execute_blender_code)를 팀에 배포할 때 보안 검토 출발점으로 쓴다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026",
+      "strengths": "Blender 개발자 공간의 논의",
+      "weaknesses": "제목 외 내용 미확인",
+      "urls": [
+        "https://devtalk.blender.org/t/blender-mcp-server-after-claude-mcp-security-for-blender-scripting-3d-agent-notes/45131"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "AI 3D 생성기 비교 리뷰 (StraySpark 2026-04, Indie Hackers 9종, Visiomake 아크비즈, Cinevva, RapidDirect, trellis2.app)",
+      "category": "리뷰/비교 (AI 3D 생성)",
+      "what_it_is": "Meshy, Tripo, Rodin(Hyper3D), TRELLIS.2, CSM, Hitem3D 비교 글들. 한 비교는 Rodin을 프로덕션·실사 1위, Meshy를 반복 속도·Blender/Unity 플러그인 2위, Tripo를 게임용 토폴로지·오토리깅 3위로 꼽는다. 흔한 워크플로는 Meshy 5나 Rodin Gen-2로 최종 패스(텍스처 중심이면 Meshy, 형상 중심이면 Rodin)를 한 뒤 CSM Cube 2나 Blender 수작업으로 리토폴로지하는 것이다. Blender MCP로 LOD·콜리전·Unreal 네이밍을 일괄 처리할 수 있다.",
+      "how_to_use": "용도별로 생성기를 고르고, 생성 뒤 Blender MCP 배치 스크립트로 게임 엔진 규격에 맞춘다.",
+      "language": "English",
+      "license_or_price": "각 서비스 유료/무료 티어. TRELLIS.2는 오픈소스",
+      "status_date": "2026-04 ~ 2026",
+      "strengths": "여러 도구를 한 번에 비교",
+      "weaknesses": "순위가 글마다 다르다. 자사 블로그(Meshy, trellis2.app)는 이해상충이 있다",
+      "urls": [
+        "https://www.strayspark.studio/blog/generative-3d-tools-comparison-meshy-rodin-tripo-csm-2026",
+        "https://www.indiehackers.com/post/best-ai-3d-model-generator-in-2026-i-tested-9-of-the-best-and-here-is-what-i-found-70ecab1a0a",
+        "https://visiomake.com/en/blog/best-ai-image-to-3d-tools-2026-comparison-archviz",
+        "https://app.cinevva.com/guides/ai-3d-model-generators",
+        "https://www.rapiddirect.com/blog/best-8-ai-3d-model-generators/",
+        "https://trellis2.app/blog/best-ai-3d-model-generator",
+        "https://www.meshy.ai/blog/best-ai-tools-for-3d-game-assets"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Meshy 공식 튜토리얼: How to Use Blender MCP with Meshy MCP & Claude (2026 Guide)",
+      "category": "벤더 튜토리얼 (AI 3D 생성)",
+      "what_it_is": "Meshy가 직접 쓴 Blender MCP + Meshy MCP + Claude 조합 가이드. 생성 MCP로 에셋을 만들고 Blender MCP로 배치·수정하는 2-서버 구성이다.",
+      "how_to_use": "공식 Blender Lab MCP에 없는 에셋 생성 기능을 Meshy MCP로 보완한다.",
+      "language": "English",
+      "license_or_price": "Meshy 유료 크레딧",
+      "status_date": "2026",
+      "strengths": "벤더 공식 절차",
+      "weaknesses": "자사 제품 중심",
+      "urls": [
+        "https://www.meshy.ai/tutorials/blender-mcp-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Hyper3D: Claude Opus 5.5 3D Prompts & Examples",
+      "category": "프롬프트 갤러리",
+      "what_it_is": "Hyper3D(Rodin) 사이트의 Claude Opus 5.5용 3D 프롬프트·예시 모음 페이지.",
+      "how_to_use": "Rodin 생성 프롬프트 작성 참고용.",
+      "language": "English",
+      "license_or_price": "무료 열람",
+      "status_date": "2026-09",
+      "strengths": "모델별 프롬프트 예시",
+      "weaknesses": "마케팅 페이지. 내용 미확인",
+      "urls": [
+        "https://hyper3d.ai/3d-prompts/models/claude-opus-5.5"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Unreal AI 가이드 (Creative AI News 'Claude and Gemini via MCP', explainx UE 5.8 가이드, Mint 3D MCP 비교)",
+      "category": "블로그 가이드 (Unreal)",
+      "what_it_is": "Unreal MCP가 Codex, Claude Code, Cursor, Gemini, VS Code용 클라이언트 설정을 생성하고, 액터·블루프린트·머티리얼·UI·테스트를 제어한다는 점을 정리했다. Mint는 Blender, Unity, Unreal MCP를 비교한다.",
+      "how_to_use": "엔진 선택과 클라이언트 설정 비교에 쓴다.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026",
+      "strengths": "여러 클라이언트를 비교",
+      "weaknesses": "2차 정리 글",
+      "urls": [
+        "https://www.creativeainews.com/articles/unreal-engine-ai-claude-gemini-mcp-2026/",
+        "https://explainx.ai/blog/unreal-engine-5-8-claude-codex-mcp-ai-integration-2026",
+        "https://mint.gg/blog/3d-mcp-guide"
+      ],
+      "confidence": "low"
+    },
+    {
+      "name": "Roblox + Claude Code 실전 글 (luismori, Loadout, Obby)",
+      "category": "블로그 가이드 (Roblox)",
+      "what_it_is": "Roblox 게임을 MCP와 Claude Code로 개발하는 과정을 다룬 글들. Luau 작성, 오브젝트 생성, 속성 변경을 모두 MCP로 처리한다.",
+      "how_to_use": "Roblox 플랫폼용 3D 월드 제작의 워크플로 참고.",
+      "language": "English",
+      "license_or_price": "무료",
+      "status_date": "2026",
+      "strengths": "게임 플랫폼 특화",
+      "weaknesses": "AAA 그래픽과는 거리가 있다",
+      "urls": [
+        "https://luismori.dev/article/roblox-game-development-with-mcp/",
+        "https://useloadout.com/blog/roblox-mcp-server-setup/",
+        "https://www.obby.fun/blog/claude-ai-roblox-studio"
+      ],
+      "confidence": "low"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "공식 Blender 커넥터는 Claude Desktop 전용이다. Blender와 같은 머신에서 실행하고, 세션마다 Blender add-on에서 연결을 시작해야 한다.",
+      "why": "브라우저 claude.ai에서는 로컬 Blender 프로세스에 접근할 수 없다. 연결이 안 될 때 가장 흔한 원인이 이것이다.",
+      "example": "Claude Desktop → 커넥터 추가 → Blender 5.1+에 add-on 설치 → 작업 시작 시 Blender 패널에서 서버 시작 → 첫 명령이 실패하면 한 번 더 보낸다(커뮤니티 트러블슈팅 문서).",
+      "urls": [
+        "https://academy.claude.com/tutorials/using-the-blender-connector-in-claude",
+        "https://glama.ai/mcp/servers/@olbboy/claudekit-blender-mcp/blob/e9ba0b47fccae95e42a1145d1909df47e1d0c792/docs/TROUBLESHOOTING.md"
+      ]
+    },
+    {
+      "tip": "공식 Blender Lab MCP는 도구가 최소한이다(코드 실행, .blend 요약, 문서 검색, 스크린샷/렌더). 에셋 조달이 필요하면 커뮤니티 blender-mcp(Poly Haven/Sketchfab/Hyper3D)나 Meshy·Rodin MCP를 함께 연결한다.",
+      "why": "AAA 품질의 핵심인 검증된 PBR 텍스처와 고품질 메시는 공식 서버만으로 조달할 수 없다. 하네스를 설계할 때 노드 도구 부재를 execute_blender_code로 매핑해야 한다.",
+      "example": "claude-3d-harness 이슈 #7(2026-09-20): 'blender-lab' 방언을 인식하고, 레거시 도구명을 정식 도구명으로 매핑하고, requires: {mcp: [...]}로 스킬 의존성을 선언한다.",
+      "urls": [
+        "https://github.com/MAX-786/claude-3d-harness/issues/7",
+        "https://www.meshy.ai/tutorials/blender-mcp-guide"
+      ]
+    },
+    {
+      "tip": "Astra를 Blender와 쓸 때는 Codex + 같은 컴퓨터의 Blender + 공유 프로젝트 폴더 구성이 가장 실용적이다. bpy 코드를 실행 전에 검사하는 Python-first 경로도 고려한다.",
+      "why": "OpenAI 공식 워크스루가 이 구성을 권한다. 생성된 코드가 파일로 남아 재현성과 리뷰가 쉬워진다.",
+      "example": "설계 브리프 → Astra가 bpy 스크립트 작성·실행 → 프리뷰 렌더로 문제 확인 → 수정 → Cycles 카메라 투어 → UE5 워크스루.",
+      "urls": [
+        "https://developers.openai.com/blog/architectural-visualization-with-astra",
+        "https://acecloud.ai/blog/connect-blender-astra-gemini-claude/"
+      ]
+    },
+    {
+      "tip": "Gemini CLI에서 MCP 서버를 등록할 때 streamable HTTP는 httpUrl 키로 지정한다. url 키는 구 SSE 전송으로 해석된다.",
+      "why": "설정 키를 잘못 쓰면 연결이 조용히 실패한다. Gemini CLI 특유의 함정이다.",
+      "example": "mcpServers: { blender: { httpUrl: \"http://localhost:.../mcp\" } } 설정 후 Gemini CLI의 MCP list 명령으로 상태를 확인한다.",
+      "urls": [
+        "https://blenderai.org/models/gemini",
+        "https://www.strayspark.studio/blog/blender-mcp-setup-codex-cursor-gemini-vscode-2026"
+      ]
+    },
+    {
+      "tip": "Gemini는 무료 티어와 이미지 이해력이 강점이다. 렌더·뷰포트 스크린샷을 반복해서 보여 주는 시각 피드백 루프 담당으로 배치한다.",
+      "why": "3D 품질 문제(관통, 스케일, 조명)는 코드만 보고는 잡기 어렵고 이미지로 봐야 드러난다.",
+      "urls": [
+        "https://blenderai.org/models/gemini"
+      ]
+    },
+    {
+      "tip": "UE 5.8에서는 에셋을 생성하지 말고 Fab 환경 팩(사람이 만든 고품질 에셋)을 임포트한 뒤, 에이전트에게 레벨 배치·게임플레이 조립을 맡긴다.",
+      "why": "AAA급 시각 품질을 가장 확실하게 얻는 방법이다. 에이전트의 강점(배치, 반복, 블루프린트)과 약점(메시·텍스처 품질)을 분리한다.",
+      "example": "Epic 커뮤니티 튜토리얼: Third Person 템플릿 + Fab 가을 숲 팩 → Claude Code가 UE 내장 MCP로 플레이 가능한 레벨 구성.",
+      "urls": [
+        "https://dev.epicgames.com/community/learning/tutorials/bnJ0/build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code"
+      ]
+    },
+    {
+      "tip": "Unreal 5.8 공식 MCP는 Codex, Claude Code, Cursor, Gemini, VS Code용 클라이언트 설정을 자동 생성한다. 튜토리얼 영상은 Preview(2026년 5월)인지 정식(6월 이후)인지 날짜를 먼저 확인한다.",
+      "why": "Preview 기준 영상은 메뉴·설정 경로가 다를 수 있어 따라 하다 막히기 쉽다.",
+      "urls": [
+        "https://www.creativeainews.com/articles/unreal-engine-ai-claude-gemini-mcp-2026/",
+        "https://www.youtube.com/watch?v=dKzyTiitRIA",
+        "https://www.youtube.com/watch?v=hUNTOltVTpQ"
+      ]
+    },
+    {
+      "tip": "Unity에서는 에디터 제어는 공식 Unity MCP(`unity mcp configure claude-code`), 지식·관행은 공식 unity-agent-plugin 스킬로 역할을 나눈다. 팀 환경에서는 AI Gateway 경유 연결(자동 승인)과 직접 연결(사용자 승인)의 정책 차이를 정리한다.",
+      "why": "MCP는 '손', 플러그인 스킬은 '매뉴얼'이다. Render Graph나 Shader Graph처럼 버전에 민감한 API에서 오류가 줄어든다.",
+      "example": "/plugin marketplace add Unity-Technologies/unity-agent-plugin → /plugin install unity@unity-agent-plugin (Unity 6+).",
+      "urls": [
+        "https://github.com/Unity-Technologies/unity-agent-plugin",
+        "https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.0/manual/unity-mcp-overview.html",
+        "https://unity.com/blog/unity-ai-mcp-how-to-get-started"
+      ]
+    },
+    {
+      "tip": "Roblox는 Studio 내장 MCP(Beta Features → MCP Server, 기본 localhost:3004)를 쓴다. 2026-04-03에 deprecated된 studio-rust-mcp-server 기준 튜토리얼은 피한다.",
+      "why": "구 서버는 archive돼 업데이트가 없다. 내장 서버에는 스크린샷·입력 시뮬레이션이 있어 시각 검증 루프를 만들 수 있다.",
+      "urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server",
+        "https://useloadout.com/blog/roblox-mcp-server-setup/"
+      ]
+    },
+    {
+      "tip": "AI 3D 생성기는 용도별로 고른다. 실사·프로덕션은 Rodin, 반복 속도와 엔진 플러그인은 Meshy, 게임 토폴로지·오토리깅은 Tripo, 무료·오픈소스 최고 품질은 TRELLIS.2다. 생성 뒤에는 리토폴로지와 Blender MCP 일괄 처리(LOD, 콜리전, Unreal 네이밍)를 거친다.",
+      "why": "생성 메시를 그대로 엔진에 넣으면 폴리곤 수, UV, 네이밍 규칙 문제로 AAA 파이프라인에 맞지 않는다.",
+      "example": "Meshy 5/Rodin Gen-2 최종 패스 → CSM Cube 2 또는 Blender 수작업 리토폴로지 → Blender MCP로 LOD0~2와 UCX_ 콜리전 생성 → GLB/FBX 익스포트.",
+      "urls": [
+        "https://www.strayspark.studio/blog/generative-3d-tools-comparison-meshy-rodin-tripo-csm-2026",
+        "https://trellis2.app/blog/best-ai-3d-model-generator"
+      ]
+    },
+    {
+      "tip": "게임 프로토타입 속도를 높이려면 모든 에셋을 모델링하지 말고 이미지 생성을 그래픽 수단으로 섞는다(Astra 45분 게임 사례). AAA 룩이 목표라면 이 트릭은 프리비즈 단계에서만 쓴다.",
+      "why": "속도와 품질의 트레이드오프를 명시적으로 관리해야 기대치가 맞는다.",
+      "urls": [
+        "https://aituts.com/gpt6-astra-game-demos/",
+        "https://developers.openai.com/blog/how-to-build-games-with-astra"
+      ]
+    },
+    {
+      "tip": "YouTube 비교 영상은 제목('KING', '5x faster', 'beats Astra')이 과장된 경우가 많다. 프롬프트, 소요 시간, 토큰/비용, 실패 장면을 공개한 영상만 근거로 쓴다.",
+      "why": "모델 출시 직후(Astra 9/3, Opus 5.5 9/22) 조회수 경쟁성 영상이 몰리고, 체리피킹된 결과가 많다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=Zgs9H8_RF3w",
+        "https://www.youtube.com/watch?v=2M1TEH6JPKc",
+        "https://www.youtube.com/watch?v=hgl2zHnWwMg"
+      ]
+    },
+    {
+      "tip": "MCP의 임의 코드 실행(execute_blender_code, run_code)은 열린 파일·플레이스를 읽고 수정할 수 있다. 팀 배포 전에 보안 검토와 백업 정책을 세운다.",
+      "why": "Roblox 공식 README도 서드파티 도구가 열린 플레이스를 읽고 수정할 수 있다고 경고한다. Blender 개발자 포럼에도 MCP 보안 스레드가 있다.",
+      "urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server",
+        "https://devtalk.blender.org/t/blender-mcp-server-after-claude-mcp-security-for-blender-scripting-3d-agent-notes/45131"
+      ]
+    },
+    {
+      "tip": "씬을 만든 뒤 에이전트에게 Blender 씬을 읽게 해 three.js 인터랙티브 웹페이지로 재구성하면 클라이언트 공유용 뷰어를 빠르게 만들 수 있다.",
+      "why": "zhihu 사례에서 Cursor + Blender MCP로 씬 내용을 읽어 three.js 페이지를 다시 만들었다. 아크비즈 리뷰 공유에 유용하다.",
+      "urls": [
+        "https://zhuanlan.zhihu.com/p/29863179256?utm_psn=1883459135720380238"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Void Explorer: Astra로 만든 우주 탐험 게임 (성계 2,048개, 절차 행성 1만 개 이상)",
+      "who": "OpenAI 'Building games with Astra' 계열 사례로 소개됨(제작자 미확인)",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Codex (세부 엔진 미확인)",
+      "what_was_made": "먼 별에서 외계 지표면까지 이동할 수 있는 우주 탐험 게임. 지구 크기 행성을 포함해 성계 2,048개, 절차 생성 행성 1만 개 이상.",
+      "process": "Astra가 Codex에서 게임 코드와 절차 생성을 작성한 것으로 요약됨. 세부 단계는 미확인.",
+      "outcome": "Astra의 3D 게임 제작 역량을 보여 주는 대표 데모로 여러 블로그에 인용됨.",
+      "urls": [
+        "https://developers.openai.com/blog/how-to-build-games-with-astra",
+        "https://aituts.com/gpt6-astra-game-demos/"
+      ]
+    },
+    {
+      "title": "Astra 출시 직후 '1시간 이내 3D 게임 프로토타입' 붐 (X 트렌딩, 45분 게임 사례)",
+      "who": "다수 X 사용자, Aituts·atoms.dev 정리",
+      "date": "2026-09-05 (X 트렌딩 ID 디코딩)",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Codex, 이미지 생성, (일부) Blender",
+      "what_was_made": "간단한 프롬프트로 만든 플레이 가능한 3D 게임들. 약 45분 만에 만든 게임 한 편은 에셋을 직접 모델링하지 않고 이미지 생성으로 그래픽을 해결했다.",
+      "process": "프롬프트 → Astra가 코드·에셋 생성 → 플레이테스트 반복.",
+      "outcome": "'코딩·엔진 UI를 몰라도 3D 게임 프로토타입이 가능하다'는 여론이 형성됐다. 다만 그래픽은 이미지 생성 트릭에 의존했다.",
+      "urls": [
+        "https://x.com/i/trending/2096209432053190780",
+        "https://x.com/i/trending/2096177038138704184",
+        "https://aituts.com/gpt6-astra-game-demos/",
+        "https://atoms.dev/blog/gpt-6-astra-early-access-examples"
+      ]
+    },
+    {
+      "title": "Epic 커뮤니티: Claude Code + UE 5.8 내장 MCP로 Third Person 템플릿을 가을 숲 플레이어블 레벨로",
+      "who": "Epic Developer Community 튜토리얼 작성자(이름 미확인)",
+      "date": "2026 (UE 5.8 이후)",
+      "ai_model": "Claude (Claude Code)",
+      "tools": "Unreal Engine 5.8 내장 MCP, Fab 환경 팩, Third Person 템플릿",
+      "what_was_made": "플레이 가능한 가을 숲 레벨",
+      "process": "Claude Code를 UE 내장 MCP에 연결 → Fab 환경 팩 임포트 → 에이전트가 템플릿 레벨을 숲 레벨로 변환(배치·구성).",
+      "outcome": "단계별 튜토리얼로 공개되고 포럼 토론 스레드가 생겼다. 고품질 기존 에셋에 AI 배치를 얹는 분업 모델의 대표 사례.",
+      "urls": [
+        "https://dev.epicgames.com/community/learning/tutorials/bnJ0/build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code",
+        "https://forums.unrealengine.com/t/community-tutorial-build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code/2747422"
+      ]
+    },
+    {
+      "title": "YouTube: I Connected Fable 5.1 To The Official Unreal Engine 5.8 MCP",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "2026 (Fable 5.1 출시 이후)",
+      "ai_model": "Claude Fable 5.1",
+      "tools": "Unreal Engine 5.8 공식 MCP",
+      "what_was_made": "UE 5.8 공식 MCP에 Fable 5.1을 연결한 실험 영상",
+      "process": "제목 기준: 공식 MCP 연결 → Fable 5.1로 에디터 작업 수행.",
+      "outcome": "결과 세부는 미확인(제목만 확보).",
+      "urls": [
+        "https://www.youtube.com/watch?v=94QPi_bM0IE"
+      ]
+    },
+    {
+      "title": "Opus 5.5 출시 몇 시간 만의 데모 스레드: 클레이메이션, 3D 게임, 광학 실험실, Unreal 도시 전체",
+      "who": "Vaibhav Sisinty (X)",
+      "date": "2026-09-23 (status ID 디코딩)",
+      "ai_model": "Claude Opus 5.5",
+      "tools": "Unreal Engine 외 다양",
+      "what_was_made": "커뮤니티가 만든 Opus 5.5 데모 모음. 클레이메이션, 3D 게임, 작동하는 광학 실험실, Unreal Engine 안의 도시 전체.",
+      "process": "여러 사용자 데모를 스레드로 큐레이션.",
+      "outcome": "Opus 5.5의 3D·게임 활용 사례가 출시 당일 확산됐다. 개별 데모의 제작자·세부는 스레드 안에 있다(미확인).",
+      "urls": [
+        "https://x.com/VaibhavSisinty/status/2102667276252282952",
+        "https://favtutor.com/claude-opus-5-5-real-examples/"
+      ]
+    },
+    {
+      "title": "Every Vibe Check: Opus 5.5가 Codex로 옮겨 간 사용자를 되돌림 (마리오카트형 게임 비교 포함)",
+      "who": "Every 팀",
+      "date": "2026-09 (Opus 5.5 출시 직후)",
+      "ai_model": "Claude Opus 5.5, Claude Fable 5.1, (비교) Codex/GPT 계열",
+      "tools": "미확인",
+      "what_was_made": "실사용 비교 리뷰. 마리오카트형 게임 과제에서 Opus 5.5 결과가 Fable 5.1보다 훨씬 좋았다는 비교가 인용된다(출처 귀속은 검색 요약 기준).",
+      "process": "팀 내부 일상 업무에 모델을 돌려 쓰며 비교.",
+      "outcome": "일부 사용자가 Opus 5.5를 일상 모델로 채택했다. 'Fable 5.1과 동급이거나 약간 낫다'는 평가.",
+      "urls": [
+        "https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude",
+        "https://favtutor.com/claude-opus-5-5-real-examples/"
+      ]
+    },
+    {
+      "title": "YouTube: 'Claude OPUS 5.5 beats GPT 6 Astra in blender ?' Blender MCP 비교 테스트",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "약 2026-09-23 (검색 시점 '4일 전')",
+      "ai_model": "Claude Opus 5.5 vs GPT-6 Astra",
+      "tools": "Blender MCP",
+      "what_was_made": "같은 Blender 과제를 두 모델에 맡긴 비교 영상",
+      "process": "Blender MCP로 두 모델의 씬 생성 결과 비교.",
+      "outcome": "결론 세부는 미확인. 제목은 의문형.",
+      "urls": [
+        "https://www.youtube.com/watch?v=Zgs9H8_RF3w"
+      ]
+    },
+    {
+      "title": "YouTube: 'Claude Opus 5.5 Is the New KING of 3D Design & Blender'",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "2026-09 하순",
+      "ai_model": "Claude Opus 5.5",
+      "tools": "Blender (MCP)",
+      "what_was_made": "Opus 5.5의 3D 디자인·Blender 역량 리뷰 영상",
+      "process": "Blender 과제 시연(세부 미확인).",
+      "outcome": "영상 설명에 '몇 달 만에 처음으로 GPT-6와 대등하게 겨룰 수 있는 모델'이라는 평이 있다.",
+      "urls": [
+        "https://www.youtube.com/watch?v=2M1TEH6JPKc"
+      ]
+    },
+    {
+      "title": "YouTube: 'I Tested Claude Fable 5 in Blender (5x Faster Than Opus 4.8)'",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "2026 (Fable 5 시기)",
+      "ai_model": "Claude Fable 5 vs Opus 4.8",
+      "tools": "Blender",
+      "what_was_made": "Fable 5의 Blender 작업 속도 테스트",
+      "process": "같은 과제의 소요 시간 비교(추정).",
+      "outcome": "제목상 Opus 4.8보다 5배 빠르다고 주장. 측정 방법은 미확인.",
+      "urls": [
+        "https://www.youtube.com/watch?v=hgl2zHnWwMg"
+      ]
+    },
+    {
+      "title": "YouTube: 'Claude Opus 5 + Blender MCP = Professional 3D Scenes'",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "2026 (Opus 5 시기)",
+      "ai_model": "Claude Opus 5",
+      "tools": "Blender MCP",
+      "what_was_made": "'프로페셔널' 3D 씬 제작 시연",
+      "process": "Blender MCP로 씬 구성(세부 미확인).",
+      "outcome": "미확인(제목만 확보).",
+      "urls": [
+        "https://www.youtube.com/watch?v=Ci9Xc-VPc04"
+      ]
+    },
+    {
+      "title": "YouTube Shorts: 'Astra + Blender MCP is kinda OP'",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender MCP",
+      "what_was_made": "Astra + Blender MCP 결과물 짧은 데모",
+      "process": "MCP로 Blender 라이브 조작.",
+      "outcome": "검색 요약상 '실제로 보기 좋은 결과'를 낸다는 평. 세부 미확인.",
+      "urls": [
+        "https://www.youtube.com/shorts/8fChl1944vg"
+      ]
+    },
+    {
+      "title": "Vagon: 레퍼런스 이미지 → Astra + Blender로 3D 씬 재구성",
+      "who": "Vagon 블로그",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender (클라우드 워크스테이션 Vagon)",
+      "what_was_made": "레퍼런스 이미지를 바탕으로 한 편집 가능한 3D 씬",
+      "process": "레퍼런스 이미지 제공 → Astra가 Blender 씬 코드 작성 → 비교·수정 반복(요약 기반).",
+      "outcome": "튜토리얼로 공개. 수치는 미확인.",
+      "urls": [
+        "https://vagon.io/blog/reference-image-to-3d-scene-with-gpt-6-astra-blender"
+      ]
+    },
+    {
+      "title": "Fraktal Journal: 브리프에서 편집 가능한 씬까지 (Astra 건축 워크플로)",
+      "who": "Fraktal (디자인 스튜디오 저널)",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Codex, Blender, (UE5 워크스루 흐름)",
+      "what_was_made": "설계 브리프를 편집 가능한 3D 건축 씬으로 옮긴 워크플로",
+      "process": "Codex에서 Astra에게 브리프를 주고 Blender 씬 생성 → 가구 배치 주택으로 발전 → UE5 탐색과 카메라 투어까지 다듬는 흐름(OpenAI 공식 흐름과 유사).",
+      "outcome": "디자인 스튜디오 관점의 워크플로 기록. 결과 품질 수치는 미확인.",
+      "urls": [
+        "https://fraktal.design/blog/gpt-6-astra-from-model-to-architecture-workflow/"
+      ]
+    },
+    {
+      "title": "Stork.AI: Astra의 Blender 3D 애니메이션 역량",
+      "who": "Stork.AI 블로그",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender",
+      "what_was_made": "Astra가 만든 Blender 3D 애니메이션 사례 정리",
+      "process": "미확인",
+      "outcome": "아크비즈, 영화 프리프로덕션에 '후처리가 적게 필요한 에셋'을 기여할 수 있다고 평가.",
+      "urls": [
+        "https://www.stork.ai/blog/astras-blender-skills-are-unreal"
+      ]
+    },
+    {
+      "title": "How I AI: GPT-6 Astra 리뷰 (하드웨어 해킹, 3D 게임, 비즈니스 자동화)",
+      "who": "ChatPRD 'How I AI'",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Codex 외",
+      "what_was_made": "3D 게임 제작을 포함한 Astra 실사용 리뷰",
+      "process": "여러 실제 과제를 Astra로 수행.",
+      "outcome": "세부 미확인.",
+      "urls": [
+        "https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding"
+      ]
+    },
+    {
+      "title": "note: GPT-6 Astra로 Blender를 조작해 복숭아 만들기",
+      "who": "季和 (note.com/ekazu_10)",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Blender, MCP for Blender add-on, ChatGPT Desktop",
+      "what_was_made": "복숭아 3D 모델",
+      "process": "'Interface: MCP for Blender' add-on 활성화 → ChatGPT Desktop 연결 → 자연어로 모델링 지시(검색 요약 기반, 귀속 일부 불확실).",
+      "outcome": "일본어 입문 체험기로 공유.",
+      "urls": [
+        "https://note.com/ekazu_10/n/n31ffbf2e0646"
+      ]
+    },
+    {
+      "title": "zenn: Astra 시대의 코드 퍼스트 3D 모델링",
+      "who": "koher (zenn.dev)",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "코드 기반 3D(구체 라이브러리 미확인)",
+      "what_was_made": "MCP 없이 코드만으로 3D 씬을 만드는 실험·논고",
+      "process": "X에 퍼진 MCP 기반 고품질 씬을 계기로, 코드만으로 씬을 만드는 방식을 시험.",
+      "outcome": "'코드 퍼스트' 접근의 가능성 제시.",
+      "urls": [
+        "https://zenn.dev/koher/articles/code-first-3d-modeling"
+      ]
+    },
+    {
+      "title": "note: GPT-6 Astra + Codex + Blender MCP로 3D 오브젝트·게임 씬 제작",
+      "who": "Criet (note.com/snapreplica) 외",
+      "date": "2026-09",
+      "ai_model": "GPT-6 Astra",
+      "tools": "Codex, Blender MCP",
+      "what_was_made": "3D 오브젝트, 컨셉 아트 기반 게임 씬(무대, 바닥, 배경 오브젝트)",
+      "process": "Codex가 Blender 파일을 조작해 무대·바닥·배경 오브젝트를 추가하고 형태·머티리얼·조명·카메라·렌더를 처리한다. 다른 사용자(Anshu)는 게임 화면이 컨셉 아트와 맞을 때까지 반복했다고 소개된다.",
+      "outcome": "'MCP 조작은 단순 코드 생성과 다른 사용 경험'이라는 소감. 귀속은 검색 요약상 일부 혼재.",
+      "urls": [
+        "https://note.com/snapreplica/n/n77a3c9fae946?hl=en",
+        "https://note.com/npaka/n/n9635d06c377f?hl=en"
+      ]
+    },
+    {
+      "title": "bilibili: 공식 MCP로 Claude + Blender 연동, 씬 정리·머티리얼 자동 수리·지오메트리 노드·애니메이션 자동화",
+      "who": "bilibili 업로더(미확인)",
+      "date": "2026 (공식 MCP 이후)",
+      "ai_model": "Claude",
+      "tools": "Blender 공식 MCP 서버",
+      "what_was_made": "AI 자동화 3D 워크플로 시연",
+      "process": "공식 MCP로 Blender 안에서 씬 정리, 머티리얼 수리, 지오메트리 노드 생성, 애니메이션 작업 자동화.",
+      "outcome": "중국어권에 공식 커넥터의 '정비·자동화' 활용을 소개.",
+      "urls": [
+        "https://www.bilibili.com/video/BV1PBLS6sEEA/"
+      ]
+    },
+    {
+      "title": "bilibili: Claude Code + Blender MCP로 초보자가 3D 환경 한 번에 생성 (중국어 더빙)",
+      "who": "bilibili 업로더(원본은 영어 영상으로 추정)",
+      "date": "2026",
+      "ai_model": "Claude (Claude Code)",
+      "tools": "Blender MCP",
+      "what_was_made": "3D 환경",
+      "process": "Claude Code에서 Blender MCP로 환경 생성.",
+      "outcome": "중국어 더빙으로 재배포.",
+      "urls": [
+        "https://www.bilibili.com/video/BV1RKXNBMEDX/"
+      ]
+    },
+    {
+      "title": "zhihu: Cursor + Blender MCP로 한 문장 모델링, 그리고 three.js 인터랙티브 페이지로 재구성",
+      "who": "zhihu 작성자(미확인)",
+      "date": "2025",
+      "ai_model": "Cursor 내 LLM(Claude 계열 추정)",
+      "tools": "Cursor, Blender MCP, three.js",
+      "what_was_made": "한 문장으로 만든 3D 모델과 같은 씬을 재현한 three.js 인터랙티브 웹페이지",
+      "process": "Cursor가 MCP로 Blender 모델링 → Blender 씬 내용을 읽어 three.js 페이지로 재작성.",
+      "outcome": "비전문가도 한 문장으로 모델링 가능. 웹 공유용 재구성 아이디어.",
+      "urls": [
+        "https://zhuanlan.zhihu.com/p/29863179256?utm_psn=1883459135720380238"
+      ]
+    },
+    {
+      "title": "Show HN: 자연어로 3D 씬을 만드는 멀티 LLM Blender MCP 서버",
+      "who": "Hacker News 게시자(Willem 공유)",
+      "date": "2025-07-20",
+      "ai_model": "ChatGPT, Claude 등 도구 호출 가능한 LLM",
+      "tools": "커스텀 Blender MCP 서버",
+      "what_was_made": "자연어로 3D 씬을 이해·제어하는 MCP 서버",
+      "process": "Blender와 LLM을 MCP로 연결해 씬 조회·조작.",
+      "outcome": "HN 상위권에 올라 X로 재확산됐다.",
+      "urls": [
+        "https://news.ycombinator.com/item?id=44622374",
+        "https://x.com/betterhn50/status/1946916019571765289",
+        "https://x.com/willem_74/status/1946974248200700133"
+      ]
+    },
+    {
+      "title": "Medium: AI 에이전트만으로 Roblox 게임 만들기",
+      "who": "Andy.G (Medium)",
+      "date": "2026",
+      "ai_model": "Claude (Claude Code)",
+      "tools": "Roblox Studio MCP",
+      "what_was_made": "Roblox 게임",
+      "process": "모든 Lua 코드 작성, 오브젝트 생성, 속성 변경을 Claude Code가 MCP로 수행.",
+      "outcome": "체험기로 공개(결과 품질 세부 미확인).",
+      "urls": [
+        "https://medium.com/@andy.a.g/i-built-a-roblox-game-using-only-ai-agents-heres-what-happened-ed57b553facc"
+      ]
+    },
+    {
+      "title": "Google AI Developers Forum: Gemini로 Blender를 MCP 제어하는 프로젝트 쇼케이스",
+      "who": "Google AI Developers Forum 사용자",
+      "date": "2026 (추정)",
+      "ai_model": "Gemini",
+      "tools": "Blender MCP",
+      "what_was_made": "Gemini/LLM으로 Blender 3D를 제어하는 프로젝트",
+      "process": "MCP 서버로 Gemini와 Blender 연결.",
+      "outcome": "커뮤니티 쇼케이스 게시(세부 미확인).",
+      "urls": [
+        "https://discuss.ai.google.dev/t/project-showcase-control-blender-3d-using-gemini-llms-via-model-context-protocol-mcp/110424"
+      ]
+    },
+    {
+      "title": "YouTube: Gemini 3.8 Flash + Antigravity로 코딩·Blender 테스트",
+      "who": "YouTube 크리에이터(채널 미확인)",
+      "date": "약 2026-09 초 (검색 시점 '3주 전')",
+      "ai_model": "Gemini 3.8 Flash",
+      "tools": "Google Antigravity, Blender",
+      "what_was_made": "Blender 작업을 포함한 Gemini 3.8 Flash 종합 테스트",
+      "process": "Antigravity 에이전트 IDE에서 코딩·Blender 과제 수행.",
+      "outcome": "세부 미확인.",
+      "urls": [
+        "https://www.youtube.com/watch?v=BAoecDDSB7Q"
+      ]
+    },
+    {
+      "title": "claude-3d-harness 이슈 #7: 공식 Blender Lab MCP를 공급자로 지원하는 문제",
+      "who": "MAX-786/claude-3d-harness 메인테이너",
+      "date": "2026-09-20",
+      "ai_model": "Claude",
+      "tools": "claude-3d-harness, Blender Lab MCP, (기존) newo-ether·ahujasid 공급자",
+      "what_was_made": "공식 MCP를 하네스 공급자로 추가하기 위한 설계 이슈",
+      "process": "이미 'blender-lab' 방언으로 레거시 도구명을 매핑하고 있다. 레지스트리 항목(런치 파라미터, 최소 Blender 버전, add-on, 버전 핀), 미지원 도구를 execute_blender_code로 대체하는 문서, 스킬의 requires 조건부 의존성, fast/standard 잡 테스트를 요구한다.",
+      "outcome": "진행 중. 공식 서버에 노드 도구와 Poly Haven이 없어 기존 스킬이 얼마나 동작할지가 미해결 질문으로 남아 있다.",
+      "urls": [
+        "https://github.com/MAX-786/claude-3d-harness/issues/7"
+      ]
+    },
+    {
+      "title": "Indie Hackers: 2026년 AI 3D 생성기 9종 직접 테스트",
+      "who": "Indie Hackers 작성자",
+      "date": "2026",
+      "ai_model": "(3D 생성 모델들)",
+      "tools": "Meshy, Tripo, Rodin, TRELLIS 등 9종",
+      "what_was_made": "AI 3D 생성기 실사용 비교",
+      "process": "9개 서비스를 같은 기준으로 테스트(세부 미확인).",
+      "outcome": "용도별 추천(세부 미확인).",
+      "urls": [
+        "https://www.indiehackers.com/post/best-ai-3d-model-generator-in-2026-i-tested-9-of-the-best-and-here-is-what-i-found-70ecab1a0a"
+      ]
+    },
+    {
+      "title": "AWS builders.flash(일본어): Cline + Blender MCP로 3D 모델 만들기",
+      "who": "AWS Japan builders.flash",
+      "date": "2025-06",
+      "ai_model": "Cline 경유 LLM(Bedrock Claude 추정)",
+      "tools": "Cline, Blender MCP",
+      "what_was_made": "3D 모델",
+      "process": "Cline에 Blender MCP를 연결해 모델링.",
+      "outcome": "일본어 초기 공식성 사례(클라우드 벤더 매체).",
+      "urls": [
+        "https://aws.amazon.com/jp/builders-flash/202506/cline-blender-mcp-3d-model"
+      ]
+    }
+  ],
+  "measurements": [
+    {
+      "item": "GPT-6 Astra 출시일",
+      "dimension": "날짜",
+      "typical_value": "2026-09-03",
+      "unit": "date",
+      "range": "",
+      "region": "global",
+      "note": "MindStudio, AceCloud 두 서드파티가 일치. X 트렌딩(9/5)과도 정합",
+      "urls": [
+        "https://www.mindstudio.ai/blog/gpt6-astra-codex-3d-game-development",
+        "https://acecloud.ai/blog/connect-blender-astra-gemini-claude/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Claude Opus 5.5 출시일",
+      "dimension": "날짜",
+      "typical_value": "2026-09-22",
+      "unit": "date",
+      "range": "",
+      "region": "global",
+      "note": "blendermcp.org 기재. '출시 몇 시간 뒤'라고 쓴 X 스레드가 2026-09-23 07:51 UTC라 정합",
+      "urls": [
+        "https://blendermcp.org/guides/claude-opus-5-5-blender",
+        "https://x.com/VaibhavSisinty/status/2102667276252282952"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Claude Opus 5.5 운영 비용 (Opus 5 대비)",
+      "dimension": "비용 절감",
+      "typical_value": "40",
+      "unit": "% 절감",
+      "range": "",
+      "region": "global",
+      "note": "'Fable 5.1 수준 성능'과 함께 인용. 단일 서드파티 출처",
+      "urls": [
+        "https://blendermcp.org/guides/claude-opus-5-5-blender"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "GPT-6 Astra 컨텍스트 창",
+      "dimension": "토큰",
+      "typical_value": "1,050,000",
+      "unit": "tokens",
+      "range": "",
+      "region": "global",
+      "note": "단일 서드파티 출처",
+      "urls": [
+        "https://acecloud.ai/blog/connect-blender-astra-gemini-claude/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "Claude for Creative Work 공식 커넥터 수",
+      "dimension": "개수",
+      "typical_value": "9",
+      "unit": "connectors",
+      "range": "",
+      "region": "global",
+      "note": "Ableton, Adobe, Affinity, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice. anthropic.com 본문 확인",
+      "urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://www.buildthisnow.com/blog/tools/mcp/claude-for-creative-work-connectors"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Claude Blender 커넥터 버전",
+      "dimension": "버전",
+      "typical_value": "1.0.1",
+      "unit": "version",
+      "range": "",
+      "region": "global",
+      "note": "claude.com 커넥터 페이지(2026-09-27 확인)",
+      "urls": [
+        "https://claude.com/connectors/blender"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Blender Lab MCP 최소 Blender 버전",
+      "dimension": "요구 사양",
+      "typical_value": "5.1",
+      "unit": "Blender version (이상)",
+      "range": "",
+      "region": "global",
+      "note": "검색 요약과 mcp.film에서 확인",
+      "urls": [
+        "https://mcpservers.org/servers/blender-mcp",
+        "https://mcp.film/mcps/blender-lab-mcp/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Unity 공식 agent plugin 버전 / 요구 Unity",
+      "dimension": "버전",
+      "typical_value": "0.1.6-beta / Unity 6+",
+      "unit": "version",
+      "range": "",
+      "region": "global",
+      "note": "GitHub README 확인",
+      "urls": [
+        "https://github.com/Unity-Technologies/unity-agent-plugin"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "CoplayDev/unity-mcp 규모",
+      "dimension": "GitHub stars / 도구 수",
+      "typical_value": "13,800+ / 25+",
+      "unit": "stars / tools",
+      "range": "",
+      "region": "global",
+      "note": "검색 요약 기준(2026-09)",
+      "urls": [
+        "https://github.com/CoplayDev/unity-mcp"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Roblox studio-rust-mcp-server 지원 종료",
+      "dimension": "날짜/도구 수",
+      "typical_value": "2026-04-03 / 6",
+      "unit": "date / tools",
+      "range": "",
+      "region": "global",
+      "note": "GitHub README 확인. 내장 Studio MCP로 이관",
+      "urls": [
+        "https://github.com/Roblox/studio-rust-mcp-server"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "Roblox Studio 내장 MCP 기본 포트",
+      "dimension": "포트",
+      "typical_value": "3004",
+      "unit": "localhost port",
+      "range": "",
+      "region": "global",
+      "note": "서드파티 가이드 기준. 2026-02 도입",
+      "urls": [
+        "https://useloadout.com/blog/roblox-mcp-server-setup/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "robloxstudio-mcp(커뮤니티) 도구 수",
+      "dimension": "도구 수",
+      "typical_value": "54",
+      "unit": "tools",
+      "range": "",
+      "region": "global",
+      "note": "검색 요약 기준",
+      "urls": [
+        "https://lobehub.com/mcp/drgost1-robloxstudio-mcp"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "Void Explorer 규모",
+      "dimension": "콘텐츠 규모",
+      "typical_value": "성계 2,048개 / 행성 10,000개 이상",
+      "unit": "count",
+      "range": "",
+      "region": "global",
+      "note": "검색 요약 기반",
+      "urls": [
+        "https://aituts.com/gpt6-astra-game-demos/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "Astra 3D 게임 프로토타입 소요 시간",
+      "dimension": "시간",
+      "typical_value": "45",
+      "unit": "minutes",
+      "range": "<60분(X 트렌딩 표현)",
+      "region": "global",
+      "note": "이미지 생성을 그래픽 수단으로 사용한 사례",
+      "urls": [
+        "https://aituts.com/gpt6-astra-game-demos/",
+        "https://x.com/i/trending/2096209432053190780"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "UE 5.8 MCP YouTube 튜토리얼 업로드 시기",
+      "dimension": "날짜 분포",
+      "typical_value": "2026-05-14 ~ 2026-08-18",
+      "unit": "date",
+      "range": "5/14, 5/28, 6/18, 7/1, 8/18",
+      "region": "global",
+      "note": "5월 두 편은 Preview 기준",
+      "urls": [
+        "https://www.youtube.com/watch?v=dKzyTiitRIA",
+        "https://www.youtube.com/watch?v=hUNTOltVTpQ"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "bilibili Claude+Blender MCP 완전 튜토리얼 길이",
+      "dimension": "영상 길이",
+      "typical_value": "26",
+      "unit": "minutes",
+      "range": "",
+      "region": "China",
+      "note": "Blender Tutorial 채널",
+      "urls": [
+        "https://www.bilibili.com/video/BV1SrXrY6E8D/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "Blender Artists 공식 커넥터 토론 스레드 규모",
+      "dimension": "게시글 수",
+      "typical_value": "257+",
+      "unit": "posts (10+ pages)",
+      "range": "",
+      "region": "global",
+      "note": "URL의 #257, page=10에서 추정",
+      "urls": [
+        "https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106/257"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Claude for Creative Work (Anthropic)",
+      "url": "https://www.anthropic.com/news/claude-for-creative-work",
+      "source_type": "official_announcement",
+      "date": "2026-04-28 (2026-05-01 업데이트)",
+      "why_useful": "공식 커넥터 9종, Blender 커넥터 기능, 기부 방식 정정을 본문으로 확인"
+    },
+    {
+      "title": "Using the Blender Connector in Claude · Claude Academy",
+      "url": "https://academy.claude.com/tutorials/using-the-blender-connector-in-claude",
+      "source_type": "official_tutorial",
+      "date": "2026",
+      "why_useful": "공식 설정 절차와 Desktop 전용 제약"
+    },
+    {
+      "title": "Blender connector (claude.com)",
+      "url": "https://claude.com/connectors/blender",
+      "source_type": "official_directory",
+      "date": "2026-04 추가 / v1.0.1",
+      "why_useful": "제작자 Blender Lab, 버전, 검증 상태"
+    },
+    {
+      "title": "SketchUp connector (claude.com)",
+      "url": "https://claude.com/connectors/sketchup",
+      "source_type": "official_directory",
+      "date": "2026-04",
+      "why_useful": "build_model/get_docs/save_model 도구 목록"
+    },
+    {
+      "title": "Unity plugin (claude.com)",
+      "url": "https://claude.com/plugins/unity",
+      "source_type": "official_directory",
+      "date": "2026-09",
+      "why_useful": "Unity 공식 Claude Code 플러그인 존재 확인"
+    },
+    {
+      "title": "Unity-Technologies/unity-agent-plugin",
+      "url": "https://github.com/Unity-Technologies/unity-agent-plugin",
+      "source_type": "github_official",
+      "date": "v0.1.6-beta",
+      "why_useful": "설치 명령, 스킬 목록, 요구 사양"
+    },
+    {
+      "title": "lab/blender_mcp (Blender Projects)",
+      "url": "https://projects.blender.org/lab/blender_mcp",
+      "source_type": "official_repo",
+      "date": "2026",
+      "why_useful": "공식 Blender Lab MCP 저장소"
+    },
+    {
+      "title": "Blender Lab",
+      "url": "https://www.blender.org/lab/",
+      "source_type": "official_site",
+      "date": "2026",
+      "why_useful": "Blender Lab 프로그램 소개"
+    },
+    {
+      "title": "Support the official Blender Lab MCP server as a provider · Issue #7 · claude-3d-harness",
+      "url": "https://github.com/MAX-786/claude-3d-harness/issues/7",
+      "source_type": "github_issue",
+      "date": "2026-09-20",
+      "why_useful": "공식 MCP의 최소 도구 세트와 하네스 통합 요건"
+    },
+    {
+      "title": "Architectural visualization with Astra | OpenAI Developers",
+      "url": "https://developers.openai.com/blog/architectural-visualization-with-astra",
+      "source_type": "official_blog",
+      "date": "2026-09",
+      "why_useful": "Astra 아크비즈 공식 워크플로(검색 요약)"
+    },
+    {
+      "title": "Building games with Astra | OpenAI Developers",
+      "url": "https://developers.openai.com/blog/how-to-build-games-with-astra",
+      "source_type": "official_blog",
+      "date": "2026-09",
+      "why_useful": "Astra 게임 제작 공식 워크플로(검색 요약)"
+    },
+    {
+      "title": "GPT-6 Astra: A new generation of intelligence | OpenAI",
+      "url": "https://openai.com/index/gpt-6-astra/",
+      "source_type": "official_announcement",
+      "date": "2026-09-03",
+      "why_useful": "Astra 출시 1차 출처"
+    },
+    {
+      "title": "Build a Playable Unreal Engine 5 Level with AI (MCP + Claude Code) | Epic Community tutorial",
+      "url": "https://dev.epicgames.com/community/learning/tutorials/bnJ0/build-a-playable-unreal-engine-5-level-with-ai-mcp-claude-code",
+      "source_type": "community_tutorial_vendor_platform",
+      "date": "2026",
+      "why_useful": "Fab 팩 + AI 배치 워크플로"
+    },
+    {
+      "title": "Unreal Engine 5.8 + Claude (MCP): crear sin límites | Epic Community tutorial",
+      "url": "https://dev.epicgames.com/community/learning/tutorials/39oR/unreal-engine-5-8-claude-mcp-crear-sin-limites",
+      "source_type": "community_tutorial_vendor_platform",
+      "date": "2026",
+      "why_useful": "스페인어 입문"
+    },
+    {
+      "title": "Community Tutorial: UE 5.8 + Claude Code con MCP desde CERO (Epic Forums)",
+      "url": "https://forums.unrealengine.com/t/community-tutorial-unreal-engine-5-8-claude-code-con-mcp-desde-cero-tutorial-completo/2729874",
+      "source_type": "forum",
+      "date": "2026",
+      "why_useful": "스페인어 완전 튜토리얼"
+    },
+    {
+      "title": "Unreal Engine 5.8 Preview: MCP Configuration and Testing with Claude and Kilo (YouTube)",
+      "url": "https://www.youtube.com/watch?v=dKzyTiitRIA",
+      "source_type": "video",
+      "date": "2026-05-14",
+      "why_useful": "Preview 시기 MCP 구성"
+    },
+    {
+      "title": "Easy MCP Server Setup For Unreal Engine 5.8 And Claude AI (YouTube)",
+      "url": "https://www.youtube.com/watch?v=z-nMc1BYW4Q",
+      "source_type": "video",
+      "date": "2026-05-28",
+      "why_useful": "VS Code 기반 초보자 셋업"
+    },
+    {
+      "title": "UE5.8 MCP Server Setup & Test — Official MCP with Claude Code (YouTube)",
+      "url": "https://www.youtube.com/watch?v=Ko3dy_G75-s",
+      "source_type": "video",
+      "date": "2026-06-18",
+      "why_useful": "정식 공식 MCP 셋업"
+    },
+    {
+      "title": "How to Connect Claude Code to Unreal Engine 5.8 with MCP (YouTube)",
+      "url": "https://www.youtube.com/watch?v=kP9d-Bv32SU",
+      "source_type": "video",
+      "date": "2026-07-01",
+      "why_useful": "셋업 튜토리얼"
+    },
+    {
+      "title": "Claude Code + Unreal Engine 5.8: Complete MCP Setup & Tutorial (YouTube)",
+      "url": "https://www.youtube.com/watch?v=hUNTOltVTpQ",
+      "source_type": "video",
+      "date": "2026-08-18",
+      "why_useful": "가장 최근 완전 튜토리얼"
+    },
+    {
+      "title": "I Connected Fable 5.1 To The Official Unreal Engine 5.8 MCP (YouTube)",
+      "url": "https://www.youtube.com/watch?v=94QPi_bM0IE",
+      "source_type": "video",
+      "date": "2026",
+      "why_useful": "Fable 5.1 × UE 공식 MCP 실험"
+    },
+    {
+      "title": "Unity MCP Server: Connect Claude Code, Cursor, and other AI Agents | Unity Blog",
+      "url": "https://unity.com/blog/unity-ai-mcp-how-to-get-started",
+      "source_type": "official_blog",
+      "date": "2026-05",
+      "why_useful": "Unity 공식 MCP 소개"
+    },
+    {
+      "title": "Unity MCP | Assistant 2.0.0-pre.1 (Unity Docs)",
+      "url": "https://docs.unity3d.com/Packages/com.unity.ai.assistant@2.0/manual/unity-mcp-overview.html",
+      "source_type": "official_docs",
+      "date": "2026",
+      "why_useful": "relay/IPC/승인 정책"
+    },
+    {
+      "title": "Claude AI + MCP in Unity: The Complete Setup & Workflow (2026) (YouTube)",
+      "url": "https://www.youtube.com/watch?v=UZCekUCWgGc",
+      "source_type": "video",
+      "date": "2026-07",
+      "why_useful": "Unity 셋업 영상"
+    },
+    {
+      "title": "How to Set Up Claude with Unity MCP in 3 Minutes (YouTube)",
+      "url": "https://www.youtube.com/watch?v=oCqyOvcWf5M",
+      "source_type": "video",
+      "date": "2026",
+      "why_useful": "빠른 셋업"
+    },
+    {
+      "title": "Unity MCP Complete Guide (gamedevllm)",
+      "url": "https://gamedevllm.com/en/unity-mcp-claude-codex-gemini-cursorcomplete-guide-en/",
+      "source_type": "blog",
+      "date": "2026",
+      "why_useful": "`unity mcp configure claude-code`, 공식 플러그인 배포일(9/10) 언급"
+    },
+    {
+      "title": "Roblox/studio-rust-mcp-server",
+      "url": "https://github.com/Roblox/studio-rust-mcp-server",
+      "source_type": "github_official",
+      "date": "2026-04-03 deprecated",
+      "why_useful": "구 서버 도구 목록과 지원 종료 확인"
+    },
+    {
+      "title": "Roblox Studio MCP server: build games with Claude (2026) — Loadout",
+      "url": "https://useloadout.com/blog/roblox-mcp-server-setup/",
+      "source_type": "blog",
+      "date": "2026",
+      "why_useful": "내장 MCP 활성화 경로와 포트"
+    },
+    {
+      "title": "How to Connect Claude to Roblox Studio (August 2026 MCP Guide)",
+      "url": "https://backyarddrunkard.com/game-guides/connect-claude-to-roblox-studio-mcp-guide/",
+      "source_type": "blog",
+      "date": "2026-08",
+      "why_useful": "최신 Roblox 가이드"
+    },
+    {
+      "title": "I Built a Roblox Game Using Only AI Agents (Medium, Andy.G)",
+      "url": "https://medium.com/@andy.a.g/i-built-a-roblox-game-using-only-ai-agents-heres-what-happened-ed57b553facc",
+      "source_type": "blog_experience",
+      "date": "2026",
+      "why_useful": "Roblox 실사용 체험"
+    },
+    {
+      "title": "Vibe Check: Opus 5.5 Is Pulling Our Codex Converts Back to Claude (Every)",
+      "url": "https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude",
+      "source_type": "review",
+      "date": "2026-09",
+      "why_useful": "Opus 5.5 실사용 평가"
+    },
+    {
+      "title": "Vaibhav Sisinty on X: Opus 5.5 wildest demos thread",
+      "url": "https://x.com/VaibhavSisinty/status/2102667276252282952",
+      "source_type": "social",
+      "date": "2026-09-23",
+      "why_useful": "출시 직후 데모 큐레이션"
+    },
+    {
+      "title": "Claude OPUS 5.5 beats GPT 6 Astra in blender ? (YouTube)",
+      "url": "https://www.youtube.com/watch?v=Zgs9H8_RF3w",
+      "source_type": "video",
+      "date": "~2026-09-23",
+      "why_useful": "모델 비교"
+    },
+    {
+      "title": "Claude Opus 5.5 Is the New KING of 3D Design & Blender (YouTube)",
+      "url": "https://www.youtube.com/watch?v=2M1TEH6JPKc",
+      "source_type": "video",
+      "date": "2026-09",
+      "why_useful": "Opus 5.5 Blender 리뷰"
+    },
+    {
+      "title": "I Tested Claude Fable 5 in Blender (5x Faster Than Opus 4.8) (YouTube)",
+      "url": "https://www.youtube.com/watch?v=hgl2zHnWwMg",
+      "source_type": "video",
+      "date": "2026",
+      "why_useful": "속도 비교 주장"
+    },
+    {
+      "title": "Claude Opus 5 + Blender MCP = Professional 3D Scenes (YouTube)",
+      "url": "https://www.youtube.com/watch?v=Ci9Xc-VPc04",
+      "source_type": "video",
+      "date": "2026",
+      "why_useful": "Opus 5 씬 시연"
+    },
+    {
+      "title": "Astra + Blender MCP is kinda OP (YouTube Shorts)",
+      "url": "https://www.youtube.com/shorts/8fChl1944vg",
+      "source_type": "video",
+      "date": "2026-09",
+      "why_useful": "Astra MCP 데모"
+    },
+    {
+      "title": "How To Connect Claude To Blender - Tutorial (YouTube)",
+      "url": "https://www.youtube.com/watch?v=Zo4JBa2r2WI",
+      "source_type": "video",
+      "date": "2026",
+      "why_useful": "셋업 영상"
+    },
+    {
+      "title": "I Tested Gemini 3.8 Flash With Antigravity — Coding, Blender & More (YouTube)",
+      "url": "https://www.youtube.com/watch?v=BAoecDDSB7Q",
+      "source_type": "video",
+      "date": "~2026-09",
+      "why_useful": "Gemini Blender 테스트"
+    },
+    {
+      "title": "Reference Image to 3D Scene With GPT-6 Astra & Blender (Vagon)",
+      "url": "https://vagon.io/blog/reference-image-to-3d-scene-with-gpt-6-astra-blender",
+      "source_type": "blog_tutorial",
+      "date": "2026-09",
+      "why_useful": "레퍼런스 → 씬 튜토리얼"
+    },
+    {
+      "title": "GPT-6 Astra: from brief to editable scene (Fraktal Journal)",
+      "url": "https://fraktal.design/blog/gpt-6-astra-from-model-to-architecture-workflow/",
+      "source_type": "blog_case",
+      "date": "2026-09",
+      "why_useful": "스튜디오 관점 건축 워크플로"
+    },
+    {
+      "title": "OpenAI's GPT-6 Astra Shows Unprecedented Blender 3D Animation Skills (Stork.AI)",
+      "url": "https://www.stork.ai/blog/astras-blender-skills-are-unreal",
+      "source_type": "blog",
+      "date": "2026-09",
+      "why_useful": "Astra 애니메이션 평가"
+    },
+    {
+      "title": "Blender with OpenAI Astra: Complete Guide + Starter Files (Kingy AI)",
+      "url": "https://kingy.ai/blog/blender-openai-astra-complete-guide/",
+      "source_type": "blog_tutorial",
+      "date": "2026-09",
+      "why_useful": "스타터 파일"
+    },
+    {
+      "title": "How To Connect Blender To Astra, Gemini CLI & Claude (AceCloud)",
+      "url": "https://acecloud.ai/blog/connect-blender-astra-gemini-claude/",
+      "source_type": "blog_tutorial",
+      "date": "2026-09",
+      "why_useful": "세 경로 비교"
+    },
+    {
+      "title": "GPT-6 Astra Review - How I AI (ChatPRD)",
+      "url": "https://www.chatprd.ai/how-i-ai/gpt-6-astra-review-hardware-3d-games-and-coding",
+      "source_type": "review",
+      "date": "2026-09",
+      "why_useful": "실사용 리뷰"
+    },
+    {
+      "title": "GPT-6 Astra 3D Generation: Incredible Examples So Far (Aituts)",
+      "url": "https://aituts.com/gpt6-astra-game-demos/",
+      "source_type": "blog_roundup",
+      "date": "2026-09",
+      "why_useful": "게임 데모 모음"
+    },
+    {
+      "title": "GPT-6 Astra Early Access: The First Real-World Builds (atoms.dev)",
+      "url": "https://atoms.dev/blog/gpt-6-astra-early-access-examples",
+      "source_type": "blog_roundup",
+      "date": "2026-09",
+      "why_useful": "얼리 액세스 사례"
+    },
+    {
+      "title": "Built with Astra (eChai)",
+      "url": "https://echai.ventures/astra",
+      "source_type": "showcase",
+      "date": "2026-09",
+      "why_useful": "Astra 제작물 쇼케이스"
+    },
+    {
+      "title": "Claude Opus 5.5 + Blender MCP: Setup & What Changed (blendermcp.org)",
+      "url": "https://blendermcp.org/guides/claude-opus-5-5-blender",
+      "source_type": "blog_tutorial",
+      "date": "2026-09",
+      "why_useful": "Opus 5.5 출시일·비용 문구"
+    },
+    {
+      "title": "Gemini for Blender: Setup, Feedback Loops & Limits (blenderai.org)",
+      "url": "https://blenderai.org/models/gemini",
+      "source_type": "blog_tutorial",
+      "date": "2026",
+      "why_useful": "Gemini 시각 피드백 루프, httpUrl"
+    },
+    {
+      "title": "Blender MCP Setup for Codex, Claude Code, Cursor, VS Code, Gemini CLI (StraySpark)",
+      "url": "https://www.strayspark.studio/blog/blender-mcp-setup-codex-cursor-gemini-vscode-2026",
+      "source_type": "blog_tutorial",
+      "date": "2026",
+      "why_useful": "클라이언트별 설정"
+    },
+    {
+      "title": "[Project Showcase] Control Blender 3D using Gemini/LLMs via MCP (Google AI Developers Forum)",
+      "url": "https://discuss.ai.google.dev/t/project-showcase-control-blender-3d-using-gemini-llms-via-model-context-protocol-mcp/110424",
+      "source_type": "forum",
+      "date": "2026",
+      "why_useful": "Gemini 커뮤니티 사례"
+    },
+    {
+      "title": "Astra時代のコードファースト3Dモデリング (zenn)",
+      "url": "https://zenn.dev/koher/articles/code-first-3d-modeling",
+      "source_type": "blog_ja",
+      "date": "2026-09",
+      "why_useful": "일본어 코드 퍼스트 논고"
+    },
+    {
+      "title": "GPT-6 AstraでBlenderを操作して桃をつくってみた (note)",
+      "url": "https://note.com/ekazu_10/n/n31ffbf2e0646",
+      "source_type": "blog_ja",
+      "date": "2026-09",
+      "why_useful": "일본어 체험기"
+    },
+    {
+      "title": "Dramatically Improved Blender Production Capabilities with GPT-6 Astra (npaka, note)",
+      "url": "https://note.com/npaka/n/n9635d06c377f?hl=en",
+      "source_type": "blog_ja",
+      "date": "2026-09",
+      "why_useful": "일본어 평가"
+    },
+    {
+      "title": "GPT-6 Astra + Codex + Blender MCP (Criet, note)",
+      "url": "https://note.com/snapreplica/n/n77a3c9fae946?hl=en",
+      "source_type": "blog_ja",
+      "date": "2026-09",
+      "why_useful": "일본어 체험기"
+    },
+    {
+      "title": "GPT-6 AstraでBlenderの3D制作はどこまでできる？ (chatgpt-consulting.jp)",
+      "url": "https://chatgpt-consulting.jp/how-much-can-you-do-with-blender-3d-creation-using-gpt-6-astra/",
+      "source_type": "blog_ja",
+      "date": "2026-09",
+      "why_useful": "일본어 가이드"
+    },
+    {
+      "title": "Cline + Blender MCP 3D model (AWS builders.flash)",
+      "url": "https://aws.amazon.com/jp/builders-flash/202506/cline-blender-mcp-3d-model",
+      "source_type": "vendor_blog_ja",
+      "date": "2025-06",
+      "why_useful": "일본어 초기 사례"
+    },
+    {
+      "title": "使用 Blender MCP 使用 Claude AI 创建 3D - 完整 26 分钟教程 (bilibili)",
+      "url": "https://www.bilibili.com/video/BV1SrXrY6E8D/",
+      "source_type": "video_zh",
+      "date": "2025~2026",
+      "why_useful": "중국어 완전 튜토리얼"
+    },
+    {
+      "title": "Claude + Blender 联动教程 - 利用 MCP 实现 AI 自动化 3D 工作流 (bilibili)",
+      "url": "https://www.bilibili.com/video/BV1PBLS6sEEA/",
+      "source_type": "video_zh",
+      "date": "2026",
+      "why_useful": "공식 MCP 자동화 활용"
+    },
+    {
+      "title": "中文配音-Claude Code + Blender MCP：零基础一键生成 3D 环境 (bilibili)",
+      "url": "https://www.bilibili.com/video/BV1RKXNBMEDX/",
+      "source_type": "video_zh",
+      "date": "2026",
+      "why_useful": "Claude Code 환경 생성"
+    },
+    {
+      "title": "AI操控电脑自主构建3D场景！BlenderMCP (bilibili)",
+      "url": "https://www.bilibili.com/video/BV1BVQBYuEPg/",
+      "source_type": "video_zh",
+      "date": "2025",
+      "why_useful": "BlenderMCP 소개"
+    },
+    {
+      "title": "Blender将永远改变：Claude AI的到来 (bilibili)",
+      "url": "https://www.bilibili.com/video/BV1JZVu6aEXh/",
+      "source_type": "video_zh",
+      "date": "2026",
+      "why_useful": "중국어권 반응"
+    },
+    {
+      "title": "3D建模终结者？Blender + MCP打造极致3D建模场景 (bilibili)",
+      "url": "https://www.bilibili.com/video/BV1JTQ4YyE2N/",
+      "source_type": "video_zh",
+      "date": "2025",
+      "why_useful": "효과 평가 영상"
+    },
+    {
+      "title": "过了把3D建模的瘾！MCP让Cursor控制Blender (知乎)",
+      "url": "https://zhuanlan.zhihu.com/p/29863179256?utm_psn=1883459135720380238",
+      "source_type": "blog_zh",
+      "date": "2025",
+      "why_useful": "three.js 재구성 아이디어"
+    },
+    {
+      "title": "Show HN: MCP server for Blender that builds 3D scenes via natural language",
+      "url": "https://news.ycombinator.com/item?id=44622374",
+      "source_type": "forum",
+      "date": "2025-07-20",
+      "why_useful": "HN 토론"
+    },
+    {
+      "title": "Anthropic Joins the Blender Development Fund as Corporate Patron (HN)",
+      "url": "https://news.ycombinator.com/item?id=47936370",
+      "source_type": "forum",
+      "date": "2026-04",
+      "why_useful": "후원 관련 토론(이후 일회성 기부로 정정)"
+    },
+    {
+      "title": "Fable 5.1 World Modeling (HN)",
+      "url": "https://news.ycombinator.com/item?id=49541458",
+      "source_type": "forum",
+      "date": "2026",
+      "why_useful": "Fable 5.1 월드 모델링 토론"
+    },
+    {
+      "title": "From Blender MCP to 3D-Agent... Anthropic partners with Blender (Blender Artists)",
+      "url": "https://blenderartists.org/t/from-blender-mcp-to-3d-agent-anthropic-partners-with-blender-claude-ai-connector-now-official/1639106",
+      "source_type": "forum",
+      "date": "2026-04~",
+      "why_useful": "아티스트 커뮤니티 반응"
+    },
+    {
+      "title": "Blender MCP Server after Claude: MCP security for Blender scripting (Blender DevTalk)",
+      "url": "https://devtalk.blender.org/t/blender-mcp-server-after-claude-mcp-security-for-blender-scripting-3d-agent-notes/45131",
+      "source_type": "forum",
+      "date": "2026",
+      "why_useful": "보안 논의"
+    },
+    {
+      "title": "How to Use Blender MCP with Meshy MCP & Claude (2026 Guide)",
+      "url": "https://www.meshy.ai/tutorials/blender-mcp-guide",
+      "source_type": "vendor_tutorial",
+      "date": "2026",
+      "why_useful": "생성 MCP + Blender MCP 구성"
+    },
+    {
+      "title": "Generative 3D Tools Compared: Meshy, Rodin, Tripo, and CSM in April 2026 (StraySpark)",
+      "url": "https://www.strayspark.studio/blog/generative-3d-tools-comparison-meshy-rodin-tripo-csm-2026",
+      "source_type": "review",
+      "date": "2026-04",
+      "why_useful": "생성기 비교"
+    },
+    {
+      "title": "Best AI 3D Model Generator in 2026: I Tested 9 (Indie Hackers)",
+      "url": "https://www.indiehackers.com/post/best-ai-3d-model-generator-in-2026-i-tested-9-of-the-best-and-here-is-what-i-found-70ecab1a0a",
+      "source_type": "review",
+      "date": "2026",
+      "why_useful": "9종 실사용 비교"
+    },
+    {
+      "title": "Meshy vs Tripo vs Rodin vs Trellis: Best for Archviz (Visiomake)",
+      "url": "https://visiomake.com/en/blog/best-ai-image-to-3d-tools-2026-comparison-archviz",
+      "source_type": "review",
+      "date": "2026",
+      "why_useful": "아크비즈 관점 비교"
+    },
+    {
+      "title": "Unreal Engine AI: Claude and Gemini via MCP (Creative AI News)",
+      "url": "https://www.creativeainews.com/articles/unreal-engine-ai-claude-gemini-mcp-2026/",
+      "source_type": "blog",
+      "date": "2026",
+      "why_useful": "UE 클라이언트 설정 자동 생성"
+    },
+    {
+      "title": "Blender MCP vs Unity MCP vs Unreal MCP (Mint)",
+      "url": "https://mint.gg/blog/3d-mcp-guide",
+      "source_type": "blog",
+      "date": "2026",
+      "why_useful": "엔진별 MCP 비교"
+    },
+    {
+      "title": "Claude Opus 5.5: 10 Amazing Things People Created (FavTutor)",
+      "url": "https://favtutor.com/claude-opus-5-5-real-examples/",
+      "source_type": "blog_roundup",
+      "date": "2026-09",
+      "why_useful": "Opus 5.5 사례 모음"
+    },
+    {
+      "title": "Hyper3D: Claude Opus 5.5 3D Prompts & Examples",
+      "url": "https://hyper3d.ai/3d-prompts/models/claude-opus-5.5",
+      "source_type": "vendor_gallery",
+      "date": "2026-09",
+      "why_useful": "프롬프트 예시"
+    }
+  ],
+  "gaps": [
+    "YouTube, X, Hacker News, Blender Artists, OpenAI 개발자 블로그, Claude Academy 본문은 egress 프록시에 막혀 제목·날짜·검색 요약만 확보했다. 대부분의 YouTube 영상은 채널명, 프롬프트, 소요 시간, 비용을 확인하지 못했다.",
+    "Reddit은 WebSearch API가 reddit.com 도메인 자체를 거부해(400) r/blender, r/unrealengine, r/Unity3D의 실사용 경험·비용 담론을 수집하지 못했다.",
+    "80.lv, CG Channel, BlenderNation의 AI+MCP 3D 워크플로 기사는 검색 결과에 한 건도 나오지 않았다. 해당 매체를 직접 검색하는 추가 라운드가 필요하다.",
+    "소셜 사례에서 구체적 비용(토큰, 달러, 요금제 소모율)을 이번 라운드에서 새로 찾지 못했다. 1라운드 MindStudio 도넛 테스트 등이 여전히 주요 비용 근거다.",
+    "Epic 공식 UE 5.8 MCP 문서 페이지(dev.epicgames.com/documentation) URL은 이번 검색에 나오지 않았다. 커뮤니티 튜토리얼만 확보했다.",
+    "Roblox 내장 MCP의 공식 문서(create.roblox.com) URL을 확보하지 못했다. 포트 3004와 메뉴 경로는 서드파티 가이드 기준이다.",
+    "중국어권 자료는 2025년 BlenderMCP 기준 영상이 많다. GPT-6 Astra나 Opus 5.5를 쓴 2026년 하반기 중국어 사례(bilibili, zhihu, 小红书)는 거의 찾지 못했다.",
+    "note.com 글 3편은 검색 요약에서 내용이 섞여 있어 어떤 사례(Anshu의 컨셉 아트 → 게임 씬 등)가 어느 글에서 나왔는지 확정하지 못했다.",
+    "Opus 5.5의 'Opus 5 대비 40% 저렴', Astra의 '1,050,000 토큰 컨텍스트'는 단일 서드파티 출처라 공식 발표문으로 교차 검증해야 한다.",
+    "Meshy, Tripo, Rodin, TRELLIS.2를 MCP 에이전트와 결합한 과정 중심 YouTube 튜토리얼은 검색에서 구체적으로 확인되지 않았다(비교 리뷰 글만 확보)."
+  ]
+}

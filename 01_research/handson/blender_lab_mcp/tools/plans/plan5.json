@@ -1,0 +1,23 @@
+[
+ [
+  "aim",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nfrom mathutils import Vector\nsc=bpy.context.scene\nms=[o for o in sc.objects if o.type=='MESH']\npts=[o.matrix_world @ Vector(c) for o in ms for c in o.bound_box]\nlo=Vector((min(p.x for p in pts),min(p.y for p in pts),min(p.z for p in pts)))\nhi=Vector((max(p.x for p in pts),max(p.y for p in pts),max(p.z for p in pts)))\nctr=(lo+hi)/2\ncam=bpy.data.objects['mcp_cam']\ncam.location=ctr+Vector((0.6,-1.0,1.1))*max((hi-lo).x,(hi-lo).y)\ncam.rotation_euler=(ctr-cam.location).to_track_quat('-Z','Y').to_euler()\nsun=bpy.data.objects.new('mcp_sun', bpy.data.lights.new('mcp_sun','SUN'))\nsun.data.energy=3; sun.rotation_euler=(0.6,0.2,0.4)\nsc.collection.objects.link(sun)\nsc.world=sc.world or bpy.data.worlds.new('w'); sc.world.color=(0.6,0.6,0.65)\nresult={'lo':list(lo),'hi':list(hi),'lights':sum(o.type=='LIGHT' for o in sc.objects)}"
+  }
+ ],
+ [
+  "thumb",
+  "render_thumbnail_to_path",
+  {
+   "output_path": "thumb2.png"
+  }
+ ],
+ [
+  "copy",
+  "execute_blender_code",
+  {
+   "code": "import bpy, os, shutil\nshutil.copy(os.path.join(bpy.app.tempdir,'blender_mcp','thumb2.png'), '${SCRATCH}/offmcp/out/thumb2.png')\nresult={}"
+  }
+ ]
+]

@@ -1,0 +1,1117 @@
+{
+  "topic": "[보완] 건물·건축·평면·도시 배치 도구 (2026-09-27)",
+  "method_note": "2026-09-27 기준 읽기 전용 조사. WebSearch(세션 예산 200회 소진 시점까지)와 WebFetch만 사용했고, 어떤 파일도 다운로드·설치·압축해제·실행하지 않음(릴리스 에셋 미열람). github.com 페이지는 직접 열람해 별 수·라이선스·커밋/릴리스 날짜를 확인함. extensions.blender.org, projects.blender.org, arxiv.org, huggingface.co, aclanthology.org, autodesk.com, bonsaibim.org, docs.ifcopenshell.org, gumroad, superhive, prochitecture.com, cgchan.com, help.sketchup.com, blenderartists.org 및 대부분의 블로그는 프록시 차단으로 직접 열람 불가 → 검색 결과 요약만 사용했고 해당 사실에 '(검색 요약)'을 붙임. GitHub 페이지 요약기가 날짜의 연도를 잘못 붙이는 경우가 있어(예: Blender 5.1 호환 릴리스를 2024년으로 표기) Blender/Rhino 버전 문맥으로 연도를 보정했고, 보정한 곳은 '(연도 추정)'으로 표기함. GPT-6 Astra 관련 건축 사례는 검색 예산 소진으로 조사하지 못함(gaps 참고).",
+  "summary_ko": [
+    "AI가 '말이 되는' 건물을 만들게 하는 핵심은 생성기보다 결정적 검증기임. 2026-06 BIM-Edit 벤치마크(IFC 편집 324과제)에서 최고 모델도 평균 49.48%였고 완전히 해결한 과제는 3.4% 이하였음(검색 요약). 성과를 낸 사례(Text2BIM, ARCHER)는 모두 규칙 체커나 테스트 루프를 에이전트에 붙인 경우임.",
+    "Blender 기준으로 가장 유력한 오픈 스택은 Blender 5.x + Bonsai(IFC 네이티브, extensions.blender.org 공식 배포, 0.9.0-alpha 일일 빌드가 2026-09-27에도 올라옴) + IfcOpenShell(ifctester IDS, ifcclash, 공식 MCP 서버 ifcmcp)임. IfcDoor/IfcSpace/IfcStair 의미 정보와 문-벽 개구부 관계가 생기므로, 우리 building_audit.py의 휴리스틱을 IFC 기반 결정적 검사로 확장할 수 있음.",
+    "평면 생성 연구는 이미지·확산에서 'JSON/마크업 토큰 + 검증 가능한 보상'으로 옮겨가는 중임(ACL 2026 RLVR 평면 LLM: HouseDiffusion 대비 Compatibility 2.5→0.15, CVPR 2026 FMLM, 모두 검색 요약). 실무 에이전트는 먼저 버블다이어그램과 면적 JSON을 내고, 겹침·면적·문 연결을 검사한 뒤에 3D로 만드는 2단계가 가장 안전함.",
+    "건축 MCP 공식판 현황: Autodesk Revit Public MCP(Revit 2027 테크 프리뷰, 읽기 전용), McNeel RhinoAI(공식 GitHub 조직, Grasshopper 포함), Trimble SketchUp Connector(원격 MCP, build_model/get_docs/save_model)가 있음. Graphisoft Archicad 공식 MCP는 로드맵상 '진행 중'임. 쓰기가 되는 Revit/Archicad MCP는 모두 커뮤니티 제품임.",
+    "Blender 건물 모델링 애드온 중 2026년에 가장 활발한 것은 Home Builder 5임(GPL, Blender 5+ 전용으로 재작성, 벽·문·창·계단·평면도 뷰, 문 스윙 조정 지원). Building Tools(MIT, 1.5k★)는 외관 생성에 강하지만 마지막 커밋이 2025-05이고 공식 호환 표기가 Blender 4.0까지임. Archipack 2.8.5(€49)는 Blender 5.x 호환을 주장함(검색 요약). Archimesh는 확장 플랫폼에서 '제한 지원' 상태이며 Blender 5.0 파라미터 패널 이슈가 있음.",
+    "도시 배치는 실제 OSM 풋프린트 + DEM 지형(blosm 2.1k★, BlenderGIS 9.4k★는 2025-12에 Blender 5 수정)을 쓰는 방식이 가장 그럴듯함. 절차적 도로망·필지 분할은 CityEngine(유료, $2,000부터, 무료판 없음, 검색 요약)이 표준이고, 오픈소스 대안은 연구용이거나 노후했음.",
+    "데이터셋 라이선스: 상업 이용이 가능한 평면 데이터는 ResPlan(17k, CC BY 4.0, 문/창/방 + via_door 연결 그래프)이 사실상 유일함. RPLAN은 연구 전용 계약(검색 요약), Tell2Design 데이터는 CC BY-NC 4.0임. MSD·CubiCasa5k 라이선스는 1차 페이지에서 확인하지 못함.",
+    "안전 경고: Archipack·SceneCity·HiFi Architecture Builder·Home Builder 5를 '크랙/FULL 무료'로 재배포하는 사이트(vfxmed, nullpk, iggtech, aeblender, gfxtra, anyplugins 등)가 검색 상위에 뜸. 절대 사용하지 말 것. Revit 커뮤니티 MCP 포크 중에는 서명 없는 사전 빌드 DLL zip을 배포하는 곳이 있음. 연구 가중치가 Google Drive의 pickle(.pt/.pkl)로만 배포되는 경우(HouseDiffusion, GSDiff, ResPlan 데이터 pickle)는 격리 환경에서만 로드할 것.",
+    "실제 사례에서는 텍스트만으로 Claude에게 평면을 만들게 하면 큰 평면에서 문 누락, 방 연결 끊김, 비례 오류가 반복됨(RoomSketcher, MindStudio 테스트, 검색 요약). 반대로 기존 평면도를 입력으로 주고 Claude Code + Blender로 3D화한 사례는 수정을 여러 번 거쳐 이틀 만에 가구 배치·렌더된 워크스루까지 도달함(검색 요약). 즉 '평면은 규칙/데이터로, 3D화는 에이전트로' 나누는 것이 현재 최선임."
+  ],
+  "items": [
+    {
+      "name": "Building Tools (ranjian0/building_tools)",
+      "category": "Blender 건물 모델링 애드온(외관)",
+      "what_it_is": "편집 모드에서 선택한 면에 층(Floors)·창·문·다중 문창 그룹·지붕·계단·발코니를 절차적으로 붙이는 외관 중심 건물 생성 애드온. Floorplan 연산자로 풋프린트를 생성함.",
+      "how_to_use": "같은 저장소의 GitHub Releases zip을 Blender에 설치하고 3D 뷰 N 패널에서 사용. 기능이 모두 bpy 연산자라 에이전트가 bpy.ops로 호출할 수 있음. 다만 편집 모드의 면 선택 상태에 의존하므로, 스크립트에서 bmesh로 대상 면을 선택한 뒤 호출해야 함.",
+      "strengths": "MIT 라이선스, 순수 파이썬. 창·문이 벽 면 격자에 정렬되어 외관 비례가 안정적임. 1.5k★로 이 분야 오픈소스 중 인지도가 가장 높음.",
+      "weaknesses": "마지막 커밋이 2025-05-16(v1.0.13, numpy 호출 수정)이고 공식 호환 표기는 Blender 4.0까지임. 4.2+ 확장 매니페스트와 5.x 동작은 확인하지 못함. 실내 평면이나 방 연결 개념이 없음. 열린 이슈 26개(90도가 아닌 코너 미지원, 발코니 노멀 뒤집힘, 박공 지붕 벽 태깅 누락 등).",
+      "license": "MIT",
+      "popularity": "GitHub 1.5k★ / 147 fork",
+      "last_update": "2025-05-16 (v1.0.13, 커밋 페이지 확인)",
+      "distribution": "GitHub Releases(zip, 동일 저장소)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(파이썬 소스 zip)",
+        "red_flags": "원 저장소 외 포크 미러(sarvex/BuildingTools 등)가 있으므로 ranjian0 원 저장소 릴리스만 사용할 것. Blender 5.x 호환성은 직접 테스트 필요.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/ranjian0/building_tools",
+        "https://github.com/ranjian0/building_tools/releases",
+        "https://github.com/ranjian0/building_tools/issues",
+        "https://ranjian0.github.io/building_tools/"
+      ]
+    },
+    {
+      "name": "Home Builder 5 (CreativeDesigner3D / Andrew Peel)",
+      "category": "Blender 건물·실내 평면 애드온",
+      "what_it_is": "Blender 5용으로 새로 작성된 오픈소스 주거·실내 설계 애드온. 외벽·내벽·반벽 그리기, 벽에 스냅되고 개구부를 자동으로 뚫는 문·창, L/U자 계단, 닫힌 외곽선 인식 바닥·천장 생성, 방 라벨, 평면도·입면도·치수가 들어간 2D 레이아웃 뷰, 캐비닛 라이브러리를 제공함.",
+      "how_to_use": "Blender 5.x 환경설정의 Get Extensions에서 'Home Builder 5'를 설치함(공식 확장 플랫폼). 벽 그리기가 모달 연산자 중심이라, 에이전트는 생성된 오브젝트와 지오메트리 노드 파라미터를 bpy로 조작하는 방식이 현실적임. 헤드리스 호출 가능 여부는 사전 테스트가 필요함.",
+      "strengths": "GPL-3.0. 2026년 활발하게 개발 중(v5.0.0 2026-03 첫 Blender 5 릴리스 → v5.1.0 Blender 5.1/Python 3.13 지원·계단 추가 → v5.1.2 평면도 개선, 이상 연도 추정; v5.2.4 2026-09, 검색 요약). 방향키로 문·창 스윙 조정, 참조 이미지 트레이싱 패널, 평면 주석 도구가 있음.",
+      "weaknesses": "주방·캐비닛 중심이라 다층 외관 표현이 약함. 헤드리스 스크립팅 API 문서가 부족함. 커뮤니티 규모가 작음(123★).",
+      "license": "GPL-3.0",
+      "popularity": "GitHub 123★ / 14 fork, 1,802 커밋",
+      "last_update": "v5.1.2 2026-04-16(릴리스 페이지, 연도 추정); v5.2.4 2026-09(검색 요약)",
+      "distribution": "extensions.blender.org(공식) + GitHub 소스",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(파이썬)",
+        "red_flags": "aeblender.com 등이 무료 오픈소스인 이 애드온을 'FULL 다운로드'로 재배포함. 미러를 쓸 이유가 없으니 반드시 확장 플랫폼이나 GitHub에서 받을 것. 유료 부분은 확장 에셋 라이브러리뿐임.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/CreativeDesigner3D/home_builder_5",
+        "https://github.com/CreativeDesigner3D/home_builder_5/releases",
+        "https://extensions.blender.org/add-ons/home-builder-5/",
+        "https://www.hackster.io/news/home-builder-5-1-is-open-source-software-for-diy-cabinet-projects-19d64626b7ca"
+      ]
+    },
+    {
+      "name": "Archipack 2.x",
+      "category": "Blender 파라메트릭 건축 애드온(유료)",
+      "what_it_is": "벽·문·창·계단·지붕·울타리·슬래브 등 파라메트릭 ArchViz 프리미티브와 실시간 화면 기즈모 편집을 제공함. 1.2.8x는 무료 커뮤니티판(과거 Blender 번들), 2.x는 유료판임.",
+      "how_to_use": "공식 사이트나 Gumroad에서 구매(€49, 2.x 시리즈 무료 업데이트, 검색 요약)해 zip으로 설치함. 각 객체가 파라미터를 가지므로 bpy로 치수 수정이 가능할 것으로 보이나, 공개 스크립팅 API 수준은 문서로 확인해야 함.",
+      "strengths": "벽-문-창 연동(개구부 자동), 계단·지붕 생성 규칙 내장. 2.8.5가 Blender 3.x/4.x/5.x 호환이라고 밝힘(검색 요약). 오래 검증된 ArchViz 도구임.",
+      "weaknesses": "유료이고 1인 개발임. 공식 사이트와 문서를 프록시 차단으로 직접 열람하지 못해 최신 날짜를 확인하지 못함. 에이전트용 API 문서화 여부가 불명확함.",
+      "license": "유료 상용 배포(€49, 검색 요약). 라이선스 문서 미확인. 구판 s-leger/archipack(Blender 2.79)은 GitHub에 공개됨",
+      "popularity": "BlenderArtists 릴리스 스레드 1,188+ 게시물(검색 요약)",
+      "last_update": "2.8.5 (Blender 5.x 대응 표기, 검색 요약)",
+      "distribution": "blender-archipack.org / blender-archipack.gumroad.com (개발자 공식)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "알려진 바 없음(파이썬 애드온, 직접 확인 못함)",
+        "red_flags": "'Archipack crack download' 류 페이지(vfxmed 등)가 검색 상위에 노출됨. 크랙판은 악성코드 위험이 크므로 절대 사용 금지. 공식 페이지를 직접 확인하지 못한 점도 감안할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://blender-archipack.gitlab.io/",
+        "https://blender-archipack.org/",
+        "https://blender-archipack.gumroad.com/l/ZRMyP",
+        "https://blenderartists.org/t/archipack-2-8-5-for-blender-3-5-x-release/1147328/1188",
+        "https://github.com/s-leger/archipack"
+      ]
+    },
+    {
+      "name": "Archimesh (Blender Extensions)",
+      "category": "Blender 건축 애드온(레거시)",
+      "what_it_is": "Blender 4.1까지 번들로 들어 있던 방·벽·문·창·계단·선반·주방 생성 애드온. 4.2부터 extensions.blender.org로 이동했고 '있는 그대로, 제한 지원' 상태임.",
+      "how_to_use": "Get Extensions에서 'Archimesh'를 설치함. 연산자 기반이라 bpy 호출이 가능함.",
+      "strengths": "Blender 프로젝트 저장소에서 관리되는 무료 확장이고 단순함.",
+      "weaknesses": "Blender 5.0에서 파라미터 패널이 표시되지 않는 이슈(#4)와 4.2 렌더 이슈(#1)가 있음. 기능이 노후했고 방 연결·동선 개념이 없음. 지식베이스에 이미 기본 언급이 있으므로 신규 채택은 비추천함.",
+      "license": "GPL(Blender 번들 애드온 계열, 검색 요약)",
+      "popularity": "과거 번들 애드온(수치 미확인)",
+      "last_update": "확장 플랫폼 제한 지원(날짜 미확인)",
+      "distribution": "extensions.blender.org / projects.blender.org",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음",
+        "red_flags": "없음(기능 노후만 문제)",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://projects.blender.org/extensions/archimesh",
+        "https://projects.blender.org/extensions/archimesh/issues/4",
+        "https://extensions.blender.org/add-ons/archimesh/",
+        "https://projects.blender.org/blender/blender/issues/126564"
+      ]
+    },
+    {
+      "name": "HiFi Architecture Builder",
+      "category": "Blender 모듈형 건축 요소 생성기",
+      "what_it_is": "벽·바닥·천장·기둥·돔·계단·램프·창틀·문틀·발코니 등 모듈형 건축 요소를 빠르게 만드는 생성기임.",
+      "how_to_use": "extensions.blender.org에서 설치함(Blender 4.2 LTS 이상, 검색 요약). 라이브 프리뷰, 파라미터 스냅샷, 축별 트랜스폼 인스펙터를 제공함.",
+      "strengths": "공식 확장 플랫폼에 등록되어 있음(2025-08 공개, 다운로드 29,233회, 99KB, 검색 요약).",
+      "weaknesses": "GitHub 7★로 커뮤니티 검증이 적음. 방 연결·평면 논리가 없음. 문서가 부족함.",
+      "license": "확장 페이지는 GPL-3.0-or-later(검색 요약), GitHub README는 MIT로 표기가 불일치함",
+      "popularity": "다운로드 29,233회(검색 요약), GitHub 7★",
+      "last_update": "v4.5.8 (검색 시점 기준 약 5개월 전 갱신, 검색 요약)",
+      "distribution": "extensions.blender.org + GitHub(MalikNomi67/hifi-builder)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "보고된 바 없음(파이썬)",
+        "red_flags": "라이선스 표기 불일치. gfxtra 등 워레즈 사이트가 재배포함. 공식 확장 플랫폼 버전만 사용할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://extensions.blender.org/add-ons/hifi-builder/",
+        "https://github.com/MalikNomi67/hifi-builder"
+      ]
+    },
+    {
+      "name": "Buildify (Pavel Oliva)",
+      "category": "Blender 지오메트리 노드 건물 생성기",
+      "what_it_is": "무료 지오메트리 노드 라이브러리. 베이스 메시의 면을 입력으로 받아, 사용자가 컬렉션으로 정리한 모듈 키트(벽·창·코너·지붕)를 배치해 건물을 만듦. blosm(OSM) 풋프린트와 결합해 도시 단위 생성이 가능함.",
+      "how_to_use": ".blend 파일의 노드 그룹을 append한 뒤 풋프린트 메시에 GN 모디파이어를 적용함. 에이전트는 bpy로 모디파이어 입력(층수, 키트 컬렉션)을 설정하면 됨.",
+      "strengths": "비파괴·파라메트릭임. 키트만 교체하면 AAA급 디테일(예: Megascans 모듈 키트)을 낼 수 있고 OSM과 연동됨.",
+      "weaknesses": "에셋 키트는 포함되지 않음. 실내가 없음. 2022년 공개 이후 버전 이력을 확인하지 못함(검색 요약). Gumroad 전용 배포임.",
+      "license": "무료(라이선스 문서 미확인)",
+      "popularity": "CG Channel·80.lv·OSArch에서 소개됨(검색 요약)",
+      "last_update": "2022 공개, 이후 갱신 불명(검색 요약)",
+      "distribution": "제작자 Gumroad(.blend)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(.blend 노드 그래프)",
+        "red_flags": ".blend 파일은 내장 파이썬 스크립트를 자동 실행할 수 있으므로 Blender의 Auto Run Python Scripts를 끈 상태로 열 것. 제3자 재판매·재배포 사이트(blendatlas 등) 대신 제작자 페이지를 사용할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://www.cgchannel.com/2022/07/download-free-blender-3d-building-generator-buildify/",
+        "https://80.lv/articles/grab-a-free-geometry-nodes-library-for-procedural-buildings-in-blender",
+        "https://community.osarch.org/discussion/1046/buildify-blender-geometry-nodes-add-on-for-customizable-modular-buildings"
+      ]
+    },
+    {
+      "name": "Bonsai (구 BlenderBIM, IfcOpenShell)",
+      "category": "Blender 네이티브 IFC/BIM 저작",
+      "what_it_is": "IfcOpenShell 기반의 Blender용 OpenBIM 저작 도구. 벽·슬래브·문·창·계단·공간(IfcSpace)·도면·일정·비용·클래시·IDS 검사까지 지원함. 문·창이 호스트 벽의 개구부 관계로 연결되어 의미 정보가 유지됨.",
+      "how_to_use": "Get Extensions에서 'Bonsai'를 설치함(플랫폼별 빌드). 에이전트는 bpy 메시가 아니라 ifcopenshell.api(예: root.create_entity, 벽·개구부·공간 생성 API)와 bonsai.tool을 호출해야 IFC 의미가 유지됨. Bonsai MCP(아래 항목)를 쓰거나 Blender MCP의 코드 실행으로 이 API를 호출함.",
+      "strengths": "IfcOpenShell 생태계(2.8k★). v0.8.5-post1 2026-04-14 릴리스, 0.8.5-alpha는 Blender 5.1+ 호환(검색 요약). 0.9.0-alpha 일일 빌드가 2026-09-27자 태그로 올라와 있음(릴리스 페이지 확인). 결과물이 표준 IFC라 외부 검증기(ifctester, buildingSMART)에 바로 넣을 수 있음.",
+      "weaknesses": "학습 곡선이 가파름. 일반 Blender 모디파이어 워크플로와 충돌함. 대형 모델에서 성능 문제가 있고, 알파 빌드는 불안정함. AAA 비주얼용 재질·디테일은 별도 작업이 필요함.",
+      "license": "GPL-3.0-or-later (IfcOpenShell 라이브러리는 LGPL-3.0-or-later)",
+      "popularity": "IfcOpenShell 저장소 2.8k★ / 972 fork",
+      "last_update": "0.8.5-post1 2026-04(검색 요약); 0.9.0-alpha 일일 빌드 2026-09-27",
+      "distribution": "extensions.blender.org(공식), GitHub IfcOpenShell releases, bonsai_unstable_repo(일일 빌드)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "플랫폼별 IfcOpenShell 네이티브 모듈(.pyd/.so, OpenCASCADE 등 C++ 기하 엔진)이 포함됨. 알려진 벤더(IfcOpenShell)의 예상된 바이너리임.",
+        "red_flags": "없음. 비공식 zip 미러 대신 확장 플랫폼이나 IfcOpenShell GitHub만 사용할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://extensions.blender.org/add-ons/bonsai/",
+        "https://extensions.blender.org/add-ons/bonsai/versions/",
+        "https://bonsaibim.org/download.html",
+        "https://docs.bonsaibim.org/",
+        "https://github.com/IfcOpenShell/IfcOpenShell/releases",
+        "https://www.blendernation.com/2025/03/13/bonsai-v0-8-1-released-with-more-bim-features/"
+      ]
+    },
+    {
+      "name": "IfcOpenShell (ifcopenshell.validate / ifctester / ifcclash / ifcpatch / ifcquery)",
+      "category": "IFC 라이브러리·검증기",
+      "what_it_is": "IFC 파싱·기하 엔진(C++/Python)과 CLI·라이브러리 모음. validate(구문·스키마), ifctester(IDS 작성·검증, 여러 형식 리포트, CLI/웹앱/라이브러리), ifcclash(충돌 감지), ifcdiff, ifcpatch, ifcquery, IfcConvert를 포함함.",
+      "how_to_use": "PyPI의 ifcopenshell·ifctester를 Blender 밖 별도 가상환경에서 사용하는 것을 권장함. 에이전트 파이프라인 예: 생성 IFC → ifcopenshell.validate → ifctester로 IDS 검사(예: 모든 IfcDoor에 폭 속성 존재, 모든 IfcSpace에 이름·용도 존재) → ifcclash로 벽-계단-문 간섭 → 커스텀 파이썬(계단 챌면/디딤판, 복도 폭, 피난거리) → 실패 항목을 에이전트에게 되돌려줌.",
+      "strengths": "LGPL, 2011년부터 개발되어 가장 성숙한 오픈 IFC 라이브러리임. v0.9.0이 기본 브랜치. 결정적이고 재현 가능한 검사임. 공식 문서도 헤드룸·피난거리 같은 분석 용도를 언급함(검색 요약).",
+      "weaknesses": "피난·계단 규칙 같은 법규 룰셋은 내장되어 있지 않아 직접 작성해야 함. IDS는 속성·분류 검사 위주라 기하 규칙에는 약함.",
+      "license": "LGPL-3.0-or-later",
+      "popularity": "GitHub 2.8k★ / 972 fork",
+      "last_update": "v0.9.0 기본 브랜치, 2026-09 활발(일일 빌드)",
+      "distribution": "PyPI(ifcopenshell, ifctester), conda, GitHub Releases",
+      "safety": {
+        "source_visible": true,
+        "binaries": "C++ 네이티브 확장(공식 빌드, 예상된 바이너리)",
+        "red_flags": "없음. rnshah9/ifcopenshell, EstebanDugueperoux2 등 포크가 검색에 뜨므로 IfcOpenShell 조직 저장소와 PyPI만 사용할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/IfcOpenShell/IfcOpenShell",
+        "https://docs.ifcopenshell.org/ifctester.html",
+        "https://docs.ifcopenshell.org/ifcopenshell-python/validation.html",
+        "https://pypi.org/project/ifctester/0.0.240118"
+      ]
+    },
+    {
+      "name": "IfcMCP (IfcOpenShell 공식 MCP 서버, pip: ifcopenshell-mcp)",
+      "category": "건축 MCP(IFC, 공식 오픈소스)",
+      "what_it_is": "IfcOpenShell 저장소 src/ifcmcp에 포함된 MCP 서버. ifcquery·ifcedit을 감싸고 IFC 모델을 도구 호출 사이에 메모리에 유지함. 약 25개 도구: 세션(로드/생성/리셋/저장), 질의(요약·계층·필터·관계), 검증·분석(스키마 적합성, 기하 클래시, 제약), 일정·비용·재료, 2D 도면·3D 렌더, ShapeBuilder 기하 생성, 파라미터 변환을 거친 ifcopenshell.api 변경 실행.",
+      "how_to_use": "pip로 ifcopenshell-mcp를 설치하고(MCP 전송은 선택 의존성 mcp) Claude Code/Desktop에 등록함. Blender 없이 헤드리스로 IFC를 생성·검증한 뒤 결과를 Bonsai로 열어 비주얼 작업을 하는 분업이 가능함.",
+      "strengths": "IfcOpenShell 공식 코드베이스이고 LGPL임. Blender 소켓이 필요 없고 검증 도구가 내장되어 있음. 우리 building_audit.py와 병행하기 좋음.",
+      "weaknesses": "신규 모듈(0.8.5 문서부터 등장)이라 성숙도와 안정성이 검증되지 않음. 문서 사이트는 직접 열람하지 못했고 GitHub README와 검색 요약만 확인함.",
+      "license": "LGPL-3.0-or-later",
+      "popularity": "IfcOpenShell 2.8k★ 저장소의 일부(독립 수치 없음)",
+      "last_update": "0.8.5 문서 / 0.9.0 브랜치(2026)",
+      "distribution": "PyPI ifcopenshell-mcp(piwheels에도 등재, 검색 요약)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "ifcopenshell 네이티브 모듈 의존(공식)",
+        "red_flags": "Glama 등에 같은 이름을 쓰는 제3자 'ifcopenshell-mcp'(Daviidro)가 있어 혼동 주의. IfcOpenShell 조직의 패키지인지 PyPI 프로젝트 링크로 확인할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/IfcOpenShell/IfcOpenShell/tree/v0.8.0/src/ifcmcp",
+        "https://docs.ifcopenshell.org/ifcmcp.html",
+        "https://www.piwheels.org/project/ifcopenshell-mcp/",
+        "https://glama.ai/mcp/servers/Daviidro/ifcopenshell-mcp"
+      ]
+    },
+    {
+      "name": "buildingSMART IFC Validation Service + ifc-gherkin-rules",
+      "category": "IFC 표준 적합성 검증(공식)",
+      "what_it_is": "buildingSMART 공식 IFC 검증 서비스. 구문(STEP ISO 10303-21) → 스키마(IfcOpenShell) → Gherkin 규칙(Implementer Agreements, Informal Propositions) → bSDD(현재 비활성) 순서로 검사함.",
+      "how_to_use": "validate.buildingsmart.org 웹(무료)을 쓰거나 Docker Compose로 로컬 구동함(Postgres/Redis/Django/Celery/React). REST API(Swagger)가 있어 에이전트가 IFC를 올리고 결과를 받을 수 있음. 규칙 로직은 ifc-gherkin-rules에 있음.",
+      "strengths": "공식 표준 적합성 판정, MIT 라이선스, API 제공.",
+      "weaknesses": "IFC 파일이 표준에 맞는지만 볼 뿐 동선·치수 같은 건축적 타당성은 검사하지 않음. 로컬 구동이 무거움.",
+      "license": "MIT",
+      "popularity": "validate 67★ / ifc-gherkin-rules 24★",
+      "last_update": "문서 0.8.4(날짜 미확인), validate 1,622 커밋",
+      "distribution": "GitHub buildingSMART 조직, 공식 웹 서비스",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(Docker 이미지는 소스에서 빌드)",
+        "red_flags": "웹 서비스에 올리는 IFC는 외부 서버로 전송됨. 민감 프로젝트는 로컬 구동할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/buildingSMART/validate",
+        "https://github.com/buildingSMART/ifc-gherkin-rules",
+        "https://validate.buildingsmart.org/",
+        "https://buildingsmart.github.io/validate/"
+      ]
+    },
+    {
+      "name": "TopologicPy",
+      "category": "공간 위상·동선 그래프 검증",
+      "what_it_is": "비다양체 위상(NMT) 라이브러리 Topologic의 파이썬판. 벽·슬래브로 둘러싸인 공간을 Cell/CellComplex로 표현하고, 인접·접근(문 경유)·가시성 그래프를 만들어 경로 탐색·중심성·그래프 ML을 수행함. IFC, BREP, OBJ, HBJSON 등을 입출력함.",
+      "how_to_use": "conda-forge 설치를 권장함(pythonocc-core 백엔드 자동 설치). Blender 밖 별도 프로세스에서 에이전트가 만든 IFC나 메시 → CellComplex → Graph 순으로 변환해 검사함. 예: '모든 방이 현관에서 문을 거쳐 도달 가능한가', '침실을 지나야만 가는 방이 있는가', '욕실이 침실·복도에서 접근 가능한가'.",
+      "strengths": "건축 공간 위상에 특화된 드문 오픈소스임. building_audit.py의 방/문 체크를 그래프 기반 동선 검증으로 확장할 수 있음.",
+      "weaknesses": "LGPL/GPL 표기가 혼재함. pythonocc 네이티브 의존성 때문에 Blender 내장 파이썬에 넣기 번거로움. 학습 곡선이 있음.",
+      "license": "LGPL-3.0 및 GPL-3.0 표기(저장소)",
+      "popularity": "GitHub 270★, 963 커밋",
+      "last_update": "문서 0.9.73(2026, 검색 요약)",
+      "distribution": "PyPI / conda-forge, GitHub wassimj/topologicpy",
+      "safety": {
+        "source_visible": true,
+        "binaries": "pythonocc-core(OpenCASCADE) — conda-forge 공식 빌드",
+        "red_flags": "포크(Tokarzewski, PabloMarRod 등)가 검색에 뜸. 원 저장소 wassimj를 사용할 것. 과거 문서의 'TopologicCore.dll 직접 설치' 방식은 피할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/wassimj/topologicpy",
+        "https://topologicpy.readthedocs.io/en/latest/",
+        "https://github.com/wassimj/Topologic"
+      ]
+    },
+    {
+      "name": "JuPedSim",
+      "category": "피난·보행 시뮬레이션",
+      "what_it_is": "독일 율리히 연구소(IAS-7)의 보행자 동역학·피난 시뮬레이터. 파이썬 API와 C++20 코어로 구성됨.",
+      "how_to_use": "PyPI의 jupedsim을 별도 가상환경에 설치함. 각 층 평면 폴리곤(방 + 문 개구부)을 기하로 넣고 출구까지 대피 시간·병목을 계산함. building_audit.py의 정적 피난거리 체크를 동적 검증으로 보완하는 용도임.",
+      "strengths": "LGPL, 연구기관이 유지보수함, PyPI 배포, 예제 노트북 제공.",
+      "weaknesses": "2D 층 단위라 층간 계단은 별도로 모델링해야 함. 법규 판정은 하지 않고 수치만 냄.",
+      "license": "LGPL-3.0",
+      "popularity": "GitHub 93★",
+      "last_update": "활발(날짜 미확인)",
+      "distribution": "PyPI(jupedsim), GitHub PedestrianDynamics",
+      "safety": {
+        "source_visible": true,
+        "binaries": "PyPI 휠에 C++ 네이티브 코어 포함(연구기관 공식 빌드)",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/PedestrianDynamics/jupedsim"
+      ]
+    },
+    {
+      "name": "ARCHER (Agentic Rule and Compliance Harness for Executable Regulations)",
+      "category": "LLM 기반 법규 검사 코드 합성(연구)",
+      "what_it_is": "규정 문서를 전문가가 평문으로 해석한 '규칙 해석(RI)' 문서와, 기대 판정이 라벨된 BIM 모델을 입력으로 받음. 결정적 오케스트레이션 루프가 플래너·생성·평가 에이전트를 돌려 테스트 주도 방식(TDD)으로 BIM 파이썬 체커를 생성·실행·수정함.",
+      "how_to_use": "도구라기보다 방법론으로 차용함. building_audit.py에 새 규칙(예: 계단 챌면 ≤ X, 문 앞 여유공간)을 추가할 때, 규칙 평문과 통과/실패 예제 모델을 먼저 만들고 에이전트가 테스트를 통과할 때까지 체커 코드를 생성하게 함.",
+      "strengths": "단일 프롬프트 대비 평균 정확도 +82%. 자가 호스팅 오픈웨이트 모델이 프런티어 API 정확도의 97.8%를 1/4 비용으로 달성함(검색 요약).",
+      "weaknesses": "코드 공개 여부를 확인하지 못함. 2026-07 프리프린트임.",
+      "license": "미확인",
+      "popularity": "신규 논문",
+      "last_update": "arXiv 2607.25566 (2026-07)",
+      "distribution": "arXiv 논문",
+      "safety": {
+        "source_visible": false,
+        "binaries": "해당 없음",
+        "red_flags": "코드 미확인",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://arxiv.org/abs/2607.25566"
+      ]
+    },
+    {
+      "name": "Generative Floor Plan Design with LLMs via RLVR (Lara et al., ACL 2026 Findings)",
+      "category": "LLM 평면 생성(연구)",
+      "what_it_is": "Llama-3.3-70B-Instruct를 실제 평면으로 SFT한 뒤, 검증 가능한 보상(연결성, 방 면적, 겹침, 출력 유효성)으로 강화학습함. 입력은 버블다이어그램(input_graph)과 room_count·total_area·방별 면적 JSON이고, 출력은 방별 id·room_type·area·floor_polygon(미터 단위 꼭짓점) JSON임.",
+      "how_to_use": "가중치 공개를 확인하기 전까지는 '출력 스키마'와 '보상 함수'를 차용함. Claude/GPT 에이전트가 같은 JSON을 내게 하고, 우리 쪽에서 겹침·면적 오차·그래프 연결성 검사를 보상 대신 통과 게이트로 사용한 뒤 Blender/IFC로 벽을 세움.",
+      "strengths": "수치 제약(면적)을 다룸. HouseDiffusion 대비 Compatibility 2.5 → 0.15, Overlap 0.13, 방 면적 오차 약 10%, Room ID 1.00(검색 요약·논문 노트 기준).",
+      "weaknesses": "70B 파인튜닝이 필요함. 코드·가중치 공개를 확인하지 못함. 문·창 배치는 범위 밖임. 학습 데이터 라이선스(RPLAN 계열 여부)를 확인해야 함.",
+      "license": "미확인",
+      "popularity": "ACL 2026 Findings, NeurIPS 2025 워크숍 페이지 존재(검색 요약)",
+      "last_update": "arXiv 2605.14117 (2026-05)",
+      "distribution": "논문(arXiv / ACL Anthology / OpenReview)",
+      "safety": {
+        "source_visible": false,
+        "binaries": "해당 없음",
+        "red_flags": "코드 미확인. 검색에 뜬 JongHwa-Shim/floorplan-llm(0★)은 이 논문의 공식 코드가 아님.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://arxiv.org/abs/2605.14117",
+        "https://aclanthology.org/2026.findings-acl.1326/",
+        "https://openreview.net/forum?id=ZMmDwqjQN9",
+        "https://en.papernotes.org/ACL2026/llm_nlp/generative_floor_plan_design_with_llms_via_reinforcement_learning_with_verifiabl/"
+      ]
+    },
+    {
+      "name": "FMLM — Unified Vector Floorplan Generation via Markup Representation (CVPR 2026)",
+      "category": "평면 생성(연구)",
+      "what_it_is": "Floorplan Markup Language(FML)로 평면 전체를 하나의 구조화 문법으로 직렬화하고, 다음 토큰 예측 트랜스포머(FMLM)로 생성함. 대지 경계, 방 인접 그래프, 부분 레이아웃 등 여러 조건을 단일 모델로 처리하며 RPLAN에서 과제별 SOTA를 넘었다고 보고함(검색 요약).",
+      "how_to_use": "마크업 표현 아이디어를 LLM 출력 포맷 설계에 차용함(평면을 텍스트 문법으로 두면 diff·검증·부분 수정이 쉬움). 코드 공개 여부는 프로젝트 페이지에서 확인해야 함.",
+      "strengths": "조건을 통합하고 벡터로 출력함.",
+      "weaknesses": "RPLAN(아시아 아파트) 편향과 RPLAN 라이선스 제약을 그대로 이어받음. 코드 공개를 확인하지 못함.",
+      "license": "미확인",
+      "popularity": "CVPR 2026 포스터(2026-06-07)",
+      "last_update": "arXiv 2604.04859 (2026-04)",
+      "distribution": "논문, 프로젝트 페이지",
+      "safety": {
+        "source_visible": false,
+        "binaries": "해당 없음",
+        "red_flags": "코드 미확인",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://arxiv.org/abs/2604.04859",
+        "https://cvpr.thecvf.com/virtual/2026/poster/39449",
+        "https://mapooon.github.io/FMLPage/"
+      ]
+    },
+    {
+      "name": "GSDiff (AAAI 2025) / HouseDiffusion (CVPR 2023) 계열",
+      "category": "그래프 제약 벡터 평면 생성(연구, 코드 공개)",
+      "what_it_is": "HouseDiffusion은 버블다이어그램 조건 벡터 평면 확산 모델로, 대부분 후속 연구의 기준선임. GSDiff는 벽 접합점(노드)을 확산으로 생성하고 벽 세그먼트(엣지)를 트랜스포머로 예측해 구조 그래프를 합성하며, 무조건·토폴로지·경계 조건을 지원함.",
+      "how_to_use": "코드는 GitHub에 있고 가중치는 Google Drive에 있음. 출력(방 폴리곤 또는 벽 그래프)을 Blender에서 벽 돌출(extrude)이나 Bonsai 벽 생성으로 변환하는 어댑터 스크립트가 필요함. 실행은 반드시 격리된 환경에서.",
+      "strengths": "코드가 공개되어 재현 가능함. GSDiff는 벽 그래프 기반이라 벽 정렬이 깔끔함. 비교용 기준선으로 표준임.",
+      "weaknesses": "문·창을 생성하지 않거나 약함. RPLAN/LIFULL 전용 학습. HouseDiffusion 저자도 RPLAN 다운로드 문제를 언급함. 오래된 PyTorch 환경.",
+      "license": "GSDiff GPL-3.0, HouseDiffusion GPL-3.0",
+      "popularity": "HouseDiffusion 236★, GSDiff 32★",
+      "last_update": "GSDiff AAAI 2025 / HouseDiffusion CVPR 2023",
+      "distribution": "GitHub 코드 + Google Drive 가중치",
+      "safety": {
+        "source_visible": true,
+        "binaries": "Google Drive로 배포되는 PyTorch 가중치(pickle 기반 체크포인트일 가능성이 높음). torch.load는 임의 코드 실행이 가능함.",
+        "red_flags": "Drive 전용 가중치 배포. 격리 컨테이너에서 weights_only 로드를 사용하거나 safetensors로 변환 후 사용할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/SizheHu/GSDiff",
+        "https://ojs.aaai.org/index.php/AAAI/article/view/33904",
+        "https://github.com/aminshabani/house_diffusion"
+      ]
+    },
+    {
+      "name": "Tell2Design (ACL 2023)",
+      "category": "텍스트→평면 데이터셋",
+      "what_it_is": "80k+ 평면과 자연어 지시문의 쌍. 평면은 RPLAN 기반이고(검색 요약), 지시문은 인공 생성과 MTurk 수집을 섞음. T5 seq2seq 기준선을 제공함. ACL 2023 Area Chair Award 수상.",
+      "how_to_use": "text-to-floorplan 에이전트 평가용 프롬프트 세트로 활용함(비상업 연구 한정).",
+      "strengths": "언어-평면 쌍 데이터로는 대표적임.",
+      "weaknesses": "데이터가 비상업 라이선스이고 RPLAN 제약을 이어받음. 문장이 합성 위주임.",
+      "license": "코드 Apache-2.0 / 데이터 CC BY-NC 4.0",
+      "popularity": "GitHub 85★",
+      "last_update": "2023(ACL)",
+      "distribution": "GitHub + Google Drive zip",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(데이터 zip)",
+        "red_flags": "Google Drive 전용 배포. 데이터만 받고 압축 해제는 격리 환경에서 할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/LengSicong/Tell2Design"
+      ]
+    },
+    {
+      "name": "Text2BIM (TUM 등, J. Comput. Civ. Eng. 2026)",
+      "category": "LLM 멀티에이전트 텍스트→BIM",
+      "what_it_is": "Product Owner·Architect·Programmer·Reviewer 4개 에이전트가 텍스트를 BIM 저작도구 API 코드로 바꾸고, 규칙 기반 모델 체커(Solibri) 결과로 문제를 반복 수정함. 내부 레이아웃·외피·의미 정보가 있는 편집 가능한 BIM을 생성하며, 391개 IFC 모델(중간 결과 포함)로 평가함.",
+      "how_to_use": "원 구현은 Vectorworks 2024/2025와 Solibri Office 라이선스가 필요함. 우리 환경에서는 구조를 'Blender+Bonsai(저작) + IfcOpenShell/ifctester/building_audit(체커)'로 바꿔 쓰는 참조 설계로 활용함.",
+      "strengths": "MIT, 109★. Claude-4, Gemini-2.5-pro, o1-mini, GPT-4o를 비교함. '체커 피드백 루프'가 품질을 높인다는 점을 실증함.",
+      "weaknesses": "상용 소프트웨어에 종속됨. 단순 주거 규모. Vectorworks 파이썬 외부 폴더에 pip 설치가 필요함.",
+      "license": "MIT",
+      "popularity": "GitHub 109★, ASCE 저널 게재",
+      "last_update": "2025-05 실험 갱신(저장소)",
+      "distribution": "GitHub 소스",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(상용 앱은 벤더 설치)",
+        "red_flags": "API 키를 코드 파일에 넣는 안내가 있음. .env를 사용하고 키 노출에 주의할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/dcy0577/Text2BIM",
+        "https://arxiv.org/abs/2408.08054",
+        "https://ascelibrary.org/doi/10.1061/JCCEE5.CPENG-6386"
+      ]
+    },
+    {
+      "name": "MCP4IFC / ifc-bonsai-mcp (Show2Instruct)",
+      "category": "건축 MCP(Blender+Bonsai, 생성 가능, 커뮤니티+논문)",
+      "what_it_is": "Blender+Bonsai용 MCP 서버이자 논문. 50개 이상 도구: 파라메트릭·2점·폴리라인 벽, 여러 형식의 지붕, 슬래브, 문, 창, 계단 생성·수정·삭제, PBR 재료와 스타일, Trimesh 기반 JSON→IFC 메시, IFC 문서 RAG 검색, 동적 코드 생성을 제공함.",
+      "how_to_use": "clone → uv sync → scripts/install_blender_packages.py로 Blender 파이썬에 패키지 설치 → 애드온 zip 설치 → Claude Desktop 설정. Blender 4.4+와 Bonsai 0.8.2+가 필요함.",
+      "strengths": "IFC 의미 정보를 유지한 채 LLM이 집을 '생성'까지 하는 공개 구현 중 가장 완성도가 높음. 논문 실험(IFC-bench-v1, Duplex 모델)이 포함되어 있음.",
+      "weaknesses": "저자 스스로 'LLM 기반 IFC 생성은 가능하지만 의미적으로 견고하지 않다'고 결론냄(공간 추론, 의존성 처리 부족, 검색 요약). README에 '범용 execute_code는 IFC 작업에서 예측 불가하게 동작한다'고 적혀 있음. 규모가 작음(63★).",
+      "license": "MIT",
+      "popularity": "GitHub 63★",
+      "last_update": "2026-07-10(README), 코드·실험 2025-10~11",
+      "distribution": "GitHub 소스만(빌드 스크립트로 애드온 zip 생성)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "자체 바이너리는 없음. 다만 설치 스크립트가 Blender 내장 파이썬에 ifcopenshell·trimesh·numpy·sentence-transformers 등을 pip 설치하고, RAG 임베딩 모델을 외부에서 받음.",
+        "red_flags": "Blender 파이썬 환경을 변경함(별도 Blender 포터블 설치본에서 사용 권장). 코드 실행 도구가 있으므로 로컬 전용으로 쓰고 작업을 저장한 뒤 실행할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/Show2Instruct/ifc-bonsai-mcp",
+        "https://arxiv.org/abs/2511.05533",
+        "https://show2instruct.github.io/mcp4ifc/",
+        "https://aiaecdigest.substack.com/p/llm-ifc-bim-mcp4ifc"
+      ]
+    },
+    {
+      "name": "Bonsai_mcp (JotaDeRodriguez)",
+      "category": "건축 MCP(Blender+Bonsai, 조회·감사 중심, 커뮤니티)",
+      "what_it_is": "BlenderMCP 포크에 IFC 도구를 더한 것: 프로젝트 정보, 엔티티 목록, 속성, 공간 구조, 관계, 선택 요소, 수량 조회, place_ifc_object, 도면 PNG 내보내기, 지오레퍼런스, BC3 견적 내보내기, execute_blender_code, Sequential Thinking.",
+      "how_to_use": "Blender 4.0+, Bonsai, Python 3.12, uv 환경에서 애드온 설치 후 소켓 연결함. Docker 옵션이 있음. AI가 만든 건물의 IfcSpace·수량·관계를 조회하는 감사 단계에 유용함.",
+      "strengths": "조회·수량·도면 출력이 충실함. 2026-09-06 커밋(IfcStore 지연 로딩)으로 유지되고 있음.",
+      "weaknesses": "생성 도구가 제한적(객체 배치 수준). 규모가 작음(64★).",
+      "license": "MIT",
+      "popularity": "GitHub 64★",
+      "last_update": "2026-09-06 (커밋)",
+      "distribution": "GitHub 소스",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음",
+        "red_flags": "execute_blender_code로 임의 파이썬을 실행할 수 있음(README가 주의를 명시). 네트워크 노출을 금지하고 작업을 저장한 뒤 사용할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/JotaDeRodriguez/Bonsai_mcp",
+        "https://medium.com/@JotaDeRodriguez/connecting-claude-to-ifc-building-models-a-proof-of-concept-with-blender-bonsai-and-mcp-cdcfd84e57a8"
+      ]
+    },
+    {
+      "name": "ifcMCP (smartaec)",
+      "category": "건축 MCP(IFC 파일 질의, 커뮤니티/학술)",
+      "what_it_is": "LLM 에이전트가 IFC 파일과 '대화'하도록 하는 경량 MCP 서버. 엔티티 검색, 속성 질의, 공간 분석, 벽의 개구부 탐지 등 7개 기능을 제공함(Jia-Rui Lin, Peng Pan 2025 인용).",
+      "how_to_use": "ifcopenshell과 FastMCP를 설치하고 python server.py를 실행한 뒤 MCP 클라이언트에 http://127.0.0.1:8000/mcp를 등록함.",
+      "strengths": "Apache-2.0, 단순함, Blender가 필요 없음. 벽 개구부 탐지는 문·창 감사에 직접 쓸 수 있음.",
+      "weaknesses": "읽기 위주이고 작은 저장소임(34★, 9 커밋).",
+      "license": "Apache-2.0",
+      "popularity": "GitHub 34★",
+      "last_update": "2025-06 전후(저장소 GIF 날짜)",
+      "distribution": "GitHub 소스",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음",
+        "red_flags": "HTTP 서버이므로 127.0.0.1에만 바인딩할 것",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/smartaec/ifcmcp"
+      ]
+    },
+    {
+      "name": "Revit Public MCP Server (Autodesk 공식)",
+      "category": "건축 MCP(공식, 읽기 전용)",
+      "what_it_is": "Autodesk의 공식·지원 MCP 서버로 Revit 2027 테크 프리뷰임(2026-04 공개 소식, 2026-06-17 AEC Tech Drop 블로그 발표). 요소 검색, 파라미터 읽기, 수량·계산, 뷰 스크린샷(멀티모달 분석)을 지원하며, 현재 릴리스는 읽기 전용에 초점을 맞춤.",
+      "how_to_use": "accounts.autodesk.com의 Revit 2027 권한에서 별도 애드온을 받아 설치하면 Claude Desktop/Cursor가 자동 설정됨(stdio).",
+      "strengths": "공식 지원. 읽기 전용이라 모델을 망가뜨릴 위험이 없어 AI 생성 모델의 감사·보고에 적합함.",
+      "weaknesses": "쓰기(생성)가 불가능함. Revit 2027 전용이고 유료 구독이 필수임. 확장 SDK와 제3자 MCP 병행 여부가 불명확함(커뮤니티 이슈).",
+      "license": "상용(Revit 구독)",
+      "popularity": "공식 제품(수치 없음)",
+      "last_update": "Tech Preview 2026-04~06",
+      "distribution": "Autodesk 계정 포털(공식)",
+      "safety": {
+        "source_visible": false,
+        "binaries": "Autodesk 배포 애드온(알려진 벤더)",
+        "red_flags": "없음. 'Revit MCP' 이름의 비공식 서버가 많으니 공식 포털 배포본인지 확인할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/",
+        "https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/Usage-of-Revit-2027-MCP-Server.html",
+        "https://bimchapters.blogspot.com/2026/04/revit-mcp-public-server-tech-preview.html",
+        "https://github.com/Nikola1Davydov/AnalyzeTool/issues/137"
+      ]
+    },
+    {
+      "name": "커뮤니티 Revit MCP (mcp-servers-for-revit / LuDattilo 포크 / Demolinator pyRevit)",
+      "category": "건축 MCP(커뮤니티, 쓰기 가능)",
+      "what_it_is": "원조 revit-mcp: TypeScript MCP 서버 + C# Revit 플러그인, 30개 이상 도구(요소 질의, 점·선·면·그리드·레벨 생성, 수정, C# 코드 실행). 2026-02-25 아카이브 후 모노레포로 이전함. LuDattilo 포크는 138개 도구에 Revit 2023~2027 지원. Demolinator 판은 pyRevit 기반 48개 도구이며 컴파일된 DLL 없이 순수 파이썬임.",
+      "how_to_use": "Revit에서 벽·방·문을 생성·수정해야 할 때 사용함. 가능하면 소스에서 직접 빌드하거나, DLL이 없는 pyRevit 기반 판을 선택함.",
+      "strengths": "생성·수정이 가능하고 여러 Revit 버전을 지원함. MIT.",
+      "weaknesses": "원본이 아카이브되어 포크가 난립함. C#/Python 임의 코드 실행 도구가 있음.",
+      "license": "MIT",
+      "popularity": "원조 464★(아카이브), LuDattilo 64★, Demolinator 29★",
+      "last_update": "원조 2026-02-25 아카이브. 포크들은 Revit 2027까지 지원 표기",
+      "distribution": "GitHub(원조 모노레포 이전, 포크 Releases)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "LuDattilo 포크는 Revit 버전별로 컴파일된 DLL zip을 Releases에 올리고 '소스를 복사하지 말고 zip을 받으라'고 안내함. 서명 없는 개인 빌드 DLL임.",
+        "red_flags": "개인 포크의 사전 빌드 DLL, 임의 코드 실행. Visual Studio로 직접 빌드하거나 pyRevit 기반 판을 쓰고, 읽기만 필요하면 공식 서버를 쓸 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/mcp-servers-for-revit/revit-mcp",
+        "https://github.com/LuDattilo/revit-mcp-server",
+        "https://github.com/Demolinator/revit-mcp-server"
+      ]
+    },
+    {
+      "name": "Archicad MCP (Graphisoft 공식 진행 중 + lgradisar/archicad-mcp + Tapir)",
+      "category": "건축 MCP(공식 준비 중 / 커뮤니티)",
+      "what_it_is": "Graphisoft 커뮤니티 로드맵에 'MCP-Enabled Workflows in Archicad'가 진행 중으로 올라 있음(2026-04 기준, AI Assistant 내장 MCP와 외부 클라이언트용 공개 MCP 서버, 검색 요약). 현재 쓸 수 있는 것은 커뮤니티 archicad-mcp로, Tapir 애드온의 JSON 명령과 공식 Archicad JSON 명령을 MCP 도구로 노출함.",
+      "how_to_use": "Tapir 애드온(Archicad 25~29, Windows .apx / macOS .zip)을 Add-On Manager로 설치 → archicad-mcp(uv) → Claude Desktop 설정. custom_tools.py로 도구를 추가할 수 있음.",
+      "strengths": "Tapir는 168★·MIT이고 Graphisoft 공식 JSON/Python API 위에 확장한 것임.",
+      "weaknesses": "archicad-mcp가 28★·5 커밋으로 초기 단계임. 공식판이 아직 없음.",
+      "license": "MIT(archicad-mcp, Tapir)",
+      "popularity": "archicad-mcp 28★, Tapir 168★",
+      "last_update": "공식판 진행 중(2026-04), 커뮤니티판 날짜 미확인",
+      "distribution": "GitHub(ENZYME-APD/Tapir 릴리스, lgradisar 소스)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "Tapir는 컴파일된 Archicad 애드온(.apx)을 GitHub Releases로 배포함(소스 공개, 커뮤니티 조직)",
+        "red_flags": "컴파일된 애드온. 동일 조직의 릴리스만 사용하고 가능하면 소스에서 빌드할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://community.graphisoft.com/t5/Product-Roadmap/MCP-Support-for-Archicad/idi-p/682950",
+        "https://github.com/lgradisar/archicad-mcp",
+        "https://github.com/ENZYME-APD/tapir-archicad-automation"
+      ]
+    },
+    {
+      "name": "RhinoAI (McNeel 공식, 구 mcneel/RhinoMCP) / rhinomcp (커뮤니티)",
+      "category": "건축 MCP(Rhino/Grasshopper)",
+      "what_it_is": "McNeel 공식 GitHub 조직의 RhinoAI: Rhino 8.19+/9용 플러그인(.rhp)과 Claude Desktop용 커넥터(.mcpb)로 구성되며 Grasshopper(GH2 포함) 정의 구성을 지원함. 커뮤니티 jingcheng-chen/rhinomcp(1.1k★)는 Rhino 8에서 Rhino·Grasshopper 도구와 임의 명령·RhinoScript-Python·RhinoCommon C# 실행을 제공함.",
+      "how_to_use": "Rhino Package Manager나 공식 GitHub 릴리스로 설치함. 건축에서는 Grasshopper로 매싱·파사드 패턴을 파라메트릭하게 만들고 3dm/OBJ로 Blender에 넘기는 흐름임.",
+      "strengths": "공식 조직 배포, MIT, 317★. Claude Code·Codex·Gemini CLI 등 다양한 클라이언트 설정 가이드를 제공함.",
+      "weaknesses": "WIP 버전(Plugin 0.3.0-wip). Rhino는 유료임. BIM 의미 정보(방·문)가 없어 평면 논리는 별도로 검증해야 함.",
+      "license": "MIT(RhinoAI, rhinomcp)",
+      "popularity": "RhinoAI 317★, rhinomcp 1.1k★",
+      "last_update": "Plugin 0.3.0-wip / Connector 0.1.6, 9월 15일 릴리스(페이지 연도 표기 불명확, .mcpb 형식과 Rhino 8.19 요구 사항으로 보아 2026으로 추정)",
+      "distribution": "GitHub mcneel/rhinoai Releases, Rhino Package Manager",
+      "safety": {
+        "source_visible": true,
+        "binaries": ".rhp 플러그인·.mcpb 커넥터(McNeel 공식 조직 릴리스)",
+        "red_flags": "커뮤니티판 문서가 스스로 '열린 실행 표면'이라며 루프백 외 노출을 금지함. mcneel/RhinoMCP는 옛 이름(2★)이므로 rhinoai를 사용할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/mcneel/rhinoai",
+        "https://github.com/mcneel/rhinoai/releases",
+        "https://github.com/mcneel/RhinoMCP",
+        "https://github.com/jingcheng-chen/rhinomcp",
+        "https://discourse.mcneel.com/t/official-mcp-for-anthropic/218540"
+      ]
+    },
+    {
+      "name": "SketchUp Connector for Claude (Trimble 공식)",
+      "category": "건축 MCP(공식, 원격)",
+      "what_it_is": "Trimble 공식 원격 MCP(https://api.sketchup.com/mcp/v1/sketchup/mcp). 도구는 build_model, get_docs, save_model임. 텍스트·스케치·사진·평면도·치수로 매싱·조경·가구 모델을 만들고, 채팅 안에서 버전 이력을 관리하며, 2D 썸네일과 .skp 다운로드 링크를 제공함.",
+      "how_to_use": "Claude 커넥터 디렉터리에서 추가하고 Trimble ID로 로그인함. 무료 권한으로 30개 모델까지 저장 가능하고 초과 시 유료임(검색 요약). .skp를 Blender로 가져오는 단계가 따로 필요함.",
+      "strengths": "공식 제품이고 로컬 설치가 없음. 매싱 스터디가 빠름. 평면도 이미지를 입력으로 받음.",
+      "weaknesses": "건축 논리 검증이 없음. 제3자 테스트에서 거실-침실, 침실-욕실 사이 문이 누락된 아파트가 나옴(검색 요약). 데이터가 Trimble 클라우드를 경유함.",
+      "license": "상용(SketchUp 구독 / 무료 권한)",
+      "popularity": "2026-04-28 Trimble 발표",
+      "last_update": "2026-04-28 출시",
+      "distribution": "Claude 커넥터 디렉터리(원격 MCP)",
+      "safety": {
+        "source_visible": false,
+        "binaries": "없음(원격 서비스)",
+        "red_flags": "원격 서버로 설계 데이터가 전송됨. 커넥터 페이지도 '신뢰하는 개발자의 커넥터만 사용하라'고 고지함.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://claude.com/connectors/sketchup",
+        "https://sketchup.trimble.com/en/blog/article/sketchup-claude-connector",
+        "https://news.trimble.com/2026-04-28-Trimble-Links-SketchUp-with-Anthropics-Claude,-Bringing-New-Conversational-AI-powered-Capabilities-to-3D-Modeling",
+        "https://help.sketchup.com/en/sketchup-claude-connector"
+      ]
+    },
+    {
+      "name": "Blosm (구 blender-osm, Prochitecture)",
+      "category": "도시 배치(OSM·지형·Google 3D Tiles)",
+      "what_it_is": "OpenStreetMap 건물(높이·층수·지붕 형태, 복합 구성), 도로·철도(커브+프로파일 폭), 수계·숲, 실측 지형, Google 3D 도시(포토리얼 3D Tiles)를 가져옴. Premium은 재질·타일 텍스처·UV·텍스처 베이크·위성영상 투영을 추가함.",
+      "how_to_use": "개발사 Gumroad(기본판 무료·기부 또는 Premium)에서 받음. 지형을 먼저 가져온 뒤 OSM을 가져오면 건물이 지형 위에 놓이는 흐름이 일반적임. Buildify GN을 풋프린트에 적용해 디테일 건물을 만듦.",
+      "strengths": "2.1k★, 소스가 GPL로 공개되어 있음. 실제 도시 배치라 '말이 되는' 블록·도로 관계가 보장됨.",
+      "weaknesses": "OSM 높이·층수 데이터 품질이 지역마다 다름. Google 3D Tiles는 API 키와 약관 제약이 있음. Blender 5.x 지원 여부를 직접 확인하지 못함.",
+      "license": "GPL(저장소)",
+      "popularity": "GitHub 2.1k★",
+      "last_update": "미확인(프록시 차단)",
+      "distribution": "prochitecture.gumroad.com(개발사 공식), GitHub vvoovv/blosm 소스(release 브랜치)",
+      "safety": {
+        "source_visible": true,
+        "binaries": "알려진 바 없음",
+        "red_flags": "BlenderAddonsArchive/blender-osm 같은 아카이브 미러와 BlendAtlas 등 제3자 판매 페이지가 있음. 개발사 배포처만 사용할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/vvoovv/blosm",
+        "https://prochitecture.com/blosm/",
+        "https://prochitecture.gumroad.com/l/blender-osm"
+      ]
+    },
+    {
+      "name": "BlenderGIS (domlysz)",
+      "category": "도시 배치(GIS·DEM 지형)",
+      "what_it_is": "GIS와 Blender를 잇는 애드온. Shapefile 벡터, 래스터, GeoTIFF DEM, OSM XML을 가져오고, SRTM/OpenTopography 지형, 웹 베이스맵, 좌표계(CRS) 지정을 지원함.",
+      "how_to_use": "GitHub 릴리스로 설치함. OpenTopography API 키(2022년부터 필요)와 CRS 검색용 MapTiler 키를 설정함. 지형 메시를 만든 뒤 건물 풋프린트 아래 지형 높이를 샘플링해 배치함(know_how 참고).",
+      "strengths": "9.4k★로 이 분야 최대임. 2025-12에 Blender 5 버그 수정, Pillow 폐기 대응, Blender 4.x 하위 호환 유지 커밋이 있음(v2.2.11~2.2.15).",
+      "weaknesses": "1인 유지보수이고 외부 API 키에 의존함. 건물 디테일 생성 기능은 없음.",
+      "license": "GPL-3.0(추정 — 저장소 LICENSE 파일은 있으나 종류를 페이지 요약에서 확인하지 못함)",
+      "popularity": "GitHub 9.4k★",
+      "last_update": "2025-12-20 (커밋, v2.2.15)",
+      "distribution": "GitHub domlysz/BlenderGIS",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(GDAL은 선택)",
+        "red_flags": "blendergis.com은 저장소에 링크되지 않은 비공식 도메인이므로 다운로드에 쓰지 말 것. SourceForge 미러도 불필요함. GitHub만 사용할 것.",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/domlysz/BlenderGIS",
+        "https://github.com/domlysz/BlenderGIS/releases"
+      ]
+    },
+    {
+      "name": "SceneCity (Arnaud Couturier)",
+      "category": "도시 배치(절차적 도시 생성, 유료)",
+      "what_it_is": "Blender용 절차적 도시 생성기로 도로망·블록·건물 배치를 다룸. Blender 3.4+ 대상이며 v2가 개발 중(검색 요약).",
+      "how_to_use": "개발자 Gumroad나 CGChan 스토어에서 구매함($39, 할인가 $19.50, 검색 요약).",
+      "strengths": "도로 그래프 기반 배치를 제공하고 장기간 유지된 제품임(BlenderArtists 스레드가 2008년부터 있음).",
+      "weaknesses": "Blender 5.x 호환과 최신 버전을 확인하지 못함(공식 페이지 차단). 건물 내부는 없음.",
+      "license": "유료 상용",
+      "popularity": "BlenderArtists 장기 스레드(검색 요약)",
+      "last_update": "미확인",
+      "distribution": "couturier-arnaud.gumroad.com / cgchan.com 스토어(개발자 공식)",
+      "safety": {
+        "source_visible": false,
+        "binaries": "미확인",
+        "red_flags": "nullpk, iggtech 등이 'SceneCity Pro free download'로 재배포함. 크랙판은 악성코드 위험이 크므로 절대 사용 금지.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://www.cgchan.com/store/scenecity",
+        "https://couturier-arnaud.gumroad.com/l/scenecity"
+      ]
+    },
+    {
+      "name": "ArcGIS CityEngine (Esri)",
+      "category": "도시 배치(절차적 도시, 상용 표준)",
+      "what_it_is": "CGA 규칙 기반 절차적 도시·건물 모델링의 업계 표준. 도로망 성장, 블록·필지 분할, 규칙 기반 매싱·파사드를 지원함.",
+      "how_to_use": "Esri 라이선스(2025.1: 단일/동시/Named User, ArcGIS 사용자 유형 확장)로 사용함. 결과를 FBX/OBJ/glTF로 Blender에 넘김. 에이전트는 CityEngine 파이썬 스크립팅으로 제어할 수 있음(별도 확인 필요).",
+      "strengths": "필지 분할·용적률·셋백 같은 도시계획 규칙을 표현하는 성숙한 문법임.",
+      "weaknesses": "비쌈(요금제 2개, $2,000부터, 무료판·체험판 없음 — TrustRadius, 검색 요약). 대학 컨소시엄 예외가 있음.",
+      "license": "상용",
+      "popularity": "업계 표준",
+      "last_update": "2025.1(검색 요약)",
+      "distribution": "Esri 공식",
+      "safety": {
+        "source_visible": false,
+        "binaries": "Esri 네이티브 앱(알려진 벤더)",
+        "red_flags": "없음(크랙판 사용 금지)",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://www.esri.com/en-us/arcgis/products/arcgis-cityengine/buy",
+        "https://www.trustradius.com/products/arcgis-cityengine/pricing",
+        "https://support.esri.com/en-us/knowledge-base/product-sales-update-arcgis-cityengine-000035055"
+      ]
+    },
+    {
+      "name": "오픈소스·연구용 도시 생성기 (CityCraft / UrbanWorld / CityX / procedural_city_generation)",
+      "category": "도시 배치(연구·오픈소스)",
+      "what_it_is": "CityCraft: DiT 레이아웃 확산 + LLM(OpenAI API) 도시계획(건물 배치·디자인) + Blender 렌더(79★). UrbanWorld: OSM 레이아웃 → Urban MLLM 설계 → 3D 확산 텍스처 → Blender(59★). CityX: annotator·planner·executor·evaluator 4개 에이전트가 Blender PCG 플러그인을 호출하는 방식(논문). josauder/procedural_city_generation: 파이썬 도로망 성장 + Blender 시각화(597★, MPL-2.0, 오래됨).",
+      "how_to_use": "직접 쓰기보다 'LLM planner가 레이아웃 JSON을 만들고, 결정적 PCG가 도로·필지·건물을 배치하고, evaluator가 확인하는' 구조를 참조 설계로 차용함.",
+      "strengths": "LLM+Blender 도시 파이프라인의 공개 사례임.",
+      "weaknesses": "CityCraft·UrbanWorld는 라이선스가 명시되지 않음. 환경이 오래됨(Blender 3.2, CUDA 11.7, Py3.7/3.8). 재현성이 낮음. procedural_city_generation은 유지보수가 거의 없음.",
+      "license": "CityCraft·UrbanWorld 미명시 / procedural_city_generation MPL-2.0",
+      "popularity": "597★ / 79★ / 59★",
+      "last_update": "2024~2025(연구 코드), 이후 미확인",
+      "distribution": "GitHub + HuggingFace 가중치·에셋",
+      "safety": {
+        "source_visible": true,
+        "binaries": "HuggingFace에서 모델 가중치·에셋을 받아야 함(형식 미확인)",
+        "red_flags": "라이선스 미명시, 외부 가중치 다운로드. 격리 환경에서만 실행할 것.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/djFatNerd/CityCraft",
+        "https://github.com/Urban-World/UrbanWorld",
+        "https://arxiv.org/html/2407.17572v3",
+        "https://github.com/josauder/procedural_city_generation"
+      ]
+    },
+    {
+      "name": "ResPlan (17,000 주거 평면 데이터셋, 2025)",
+      "category": "평면 데이터셋(상업 이용 가능)",
+      "what_it_is": "공개 부동산 리스팅에서 추출한 17,000개 주거 평면. 벽·문·창·방·발코니 벡터와 미터 스케일 좌표, 4종 엣지(via_door, adjacency, via_window, direct)를 가진 방 연결 그래프를 제공함. 이미지·주소·개인정보는 없음.",
+      "how_to_use": "문 연결 그래프로 '정상 평면' 통계를 뽑아 검증 기준으로 씀. 예: 욕실의 via_door 이웃 분포, 거실 경유 비율, 방별 면적 분포. building_audit.py의 임계값(최소 면적, 문 수)을 데이터로 보정하는 데 활용함.",
+      "strengths": "데이터 CC BY 4.0이라 상업적 이용이 가능함(출처 표기). 문·창까지 벡터로 있음. Croissant 메타데이터와 분할(split.json)을 제공함.",
+      "weaknesses": "작은 커뮤니티(18★). 리스팅 기반이라 지역 편향 가능성이 있음. 데이터가 pickle 형식임.",
+      "license": "데이터 CC BY 4.0 / 코드 MIT",
+      "popularity": "GitHub 18★, Kaggle 공개",
+      "last_update": "arXiv 2508.14006 (2025-08)",
+      "distribution": "GitHub(ResPlan.zip) + Kaggle",
+      "safety": {
+        "source_visible": true,
+        "binaries": "데이터가 pickle 파일임. pickle 로드는 임의 코드 실행이 가능함.",
+        "red_flags": "pickle은 격리 환경에서 한 번만 로드해 JSON으로 변환한 뒤 사용할 것",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/m-agour/ResPlan",
+        "https://arxiv.org/pdf/2508.14006",
+        "https://www.kaggle.com/code/resplan/resplan-17000-floor-plans-usage/input"
+      ]
+    },
+    {
+      "name": "MSD — Modified Swiss Dwellings (ECCV 2024)",
+      "category": "평면 데이터셋(다세대 건물)",
+      "what_it_is": "중대형 다세대 건물 평면 5.3K개 이상, 세대 18.9K개. 방 폴리곤, 방 유형, 존(zoning) 유형 속성을 가진 그래프 중심 구조(networkx / torch_geometric)이며 Swiss Dwellings에서 파생됨.",
+      "how_to_use": "아파트 동 단위 배치(코어·복도·세대 경계) 검증 기준으로 활용함. 기존 모델(HouseDiffusion 변형, 그래프 U-Net)이 MSD에서는 잘 안 된다는 저자 결론은 '다세대 평면은 아직 어렵다'는 경고로 읽어야 함.",
+      "strengths": "다세대 복합 건물을 다루는 거의 유일한 대규모 데이터셋임.",
+      "weaknesses": "라이선스를 GitHub 페이지에서 확인하지 못함(Kaggle 페이지 확인 필요). 기준선 코드 일부가 '예정' 상태임.",
+      "license": "미확인(Kaggle 확인 필요)",
+      "popularity": "GitHub 134★",
+      "last_update": "ECCV 2024",
+      "distribution": "Kaggle + GitHub",
+      "safety": {
+        "source_visible": true,
+        "binaries": "없음(데이터)",
+        "red_flags": "없음",
+        "verdict": "안전 신호 양호"
+      },
+      "urls": [
+        "https://github.com/caspervanengelenburg/msd",
+        "https://www.kaggle.com/datasets/caspervanengelenburg/modified-swiss-dwellings",
+        "https://arxiv.org/abs/2407.10121"
+      ]
+    },
+    {
+      "name": "RPLAN / CubiCasa5k / Structured3D (기존 평면·실내 데이터셋 라이선스 정리)",
+      "category": "평면 데이터셋(라이선스 주의)",
+      "what_it_is": "RPLAN: 아시아 실제 주거 평면 80,788개. 대부분 평면 생성 연구의 기반이며, 연구 전용 데이터 사용 계약·요청 절차가 있고 재배포가 금지됨(검색 요약). CubiCasa5k: 평면 이미지 5,000장, 80개 이상 카테고리 SVG 폴리곤 주석, Zenodo 배포, 모델 가중치는 Google Drive(593★). Structured3D: 3.5K 주택 설계, 레이아웃·3D 박스·와이어프레임·평면 주석, 이용약관 동의 폼 필요(682★, 코드 MIT).",
+      "how_to_use": "평면 이미지를 벡터로 바꾸는 인식 모델 학습(CubiCasa5k), 실내 레이아웃 검증(Structured3D)에 씀. RPLAN 기반 모델의 출력물을 상업 프로젝트에 쓸 때는 법률 검토가 필요함.",
+      "strengths": "연구 표준이라 비교 기준으로 쓰기 좋음.",
+      "weaknesses": "대부분 비상업·연구 전용 제약이 있음. CubiCasa5k 데이터 라이선스 종류는 저장소 요약에서 확인하지 못함(LICENSE 파일은 존재).",
+      "license": "RPLAN 연구 전용(검색 요약) / CubiCasa5k 미확인 / Structured3D 자체 이용약관",
+      "popularity": "CubiCasa5k 593★, Structured3D 682★",
+      "last_update": "2019~2020 공개 데이터셋",
+      "distribution": "요청 폼·Zenodo·Google Drive",
+      "safety": {
+        "source_visible": true,
+        "binaries": "CubiCasa5k 가중치 Google Drive(pickle 가능성)",
+        "red_flags": "Drive 가중치는 격리 로드. 비공식 재배포본(특히 RPLAN)은 계약 위반이므로 사용 금지.",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://github.com/CubiCasa/CubiCasa5k",
+        "https://github.com/bertjiazheng/Structured3D",
+        "https://pypi.org/project/rplanpy/",
+        "https://arxiv.org/pdf/2605.14117"
+      ]
+    },
+    {
+      "name": "BIM-Edit 벤치마크 (2026-06)",
+      "category": "LLM BIM 편집 벤치마크",
+      "what_it_is": "IFC BIM을 자연어로 편집하는 LLM 벤치마크. 실제 건물 11개와 합성 장면 36개에 걸쳐 324개 과제가 있고, 지시 유형은 직접·공간·위상 3종임.",
+      "how_to_use": "우리 파이프라인 평가 설계의 참고 자료. '기하·의미·위상을 동시에 보존했는가'로 채점하는 방식을 building_audit 리포트에 도입함.",
+      "strengths": "7개 LLM 비교: 최고 평균 49.48%, 완전 해결 3.4% 이하. Gemini 3.0 Flash가 최고점이었고, Claude Sonnet 4.6은 평균 16.5회 도구 호출에 런타임 실패 46.3%(대부분 호출 예산 소진)였음. '눈으로 그럴듯한 편집도 구조화된 엔지니어링 산출물로는 무효인 경우가 많다'는 결론(모두 검색 요약).",
+      "weaknesses": "코드·데이터 공개 여부를 확인하지 못함. 신규 프리프린트임.",
+      "license": "미확인",
+      "popularity": "신규(benchmarklist 등에 등재, 검색 요약)",
+      "last_update": "arXiv 2606.20146 (2026-06)",
+      "distribution": "arXiv",
+      "safety": {
+        "source_visible": false,
+        "binaries": "해당 없음",
+        "red_flags": "코드 미확인",
+        "verdict": "주의"
+      },
+      "urls": [
+        "https://arxiv.org/abs/2606.20146",
+        "https://benchmarklist.com/benchmarks/bim_edit/"
+      ]
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "평면을 2단계로 생성할 것. (1) LLM이 버블다이어그램(방·문 연결 그래프)과 방별 목표 면적 JSON을 먼저 냄 → (2) 방 폴리곤(미터 단위)으로 구체화 → (3) 겹침 면적, 면적 오차, 문 경유 연결성, 외곽 경계 포함 여부를 결정적으로 검사 → (4) 통과한 것만 Blender/Bonsai로 벽을 세움.",
+      "why": "ACL 2026 RLVR 논문은 바로 이 JSON 스키마(input_graph + floor_polygon)에 검증 가능한 보상을 붙여 겹침·연결성 오류를 크게 줄였음. ResPlan은 via_door/adjacency 엣지를 구분해 '문을 통한 연결'을 직접 검증할 수 있게 해 줌. 3D로 먼저 만들면 오류 수정 비용이 커짐.",
+      "urls": [
+        "https://arxiv.org/abs/2605.14117",
+        "https://github.com/m-agour/ResPlan"
+      ]
+    },
+    {
+      "tip": "LLM의 자기평가 대신 결정적 체커를 통과 게이트로 둘 것. 실패 항목(예: 'Door_03이 두 공간을 잇지 않음')을 구조화된 메시지로 에이전트에 되돌려 반복 수정하게 함.",
+      "why": "Text2BIM은 Solibri 규칙 체커 피드백 루프로 품질을 높였고, ARCHER는 TDD식 오케스트레이션으로 단일 프롬프트 대비 정확도를 82% 높였음(검색 요약). BIM-Edit은 '눈으로 그럴듯한 결과가 구조적으로는 무효'인 경우가 많다고 보고함.",
+      "urls": [
+        "https://github.com/dcy0577/Text2BIM",
+        "https://arxiv.org/abs/2607.25566",
+        "https://arxiv.org/abs/2606.20146"
+      ]
+    },
+    {
+      "tip": "벽·문·창·방을 메시가 아니라 IFC 의미 객체(IfcWall, IfcDoor와 개구부 관계, IfcSpace, IfcStair)로 만들 것. building_audit.py가 기하 교차로 '문이 벽에 있는가'를 추정하던 부분을 관계(IfcRelVoidsElement/IfcRelFillsElement)와 IfcSpace 경계로 직접 확인할 수 있음.",
+      "why": "Bonsai/IfcOpenShell은 문이 호스트 벽의 개구부를 채우는 관계를 유지함. 결과를 ifctester·ifcclash·buildingSMART 검증기에 그대로 넣을 수 있고, IfcMCP로 헤드리스 질의·편집도 됨.",
+      "urls": [
+        "https://github.com/IfcOpenShell/IfcOpenShell",
+        "https://github.com/IfcOpenShell/IfcOpenShell/tree/v0.8.0/src/ifcmcp",
+        "https://extensions.blender.org/add-ons/bonsai/"
+      ]
+    },
+    {
+      "tip": "IDS 파일로 '생성물이 반드시 가져야 할 정보'를 계약처럼 정의할 것. 예: 모든 IfcSpace에 이름·용도 분류, 모든 IfcDoor에 폭·높이, 모든 IfcStair에 챌면 수·디딤판 깊이. 기하 규칙(피난거리, 계단 경사)은 IDS 밖에서 파이썬으로 검사함.",
+      "why": "ifctester가 IDS를 읽고 IFC를 검증해 HTML/JSON/BCF 리포트를 내므로, 에이전트가 빠뜨린 속성을 자동으로 잡아낼 수 있음.",
+      "urls": [
+        "https://docs.ifcopenshell.org/ifctester.html",
+        "https://pypi.org/project/ifctester/0.0.240118"
+      ]
+    },
+    {
+      "tip": "동선 검증은 그래프로 할 것. 공간을 셀로, 문을 엣지로 두는 그래프를 만들어 현관에서 모든 방까지 도달 가능한지, 침실을 통과해야만 가는 욕실·방이 없는지, 막다른 복도 길이는 얼마인지 검사함. 대피 시간이 필요하면 층 평면을 JuPedSim에 넣음.",
+      "why": "TopologicPy는 인접·접근 그래프와 경로 탐색을 제공하고, JuPedSim은 출구까지 대피를 시뮬레이션함. 두 도구 모두 LGPL이고 별도 프로세스로 돌릴 수 있음. 'Backrooms'식 평면의 대표 증상인 도달 불가 방, 문 없는 방, 끝없는 복도가 바로 드러남.",
+      "urls": [
+        "https://github.com/wassimj/topologicpy",
+        "https://github.com/PedestrianDynamics/jupedsim"
+      ]
+    },
+    {
+      "tip": "에이전트에게는 임의 코드 실행보다 고수준의 파라메트릭 도구(create_wall(시작, 끝, 두께, 높이), create_door(호스트 벽, 오프셋, 폭, 스윙))를 주고, 도구 호출 예산과 중간 체크포인트(저장)를 둘 것.",
+      "why": "MCP4IFC README는 범용 execute_code가 IFC 작업에서 예측 불가하게 동작한다고 밝힘. BIM-Edit에서 Claude Sonnet 4.6의 실패 46.3%는 대부분 호출 예산 소진이었음(검색 요약). RhinoMCP 문서도 임의 실행 표면을 경고함.",
+      "urls": [
+        "https://github.com/Show2Instruct/ifc-bonsai-mcp",
+        "https://arxiv.org/abs/2606.20146",
+        "https://github.com/jingcheng-chen/rhinomcp"
+      ]
+    },
+    {
+      "tip": "감사(검사)에는 읽기 전용 공식 서버를, 생성에는 쓰기 가능한 서버를 따로 쓸 것. 예: Revit 2027 Public MCP로 수량·파라미터를 검사하고, Bonsai_mcp로 IfcSpace·수량·관계를 조회함.",
+      "why": "Autodesk 공식 Revit MCP는 읽기 전용이라 모델을 훼손할 위험 없이 AI 생성 결과를 검사할 수 있음. 생성과 검사를 같은 에이전트·도구로 하면 자기 확증 편향이 생김.",
+      "urls": [
+        "https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/",
+        "https://github.com/JotaDeRodriguez/Bonsai_mcp"
+      ]
+    },
+    {
+      "tip": "도시·단지 배치는 절차적으로 지어내기보다 실제 OSM 풋프린트와 DEM 지형에서 시작할 것. 지형을 먼저 만들고, 각 풋프린트 꼭짓점 아래 지형 높이를 레이캐스트로 샘플링함. 건물 바닥(FFL)은 최저점이나 입구 쪽 높이에 맞추고, 최고점과 최저점의 차이만큼 기단(plinth)이나 옹벽을 내려 공중에 뜨거나 파묻히는 일을 막음. 경사가 크면 층을 나눔.",
+      "why": "blosm과 BlenderGIS는 실제 도로·블록 관계와 지형을 제공하므로 '말이 되는' 배치가 기본으로 보장됨. 기단 처리는 일반적인 실무 관행임(도구 문서가 아닌 일반 지식).",
+      "urls": [
+        "https://github.com/vvoovv/blosm",
+        "https://github.com/domlysz/BlenderGIS"
+      ]
+    },
+    {
+      "tip": "가능하면 평면은 사람이 준 도면이나 데이터셋 샘플을 입력으로 쓰고, 에이전트에게는 3D화·디테일·재질을 맡길 것.",
+      "why": "텍스트만으로 Claude가 평면을 만들면 큰 레이아웃에서 문 누락, 방 연결 끊김, 비례 오류가 반복됐음(RoomSketcher, MindStudio, 검색 요약). 반면 평면도 입력 → Blender 3D화는 여러 번 수정을 거쳐 이틀 만에 워크스루에 도달한 사례가 있음(검색 요약).",
+      "urls": [
+        "https://www.roomsketcher.com/blog/can-claude-create-floor-plans/",
+        "https://designwithai.substack.com/p/how-i-built-a-walkable-3d-house-with-claude-code-and-blender"
+      ]
+    },
+    {
+      "tip": "학습·통계용 평면 데이터는 라이선스부터 확인할 것. 상업 프로젝트 기준치는 ResPlan(CC BY 4.0)에서 뽑고, RPLAN·Tell2Design(비상업) 기반 모델의 출력물을 상업적으로 쓰려면 법률 검토를 거칠 것.",
+      "why": "RPLAN은 연구 전용 계약에 재배포 금지이고(검색 요약) Tell2Design 데이터는 CC BY-NC 4.0임. 대부분의 평면 생성 모델(HouseDiffusion, GSDiff, FMLM)이 RPLAN으로 학습됨.",
+      "urls": [
+        "https://github.com/m-agour/ResPlan",
+        "https://github.com/LengSicong/Tell2Design",
+        "https://github.com/aminshabani/house_diffusion"
+      ]
+    },
+    {
+      "tip": "공급망 안전 수칙: (1) 애드온은 extensions.blender.org, 개발자 본인의 Gumroad/Superhive, 같은 조직의 GitHub 릴리스에서만 받을 것. (2) 'crack/FULL/free download' 사이트는 절대 쓰지 말 것. (3) Google Drive의 .pt/.pkl 가중치와 pickle 데이터는 격리 컨테이너에서 weights_only 로드나 변환 후 사용할 것. (4) 개인 포크가 배포하는 사전 빌드 DLL(Revit 등)은 소스에서 직접 빌드할 것. (5) .blend 파일은 Auto Run Scripts를 끄고 열 것.",
+      "why": "이번 조사에서 Archipack·SceneCity·HiFi·Home Builder를 재배포하는 워레즈 사이트가 검색 상위에 반복 노출됐음. 연구 코드 다수가 Drive pickle 가중치를 쓰고, Revit 커뮤니티 포크는 서명 없는 DLL zip을 배포함.",
+      "urls": [
+        "https://github.com/LuDattilo/revit-mcp-server",
+        "https://github.com/SizheHu/GSDiff",
+        "https://github.com/CreativeDesigner3D/home_builder_5"
+      ]
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "RoomSketcher: 'Claude로 평면도를 만들 수 있나?' 테스트",
+      "who": "RoomSketcher(평면도 SaaS 회사) 블로그",
+      "ai_model": "Claude(구체 버전은 검색 요약에 없음)",
+      "tools": "Claude 채팅(아파트·방 레이아웃, 스케치 변환, 2D→3D)",
+      "what_was_made": "아파트 평면, 단일 방 레이아웃, 스케치 변환, 3D 레이아웃",
+      "process": "텍스트 프롬프트와 스케치를 입력해 평면과 3D 레이아웃을 생성하고 정밀 수정을 요청함(검색 요약).",
+      "outcome": "평면처럼 보이는 결과는 나오지만 실제 평면으로 쓸 만한 경우는 드물었음. 큰 레이아웃일수록 문 누락, 가구 겹침, 비례 오류, 논리적으로 연결되지 않는 방이 나타남. 작은 방은 비교적 양호했으나 정밀 수정, 스케치 변환, 3D 비례 유지에 약했음(검색 요약. 이해관계가 있는 회사의 테스트임).",
+      "urls": [
+        "https://www.roomsketcher.com/blog/can-claude-create-floor-plans/"
+      ]
+    },
+    {
+      "title": "MindStudio: Claude 크리에이티브 커넥터(Blender·Adobe·SketchUp) 실사용 평가",
+      "who": "MindStudio 블로그",
+      "ai_model": "Claude(2026-05 공개된 크리에이티브 커넥터)",
+      "tools": "SketchUp Connector, Blender 커넥터",
+      "what_was_made": "SketchUp 아파트 모델, Blender 평면",
+      "process": "커넥터로 아파트를 생성하고 동선과 가구 배치를 점검함(검색 요약).",
+      "outcome": "SketchUp 결과에서 거실-침실, 침실-욕실 사이 문이 없었고 주방 아일랜드 때문에 싱크대 접근이 어려웠음. 평면 테스트에서는 가구 비례 오류, 레이아웃 중간에 갑자기 생긴 계단, 문 없는 방이 여러 개 나옴(검색 요약). 공식 커넥터도 건축 논리 검증을 해 주지 않는다는 근거임.",
+      "urls": [
+        "https://www.mindstudio.ai/blog/claude-3-creative-app-mcp-connectors-blender-adobe-sketchup"
+      ]
+    },
+    {
+      "title": "평면도 → 걸어 다닐 수 있는 3D 집 (Claude Code + Blender)",
+      "who": "Design with AI(Substack) 작성자와 유사 블로그들(Sidharth Satapathy, vxlabs의 Codex 버전)",
+      "ai_model": "Claude(Claude Code). vxlabs 사례는 Codex",
+      "tools": "Claude Code, Blender MCP(N 패널 Connect), Blender",
+      "what_was_made": "가족 주택의 2D 평면도를 바탕으로 가구를 배치하고 렌더한 3D 워크스루",
+      "process": "평면도 이미지를 주고 Claude가 벽을 식별·돌출하도록 한 뒤 여러 차례 수정 지시를 반복함(검색 요약).",
+      "outcome": "첫 결과는 기대보다 낮아 여러 번 수정해야 했으나, 이틀 만에 가구 배치·렌더된 워크스루에 도달함(검색 요약). '평면을 입력으로 주면' 에이전트가 3D화를 충분히 해낼 수 있다는 긍정 사례임.",
+      "urls": [
+        "https://designwithai.substack.com/p/how-i-built-a-walkable-3d-house-with-claude-code-and-blender",
+        "https://www.sidharthsatapathy.com/blog/claude-blender-mcp-floor-plan-to-3d-house/",
+        "https://vxlabs.in/blog/codex-blender-mcp-3d-floor-plan",
+        "https://www.chatprd.ai/how-i-ai/workflows/how-to-create-an-interactive-3d-house-model-from-a-floor-plan-using-ai"
+      ]
+    },
+    {
+      "title": "Text2BIM: LLM 멀티에이전트 + 규칙 체커 루프로 BIM 생성",
+      "who": "Changyu Du 등(TUM 연구진), ASCE J. Comput. Civ. Eng. Vol.40 No.2",
+      "ai_model": "GPT-4o(초기), 이후 Claude-4, Gemini-2.5-pro, o1-mini 비교",
+      "tools": "Vectorworks 2024/2025 API, Solibri Office 모델 체커, IFC",
+      "what_was_made": "내부 레이아웃·외피·의미 정보를 가진 편집 가능한 BIM 모델(391개 IFC, 중간 결과 포함)",
+      "process": "Product Owner가 요구사항을 정리하고, Architect가 건축 지침에 따라 계획을 세우고, Programmer가 API 코드를 작성하고, Reviewer가 검토함. 이어서 Solibri 체커가 문제를 찾아 에이전트에 되먹임하며 반복 수정함.",
+      "outcome": "사용자 개념에 맞는 구조적으로 합리적인 모델을 생성했다고 보고함. 체커 루프가 품질 개선의 핵심 장치였음. 상용 소프트웨어 의존이 한계임.",
+      "urls": [
+        "https://github.com/dcy0577/Text2BIM",
+        "https://arxiv.org/abs/2408.08054"
+      ]
+    },
+    {
+      "title": "MCP4IFC: Blender+Bonsai MCP로 LLM이 IFC 주택 생성·질의·편집",
+      "who": "Show2Instruct 팀(논문 arXiv 2511.05533)",
+      "ai_model": "기존 멀티모달 LLM(구체 모델은 검색 요약에 없음)",
+      "tools": "Blender, Bonsai, IfcOpenShell, 50개 이상 MCP 도구, RAG 코드 생성",
+      "what_was_made": "단순 주택 생성, Duplex 모델(IFC-bench-v1) 질의·편집",
+      "process": "사전 정의된 요소 생성 함수(벽·슬래브·지붕·문·창·계단)와 장면 질의 도구를 기본으로 쓰고, 부족한 부분은 RAG 기반 코드 생성으로 보완함.",
+      "outcome": "BIM 소프트웨어를 직접 조작하지 않고도 질의·편집·생성이 가능함을 보였음. 다만 'LLM 기반 IFC 생성은 가능하지만 의미적으로 견고하지 않고, 공간 추론·의미 일관성·의존성 처리 개선이 필수'라고 결론냄(검색 요약).",
+      "urls": [
+        "https://github.com/Show2Instruct/ifc-bonsai-mcp",
+        "https://arxiv.org/abs/2511.05533"
+      ]
+    },
+    {
+      "title": "BIM-Edit: 7개 LLM의 IFC 편집 능력 측정",
+      "who": "BIM-Edit 저자(arXiv 2606.20146)",
+      "ai_model": "7개 LLM(Gemini 3.0 Flash, Claude Sonnet 4.6, GPT 계열 등)",
+      "tools": "IFC 편집 도구 호출 환경",
+      "what_was_made": "324개 편집 과제(실제 건물 11개, 합성 장면 36개)",
+      "process": "직접·공간·위상 지시를 주고 기하·의미·위상 보존 여부로 채점함.",
+      "outcome": "최고 평균 49.48%, 완전 해결 3.4% 이하. Gemini 3.0 Flash가 최고점이었고, Claude Sonnet 4.6은 도구 호출이 가장 많았으며(16.5회) 런타임 실패 46.3%(대부분 예산 소진)였음. 부분적인 기하 진전은 있어도 세 가지를 동시에 보존하는 경우는 드물었음(검색 요약).",
+      "urls": [
+        "https://arxiv.org/abs/2606.20146"
+      ]
+    },
+    {
+      "title": "Claude ↔ IFC 모델 연결 PoC (Bonsai MCP)",
+      "who": "Juan D. Rodriguez(Medium, Bonsai_mcp 저자)",
+      "ai_model": "Claude(Claude Desktop)",
+      "tools": "Blender, Bonsai, BlenderMCP 포크",
+      "what_was_made": "기존 IFC 건물 모델에 대한 자연어 질의·분석(프로젝트 정보, 엔티티, 속성, 공간 구조, 관계)",
+      "process": "Blender 애드온 소켓 서버와 MCP 서버를 연결하고 IFC 조회 도구를 추가함. 이후 배치, 도면 PNG, 견적(BC3), 지오레퍼런스 도구로 확장함.",
+      "outcome": "IFC 조회와 분석은 실용적인 수준이었음. 생성 기능은 제한적이라 '감사·분석' 용도로 자리잡음. 2026-09까지 유지보수가 이어짐.",
+      "urls": [
+        "https://medium.com/@JotaDeRodriguez/connecting-claude-to-ifc-building-models-a-proof-of-concept-with-blender-bonsai-and-mcp-cdcfd84e57a8",
+        "https://github.com/JotaDeRodriguez/Bonsai_mcp"
+      ]
+    },
+    {
+      "title": "LLM 기반 자동 건축법규 검토 사례 연구",
+      "who": "arXiv 2510.02634 저자",
+      "ai_model": "GPT-4o 외 여러 LLM",
+      "tools": "LLM 에이전트, 미국 DOE COMcheck 엔진 API, 규정 RAG",
+      "what_was_made": "이기종 설계 파일에서 기하·일정·시스템 속성을 추출하고 ASHRAE 90.1-2022 조명 허용치 등을 검증함",
+      "process": "결정적 엔진(COMcheck) API 호출과 RAG 기반 규정 해석을 결합함.",
+      "outcome": "GPT-4o가 효율과 안정성의 균형이 가장 좋았고, 작은 모델은 불안정하거나 실패함(검색 요약). '결정적 엔진 + LLM 해석' 하이브리드가 핵심이라는 교훈임.",
+      "urls": [
+        "https://arxiv.org/abs/2510.02634"
+      ]
+    },
+    {
+      "title": "RLVR로 학습한 평면 LLM (ACL 2026 Findings)",
+      "who": "Luis Lara, Christopher Pal 등",
+      "ai_model": "Llama-3.3-70B-Instruct(SFT + RLVR)",
+      "tools": "버블다이어그램 + 면적 JSON 입력, 방 폴리곤 JSON 출력, 검증 가능한 보상",
+      "what_was_made": "연결성과 수치(면적) 제약을 만족하는 주거 평면",
+      "process": "실제 평면으로 SFT한 뒤, 연결성·면적·겹침·유효성 보상으로 강화학습함.",
+      "outcome": "기존 방법 대비 Realism, Compatibility, Diversity에서 모두 우세했고 Compatibility가 94% 이상 상대 감소함(HouseDiffusion 2.5 → 0.15, 검색 요약). 검증 가능한 규칙을 보상이나 게이트로 쓰는 접근이 평면 품질을 크게 올린다는 근거임.",
+      "urls": [
+        "https://arxiv.org/abs/2605.14117",
+        "https://aclanthology.org/2026.findings-acl.1326/"
+      ]
+    },
+    {
+      "title": "치수 없는 평면도 한 장 → 3D 모델 + 45초 워크스루 영상 (Claude Fable 5.1 테스트)",
+      "who": "AGI 랩(일본 블로그), Tripo 프롬프트 갤러리",
+      "ai_model": "Claude Fable 5.1",
+      "tools": "Blender(Tripo 페이지 제목 기준)",
+      "what_was_made": "치수 없는 평면도 한 장으로 만든 3D 모델과 45초 '걸어 다니는' 영상",
+      "process": "제목 수준의 정보만 확인함(본문은 프록시 차단)",
+      "outcome": "결과 품질과 실패 양상은 미확인. 검색 결과 제목만 근거이므로 후속 확인이 필요함.",
+      "urls": [
+        "https://chatgpt-lab.com/n/n43b0e1173339?hl=en&gs=74e706c2b9a4f4d15a68bda7439c08b0",
+        "https://www.tripo3d.ai/3d-prompts/floor-plan-to-blender-walkthrough-2094925117344428232"
+      ]
+    }
+  ],
+  "sources": [
+    {"title": "ranjian0/building_tools (GitHub)", "url": "https://github.com/ranjian0/building_tools", "source_type": "GitHub 저장소", "date": "최종 커밋 2025-05-16", "why_useful": "별 수·MIT·릴리스·이슈 직접 확인"},
+    {"title": "CreativeDesigner3D/home_builder_5 Releases", "url": "https://github.com/CreativeDesigner3D/home_builder_5/releases", "source_type": "GitHub 릴리스", "date": "2026-03~04", "why_useful": "Blender 5/5.1 지원, 계단, 문 스윙, 평면도 기능 확인"},
+    {"title": "Home Builder 5 — Blender Extensions", "url": "https://extensions.blender.org/add-ons/home-builder-5/", "source_type": "공식 확장 플랫폼(검색 요약)", "date": "2026", "why_useful": "공식 배포 채널"},
+    {"title": "Archipack 2.8.5 for Blender 3.+ / 5.x RELEASE (BlenderArtists)", "url": "https://blenderartists.org/t/archipack-2-8-5-for-blender-3-5-x-release/1147328/1188", "source_type": "포럼(검색 요약)", "date": "2025~2026", "why_useful": "Blender 5.x 호환 주장"},
+    {"title": "Archimesh issue #4 Parameters do not appear in 5.0", "url": "https://projects.blender.org/extensions/archimesh/issues/4", "source_type": "Blender 이슈 트래커(검색 요약)", "date": "2025~2026", "why_useful": "Blender 5 호환 문제 근거"},
+    {"title": "HiFi Architecture Builder — Blender Extensions", "url": "https://extensions.blender.org/add-ons/hifi-builder/", "source_type": "공식 확장 플랫폼(검색 요약)", "date": "2025-08 공개", "why_useful": "다운로드 수, 라이선스 표기"},
+    {"title": "Download free Blender 3D building generator Buildify (CG Channel)", "url": "https://www.cgchannel.com/2022/07/download-free-blender-3d-building-generator-buildify/", "source_type": "뉴스(검색 요약)", "date": "2022-07", "why_useful": "Buildify 개요, OSM 연동"},
+    {"title": "IfcOpenShell (GitHub)", "url": "https://github.com/IfcOpenShell/IfcOpenShell", "source_type": "GitHub 저장소", "date": "2026-09", "why_useful": "2.8k★, LGPL/GPL, 하위 프로젝트(ifcmcp 포함) 확인"},
+    {"title": "IfcOpenShell Releases (bonsai 0.9.0-alpha daily)", "url": "https://github.com/IfcOpenShell/IfcOpenShell/releases", "source_type": "GitHub 릴리스", "date": "2026-09-27", "why_useful": "Bonsai 일일 빌드 활성 확인"},
+    {"title": "ifcmcp README (IfcOpenShell src/ifcmcp)", "url": "https://github.com/IfcOpenShell/IfcOpenShell/tree/v0.8.0/src/ifcmcp", "source_type": "GitHub 소스", "date": "0.8.x", "why_useful": "공식 MCP 서버 도구 목록, pip 패키지명"},
+    {"title": "Bonsai Version History — Blender Extensions", "url": "https://extensions.blender.org/add-ons/bonsai/versions/", "source_type": "공식 확장 플랫폼(검색 요약)", "date": "2026-04", "why_useful": "0.8.5-post1, Blender 5.1 호환"},
+    {"title": "buildingSMART/validate", "url": "https://github.com/buildingSMART/validate", "source_type": "GitHub 저장소", "date": "2026", "why_useful": "공식 IFC 검증 서비스, MIT, Docker/API"},
+    {"title": "wassimj/topologicpy", "url": "https://github.com/wassimj/topologicpy", "source_type": "GitHub 저장소", "date": "2026", "why_useful": "공간 위상·그래프 검증 라이브러리"},
+    {"title": "PedestrianDynamics/jupedsim", "url": "https://github.com/PedestrianDynamics/jupedsim", "source_type": "GitHub 저장소", "date": "2026", "why_useful": "피난 시뮬레이션, LGPL, PyPI"},
+    {"title": "ARCHER: Agentic Rule and Compliance Harness for Executable Regulations", "url": "https://arxiv.org/abs/2607.25566", "source_type": "논문(검색 요약)", "date": "2026-07", "why_useful": "TDD 기반 법규 체커 합성, +82% 정확도"},
+    {"title": "Towards an automated AI-based framework for floor plan compliance checks for residential buildings", "url": "https://arxiv.org/abs/2607.00015", "source_type": "논문(검색 요약)", "date": "2026", "why_useful": "LLM 규칙 엔진 + 평면 그래프 추출 + 다세대 컴플라이언스(호주 SEPP65 등)"},
+    {"title": "Automatic Building Code Review: A Case Study", "url": "https://arxiv.org/abs/2510.02634", "source_type": "논문(검색 요약)", "date": "2025-10", "why_useful": "COMcheck API + RAG 하이브리드 사례"},
+    {"title": "Generative Floor Plan Design with LLMs via RLVR", "url": "https://arxiv.org/abs/2605.14117", "source_type": "논문(검색 요약)", "date": "2026-05 / ACL 2026 Findings", "why_useful": "JSON 평면 스키마 + 검증 가능한 보상, 수치 결과"},
+    {"title": "Unified Vector Floorplan Generation via Markup Representation (CVPR 2026)", "url": "https://arxiv.org/abs/2604.04859", "source_type": "논문(검색 요약)", "date": "2026-04 / CVPR 2026", "why_useful": "마크업 기반 통합 평면 생성"},
+    {"title": "HypergraphFormer: Learning Hypergraphs from LLMs for Editable Floor Plan Generation", "url": "https://arxiv.org/pdf/2605.18932", "source_type": "논문(검색 요약, 제목만)", "date": "2026-05", "why_useful": "편집 가능한 평면 생성 신규 연구(세부 미확인)"},
+    {"title": "SizheHu/GSDiff", "url": "https://github.com/SizheHu/GSDiff", "source_type": "GitHub 저장소", "date": "AAAI 2025", "why_useful": "코드 공개 벡터 평면 생성, GPL, Drive 가중치"},
+    {"title": "aminshabani/house_diffusion", "url": "https://github.com/aminshabani/house_diffusion", "source_type": "GitHub 저장소", "date": "CVPR 2023", "why_useful": "기준선, RPLAN 다운로드 문제 언급"},
+    {"title": "LengSicong/Tell2Design", "url": "https://github.com/LengSicong/Tell2Design", "source_type": "GitHub 저장소", "date": "ACL 2023", "why_useful": "코드 Apache-2.0 / 데이터 CC BY-NC 4.0"},
+    {"title": "m-agour/ResPlan", "url": "https://github.com/m-agour/ResPlan", "source_type": "GitHub 저장소", "date": "2025-08", "why_useful": "CC BY 4.0 평면 데이터, via_door 그래프"},
+    {"title": "caspervanengelenburg/msd", "url": "https://github.com/caspervanengelenburg/msd", "source_type": "GitHub 저장소", "date": "ECCV 2024", "why_useful": "다세대 평면 데이터셋"},
+    {"title": "CubiCasa/CubiCasa5k", "url": "https://github.com/CubiCasa/CubiCasa5k", "source_type": "GitHub 저장소", "date": "2019~", "why_useful": "평면 인식 데이터, Zenodo/Drive 배포"},
+    {"title": "bertjiazheng/Structured3D", "url": "https://github.com/bertjiazheng/Structured3D", "source_type": "GitHub 저장소", "date": "2020~", "why_useful": "이용약관 동의 폼, 3.5K 주택"},
+    {"title": "dcy0577/Text2BIM", "url": "https://github.com/dcy0577/Text2BIM", "source_type": "GitHub 저장소", "date": "2025-05 갱신", "why_useful": "멀티에이전트 + 체커 루프 참조 구현"},
+    {"title": "Show2Instruct/ifc-bonsai-mcp (MCP4IFC)", "url": "https://github.com/Show2Instruct/ifc-bonsai-mcp", "source_type": "GitHub 저장소", "date": "2026-07", "why_useful": "Blender+Bonsai 생성형 MCP 50개 이상 도구"},
+    {"title": "MCP4IFC: IFC-Based Building Design Using LLMs", "url": "https://arxiv.org/abs/2511.05533", "source_type": "논문(검색 요약)", "date": "2025-11", "why_useful": "LLM IFC 생성의 한계 결론"},
+    {"title": "A Modular Reference Architecture for MCP-Servers Enabling Agentic BIM Interaction", "url": "https://arxiv.org/abs/2601.00809", "source_type": "논문(검색 요약)", "date": "2026-01", "why_useful": "API 비종속 BIM MCP 어댑터 구조(IfcOpenShell 프로토타입)"},
+    {"title": "A Building as a Repository: KIR", "url": "https://arxiv.org/abs/2609.14578", "source_type": "논문(검색 요약)", "date": "2026-09", "why_useful": "에이전트 BIM 저작용 타입 IR, 7가지 침묵 실패 모드 탐지"},
+    {"title": "BIM-Edit benchmark", "url": "https://arxiv.org/abs/2606.20146", "source_type": "논문(검색 요약)", "date": "2026-06", "why_useful": "LLM IFC 편집 성능 수치"},
+    {"title": "JotaDeRodriguez/Bonsai_mcp", "url": "https://github.com/JotaDeRodriguez/Bonsai_mcp", "source_type": "GitHub 저장소", "date": "2026-09-06", "why_useful": "IFC 조회·감사 MCP"},
+    {"title": "smartaec/ifcmcp", "url": "https://github.com/smartaec/ifcmcp", "source_type": "GitHub 저장소", "date": "2025", "why_useful": "경량 IFC 질의 MCP, Apache-2.0"},
+    {"title": "Introducing the Revit Public MCP Server (Autodesk AEC blog)", "url": "https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/", "source_type": "공식 블로그(검색 요약)", "date": "2026-06-17", "why_useful": "공식 Revit MCP, 읽기 전용, 배포 방식"},
+    {"title": "AnalyzeTool issue #137 (Revit Public MCP 분석)", "url": "https://github.com/Nikola1Davydov/AnalyzeTool/issues/137", "source_type": "GitHub 이슈", "date": "2026", "why_useful": "stdio, 기능 목록, 미확인 사항 정리"},
+    {"title": "mcp-servers-for-revit/revit-mcp", "url": "https://github.com/mcp-servers-for-revit/revit-mcp", "source_type": "GitHub 저장소", "date": "2026-02-25 아카이브", "why_useful": "커뮤니티 Revit MCP 원조"},
+    {"title": "LuDattilo/revit-mcp-server", "url": "https://github.com/LuDattilo/revit-mcp-server", "source_type": "GitHub 저장소", "date": "2026", "why_useful": "사전 빌드 DLL 배포 안전 이슈 근거"},
+    {"title": "MCP Support for Archicad (Graphisoft Product Roadmap)", "url": "https://community.graphisoft.com/t5/Product-Roadmap/MCP-Support-for-Archicad/idi-p/682950", "source_type": "공식 커뮤니티 로드맵(검색 요약)", "date": "2026-04", "why_useful": "공식 Archicad MCP 진행 중"},
+    {"title": "ENZYME-APD/tapir-archicad-automation", "url": "https://github.com/ENZYME-APD/tapir-archicad-automation", "source_type": "GitHub 저장소", "date": "2026", "why_useful": "Archicad 25~29 JSON 명령 애드온"},
+    {"title": "mcneel/rhinoai", "url": "https://github.com/mcneel/rhinoai", "source_type": "GitHub 저장소(공식 조직)", "date": "2026", "why_useful": "McNeel 공식 Rhino MCP"},
+    {"title": "jingcheng-chen/rhinomcp", "url": "https://github.com/jingcheng-chen/rhinomcp", "source_type": "GitHub 저장소", "date": "2026", "why_useful": "1.1k★ 커뮤니티 Rhino/GH MCP, 실행 표면 경고"},
+    {"title": "Trimble SketchUp connector | Claude", "url": "https://claude.com/connectors/sketchup", "source_type": "공식 커넥터 페이지", "date": "2026", "why_useful": "원격 MCP URL과 도구 목록(build_model 등)"},
+    {"title": "SketchUp Connector for Claude (Trimble blog)", "url": "https://sketchup.trimble.com/en/blog/article/sketchup-claude-connector", "source_type": "공식 블로그(검색 요약)", "date": "2026-04", "why_useful": "기능, 무료 30개 모델"},
+    {"title": "vvoovv/blosm", "url": "https://github.com/vvoovv/blosm", "source_type": "GitHub 저장소", "date": "미확인", "why_useful": "2.1k★, GPL, Gumroad 배포 구조"},
+    {"title": "domlysz/BlenderGIS commits", "url": "https://github.com/domlysz/BlenderGIS", "source_type": "GitHub 저장소", "date": "2025-12-20", "why_useful": "9.4k★, Blender 5 수정"},
+    {"title": "ArcGIS CityEngine Pricing (TrustRadius)", "url": "https://www.trustradius.com/products/arcgis-cityengine/pricing", "source_type": "리뷰 사이트(검색 요약)", "date": "2026", "why_useful": "$2,000부터, 무료판 없음"},
+    {"title": "djFatNerd/CityCraft", "url": "https://github.com/djFatNerd/CityCraft", "source_type": "GitHub 저장소", "date": "2024~", "why_useful": "확산 + LLM + Blender 도시 파이프라인"},
+    {"title": "Can Claude Create Floor Plans? We Tested It (RoomSketcher)", "url": "https://www.roomsketcher.com/blog/can-claude-create-floor-plans/", "source_type": "블로그(검색 요약)", "date": "2026", "why_useful": "Claude 평면 생성 실패 양상"},
+    {"title": "Claude's 3 New Creative App MCP Connectors (MindStudio)", "url": "https://www.mindstudio.ai/blog/claude-3-creative-app-mcp-connectors-blender-adobe-sketchup", "source_type": "블로그(검색 요약)", "date": "2026-05", "why_useful": "SketchUp 문 누락 사례"},
+    {"title": "How I Built a Walkable 3D House with Claude Code and Blender", "url": "https://designwithai.substack.com/p/how-i-built-a-walkable-3d-house-with-claude-code-and-blender", "source_type": "블로그(검색 요약)", "date": "2026", "why_useful": "평면도 입력 기반 3D화 성공 사례"}
+  ],
+  "gaps": [
+    "검색 예산(세션 200회)이 소진되어 GPT-6 Astra의 건축·평면 관련 사례와 벤치마크, OpenAI 쪽 건축 MCP/커넥터 현황을 조사하지 못함.",
+    "extensions.blender.org, arxiv.org, autodesk.com, bonsaibim.org, gumroad, superhive, docs.ifcopenshell.org 등이 프록시에 막혀, Bonsai 0.8.5 날짜, HiFi 다운로드 수, Archipack·SceneCity 가격과 Blender 5 호환, Revit 공식 MCP 세부 기능은 검색 요약에만 의존함.",
+    "CubiCasa5k·MSD 데이터 라이선스 종류, BlenderGIS 라이선스 종류를 1차 페이지에서 확정하지 못함.",
+    "RLVR 평면 LLM(ACL 2026), FMLM(CVPR 2026), ARCHER, BIM-Edit, KIR의 코드·가중치 공개 여부와 라이선스를 확인하지 못함.",
+    "Building Tools의 Blender 4.2+/5.x 동작, Home Builder 5의 헤드리스(bpy) 호출 가능성은 문서로 확인되지 않아 실제 테스트가 필요함(설치·실행은 이번 조사 범위 밖).",
+    "절차적 도로망·필지 분할에 대해 최신이면서 잘 유지되는 오픈소스 Blender 도구(CityEngine 대체)를 찾지 못함. Superhive의 Urbaniac Building Generator 같은 유료 GN 생성기는 세부 정보를 확인하지 못함.",
+    "한국 건축법(피난·계단·복도 폭) 기준을 코드화한 오픈소스 룰셋은 찾지 못함. IfcOpenShell 위에 직접 작성해야 할 것으로 보임.",
+    "Autodesk Forma, Vectorworks, Chief Architect 등 다른 건축 도구의 MCP 존재 여부는 조사하지 못함."
+  ]
+}

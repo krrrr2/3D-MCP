@@ -1,0 +1,108 @@
+{
+ "topic": "[보완] 조형·배치 라이브러리 재확인: BlenderProc 등 (2026-10-02)",
+ "method_note": "사용자 질문('조형·배치가 잘 되게 하는 라이브러리, 깃허브에 정보 있지?')에 답하려고 메인 에이전트가 직접 확인. 실행·설치 없이 git 메타데이터(--depth 1 --no-checkout)와 raw.githubusercontent.com의 텍스트 파일(README, LICENSE, change_log, 소스 일부)만 읽음.",
+ "summary_ko": [
+  "물체 배치(표면 위 샘플링·물리 안착·충돌 검사)를 함수로 제공하는 대표 라이브러리는 BlenderProc(DLR, GPL-3.0)이다. 저장소에 빠져 있던 항목이라 추가함.",
+  "BlenderProc은 자체 Blender(현재 4.2.1)를 공식 download.blender.org에서 받아 별도 프로세스로 돌린다. 작업 중인 Blender 5.x 안에서 import해 쓰는 라이브러리가 아니므로, 배치를 풀어 결과(.blend·좌표)를 가져오거나 같은 방식을 bpy로 옮겨 쓰는 것이 현실적이다.",
+  "이미 저장소에 있는 라이브러리: 조형은 fogleman/sdf(MIT, 마지막 커밋 2024-08로 정체), 조형+배치는 Infinigen(BSD-3, 2026-08 커밋), 노드 조형은 Sverchok(GPL-3, 2026-09 커밋)."
+ ],
+ "items": [
+  {
+   "name": "BlenderProc (DLR-RM)",
+   "category": "placement_library",
+   "what_it_is": "Blender 기반 절차적 장면 생성 파이프라인(원래 합성 학습 데이터용). README 기능: 'Set or sample object poses, apply physics and collision checking'. API: bproc.object.sample_poses, bproc.object.sample_poses_on_surface, bproc.object.simulate_physics_and_fix_final_poses, simulate_physics. 물체별 rigid body와 collision_shape(CONVEX_HULL 기본, 오목한 물체는 COMPOUND + 볼록 분해).",
+   "how_to_use": "pip install blenderproc → blenderproc run 스크립트.py. 첫 실행 때 공식 download.blender.org에서 Blender 4.2.1을 내려받아 그 안에서 실행됨. 표면 위 샘플링 → 물리 안착 → 결과 저장 순서로 '떠 있지 않고 겹치지 않는' 배치를 얻음.",
+   "strengths": "배치 샘플링·충돌 검사·물리 안착을 한 줄 함수로 제공. 문서·예제(physics_positioning 등) 풍부. 공식 Blender 배포처만 사용.",
+   "weaknesses": "자체 Blender 버전(4.2.1)에 묶임 → 작업 Blender 5.x와 별도 프로세스. 최신 릴리스 v2.8.0(2024-10-22) 이후 릴리스 없음(커밋은 2026-01-07까지). 실내 '디자인 규칙'(동선, 초점)은 없음.",
+   "license": "GPL-3.0 (LICENSE 확인)",
+   "popularity": "미확인(별 수 미조회)",
+   "last_update": "마지막 커밋 2026-01-07, 버전 2.8.0(2024-10-22, change_log)",
+   "distribution": "PyPI blenderproc, GitHub DLR-RM",
+   "safety": {
+    "source_visible": true,
+    "binaries": "첫 실행 때 공식 download.blender.org에서 Blender 본체를 받음(설치 코드 InstallUtility.py에서 URL 확인)",
+    "red_flags": "없음. 이름이 비슷한 패키지가 아닌지 PyPI 이름 확인",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/DLR-RM/BlenderProc",
+    "https://github.com/DLR-RM/BlenderProc/blob/main/docs/tutorials/physics.md",
+    "https://github.com/DLR-RM/BlenderProc/blob/main/change_log.md",
+    "https://pypi.org/project/blenderproc/"
+   ]
+  },
+  {
+   "name": "Kubric (Google Research)",
+   "category": "placement_library",
+   "what_it_is": "PyBullet 물리 + Blender 렌더로 여러 물체의 물리 상호작용 장면을 자동 생성하는 합성 데이터 파이프라인.",
+   "how_to_use": "Docker 이미지로 실행. 물리 배치 아이디어 참고용.",
+   "strengths": "물리 기반 배치·상호작용",
+   "weaknesses": "Blender 2.93 고정(README) → 현재 작업 환경과 거리가 멂. 데이터셋 생성 목적.",
+   "license": "Apache-2.0 (LICENSE 확인)",
+   "popularity": "미확인",
+   "last_update": "마지막 커밋 2026-05-21",
+   "distribution": "GitHub google-research",
+   "safety": {
+    "source_visible": true,
+    "binaries": "Docker 이미지",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/google-research/kubric"
+   ]
+  }
+ ],
+ "know_how": [
+  {
+   "tip": "배치가 떠 있거나 겹치는 문제는 '표면 위 샘플링 → 물리 안착 → 최종 포즈 고정' 순서로 푼다(BlenderProc의 sample_poses_on_surface + simulate_physics_and_fix_final_poses와 같은 구조)",
+   "why": "좌표를 직접 찍는 대신 물리가 접촉을 보장한다. 이 저장소 08 가이드 4.7절의 rigid body 안착 코드가 같은 원리를 Blender 5.x 안에서 구현한 것",
+   "urls": [
+    "https://github.com/DLR-RM/BlenderProc/blob/main/docs/tutorials/physics.md"
+   ]
+  }
+ ],
+ "case_studies": [],
+ "sources": [
+  {
+   "title": "DLR-RM/BlenderProc README·LICENSE·change_log",
+   "url": "https://github.com/DLR-RM/BlenderProc",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-01-07(마지막 커밋)",
+   "why_useful": "배치 샘플링·물리 안착·충돌 검사 API"
+  },
+  {
+   "title": "BlenderProc physics tutorial",
+   "url": "https://github.com/DLR-RM/BlenderProc/blob/main/docs/tutorials/physics.md",
+   "source_type": "GitHub 문서(직접 확인)",
+   "date": "상시",
+   "why_useful": "collision_shape, simulate_physics_and_fix_final_poses"
+  },
+  {
+   "title": "BlenderProc change log",
+   "url": "https://github.com/DLR-RM/BlenderProc/blob/main/change_log.md",
+   "source_type": "GitHub 문서(직접 확인)",
+   "date": "2024-10-22(v2.8.0)",
+   "why_useful": "Blender 4.2.1 업그레이드"
+  },
+  {
+   "title": "PyPI blenderproc",
+   "url": "https://pypi.org/project/blenderproc/",
+   "source_type": "패키지 레지스트리",
+   "date": "—",
+   "why_useful": "설치 이름"
+  },
+  {
+   "title": "google-research/kubric",
+   "url": "https://github.com/google-research/kubric",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-05-21(마지막 커밋)",
+   "why_useful": "PyBullet + Blender 물리 배치"
+  }
+ ],
+ "gaps": [
+  "별(star) 수는 GitHub API가 차단돼 확인하지 못함",
+  "BlenderProc을 Blender 5.x에서 쓸 수 있는지(공식 지원은 4.2.1)는 확인하지 못함",
+  "libfive(SDF 커널)는 라이선스 파일 경로를 확인하지 못해 제외"
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "topic": "G9_human_character 원문 대조 (2026-09-27)",
+ "verdicts": [
+  {
+   "claim": "MPFB2는 GPLv3 코드 + 별도 에셋 라이선스이고 2026-09에도 Blender 5.2 대응 커밋이 있다",
+   "verdict": "confirmed",
+   "note": "LICENSE.md: 소스 GPLv3, 에셋·출력은 별도 조항. 마지막 커밋 2026-09-26(git 메타데이터).",
+   "evidence_urls": [
+    "https://github.com/makehumancommunity/mpfb2"
+   ]
+  },
+  {
+   "claim": "Anny(NAVER LABS Europe)는 Apache-2.0이고 PyPI anny 0.6이 2026-08에 나왔다",
+   "verdict": "confirmed",
+   "note": "LICENSE 첫머리 Apache-2.0(Copyright 2025 NAVER). PyPI anny 0.6.0 업로드 2026-08-07. 마지막 커밋 2026-09-16.",
+   "evidence_urls": [
+    "https://github.com/naver/anny"
+   ]
+  },
+  {
+   "claim": "Meta MHR은 Apache-2.0",
+   "verdict": "confirmed",
+   "note": "LICENSE Apache 2.0, 마지막 커밋 2026-09-10.",
+   "evidence_urls": [
+    "https://github.com/facebookresearch/MHR"
+   ]
+  },
+  {
+   "claim": "SAM 3D Body는 SAM License(2025-11-19)로 상업 이용 허용",
+   "verdict": "partially",
+   "note": "LICENSE 파일이 'SAM License, Last Updated: November 19, 2025'임은 확인. 상업 허용·금지 용도 세부는 조사 원문 요약을 따름(전문 대조 안 함).",
+   "evidence_urls": [
+    "https://github.com/facebookresearch/sam-3d-body"
+   ]
+  },
+  {
+   "claim": "SkinTokens·UniRig는 MIT",
+   "verdict": "confirmed",
+   "note": "두 저장소 LICENSE 모두 MIT(VAST-AI-Research). 마지막 커밋 SkinTokens 2026-05-12, UniRig 2026-06-04.",
+   "evidence_urls": [
+    "https://github.com/VAST-AI-Research/SkinTokens",
+    "https://github.com/VAST-AI-Research/UniRig"
+   ]
+  },
+  {
+   "claim": "NVIDIA SOMA-X는 Apache-2.0이고 2026-09 갱신",
+   "verdict": "confirmed",
+   "note": "LICENSE Apache 2.0, 마지막 커밋 2026-09-17.",
+   "evidence_urls": [
+    "https://github.com/NVlabs/SOMA-X"
+   ]
+  },
+  {
+   "claim": "CharMorph는 사실상 정체",
+   "verdict": "confirmed",
+   "note": "마지막 커밋 2024-10-10(git 메타데이터).",
+   "evidence_urls": [
+    "https://github.com/Upliner/CharMorph"
+   ]
+  },
+  {
+   "claim": "SMPL-X는 비상업, Epic이 2026-02 Meshcapade 인수",
+   "verdict": "unverifiable",
+   "note": "라이선스 페이지와 인수 소식은 차단돼 검색 요약만 있음.",
+   "evidence_urls": [
+    "https://github.com/Meshcapade/SMPL_blender_addon"
+   ]
+  }
+ ],
+ "item_checks": [],
+ "unreliable_sources": [
+  {
+   "url": "https://github.com/Immunogenic-prismspectroscope589/Blender_mcp",
+   "reason": "악성 배포 패턴 의심(README의 모든 링크가 저장소 안 zip 하나로 향함). 경고 사례로만 기록 — 링크를 열거나 파일을 받지 말 것."
+  },
+  {
+   "url": "https://github.com/HurtzDonutStudios/ai-forge-mcp",
+   "reason": "소스 비공개(Nuitka 컴파일 번들), 커밋 수 대비 별 수 이상치. 주장 근거로 쓰지 말고, 시험은 격리 환경에서만."
+  }
+ ],
+ "missed_items": [],
+ "notes": [
+  "메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다."
+ ]
+}

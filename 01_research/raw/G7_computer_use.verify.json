@@ -1,0 +1,229 @@
+{
+  "topic": "[검증] G7_computer_use.gap.json 및 02_guides/12_computer_use_and_other_methods.md 독립 사실 검증 (2026-09-27, 적대적 검증자: WebSearch 15회 + WebFetch 원문 확인 code.claude.com·github.com·anthropic.com·platform.claude.com)",
+  "method_note": "code.claude.com/docs/en/computer-use, github.com(HKUDS/CLI-Anything, partme-ai/codex-blender-plugin, Zdong104/CADWORLD, llada60/3DHarnessBench, bytedance/ui-tars-desktop, piyo123/learning-computer-use-with-gpt-6-astra), anthropic.com/claude-opus-5-5, platform.claude.com 비전 문서는 원문을 직접 열람했다. arXiv·openai.com·X·kingy.ai·neural4d·kylejeong.com·weavebench.github.io는 네트워크 정책으로 차단되어 검색 결과 요약으로만 교차 확인했다.",
+  "checks": [
+    {
+      "claim": "Claude Code CLI 컴퓨터 유즈는 macOS 전용, Pro/Max, 연구 프리뷰이고, 대화형 세션에서 /mcp로 computer-use를 켜고 macOS 접근성·화면 기록 권한을 준다. -p 비대화형 불가, 앱별 세션 승인, 다른 앱 숨김, Esc 중단, 스크린샷 자동 축소(3456×2234 → 약 1372×887)",
+      "verdict": "confirmed",
+      "correction": "원문과 일치한다. 추가 조건: Team·Enterprise 플랜에서는 쓸 수 없고, claude.ai 로그인이 필요하다(Amazon Bedrock·Google Cloud·Microsoft Foundry 등 서드파티 제공자 경유 불가). 켜기 설정은 프로젝트별로 유지된다. 앱 범주별 제어 수준이 달라 브라우저·트레이딩 앱은 보기 전용, 터미널·IDE는 클릭 전용, 나머지는 전체 제어다.",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/computer-use"
+      ]
+    },
+    {
+      "claim": "Claude Code 문서는 컴퓨터 유즈를 '가장 넓고 가장 느린 방법'이라 하고 MCP → Bash → Claude in Chrome → 컴퓨터 유즈 순으로 고른다",
+      "verdict": "confirmed",
+      "correction": "원문: 'Computer use is the broadest and slowest, so Claude tries the most precise tool first' 뒤에 MCP 서버 → Bash → Claude in Chrome → computer use 순서가 명시되어 있다.",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/computer-use"
+      ]
+    },
+    {
+      "claim": "Claude Desktop 컴퓨터 유즈는 macOS·Windows, 설정 > 일반에서 켜고, 거부 앱 목록을 설정할 수 있다",
+      "verdict": "confirmed",
+      "correction": "원문 표: Desktop은 macOS and Windows, 'Toggle in Settings > General (under Desktop app)', Denied apps list 'Configurable in Settings'(CLI는 아직 없음).",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/computer-use"
+      ]
+    },
+    {
+      "claim": "Claude Code 컴퓨터 유즈 안전장치: 실제 데스크톱에서 동작(샌드박스 아님), 앱별 승인, 터미널을 스크린샷에서 제외, Esc 전역 중단, 세션 잠금",
+      "verdict": "confirmed",
+      "correction": "원문과 일치한다. 추가로 셸·파일·시스템 설정 접근 앱(터미널·Finder·시스템 설정)은 승인 전 경고가 뜨고, Claude가 화면 내용의 프롬프트 인젝션 가능성을 표시한다.",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/computer-use"
+      ]
+    },
+    {
+      "claim": "OpenAI 컴퓨터 유즈 가이드는 GPT-6 Astra에 structured computer 도구보다 code execution(모델이 PyAutoGUI·Playwright 코드를 작성)을 권장한다",
+      "verdict": "confirmed",
+      "correction": "검색 요약 기준으로 일치한다('For GPT-6 Astra, OpenAI recommends code execution'). computer 도구는 대안으로 계속 지원되고, 브라우저 작업은 Playwright, 데스크톱은 PyAutoGUI 또는 동등한 하네스를 쓴다. 한 번의 호출에 여러 동작·반복·조건문을 묶을 수 있다는 것이 이유다. piyo123 저장소는 OpenAI 공식이 아닌 개인 실습 저장소이며 권장 여부나 격리 권고를 직접 적고 있지는 않다.",
+      "evidence_urls": [
+        "https://developers.openai.com/api/docs/guides/tools-computer-use",
+        "https://github.com/piyo123/learning-computer-use-with-gpt-6-astra"
+      ]
+    },
+    {
+      "claim": "OpenAI는 생성된 코드를 개인 작업 PC에서 돌리지 말고 네트워크·파일시스템·자격 증명을 제한한 VM·컨테이너에서 실행하라고 권한다",
+      "verdict": "confirmed",
+      "correction": "검색 요약 기준으로 일치한다('Use an isolated browser, container or virtual machine with restricted network, filesystem, credentials and runtime. Never run arbitrary generated code on a personal workstation'). 샌드박스를 API 클라이언트와 다른 보안 경계에 두고 자격 증명·호스트 마운트를 공유하지 말라는 권고도 있다.",
+      "evidence_urls": [
+        "https://developers.openai.com/api/docs/guides/tools-computer-use"
+      ]
+    },
+    {
+      "claim": "OpenAI 공식 아키비즈 사례에서 Astra는 bpy로 장면을 만들고 Blender 실행 파일을 --python으로 돌려 미리보기를 렌더한 뒤, 저장된 이미지와 Blender 앱을 컴퓨터 유즈로 확인했다",
+      "verdict": "confirmed",
+      "correction": "검색 요약 기준으로 일치한다('ran scripts through Blender's executable with the --python option, rendered previews, and inspected both the saved images and the Blender application through Computer Use'). 같은 글에 Unreal Engine 5 워크스루도 있고, 결과 설계안은 부지·구조·법규에 대한 전문가 검토가 필요하다고 명시한다.",
+      "evidence_urls": [
+        "https://developers.openai.com/blog/architectural-visualization-with-astra"
+      ]
+    },
+    {
+      "claim": "Kyle Jeong이 'Astra의 Blender 능력은 새 컴퓨터 유즈 능력의 부산물'이라고 썼다",
+      "verdict": "confirmed",
+      "correction": "검색 요약에 해당 문장('...ability to use Blender and generate 3D worlds, all a byproduct of its new computer use capabilities')이 확인된다. 글 제목은 'How does Astra's computer use actually work?'이고 같은 글이 개인 블로그에도 있다. 다만 이 글이 '컴퓨터 유즈로 직접 모델링하는 게 낫다'는 오해의 출처라는 것은 가이드의 추정이다.",
+      "evidence_urls": [
+        "https://x.com/kylejeong/status/2097077446663372966",
+        "https://kylejeong.com/blog/how-astras-computer-use-works"
+      ]
+    },
+    {
+      "claim": "OpenAI Codex는 앱·CLI에서 Computer Use 플러그인으로 컴퓨터 유즈를 지원하며 Windows 11 지원이 추가되었다",
+      "verdict": "partially",
+      "correction": "Windows 11 지원은 확인된다. OpenAI는 2026-05-29 Codex 데스크톱 앱(Windows 11)에 Computer Use를 추가했고, 앱 설정 > Plugins에서 설치한 뒤 프롬프트에서 @Computer나 앱 이름을 언급해 쓴다. 사용자가 로컬 또는 ChatGPT 모바일 앱으로 감독할 수 있다. 'CLI'에서도 쓸 수 있는지는 이번 검색으로 확인하지 못했다. Windows 앱에서 플러그인이 안 보인다는 GitHub 이슈도 있다.",
+      "evidence_urls": [
+        "https://www.aitimes.com/news/articleView.html?idxno=211135",
+        "https://www.pcworld.com/article/3154677/openai-codex-can-finally-control-windows-11-pcs-on-its-own.html",
+        "https://github.com/openai/codex/issues/26536"
+      ]
+    },
+    {
+      "claim": "OSWorld 2.0 벤더 수치: Opus 5.5 81.8%(partial, max effort), GPT-6 Astra 72.6%(과제당 약 40분)",
+      "verdict": "confirmed",
+      "correction": "Opus 5.5 81.8% partial은 Anthropic 발표 페이지 원문에서 확인했다('adaptive thinking at max effort'). 같은 표에 Fable 5.1 80.7%, Opus 5 74.0%가 있고 GPT-6 Astra는 '—'로 비어 있다. Astra 72.6%(약 40분, GPT-5.6 Sol 65.7%·약 75분)는 openai.com 차단으로 2차 출처 요약으로만 확인했다. 두 수치는 서로 다른 발표에서 나와 직접 비교하면 안 된다.",
+      "evidence_urls": [
+        "https://www.anthropic.com/claude-opus-5-5",
+        "https://openai.com/index/gpt-6-astra/",
+        "https://www.mindstudio.ai/blog/gpt-6-astra-computer-use-agentic"
+      ]
+    },
+    {
+      "claim": "2024년 원본 OSWorld에서 최고 모델 12.24%, 사람 72.36%였고, 이에 비하면 (OSWorld 2.0 점수로) 크게 좋아졌다",
+      "verdict": "partially",
+      "correction": "원본 OSWorld 수치(369과제, 사람 72.36%, 최고 모델 12.24%, 주된 실패는 GUI 그라운딩과 조작 지식)는 확인된다. 그러나 OSWorld 2.0은 장기 과제 중심의 별도 벤치마크(arXiv 2606.29537)라 12.24%와 72~82%를 한 줄로 이어 '크게 좋아졌다'고 비교하는 것은 척도가 다르다. 방향 참고로만 써야 한다.",
+      "evidence_urls": [
+        "https://arxiv.org/abs/2404.07972",
+        "https://arxiv.org/pdf/2606.29537"
+      ]
+    },
+    {
+      "claim": "GUI vs CLI 논문: 18개 앱 440과제에서 화면 전용 최고 59.1%, CLI 원래 스킬 48.2%, 스킬 보강 시 69.3%",
+      "verdict": "confirmed",
+      "correction": "수치 일치(12개 워크플로 범주). GUI 최고는 GPT-5.4, CLI 최고는 Codex(GPT-5.5)였다. CLI의 '원래 스킬'은 CLI-Anything 스킬 층이다. 69.3%는 검증기가 관찰한 요구사항에 맞춰 빠진 스킬 경로를 고친(verifier-guided patched skill) 조건이라, 실전에서 스킬을 그만큼 채울 수 있다는 전제가 붙는다. 결론은 'GUI는 긴 작업의 정확한 조작(그라운딩), CLI는 스킬 커버리지가 병목'이다.",
+      "evidence_urls": [
+        "https://arxiv.org/abs/2606.24551",
+        "https://huggingface.co/papers/2606.24551",
+        "https://aiweekly.co/alerts/cli-agents-surpass-gui-once-skill-coverage-gaps-are-filled"
+      ]
+    },
+    {
+      "claim": "CADWorld: FreeCAD를 화면으로 조작하는 200과제, 최고 에이전트 17.5% vs 전문가 87.0%",
+      "verdict": "confirmed",
+      "correction": "200과제·11개 워크플로 범주(스케치, 파트·피처 모델링, 어셈블리, CAM, FEM, 측정, 메시, 도면 등)·183개 지식 포인트, 최고 17.5% 대 전문가 기준 87.0% 확인. 에이전트는 스크린샷과 pyautogui 동작으로 조작한다(GitHub). '7개 에이전트'라는 개수는 이번에 확인하지 못했다.",
+      "evidence_urls": [
+        "https://arxiv.org/abs/2609.16251",
+        "https://github.com/Zdong104/CADWORLD",
+        "https://aiweekly.co/alerts/cadworld-benchmark-top-agent-175-on-freecad-vs-experts-87"
+      ]
+    },
+    {
+      "claim": "CADWorld에서 강한 에이전트일수록 형상·구조·작업 순서 요건에서 실패한다",
+      "verdict": "confirmed",
+      "correction": "원 문장은 'Weaker agents often fail before producing a valid artifact, whereas stronger agents increasingly fail on structural, geometric, and construction-process requirements'. 즉 약한 에이전트는 유효한 산출물조차 못 만들고, 강한 에이전트는 그럴듯하지만 틀린 산출물을 만든다. 주된 실패 패턴은 동작 위치 반복 루프(action-localization loop)와 공간 방향 착오다.",
+      "evidence_urls": [
+        "https://arxiv.org/abs/2609.16251"
+      ]
+    },
+    {
+      "claim": "WeaveBench: 화면+CLI 혼합 114과제(3D 포함), 최고 41.2%, 결과만 채점하면 과대평가(가짜 시각 증거 등)",
+      "verdict": "confirmed",
+      "correction": "114과제·8개 실무 분야(Spatial/3D 포함), 최고 41.2%는 Claude Opus 4.7 + Claude Code 조합(고정 하네스 OpenClaw에서는 Opus 4.7 35.1%, GPT-5.5 33.3%). 궤적 인식 심판이 결과만 보는 채점이 성능을 크게 과대평가한다는 것을 보였고, 가짜 스크린샷·렌더, 하드코딩 지표 같은 지름길을 잡아 0점 처리한다. 중요한 추가 결과: GUI만 또는 CLI만 쓰게 한 조건은 3.5% 이하였다.",
+      "evidence_urls": [
+        "https://arxiv.org/abs/2606.09426",
+        "https://www.emergentmind.com/papers/2606.09426",
+        "https://weavebench.github.io/"
+      ]
+    },
+    {
+      "claim": "3DHarnessBench: 단일뷰 → 멀티뷰 → 능동 시점 → 전체 3D 상호작용 순으로 도구 접근이 늘수록 모든 모델이 향상, 최고 Uni3D 0.927",
+      "verdict": "partially",
+      "correction": "README 원문은 '함수 호출 접근이 풍부해질수록 모든 프런티어 모델의 3D 복원이 크게 개선되지만, 개선 폭은 모델에 따라 크게 다르다'이다. 네 단계마다 단조롭게 오른다는 뜻은 아니다. 최고 Uni3D 0.927은 멀티뷰와 전체 3D 상호작용 조건에서 나왔고(검색 요약), 이 저장소의 AI 모델 가이드는 추가 시점이 일부 모델에는 오히려 해가 되었다고 기록한다. 100개 인스턴스.",
+      "evidence_urls": [
+        "https://github.com/llada60/3DHarnessBench",
+        "https://arxiv.org/abs/2609.06535"
+      ]
+    },
+    {
+      "claim": "VideoCAD: CAD UI 조작 영상 41,005개, GPT-4.1 돌출 횟수 추정 47%, 프레임 순서 36%",
+      "verdict": "partially",
+      "correction": "GPT-4.1의 47%(돌출 횟수)·36%(프레임 순서)는 확인된다. 영상 개수 41,005는 이번 검색 요약에서 확인하지 못했다(약 4만 1천 개로 표기 권장).",
+      "evidence_urls": [
+        "https://arxiv.org/abs/2505.24838"
+      ]
+    },
+    {
+      "claim": "CLI-Anything(HKUDS)은 앱 코드베이스에서 에이전트용 CLI를 자동 생성하는 Claude Code 플러그인이며 Blender 208개·GIMP 107개 테스트, 실제 백엔드와 JSON 출력",
+      "verdict": "confirmed",
+      "correction": "README 원문: Blender '208 passed (150 unit + 58 e2e)', GIMP '107 passed (64 unit + 43 e2e)', 모든 명령에 --json, Blender는 bpy로 실제 렌더. 문구는 'No screenshots, no clicking, no RPA fragility'로, '테마·버전 변화'는 가이드의 풀어쓰기다. GUI vs CLI 논문의 CLI 기준선(48.2%)이 바로 CLI-Anything 스킬 층이었다.",
+      "evidence_urls": [
+        "https://github.com/HKUDS/CLI-Anything",
+        "https://arxiv.org/abs/2606.24551"
+      ]
+    },
+    {
+      "claim": "codex-blender-plugin은 임의 Python을 기본 차단하고, 되돌릴 수 없는 작업은 승인 토큰을 요구하며, 사람이 중간에 손으로 고치면 장면을 다시 읽은 뒤 이어간다",
+      "verdict": "confirmed",
+      "correction": "README 원문과 일치한다. 임의 Python은 expert_python 승인이 있어야 하고, delete·overwrite·expert_python·path_escape 등은 HMAC 서명·유효기간 있는 1회용 토큰이 필요하다. Blender 데이터는 메인 스레드에서만 바뀐다. 재개 시 'Resume forces a fresh inspection'. Codex CLI와 ChatGPT 데스크톱 앱을 지원한다.",
+      "evidence_urls": [
+        "https://github.com/partme-ai/codex-blender-plugin"
+      ]
+    },
+    {
+      "claim": "UI-TARS Desktop(ByteDance)은 스크린샷만 보고 동작하는 오픈 가중치 GUI 에이전트 앱이며 로컬·원격 조작을 지원한다",
+      "verdict": "partially",
+      "correction": "오픈소스(Apache 2.0)이고 로컬·원격(v0.2.0 Remote Operator) 조작을 지원하는 네이티브 GUI 에이전트 앱이 맞다. 다만 구동 모델은 UI-TARS와 Seed-1.5-VL/1.6 계열이라 '오픈 가중치'는 UI-TARS 모델에 한정된다. 같은 저장소의 Agent TARS(CLI·Web UI, MCP 연동)는 별도 프로젝트다.",
+      "evidence_urls": [
+        "https://github.com/bytedance/ui-tars-desktop"
+      ]
+    },
+    {
+      "claim": "MindStudio는 Blender 스컬프트 모드가 MCP로 접근되지 않는다고 평가했다",
+      "verdict": "confirmed",
+      "correction": "검색 요약: 'Blender's sculpt mode isn't accessible via MCP, and constructing complex organic forms from Python primitives is extremely difficult.'",
+      "evidence_urls": [
+        "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance"
+      ]
+    },
+    {
+      "claim": "1920×1080 스크린샷 한 장은 Opus 5.5 기준 2,691토큰(약 $0.011)",
+      "verdict": "confirmed",
+      "correction": "Claude 비전 문서 표에서 고해상도 티어(Claude 4.7 이후 모델) 1920×1080은 축소 없이 2691토큰이다. Opus 5.5 입력 단가 $4/1M(AI 모델 가이드 기준)을 곱하면 약 $0.0108이다.",
+      "evidence_urls": [
+        "https://platform.claude.com/docs/en/build-with-claude/vision"
+      ]
+    },
+    {
+      "claim": "여러 Astra 가이드(kingy.ai, neural4d)가 'MCP + 컴퓨터 유즈' 혼합을 권하고, 유기체는 이미지→3D·텍스트→3D 생성기로 베이스를 만들라고 권한다",
+      "verdict": "unverifiable",
+      "correction": "kingy.ai·blog.neural4d.com 모두 네트워크 정책으로 원문을 열 수 없었고 검색 한도 안에서 해당 문장을 찾지 못했다. (미확인) 표시.",
+      "evidence_urls": [
+        "https://kingy.ai/blog/blender-openai-astra-complete-guide/",
+        "https://blog.neural4d.com/user-guide/gpt-6-astra-blender-mcp/"
+      ]
+    },
+    {
+      "claim": "Sarang Borude가 레퍼런스 이미지로 드래곤을 만든 사례는 헤드리스 Blender를 썼다",
+      "verdict": "unverifiable",
+      "correction": "X 원문 차단, 검색 한도 소진으로 확인하지 못했다. (미확인) 표시.",
+      "evidence_urls": [
+        "https://x.com/doomdave/status/2096335588727349434"
+      ]
+    },
+    {
+      "claim": "생성된 메시의 특정 부위를 텍스트·이미지로 고치는 연구(ES3D, 3DEditFormer, EditFlow3D)",
+      "verdict": "unverifiable",
+      "correction": "arXiv 차단, 검색 한도 소진으로 논문 내용을 확인하지 못했다. (미확인) 표시.",
+      "evidence_urls": [
+        "https://arxiv.org/pdf/2608.15749",
+        "https://arxiv.org/pdf/2608.03179"
+      ]
+    }
+  ],
+  "notes": [
+    "판정 집계: confirmed 17, partially 5, refuted 0, unverifiable 3 (총 25건).",
+    "가장 중요한 보정: (1) OSWorld 원본(2024)과 OSWorld 2.0은 다른 벤치마크라 수치를 이어 비교하면 안 된다. (2) 3DHarnessBench는 '단계마다 모든 모델이 단조 향상'이 아니라 '함수 호출 접근이 풍부해지면 개선되지만 폭이 모델마다 크게 다름'이다. (3) GUI vs CLI의 69.3%는 검증기 기반으로 스킬을 고친 조건이다. (4) WeaveBench에서 GUI만·CLI만 쓰면 3.5% 이하라 하이브리드 결론을 강하게 뒷받침한다.",
+    "CLI-Anything이 GUI vs CLI 논문의 CLI 스킬 층으로 쓰였다는 점은 가이드의 5번 방법(에이전트용 CLI 래퍼)과 3절 근거를 연결한다.",
+    "Codex 컴퓨터 유즈의 CLI 지원 여부, CADWorld 평가 에이전트 수(7개), VideoCAD 영상 개수(41,005)는 이번에 확인하지 못했다."
+  ]
+}

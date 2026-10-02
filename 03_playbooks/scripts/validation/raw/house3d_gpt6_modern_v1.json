@@ -1,0 +1,15 @@
+{
+ "rooms": [],
+ "issues": [],
+ "summary": {
+  "rooms": 0,
+  "doors": 0,
+  "windows": 0,
+  "walls": 0,
+  "errors": 0,
+  "warnings": 0,
+  "liminal_risk": "low",
+  "liminal_reasons": [],
+  "collection": null
+ }
+}

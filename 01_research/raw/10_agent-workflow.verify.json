@@ -1,0 +1,429 @@
+{
+  "verdicts": [
+    {
+      "claim": "Claude 'Blender' connector는 Blender Lab이 제작했고 Anthropic 디렉토리에 2026년 4월 등록됐다(v1.0.1, Anthropic verified).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://claude.com/connectors/blender",
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ],
+      "note": "커넥터 페이지에서 'Made by Blender Lab', v1.0.1, Added April 2026, 'Anthropic verified'를 확인했다. Anthropic 발표문도 'The Blender developers have created an MCP connector'라고 적고 있다. 커넥터 페이지에는 Blender 요구 버전이 나오지 않는다."
+    },
+    {
+      "claim": "Anthropic은 2026-04-28 'Claude for Creative Work'에서 Blender를 포함한 커넥터 8종을 발표했고, Blender Python API 개발에 일회성 기부를 했다.",
+      "verdict": "partially",
+      "correction": "날짜(2026-04-28)는 맞다. 발표문에는 커넥터 개수가 적혀 있지 않고, Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, Splice 9개 이름이 나열돼 있다('8종'은 Resolume 둘을 하나로 셌을 때만 성립한다). 기부의 정확한 내용은 'Python API를 계속 개발하는 Blender 프로젝트를 지원하는 기부'이다. 업데이트 노트에 따르면 Blender는 이 기부를 Blender Development Fund가 아닌 일회성 기부로 받기로 했다.",
+      "evidence_urls": [
+        "https://www.anthropic.com/news/claude-for-creative-work"
+      ],
+      "note": "발표문에는 'the connector lets Claude add new tools directly to Blender's interface'라는 문장과 '다른 LLM에서도 사용 가능'이라는 문장도 있다."
+    },
+    {
+      "claim": "공식 Blender Lab MCP를 쓰려면 Blender 5.1 이상이 필요하다(2차 자료. blender.org는 차단되어 원문 미확인).",
+      "verdict": "unverifiable",
+      "evidence_urls": [
+        "https://github.com/ThanhNguyxnOrg/blendops",
+        "https://github.com/franjorub/grok-build-blender-plugin",
+        "https://claude.com/connectors/blender"
+      ],
+      "note": "blender.org와 projects.blender.org는 이번에도 차단됐다. 'Blender 5.1+'라고 적은 곳은 blendops(3 stars, Draft v0) 하나뿐이다. grok-build 플러그인은 5.1.2에서 테스트했다고만 적었고, 최소 버전은 밝히지 않는다. 공식 커넥터 페이지에도 버전 요구가 없다. 1차 자료로 확인하기 전까지는 '미확인'으로 표기해야 한다."
+    },
+    {
+      "claim": "ahujasid/blender-mcp는 PyPI 이름이 mcp-for-blender로 바뀌었고, 최신 2.1.0이 2026-09-25에 릴리스됐다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://github.com/ahujasid/blender-mcp"
+      ],
+      "note": "릴리스 이력: 2.1.0(09-25), 2.0.4(09-24), 2.0.3/2.0.1(09-21), 2.0.0(09-16). PyPI 설명상 기존 `uvx blender-mcp` 설정도 그대로 동작한다. PyPI의 홈페이지는 mcp-for-blender.com이고 소스 저장소는 github.com/ahujasid/mcp-for-blender로 적혀 있다. GitHub 29.4k stars도 확인했다."
+    },
+    {
+      "claim": "BLENDER_MCP_SAFE_MODE=1은 파일 읽기·쓰기, 외부 프로그램 실행, 네트워크, 코드 영속화를 막고, DISABLE_TELEMETRY=true는 텔레메트리를 끈다.",
+      "verdict": "partially",
+      "correction": "safe mode가 막는 것은 open()이나 os 같은 '직접' 파일 I/O, 프로세스, 네트워크, handlers/timers/drivers, 외부 .blend append/link다. 반면 bpy 오퍼레이터를 통한 .blend 저장·열기, import/export, 렌더는 명시적으로 허용된다(README: 'Normal Blender work (... saving, import/export) still works'). 또 safe_mode.py 문서에 따르면 이 검사는 MCP 경로에만 걸린다. 애드온 소켓은 로컬의 어떤 프로세스가 보낸 raw execute_code도 받기 때문에 샌드박스가 아니다. 텔레메트리도 순수 옵트인이 아니다. 콘텐츠(프롬프트, 코드, 스크린샷, 궤적)는 옵트인이지만, 익명 사용 기록(install ID, 세션 ID, 툴 이름, 성공 여부, 소요 시간, 버전, OS)은 기본으로 수집된다. DISABLE_TELEMETRY=true를 켜야 이 기본 기록까지 모두 꺼진다. README는 수집 데이터가 'to train AI models'에 쓰일 수 있다고도 적고 있다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py"
+      ],
+      "note": "2026-09-25 커밋 8ce9f8d의 safe_mode.py 검증기를 직접 돌려 봤다. 연구자의 증분 저장 스니펫(save_as_mainfile(copy=True))과 bpy.ops.wm.save_mainfile(incremental=True) 모두 ALLOWED로 통과했다."
+    },
+    {
+      "claim": "ahujasid 애드온의 get_scene_info는 객체를 최대 10개만 반환하고, execute_code에는 타임아웃이 없으며, 스크린샷 기본 max_size는 800이다.",
+      "verdict": "partially",
+      "correction": "10개 제한(주석 'Reduced from 20 to 10')과 exec()에 타임아웃이 없다는 점은 코드로 확인했다. 스크린샷 기본값 800은 애드온 함수 시그니처 기준으로만 맞다. MCP 서버 툴 get_viewport_screenshot의 기본값은 max_size=1000이고(docstring에는 800으로 잘못 적혀 있음), MCP로 호출하면 이 값이 애드온에 전달된다. 따라서 실제 기본 캡처는 긴 변 1000px이다. 16:9 뷰포트라면 약 1000×563, 756토큰이다. 비용 섹션의 '800×450 = 493토큰(기본값)' 표기는 고쳐야 한다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py"
+      ],
+      "note": "get_scene_info가 반환하는 필드는 name, type, location(소수 2자리)뿐이다. get_object_info는 world_bounding_box를 반환한다. 둘 다 확인했다."
+    },
+    {
+      "claim": "blender-mcp의 툴 스키마 컨텍스트 비용이 5,462토큰에서 6,928토큰으로 늘었다(28 tools).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp/issues/347"
+      ],
+      "note": "이슈 제목은 '5,462 → 6,928 tokens (+27%) between 2026-08-19 and 2026-09-03'이고 툴 수는 25개에서 28개로 늘었다. 2026-09-05에 열렸고 아직 open 상태다. 현재 main의 server.py에는 @mcp.tool()이 36개라서 지금 비용은 이보다 클 가능성이 크다. Claude Code는 MCP 툴 정의를 기본적으로 지연 로딩하므로, 이 비용을 처음부터 전부 내는 것은 Claude Desktop이나 Cursor처럼 정의를 한꺼번에 로드하는 클라이언트다."
+    },
+    {
+      "claim": "Claude 이미지 비용은 ⌈w/28⌉×⌈h/28⌉ 비주얼 토큰이고, Claude 4.7 이후 모델은 긴 변 2576px, 최대 4784토큰의 high-res tier로 처리된다(1920×1080 = 2,691토큰).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://platform.claude.com/docs/en/build-with-claude/vision"
+      ],
+      "note": "표 기준으로 1920×1080은 standard tier에서 1,560토큰, high-res tier에서 2,691토큰이다. '이미지를 텍스트보다 앞에 두기'와 'Image 1:' 라벨 권장도 원문과 일치한다. 연구자가 놓친 점이 하나 있다. 한 요청에 이미지가 20개를 넘으면(이전 턴에서 다시 보낸 이미지와 tool_result 안의 스크린샷 포함) 이미지당 더 엄격한 치수 제한이 걸린다. 문서는 각 변을 2000px 이하로 줄이라고 권한다. 스크린샷이 많은 3D 루프에서는 중요한 제약이다."
+    },
+    {
+      "claim": "Claude Opus 5.5는 입력 $4, 출력 $20 per MTok이고 캐시 히트는 0.05x($0.20)다. Sonnet 5의 $2/$10은 표준가로 확정됐다. Fable 5.1은 $10/$50이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://platform.claude.com/docs/en/about-claude/pricing"
+      ],
+      "note": "Opus 5.5는 5분 캐시 쓰기 $5, 1시간 $8이다. Fable 5.1 캐시 히트는 0.025x($0.25)이다. Sonnet 5는 9월 1일로 예정됐던 $3/$15 인상이 취소됐다는 각주가 있다. 연구자의 세션 비용 추정 산술(Sonnet 5 ≈$2.46, Opus 5.5 ≈$3.96, Fable 5.1 ≈$8.70)도 재계산해 보니 맞다. 가정에 기반한 추정치라는 표기는 유지해야 한다."
+    },
+    {
+      "claim": "Claude Code의 MAX_MCP_OUTPUT_TOKENS 기본값은 25,000이고 10,000을 넘으면 경고한다. MCP 툴이 반환한 이미지는 인라인으로 보이며 원본은 tool-results에 저장된다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/mcp"
+      ],
+      "note": "한도를 넘은 결과를 파일로 빼는 동작은 '이미지가 없는 결과'에만 해당한다. 이미지는 인라인으로 보일 때 축소·압축될 수 있고, MAX_MCP_OUTPUT_TOKENS 한도에도 포함된다. 같은 문서에 따르면 MCP_TOOL_TIMEOUT을 설정하지 않으면 기본값이 약 28시간이고, .mcp.json의 서버별 \"timeout\"(ms)으로 덮어쓸 수 있으며, 유휴 타임아웃 CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT은 기본 5분이다. 긴 Blender 렌더에 영향을 주는 값들이다."
+    },
+    {
+      "claim": "Claude Code 체크포인트(/rewind)는 Claude의 파일 편집 도구로 바꾼 것만 추적하고, 외부 프로세스의 변경은 추적하지 않는다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/best-practices"
+      ],
+      "note": "원문: 'Checkpoints only track changes made through Claude's file editing tools. Changes made through Bash commands or external processes are not captured.'"
+    },
+    {
+      "claim": "Epic 공식 Claude Code 플러그인은 `/plugin install unreal-engine-skills-for-claude-code@claude-plugins-official`로 설치하고, 에디터에서 `ModelContextProtocol.StartServer`로 localhost:8000 MCP 서버를 띄운다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+        "https://raw.githubusercontent.com/EpicGames/unreal-engine-skills-for-claude-code-plugin/main/skills/unreal-mcp/SKILL.md"
+      ],
+      "note": "기본 포트는 8000, 경로는 /mcp다. .mcp.json은 `ModelContextProtocol.GenerateClientConfig ClaudeCode`로 생성한다. 라이선스는 MIT, 308 stars. README에는 UE 요구 버전(5.8)이 적혀 있지 않다. 'Localhost is not a trust boundary'와 'ProgrammaticToolset.execute_tool_script가 임의 Python을 실행한다'는 경고도 있다."
+    },
+    {
+      "claim": "MCP에서 툴 직접 호출 대신 코드 실행을 쓰면 토큰이 150,000에서 2,000으로 줄었다(98.7%).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://www.anthropic.com/engineering/code-execution-with-mcp"
+      ],
+      "note": "원문: 'This reduces the token usage from 150,000 tokens to 2,000 tokens—a time and cost saving of 98.7%.' 게시일은 2025-11-04다. 일반 MCP 사례이며 3D 작업을 측정한 수치는 아니다."
+    },
+    {
+      "claim": "cc-blender-skill v1.3.0은 Blender 5.1.1에서 end-to-end로 검증됐고, 저자는 곡면 가구와 사람 얼굴 같은 미적 완성도를 범위 밖이라고 밝혔다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/RobLe3/cc-blender-skill"
+      ],
+      "note": "30개 스킬, MIT, 70 stars다. 'no cherry-picking'과 TP 100% / FP 4%(200개 이상 쿼리)를 확인했다. README의 요구 사항은 Blender ≥4.0이다. 다만 이 저장소의 blender-version-compat.md에는 use_auto_smooth에 관한 오류가 있다(별도 verdict 참조)."
+    },
+    {
+      "claim": "blender-kiln은 Blender 4.4를 하한으로 두고(action.layers API) 5.0과 5.2 LTS에서 측정했으며, 대화형 MCP 경로와 headless 경로의 결과가 바이트 단위로 같다(111.9kB, 2,202 tris).",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://github.com/elithril/blender-kiln",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/SKILL.md"
+      ],
+      "note": "README 원문: 'agree to the byte — 111.9 kB GLB either way, same 2,202 triangles, same three materials'. 갤러리 수치는 15 assets, 21,879 tris, 1456.2 kB에서 132.7 kB(91%)다. 연구자가 여러 곳에 쓴 'Iron Rules 25개'는 틀렸다. README에 따르면 31개(core 26개 + batch 5개)다."
+    },
+    {
+      "claim": "(know-how/요약) Mesh.use_auto_smooth는 5.x에서 제거됐다(RobLe3 compat 문서가 '4.x에 존재, 5.x에서 REMOVED'라고 적음).",
+      "verdict": "refuted",
+      "correction": "use_auto_smooth는 Blender 4.1에서 제거됐다. PyPI의 fake-bpy-module-4.0 스텁에는 이 속성이 있고, fake-bpy-module-4.1 스텁에는 없다. 로컬 bpy 5.0.1에서도 hasattr(mesh,'use_auto_smooth')는 False다. 따라서 '4.1+ 제거'로 고쳐야 하고, 4.1~4.5도 hasattr 분기나 shade_smooth_by_angle 계열로 처리해야 한다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/text-to-blender/references/blender-version-compat.md",
+        "https://github.com/nutti/fake-bpy-module"
+      ],
+      "note": "EEVEE 식별자(4.2 스텁에 BLENDER_EEVEE_NEXT, 5.0에서 BLENDER_EEVEE), 5.0에서 action.fcurves 부재와 action.layers 존재, Principled v2 입력명('Subsurface Color' 없음, 'Specular IOR Level', 'Coat Weight', 'Transmission Weight', 'Emission Color' 있음), 비활성 소켓 'Subsurface IOR'의 문자열 키 접근 시 KeyError는 bpy 5.0.1과 4.2 스텁으로 직접 확인했다. 모두 맞다."
+    },
+    {
+      "claim": "(know-how) BLENDER_MCP_SAFE_MODE=1은 파일 I/O를 막으므로 .blend 증분 저장 스니펫이 차단될 수 있고, Blender 'Save Incremental' API 이름은 미확인이다.",
+      "verdict": "refuted",
+      "correction": "safe mode는 bpy를 통한 저장을 허용한다. 연구자의 save_as_mainfile(copy=True) 스니펫은 2026-09-25 커밋의 safe_mode.validate_code를 통과했다. Blender 5.0.1에는 bpy.ops.wm.save_mainfile(incremental=True)가 있고, 이것도 safe mode를 통과한다.",
+      "evidence_urls": [
+        "https://github.com/ahujasid/blender-mcp"
+      ],
+      "note": "로컬에서 safe_mode.py를 단독 실행했고, bpy 5.0.1로 오퍼레이터 속성 목록을 조회해 확인했다."
+    },
+    {
+      "claim": "(item) ellmos blender_run_script는 최대 15분, 출력 tail 8~50KB다.",
+      "verdict": "refuted",
+      "correction": "README 기준 프로세스 타임아웃은 최대 600,000ms(10분)이다. 출력 tail은 기본 8,000자이고 최대 50,000자까지 설정할 수 있다(KB가 아니라 문자 수).",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ellmos-ai/ellmos-blender-use-mcp/main/README.md"
+      ]
+    },
+    {
+      "claim": "(know-how) obj.dimensions는 scale=(1,1,1)일 때만 신뢰할 수 있다(Gaius114 blender-space).",
+      "verdict": "refuted",
+      "correction": "Object.dimensions는 스케일을 반영한다. bpy 5.0.1에서 scale=(2,3,4)인 1m 큐브는 dimensions (2,3,4)를 반환했고, dimensions를 대입하면 scale이 조정됐다. 진짜 함정은 dimensions가 로컬 축 기준이라 회전을 반영하지 않는다는 점이다. 배치에는 matrix_world @ bound_box로 구한 world AABB를 쓰라는 결론 자체는 맞다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/Gaius114/blender-claude-mcp/main/skill/blender-space/SKILL.md"
+      ]
+    },
+    {
+      "claim": "(item) ahujasid 서버에 Tripo 생성이 내장되어 있고, 외부 생성 API는 각자 키로 과금된다. 서버는 무료 오픈소스다.",
+      "verdict": "partially",
+      "correction": "MCP for Blender는 MIT 무료지만 유료 Premium 티어가 있다(mcp-for-blender.com/premium). addon.py 주석에 'Tripo is only offered through Premium'이라고 되어 있어 Tripo는 BYOK로 쓸 수 없다. Hyper3D Rodin과 Hunyuan3D는 자기 키(BYOK)로도, Premium 키로도 쓸 수 있다. Premium 키는 기기 3대 활성화, 월 쿼터, Pro 플랜의 고품질 모델 제한이 있다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py",
+        "https://github.com/ahujasid/blender-mcp"
+      ]
+    },
+    {
+      "claim": "(item) blend-ai 라이선스는 오픈소스(세부 미확인)이다.",
+      "verdict": "partially",
+      "correction": "blend-ai는 AGPL-3.0-or-later다. 네트워크 서비스로 수정본을 제공하면 소스 공개 의무가 생기므로 상업적 도입 시 확인해야 한다. 186 tools / 27 domains, 허용 import 5개(bpy, bmesh, mathutils, math, json), 64종 셰이더 노드 allowlist, 4.2 LTS 이상, 5.1 테스트, 148 stars는 모두 확인했다.",
+      "evidence_urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ]
+    },
+    {
+      "claim": "(know-how) CLAUDE.md는 200줄 이하(공식 권장), SKILL.md는 500줄 이하, 자동 compaction은 최근 스킬을 25K 토큰 예산 안에서 보존, /goal 평가자는 Haiku 기본에 파일을 읽지 않으며 조건은 최대 4,000자, Claude Code 기업 평균 비용은 활동일당 약 $13이다.",
+      "verdict": "confirmed",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/costs",
+        "https://code.claude.com/docs/en/skills",
+        "https://code.claude.com/docs/en/goal"
+      ],
+      "note": "'200줄'은 best-practices 페이지가 아니라 costs 페이지에 있다('Aim to keep CLAUDE.md under 200 lines'). compaction은 스킬당 앞 5,000토큰을 합계 25,000토큰 예산 안에서 다시 붙인다."
+    },
+    {
+      "claim": "(item) Codex 스킬은 ~/.codex/skills/에 두고 `$skill`로 호출한다.",
+      "verdict": "unverifiable",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/CheshireJCat/create-3d-model-skill/main/README.md",
+        "https://github.com/openai/codex/blob/main/docs/skills.md"
+      ],
+      "note": "openai/codex 저장소의 docs/skills.md는 developers.openai.com으로 연결만 해 두었는데, 이 도메인이 차단돼 있다. 서드파티 저장소들은 ~/.codex/skills를 쓰지만, 다른 저장소들은 Codex가 저장소 내 `.agents/skills/`에서 스킬을 찾는다고 적고 있다. 공식 문서를 확인하기 전까지는 두 경로를 모두 표기하는 편이 안전하다."
+    }
+  ],
+  "item_checks": [
+    {
+      "name": "MCP for Blender (ahujasid → mcp-for-blender)",
+      "status": "issue",
+      "detail": "존재·유지보수 상태 양호(PyPI 2.1.0 = 2026-09-25, 29.4k stars, MIT, README 기준 Blender 3.0 이상, Python 3.10 이상). 설치 명령(claude/codex mcp add)과 환경변수도 확인했다. 고칠 점: (1) MCP 툴 스크린샷 기본 max_size는 1000이다(800이 아님). (2) Tripo는 유료 Premium 전용이다. Premium 티어가 있다는 사실이 빠졌다. (3) 텔레메트리는 기본 익명 사용 기록이 켜져 있고 콘텐츠만 옵트인이다. (4) safe mode는 MCP 경로에만 걸리고 bpy 저장·import/export는 허용한다. (5) 현재 툴 수는 36개(server.py 기준)로, #347 측정 당시의 28개보다 많다.",
+      "evidence_urls": [
+        "https://pypi.org/project/mcp-for-blender/",
+        "https://github.com/ahujasid/blender-mcp",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+        "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/addon.py"
+      ]
+    },
+    {
+      "name": "Blender Lab 공식 MCP + Claude Blender connector",
+      "status": "issue",
+      "detail": "커넥터 존재, v1.0.1, 2026-04 등록, Anthropic verified는 확인했다. 연구자가 '미확인'으로 남긴 부분 중 2차 자료로 채울 수 있는 것들이 있다. 서버 소스는 projects.blender.org/lab/blender_mcp, 라이선스는 GPL-3.0-or-later, 구조는 stdio MCP 서버와 TCP 애드온이다. 애드온 포트는 localhost:9876으로 ahujasid와 같아 충돌한다. 실행 파일 이름도 ahujasid의 옛 PyPI 이름과 같은 `blender-mcp`다. 설치 예시는 `uvx --from 'git+https://projects.blender.org/lab/blender_mcp.git@v1.0.0#subdirectory=mcp' blender-mcp`이고, execute_blender_code와 문서 검색·스크린샷 툴이 있다. Blender 5.1+ 요구는 여전히 1차 자료로 확인되지 않았다.",
+      "evidence_urls": [
+        "https://claude.com/connectors/blender",
+        "https://www.anthropic.com/news/claude-for-creative-work",
+        "https://github.com/franjorub/grok-build-blender-plugin"
+      ]
+    },
+    {
+      "name": "newo-ether/blender-mcp 포크",
+      "status": "ok",
+      "detail": "구조화 노드 패치 툴, 인스턴스 claim/release, 문서 검색 툴이 있다. 4.2.22 LTS, 5.1.2, 5.2 LTS RC에서 테스트했고 Windows PowerShell 설치를 제공한다. 라이선스는 MIT다('세부 미확인'을 MIT로 고칠 것). 8 stars, 250 commits로 규모는 작다.",
+      "evidence_urls": [
+        "https://github.com/newo-ether/blender-mcp"
+      ]
+    },
+    {
+      "name": "blend-ai (HoldMyBeer-gg)",
+      "status": "issue",
+      "detail": "기능 수치는 모두 맞다. 라이선스가 AGPL-3.0-or-later인데 '미확인'으로 적혀 있어 반드시 보완해야 한다. 148 stars, 유닛 테스트 1,190개, 텔레메트리 없음, 127.0.0.1 바인딩.",
+      "evidence_urls": [
+        "https://github.com/HoldMyBeer-gg/blend-ai"
+      ]
+    },
+    {
+      "name": "blender-mcp-pro (youichi-uda)",
+      "status": "ok",
+      "detail": "120+ tools / 17 categories, 시작 시 15개만 노출, enable_tools, 포트 9877, 애드온 MIT / 서버 독점, $5/월(7일 체험, Gumroad) 또는 $15 일회성(itch.io), 31 stars. 모두 일치한다. Blender 4.0 이상(5.0 권장).",
+      "evidence_urls": [
+        "https://github.com/youichi-uda/blender-mcp-pro"
+      ]
+    },
+    {
+      "name": "ellmos-blender-use-mcp",
+      "status": "issue",
+      "detail": "4개 툴과 '애드온·포트 없음'은 맞다. 타임아웃은 최대 600,000ms(10분)이다(15분이 아님). 출력 tail은 8,000~50,000자다(KB가 아님). MIT, 2 stars, npm 배포. README에 규모에 비해 과장된 엔터프라이즈 문구(48h Security SLA 등)가 많다.",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/ellmos-ai/ellmos-blender-use-mcp/main/README.md",
+        "https://github.com/ellmos-ai/ellmos-blender-use-mcp"
+      ]
+    },
+    {
+      "name": "Context7 (upstash)",
+      "status": "ok",
+      "detail": "툴 이름 resolve-library-id / query-docs, 원격 URL https://mcp.context7.com/mcp, `npx ctx7 setup`, claude-plugins-official external_plugins의 context7 존재를 확인했다. 연구자가 인용한 CLAUDE.md 규칙 문구는 README 원문('Always use Context7 when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.')과 다르다. 인용 표기를 고쳐야 한다. Blender 문서가 등록돼 있는지는 여전히 미확인이다.",
+      "evidence_urls": [
+        "https://github.com/upstash/context7",
+        "https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins"
+      ]
+    },
+    {
+      "name": "fake-bpy-module",
+      "status": "ok",
+      "detail": "2.78부터 5.2까지 지원하고 `pip install fake-bpy-module-5.1` 형식이 맞다. PyPI 4.0/4.1/4.2 스텁 wheel(20260730 빌드)을 내려받아 use_auto_smooth와 EEVEE_NEXT의 버전별 존재 여부를 교차 검증하는 데 실제로 유용했다.",
+      "evidence_urls": [
+        "https://github.com/nutti/fake-bpy-module"
+      ]
+    },
+    {
+      "name": "RobLe3/cc-blender-skill",
+      "status": "issue",
+      "detail": "v1.3.0, 30 skills, MIT, 5.1.1 검증, 한계 서술, 치수표 값(의자 45×45×4cm, 좌면 45cm, 식탁 150×90×3.5cm/75cm, 문 80×200×4cm, 벽 12/25cm)을 원문과 대조해 확인했다. 다만 blender-version-compat.md가 use_auto_smooth 제거 시점을 5.x로 잘못 적었다(실제 4.1). 이 파일을 그대로 인용한 버전 함정 표는 수정해야 한다.",
+      "evidence_urls": [
+        "https://github.com/RobLe3/cc-blender-skill",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/text-to-blender/references/common-object-dimensions.md",
+        "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/text-to-blender/references/blender-version-compat.md"
+      ]
+    },
+    {
+      "name": "elithril/blender-kiln",
+      "status": "issue",
+      "detail": "4.4 하한, 5.0/5.2 측정, 바이트 동일 결과, 91% 감축, MIT는 확인했다. 'Iron Rules 25개'는 틀렸다. 31개(core 26 + batch 5)다. 연구자가 인용한 규칙 번호(6, 7, 17, 19~25)는 SKILL.md core 번호와 맞는다. 다만 SKILL.md의 툴 표에서는 규칙 번호가 어긋나 있다(get_object_info에 'Rule 23'). kiln 문서 자체의 불일치다.",
+      "evidence_urls": [
+        "https://github.com/elithril/blender-kiln",
+        "https://raw.githubusercontent.com/elithril/blender-kiln/main/SKILL.md"
+      ]
+    },
+    {
+      "name": "arjun988/blender-skills",
+      "status": "issue",
+      "detail": "94 skills, 175개 이상의 reference 파일, Cursor/Claude Code/Kiro/Codex 지원, 마켓플레이스 심사 중, MIT, 229 stars, v1.3.0을 확인했다. '스타일 스킬 27개'는 README 기준 core 8 + extended 15 + horror packs 7 = 30개와 다르다.",
+      "evidence_urls": [
+        "https://github.com/arjun988/blender-skills"
+      ]
+    },
+    {
+      "name": "Bniya-cn/blender-design-master",
+      "status": "issue",
+      "detail": "에이전트 4종, 단계, 게이트(평균 8 이상, 항목 7 이상), .ai-blender/tasks, SHA-256 증거 묶기를 확인했다. 그러나 README에 '仓库当前未声明 License'라고 되어 있어 라이선스가 없다. 법적으로 '오픈소스'가 아니므로 재사용 시 주의해야 한다. Codex Level 0 테스트에서도 Final Gate는 평균 7.4로 통과하지 못했다. 1 star.",
+      "evidence_urls": [
+        "https://github.com/Bniya-cn/blender-design-master"
+      ]
+    },
+    {
+      "name": "Epic Unreal Engine Skills for Claude Code 플러그인",
+      "status": "ok",
+      "detail": "설치 명령, StartServer, GenerateClientConfig, 8000/mcp, MIT, 308 stars, 운영 규칙(저장 → 대량 변경 → 저장, undo 불완전, 의존 호출 직렬화, status 검증, PIE 확인, AgentSkillToolset)을 모두 확인했다. 'UE 5.8'은 플러그인 README에 없는 정보다. 출처를 따로 달아야 한다.",
+      "evidence_urls": [
+        "https://github.com/EpicGames/unreal-engine-skills-for-claude-code-plugin",
+        "https://raw.githubusercontent.com/EpicGames/unreal-engine-skills-for-claude-code-plugin/main/skills/unreal-mcp/SKILL.md"
+      ]
+    },
+    {
+      "name": "MAX-786/claude-3d-harness",
+      "status": "ok",
+      "detail": "5개 라이브러리 58 SKILL.md, provider 기본값 newo-ether(v1.18.0)와 fallback ahujasid(blender-mcp==2.0.0), 워크플로우 6종, 프로필 3종(fast 1280×720/64spp, standard 1920×1080/256spp, cinematic 512spp), MIT, 6 stars를 확인했다. jithinolickal 스킬은 Apache-2.0이다(연구자는 '오픈소스'로만 표기).",
+      "evidence_urls": [
+        "https://github.com/MAX-786/claude-3d-harness"
+      ]
+    },
+    {
+      "name": "Claude Code 확장 기능(Skills/Subagents/Hooks//goal/MCP)",
+      "status": "ok",
+      "detail": "SKILL.md frontmatter 필드, 500줄 권장, 25K compaction 예산, !`cmd` 주입, subagent 필드(tools, disallowedTools, mcpServers, skills, maxTurns, effort), hooks matcher mcp__<server>__<tool>, exit 2 차단, additionalContext, 핸들러 5종, /goal의 Haiku 기본값과 4,000자 제한을 모두 공식 문서로 확인했다.",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/skills",
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/hooks",
+        "https://code.claude.com/docs/en/goal"
+      ]
+    },
+    {
+      "name": "Gemini CLI MCP / GEMINI.md",
+      "status": "ok",
+      "detail": "timeout 기본 600,000ms, includeTools/excludeTools(exclude 우선), trust, 멀티파트 결과, context.fileName 배열로 AGENTS.md 지정, 3단계 계층(global/workspace/JIT)을 확인했다.",
+      "evidence_urls": [
+        "https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md",
+        "https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md"
+      ]
+    }
+  ],
+  "unreliable_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/RobLe3/cc-blender-skill/main/plugin/skills/text-to-blender/references/blender-version-compat.md",
+      "reason": "use_auto_smooth가 '4.x에 존재하고 5.x에서 제거'됐다고 적었는데 사실과 다르다. 실제로는 4.1에서 제거됐다(fake-bpy-module 4.0/4.1 스텁으로 확인). 버전 함정 표의 근거로 쓸 때는 1차 API로 교차 확인해야 한다."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Gaius114/blender-claude-mcp/main/skill/blender-space/SKILL.md",
+      "reason": "'dimensions는 scale=(1,1,1)일 때만 동작'이라는 설명이 틀렸다. dimensions는 스케일을 반영하고, 문제는 회전(로컬 축)이다. 문서가 이탈리아어라 오해가 더 커질 수 있다."
+    },
+    {
+      "url": "https://github.com/ThanhNguyxnOrg/blendops",
+      "reason": "3 stars, Draft v0인 초기 저장소다. ahujasid 스타 수를 '21K+'로 적어 정보가 오래됐다. 'Blender Lab MCP는 5.1+ 필요'의 유일한 출처인데 1차 근거가 없다."
+    },
+    {
+      "url": "https://github.com/ellmos-ai/ellmos-blender-use-mcp",
+      "reason": "2 stars 저장소인데 README가 '48h Security Response SLA', 'Enterprise security teams' 같은 AI 생성으로 보이는 마케팅 문구로 가득하다. 연구자는 수치(15분, KB)도 잘못 옮겼다. 채택 전에 실제 동작을 검증해야 한다."
+    },
+    {
+      "url": "https://github.com/SandeshBhat15/blender-mcp-antigravity-setup-guide",
+      "reason": "비공식 개인 가이드다. 옛 패키지명 `blender-mcp`에 fastmcp/mcp[cli]를 강제 주입하는 우회책을 쓰고, Windows 경로(C:\\Users\\...\\.gemini\\config\\mcp_config.json)만 제시한다. Antigravity 공식 문서로 교차 확인되지 않았다."
+    },
+    {
+      "url": "https://github.com/Bniya-cn/blender-design-master",
+      "reason": "라이선스 미선언(재사용 권리 불명확), 1 star, Claude Code와 Cursor 경로는 설계만 있고 미검증이며, Codex 테스트는 Final Gate 7.4로 실패했다. '레퍼런스 설계'로만 인용해야 한다."
+    }
+  ],
+  "missed_items": [
+    {
+      "name": "Blender Lab 공식 blender_mcp 저장소 세부(GPL-3.0-or-later, uvx git 설치, 포트 9876, 실행 파일명 blender-mcp)",
+      "url": "https://github.com/franjorub/grok-build-blender-plugin",
+      "why_important": "공식 서버는 ahujasid와 같은 localhost:9876 포트를 쓰고, 실행 파일 이름도 ahujasid의 옛 PyPI 이름(`blender-mcp`)과 같다. 두 서버를 한 머신에 함께 설치하면 충돌하거나 엉뚱한 서버를 띄울 수 있다. GPL 라이선스라는 점도 번들 배포 시 중요하다. 원 소스는 projects.blender.org/lab/blender_mcp(현재 차단)이다."
+    },
+    {
+      "name": "MCP for Blender Premium(유료)와 Tripo의 Premium 전용 제공",
+      "url": "https://www.mcp-for-blender.com/premium",
+      "why_important": "'무료 오픈소스 + 각자 API 키'라는 설명과 달리 Tripo는 유료 Premium으로만 쓸 수 있고, Hyper3D와 Hunyuan3D도 Premium 키 경로가 있다. 비용을 계획할 때와 '유료 생성 전 사용자 확인' 규칙을 적용할 때 반드시 알아야 한다."
+    },
+    {
+      "name": "bpy.ops.wm.save_mainfile(incremental=True)",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "why_important": "연구자가 미확인으로 남긴 증분 저장 API다. Blender 5.0.1에 존재하고 SAFE_MODE 검증도 통과한다. 연구자가 직접 만든 save_as_mainfile 스니펫보다 간단한 표준 방법이다."
+    },
+    {
+      "name": "Claude 비전 '이미지 20개 초과 시 더 엄격한 치수 제한(각 변 2000px 이하 권장)' 규칙",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/vision",
+      "why_important": "스크린샷 루프를 오래 돌리면 이력에 이미지가 20개를 넘기 쉽다(tool_result 안의 이미지 포함). 이때 2576px 렌더를 그대로 넣으면 invalid_request_error가 날 수 있다. 3D 시각 피드백 루프에서 직접 부딪히는 제약이다."
+    },
+    {
+      "name": "Material.use_nodes 폐기 예고(5.0 DeprecationWarning, 6.0에서 제거 예정)",
+      "url": "https://github.com/elithril/blender-kiln",
+      "why_important": "대부분의 에이전트 bpy 템플릿이 `mat.use_nodes = True`를 쓴다. bpy 5.0.1에서 경고가 나는 것을 직접 확인했다. 버전 함정 표에 넣어야 한다."
+    },
+    {
+      "name": "ahujasid safe mode의 범위 한계(MCP 경로만 검사, 애드온 소켓은 로컬 프로세스의 raw execute_code를 그대로 수락)",
+      "url": "https://github.com/ahujasid/blender-mcp",
+      "why_important": "safe mode를 샌드박스로 오해하면 안 된다. 개발자가 직접 'not a sandbox around Blender'라고 명시한다. 보안 체크리스트에 반영해야 한다."
+    },
+    {
+      "name": "Poly Pizza 에셋의 약 69%가 CC-BY라 저작자 표기 의무가 있고, attribution 문자열이 커스텀 속성으로 저장됨",
+      "url": "https://raw.githubusercontent.com/ahujasid/blender-mcp/main/src/blender_mcp/server.py",
+      "why_important": "'라이선스를 로그로 남긴다'는 규칙을 구체적으로 구현할 수 있는 근거다. licence='CC0' 필터로 표기 의무를 피할 수도 있다. normalize_size와 target_size 권장도 포함돼 있다."
+    },
+    {
+      "name": "Claude Code MCP 타임아웃 설정(MCP_TOOL_TIMEOUT 기본 약 28시간, .mcp.json 서버별 timeout, 유휴 타임아웃 기본 5분)",
+      "url": "https://code.claude.com/docs/en/mcp",
+      "why_important": "긴 Cycles 렌더나 대용량 export를 MCP로 호출하면 진행 알림이 없는 동안 유휴 타임아웃(5분)에 걸려 중단될 수 있다. headless로 전환할지 판단하는 기준이 된다."
+    },
+    {
+      "name": "build123d-mcp (CAD 정밀 모델링 MCP)",
+      "url": "https://github.com/pzfreo/build123d-mcp",
+      "why_important": "가구, 제품, 하드서페이스처럼 치수 정확도가 중요한 오브젝트를 CAD 커널로 만들고 측정·검증한 뒤 STEP/STL로 내보낼 수 있다. CADGenBench에서 같은 모델의 점수가 0.360에서 0.457로, CAD 유효성이 88%에서 100%로 올랐다. Apache 2.0이며 Claude Code와 Codex를 지원한다. '오브젝트·가구가 제대로 만들어지는' 문제에 직접 관련된다."
+    },
+    {
+      "name": "Blender 환경설정 use_translate_new_dataname(Interface > Translation > New Data)",
+      "url": "https://github.com/hideki711014/roo-blendermcp-jp-rules",
+      "why_important": "연구자가 추정으로 남긴 대응책('New Data 번역 끄기')에 쓰이는 속성이 bpy 5.0.1 PreferencesView에 실제로 있음을 확인했다. 한국어 UI 사용자를 위한 권고를 '추정'에서 '확인된 설정'으로 올릴 수 있다. 번역이 실제로 적용되는 동작 자체는 bpy 모듈에 번역 데이터가 없어 확인하지 못했다."
+    }
+  ]
+}

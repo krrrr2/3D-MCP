@@ -1,0 +1,15 @@
+{
+ "topic": "G14 확인 기록",
+ "verdicts": [],
+ "item_checks": [],
+ "missed_items": [],
+ "notes": [
+  "G14 항목은 메인 에이전트가 직접 확인한 것이라 별도 대조 없음."
+ ],
+ "unreliable_sources": [
+  {
+   "url": "https://github.com/elasticdotventures/blender-agent-tools",
+   "reason": "LICENSE 없음 + install.ps1 설치 스크립트. 실행 전 내용 검토."
+  }
+ ]
+}

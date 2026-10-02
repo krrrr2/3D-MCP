@@ -1,0 +1,79 @@
+[
+ [
+  "cam",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nc=bpy.data.objects.new('mcp_cam', bpy.data.cameras.new('mcp_cam'))\nbpy.context.scene.collection.objects.link(c)\nc.location=(6,-9,9); c.rotation_euler=(0.85,0,0.5)\nbpy.context.scene.camera=c\nresult={'engine': bpy.context.scene.render.engine}"
+  }
+ ],
+ [
+  "cycles",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nsc=bpy.context.scene\nsc.render.engine='CYCLES'\nsc.cycles.device='CPU'\nsc.cycles.samples=8\nsc.render.resolution_x=640\nsc.render.resolution_y=400\nresult={}"
+  }
+ ],
+ [
+  "thumb_cy",
+  "render_thumbnail_to_path",
+  {
+   "output_path": "${SCRATCH}/offmcp/out/thumb_cycles.png"
+  }
+ ],
+ [
+  "viewport_cy",
+  "render_viewport_to_path",
+  {
+   "output_path": "${SCRATCH}/offmcp/out/viewport_cycles.png"
+  }
+ ],
+ [
+  "building_audit",
+  "execute_blender_code",
+  {
+   "code": "import sys, time\nsys.path.insert(0, '/home/user/3D-MCP/03_playbooks/scripts')\nimport importlib, building_audit as ba\nimportlib.reload(ba)\nt=time.time()\nrep = ba.audit_building()\nfrom collections import Counter\nresult = {'sec': round(time.time()-t,1), 'summary': rep['summary'], 'codes': dict(Counter(i['code'] for i in rep['issues'])), 'doors': [(o['name'], (o.get('swing') or {}).get('recommended',{}).get('opens_into')) for o in rep['openings'] if o['kind']=='door'][:6]}"
+  }
+ ],
+ [
+  "scene_audit",
+  "execute_blender_code",
+  {
+   "code": "import sys, time\nsys.path.insert(0, '/home/user/3D-MCP/03_playbooks/scripts')\nimport scene_audit as sa\nt=time.time()\nrep = sa.audit_scene() if hasattr(sa,'audit_scene') else None\nresult = {'sec': round(time.time()-t,1), 'keys': list(rep.keys()) if isinstance(rep, dict) else str(type(rep)), 'summary': rep.get('summary') if isinstance(rep, dict) else None}"
+  }
+ ],
+ [
+  "big_result",
+  "execute_blender_code",
+  {
+   "code": "result = {'x': 'a' * (12*1024*1024)}"
+  }
+ ],
+ [
+  "alive2",
+  "execute_blender_code",
+  {
+   "code": "import bpy\nresult={'alive': True}"
+  }
+ ],
+ [
+  "tempdir",
+  "execute_blender_code",
+  {
+   "code": "import bpy, os\nd=os.path.join(bpy.app.tempdir,'blender_mcp')\nresult={'tempdir': bpy.app.tempdir, 'files': os.listdir(d) if os.path.isdir(d) else None}"
+  }
+ ],
+ [
+  "sysexit_raise",
+  "execute_blender_code",
+  {
+   "code": "raise SystemExit(0)"
+  }
+ ],
+ [
+  "alive3",
+  "execute_blender_code",
+  {
+   "code": "result={'alive': True}"
+  }
+ ]
+]

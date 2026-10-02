@@ -1,0 +1,1340 @@
+{
+ "_source": "client_call.py 실행 결과 (긴 문자열은 700자에서 자름, 경로는 <scratch> 등으로 치환)",
+ "runs": [
+  {
+   "run": "1_readonly_exec_docs",
+   "what": "읽기 전용 도구·코드 실행·문서 검색",
+   "calls": [
+    {
+     "label": "objs",
+     "tool": "get_objects_summary",
+     "isError": false,
+     "sec": 0.06,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "scene_name": "Scene",
+       "active_workspace": "Layout",
+       "active_object": "export",
+       "object_mode": "OBJECT",
+       "camera_object": null,
+       "collections": [
+        {
+         "name": "Scene Collection",
+         "exclude": false,
+         "hide_viewport": false,
+         "objects": [
+          {
+           "name": "Mesh_100",
+           "type": "MESH",
+           "parent": "Node_132",
+           "data_name": "Mesh_100",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_101",
+           "type": "MESH",
+           "parent": "opening-bed2-door",
+           "data_name": "Mesh_101",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_102",
+           "type": "MESH",
+           "parent": "opening-bed2-door",
+           "data_name": "Mesh_102",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_103",
+           "type": "MESH",
+           "parent": "opening-bed2-door",
+           "data_name": "Mesh_103",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_104",
+           "type": "MESH",
+           "parent": "Node_140",
+           "data_name": "Mesh_104",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_105",
+           "type": "MESH",
+           "parent": "Node_142",
+           "data_name": "Mesh_105",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_106",
+           "type": "MESH",
+           "parent": "Node_142",
+           "data_name": "Mesh_106",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_107",
+           "type": "MESH",
+           "parent": "Node_145",
+           "data_name": "Mesh_107",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_108",
+           "type": "MESH",
+           "parent": "Node_145",
+           "data_name": "Mesh_108",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_109",
+           "type": "MESH",
+           "parent": "opening-suite-arch",
+           "data_name": "Mesh_109",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_110",
+           "type": "MESH",
+           "parent": "opening-suite-arch",
+           "data_name": "Mesh_110",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_111",
+           "type": "MESH",
+           "parent": "opening-suite-arch",
+           "data_name": "Mesh_111",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_112",
+           "type": "MESH",
+           "parent": "opening-suite-arch",
+           "data_name": "Mesh_112",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_113",
+           "type": "MESH",
+           "parent": "opening-bath2-door",
+           "data_name": "Mesh_113",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          {
+           "name": "Mesh_114",
+           "type": "MESH",
+           "parent": "opening-bath2-door",
+           "data_name": "Mesh_114",
+           "selected": true,
+           "visible": true,
+           "hide_viewport": false
+          },
+          "… (+1004 items)"
+         ],
+         "children": []
+        }
+       ]
+      }
+     }
+    },
+    {
+     "label": "datablocks",
+     "tool": "get_blendfile_summary_datablocks",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "datablock_counts": {
+        "all_ids": 2769,
+        "materials": 863,
+        "meshes": 863,
+        "objects": 1019,
+        "scenes": 1,
+        "screens": 11,
+        "window_managers": 1,
+        "workspaces": 11
+       },
+       "render_engine": "BLENDER_EEVEE",
+       "scene_name": "Scene",
+       "workspaces": [
+        "Animation",
+        "Compositing",
+        "Geometry Nodes",
+        "Layout",
+        "Modeling",
+        "Rendering",
+        "Scripting",
+        "Sculpting",
+        "Shading",
+        "Texture Paint",
+        "UV Editing"
+       ],
+       "active_workspace": "Layout"
+      }
+     }
+    },
+    {
+     "label": "missing",
+     "tool": "get_blendfile_summary_missing_files",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "missing_files": [],
+       "total_checked": 0
+      }
+     }
+    },
+    {
+     "label": "libs",
+     "tool": "get_blendfile_summary_of_linked_libraries",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "direct_libraries": [],
+       "indirect_libraries": [],
+       "total_library_count": 0
+      }
+     }
+    },
+    {
+     "label": "paths",
+     "tool": "get_blendfile_summary_path_info",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "filepath": "<scratch>/h3d/fable_modern.blend",
+       "is_saved": true,
+       "is_dirty": true,
+       "age_seconds": 16434.7,
+       "file_size_bytes": 2994657,
+       "backups": [
+        {
+         "path": "<scratch>/h3d/fable_modern.blend1",
+         "age_seconds": 16448.8,
+         "size_bytes": 2993602
+        }
+       ]
+      }
+     }
+    },
+    {
+     "label": "usage",
+     "tool": "get_blendfile_summary_usage_guess",
+     "isError": false,
+     "sec": 0.02,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "usage_guesses": {
+        "Animation": {
+         "score": 0,
+         "certainty": 83
+        },
+        "Rendering": {
+         "score": 0,
+         "certainty": 77
+        },
+        "Scripting": {
+         "score": 0,
+         "certainty": 100
+        },
+        "Video Editing": {
+         "score": 0,
+         "certainty": 100
+        },
+        "Modeling": {
+         "score": 25,
+         "certainty": 68
+        },
+        "Grease Pencil": {
+         "score": 0,
+         "certainty": 100
+        },
+        "Geometry Nodes": {
+         "score": 0,
+         "certainty": 100
+        },
+        "Compositing": {
+         "score": 0,
+         "certainty": 100
+        },
+        "UV Unwrapping": {
+         "score": 0,
+         "certainty": 80
+        },
+        "Motion Tracking": {
+         "score": 0,
+         "certainty": 100
+        },
+        "Audio": {
+         "score": 0,
+         "certainty": 100
+        }
+       }
+      }
+     }
+    },
+    {
+     "label": "exec_simple",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "n": 1019,
+       "ver": "5.2.2 LTS",
+       "bg": true
+      }
+     }
+    },
+    {
+     "label": "exec_noresult",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {}
+     }
+    },
+    {
+     "label": "exec_nondict",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "error",
+      "message": "The `result` variable must be a dict, not list. Wrap your return value: `result = {\"key\": value}`"
+     }
+    },
+    {
+     "label": "exec_raise",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "error",
+      "message": "Traceback (most recent call last):\n  File \"<mirror>/addon/blender_mcp_addon/mcp_to_blender_server.py\", line 230, in _execute_code\n    exec(code, namespace)\n    ~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 1, in <module>\nValueError: boom\n"
+     }
+    },
+    {
+     "label": "exec_print",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "ok": 1
+      },
+      "stdout": "hello from blender\n"
+     }
+    },
+    {
+     "label": "exec_obj",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "o": "bpy.data.objects['apron']"
+      }
+     }
+    },
+    {
+     "label": "api_docs",
+     "tool": "get_python_api_docs",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "kind": "exact",
+      "found": true,
+      "identifier": "bpy.types.BevelModifier",
+      "content": "BevelModifier(Modifier)\n=======================\n\n.. currentmodule:: bpy.types\n\nbase classes --- :class:`bpy_struct`, :class:`Modifier`\n\n.. class:: BevelModifier(Modifier)\n\n   Bevel modifier to make edges and vertices more rounded\n\n   .. attribute:: affect\n\n      Affect edges or vertices (default ``'EDGES'``)\n\n      - ``VERTICES``\n        Vertices -- Affect only vertices.\n      - ``EDGES``\n        Edges -- Affect only edges.\n\n      :type: Literal['VERTICES', 'EDGES']\n\n   .. attribute:: angle_limit\n\n      Angle above which to bevel edges (in [0, 3.14159], default 0.523599)\n\n      :type: float\n\n   .. data:: custom_profile\n\n      The path for the custom profile (readonly)\n\n      :type: :class:`C… (+6965 chars)",
+      "examples": []
+     }
+    },
+    {
+     "label": "api_docs_bad",
+     "tool": "get_python_api_docs",
+     "isError": false,
+     "sec": 0.02,
+     "structured": {
+      "kind": "partial",
+      "found": false,
+      "identifier": "bpy.types.NoSuchThing",
+      "parent": "bpy.types",
+      "available": [],
+      "submodules": []
+     }
+    },
+    {
+     "label": "search_api",
+     "tool": "search_api_docs",
+     "isError": false,
+     "sec": 0.88,
+     "structured": {
+      "hits": [],
+      "truncated": false
+     }
+    },
+    {
+     "label": "search_manual",
+     "tool": "search_manual_docs",
+     "isError": false,
+     "sec": 0.58,
+     "structured": {
+      "hits": [
+       {
+        "path": "manual/render/shader_nodes/shader/principled.rst",
+        "text": "Method\n\nRendering method to simulate Subsurface scattering.\n\nChristensen-Burley\n\nAn approximation to physically-based volume scattering.\nThis method is less accurate than Random Walk however,\nin some situations this method will resolve noise faster.\n\nRandom Walk\n\nCycles Only\nProvides accurate results for thin and curved objects.\nRandom Walk uses true volumetric scattering inside the mesh,\nwhich means that it works best for closed meshes.\nOverlapping faces and holes in the mesh can cause problems.\n\nRandom Walk (Skin)\n\nCycles Only\nRandom walk method optimized for skin rendering. The radius\nis automatically adjusted based on the color texture, and\nthe subsurface entry direction uses a mix of di… (+1261 chars)",
+        "breadcrumb": "Principled BSDF > Inputs > Subsurface",
+        "score": 350,
+        "index": 0
+       },
+       {
+        "path": "manual/render/shader_nodes/shader/principled.rst",
+        "text": "Subsurface\n\n:term:`Subsurface scattering` is used to render materials such as skin, milk and wax.\nLight scatters below the surface to create a soft appearance.",
+        "breadcrumb": "Principled BSDF > Inputs > Subsurface",
+        "score": 325,
+        "index": 1
+       },
+       {
+        "path": "manual/render/shader_nodes/shader/principled.rst",
+        "text": "The metal component is opaque and only reflect lights. Diffuse is fully opaque, while\nsubsurface also involves light scattering just below the surface. Both diffuse and\nsubsurface sit below a specular layer. The transmission component includes both\nspecular reflection and refraction.",
+        "breadcrumb": "Principled BSDF > Layers",
+        "score": 233,
+        "index": 2
+       }
+      ],
+      "truncated": true
+     }
+    },
+    {
+     "label": "search_manual_ko",
+     "tool": "search_manual_docs",
+     "isError": false,
+     "sec": 0.2,
+     "structured": {
+      "hits": [],
+      "truncated": false
+     }
+    }
+   ]
+  },
+  {
+   "run": "2_search_render_ui_sandbox_cli",
+   "what": "문서 검색 변형·오브젝트 상세·카메라 없는 렌더·백그라운드 UI 도구·약한 샌드박스·_for_cli",
+   "calls": [
+    {
+     "label": "search_api2",
+     "tool": "search_api_docs",
+     "isError": false,
+     "sec": 0.93,
+     "structured": {
+      "hits": [
+       {
+        "path": "api/bpy.ops.mesh.rst",
+        "text": ".. function:: bevel(*, offset_type='OFFSET', offset=0.0, profile_type='SUPERELLIPSE', offset_pct=0.0, segments=1, profile=0.5, affect='EDGES', clamp_overlap=False, loop_slide=True, mark_seam=False, mark_sharp=False, material=-1, harden_normals=False, face_strength_mode='NONE', miter_outer='SHARP', miter_inner='SHARP', spread=0.1, vmesh_method='ADJ', release_confirm=False)\n\nCut into selected items at an angle to create bevel or chamfer\n\n:param offset_type: Width Type, The method for determining the size of the bevel (optional)\n\nOFFSET\nOffset -- Amount is offset of new edges from original.\n\nWIDTH\nWidth -- Amount is width of new face.\n\nDEPTH\nDepth -- Amount is perpendicular distance from origin… (+3241 chars)",
+        "breadcrumb": "Mesh Operators",
+        "score": 65,
+        "index": 0
+       },
+       {
+        "path": "api/bmesh.ops.rst",
+        "text": ".. function:: bevel(bm, geom=[], offset=0, offset_type='OFFSET', profile_type='SUPERELLIPSE', segments=0, profile=0, affect='VERTICES', clamp_overlap=False, material=0, loop_slide=False, mark_seam=False, mark_sharp=False, harden_normals=False, face_strength_mode='NONE', miter_outer='SHARP', miter_inner='SHARP', spread=0, custom_profile=None, vmesh_method='ADJ')\n\nBevel.\n\nBevels edges and vertices\n\n:param bm: The bmesh to operate on.\n:type bm: bmesh.types.BMesh\n:param geom: Input edges and vertices.\n:type geom: list[bmesh.types.BMVert | bmesh.types.BMEdge | bmesh.types.BMFace]\n:param offset: Amount to offset beveled edge.\n:type offset: float\n:param offset_type: How to measure the offset.\n:type… (+1781 chars)",
+        "breadcrumb": "BMesh Operators (bmesh.ops) > Operator Example",
+        "score": 54,
+        "index": 1
+       },
+       {
+        "path": "api/bpy.types.Curve.rst",
+        "text": ".. attribute:: bevel_resolution\n\nThe number of segments in each quarter-circle of the bevel (in [0, 32], default 4)\n\n:type: int",
+        "breadcrumb": "Curve(ID)",
+        "score": 11,
+        "index": 2
+       }
+      ],
+      "truncated": false
+     }
+    },
+    {
+     "label": "search_api3",
+     "tool": "search_api_docs",
+     "isError": false,
+     "sec": 0.27,
+     "structured": {
+      "hits": [
+       {
+        "path": "api/change_log.rst",
+        "text": "bpy.types.BevelModifier\n\nAdded\n\nbpy.types.BevelModifier.affect\n\nbpy.types.BevelModifier.profile_type",
+        "breadcrumb": "Change Log > 2.83 to 2.90 > bpy.types.BevelModifier > Added",
+        "score": 126,
+        "index": 0
+       },
+       {
+        "path": "api/change_log.rst",
+        "text": "Removed\n\nuse_custom_profile\n\nuse_only_vertices",
+        "breadcrumb": "Change Log > 2.83 to 2.90 > bpy.types.BevelModifier > Removed",
+        "score": 105,
+        "index": 1
+       },
+       {
+        "path": "api/bpy.types.BevelModifier.rst",
+        "text": "BevelModifier(Modifier)\n\n.. currentmodule:: bpy.types",
+        "breadcrumb": "BevelModifier(Modifier)",
+        "score": 77,
+        "index": 2
+       }
+      ],
+      "truncated": true
+     }
+    },
+    {
+     "label": "search_api4",
+     "tool": "search_api_docs",
+     "isError": false,
+     "sec": 1.48,
+     "structured": {
+      "hits": [
+       {
+        "path": "api/bpy_types_enum_items/bake_target_items.rst",
+        "text": "Bake Target Items\n\n:IMAGE_TEXTURES: Image Textures.\n\nBake to image data-blocks associated with active image texture nodes in materials.\n:VERTEX_COLORS: Active Color Attribute.\n\nBake to the active color attribute on meshes.",
+        "breadcrumb": "Bake Target Items",
+        "score": 140,
+        "index": 0
+       },
+       {
+        "path": "api/bpy_types_enum_items/bake_margin_type_items.rst",
+        "text": "Bake Margin Type Items\n\n:ADJACENT_FACES: Adjacent Faces.\n\nUse pixels from adjacent faces across UV seams.\n:EXTEND: Extend.\n\nExtend border pixels outwards.",
+        "breadcrumb": "Bake Margin Type Items",
+        "score": 130,
+        "index": 1
+       },
+       {
+        "path": "api/bpy_types_enum_items/bake_pass_filter_type_items.rst",
+        "text": "Bake Pass Filter Type Items\n\n:NONE: None.\n:EMIT: Emit.\n:DIRECT: Direct.\n:INDIRECT: Indirect.\n:COLOR: Color.\n:DIFFUSE: Diffuse.\n:GLOSSY: Glossy.\n:TRANSMISSION: Transmission.",
+        "breadcrumb": "Bake Pass Filter Type Items",
+        "score": 130,
+        "index": 2
+       }
+      ],
+      "truncated": true
+     }
+    },
+    {
+     "label": "search_idx",
+     "tool": "search_api_docs",
+     "isError": false,
+     "sec": 0.38,
+     "structured": {
+      "hits": [
+       {
+        "path": "api/bpy.ops.mesh.rst",
+        "text": ".. function:: attribute_set(*, value_float=0.0, value_float_vector_2d=(0.0, 0.0), value_float_vector_3d=(0.0, 0.0, 0.0), value_int=0, value_int_vector_2d=(0, 0), value_color=(1.0, 1.0, 1.0, 1.0), value_bool=False)\n\nSet values of the active attribute for selected elements\n\n:param value_float: Value, (in [-inf, inf], optional)\n:type value_float: float\n:param value_float_vector_2d: Value, (array of 2 items, in [-inf, inf], optional)\n:type value_float_vector_2d: Sequence[float]\n:param value_float_vector_3d: Value, (array of 3 items, in [-inf, inf], optional)\n:type value_float_vector_3d: Sequence[float]\n:param value_int: Value, (in [-inf, inf], optional)\n:type value_int: int\n:param value_int_vect… (+8696 chars)",
+        "breadcrumb": "Mesh Operators",
+        "score": 65,
+        "index": 0
+       }
+      ],
+      "truncated": false
+     }
+    },
+    {
+     "label": "detail",
+     "tool": "get_object_detail_summary",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "name": "apron",
+       "type": "MESH",
+       "location": [
+        -0.20000000298023224,
+        -0.0,
+        0.41200000047683716
+       ],
+       "rotation": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "scale": [
+        1.0,
+        1.0,
+        1.0
+       ],
+       "dimensions": [
+        0.030000003054738045,
+        0.40000006556510925,
+        0.05999999865889549
+       ],
+       "parent": "item-mo_dining_chair",
+       "children": [],
+       "modifiers": [],
+       "constraints": [],
+       "materials": [
+        "oakVeneer.015"
+       ],
+       "visibility": {
+        "hide_viewport": false,
+        "hide_render": false,
+        "hide_get": false
+       },
+       "data_name": "Mesh_274",
+       "collections": [
+        "Scene Collection"
+       ],
+       "message": null
+      }
+     }
+    },
+    {
+     "label": "detail_bad",
+     "tool": "get_object_detail_summary",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "error",
+       "name": null,
+       "type": null,
+       "location": null,
+       "rotation": null,
+       "scale": null,
+       "dimensions": null,
+       "parent": null,
+       "children": null,
+       "modifiers": null,
+       "constraints": null,
+       "materials": null,
+       "visibility": null,
+       "data_name": null,
+       "collections": null,
+       "message": "Object 'nope' not found. Available objects: Mesh_100, Mesh_101, Mesh_102, Mesh_103, Mesh_104, Mesh_105, Mesh_106, Mesh_107, Mesh_108, Mesh_109, Mesh_110, Mesh_111, Mesh_112, Mesh_113, Mesh_114, Mesh_115, Mesh_116, Mesh_117, Mesh_118, Mesh_119, Mesh_120, Mesh_121, Mesh_122, Mesh_123, Mesh_124, Mesh_125, Mesh_126, Mesh_127, Mesh_128, Mesh_129, Mesh_130, Mesh_131, Mesh_132, Mesh_133, Mesh_134, Mesh_135, Mesh_136, Mesh_137, Mesh_138, Mesh_139, Mesh_140, Mesh_141, Mesh_142, Mesh_143, Mesh_144, Mesh_145, Mesh_146, Mesh_147, Mesh_148, Mesh_149, Mesh_150, Mesh_151, Mesh_152, Mesh_154, Mesh_155, Mesh_156, Mesh_159, Mesh_160, Mesh_161, Mesh_162, Mesh_163, Mesh_164, Mesh_166, Mesh_167, Mesh_168, Mesh_1… (+10606 chars)"
+      }
+     }
+    },
+    {
+     "label": "thumb",
+     "tool": "render_thumbnail_to_path",
+     "isError": false,
+     "sec": 0.02,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "error",
+       "filepath": null,
+       "message": "Error: Cannot render, no camera\n"
+      },
+      "stdout": "Error: Cannot render, no camera\n"
+     }
+    },
+    {
+     "label": "viewport",
+     "tool": "render_viewport_to_path",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "error",
+       "filepath": null,
+       "message": "Error: Cannot render, no camera\n"
+      },
+      "stdout": "Error: Cannot render, no camera\n"
+     }
+    },
+    {
+     "label": "shot_json",
+     "tool": "get_screenshot_of_window_as_json",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "error",
+       "window_width": 0,
+       "window_height": 0,
+       "screen_name": "",
+       "workspace": "",
+       "scene": "",
+       "areas": [],
+       "active_object": null,
+       "selected_objects": [],
+       "message": "Window layout is not available in background mode"
+      }
+     }
+    },
+    {
+     "label": "shot_img",
+     "tool": "get_screenshot_of_window_as_image",
+     "isError": true,
+     "sec": 0.01,
+     "content": [
+      {
+       "text": "Error executing tool get_screenshot_of_window_as_image: Screenshots are not available in background mode"
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "jump_tab",
+     "tool": "jump_to_tab_by_name",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "error",
+       "workspace": null,
+       "message": "Not available in background mode",
+       "available_workspaces": null
+      }
+     }
+    },
+    {
+     "label": "jump_obj",
+     "tool": "jump_to_view3d_object_by_name",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "error",
+       "object": null,
+       "type": null,
+       "location": null,
+       "message": "Not available in background mode"
+      }
+     }
+    },
+    {
+     "label": "sb_exit",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "error",
+      "message": "Traceback (most recent call last):\n  File \"<mirror>/addon/blender_mcp_addon/mcp_to_blender_server.py\", line 230, in _execute_code\n    exec(code, namespace)\n    ~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 2, in <module>\n  File \"<mirror>/addon/blender_mcp_addon/weak_sandbox.py\", line 30, in _blocked_exit\n    raise RuntimeError(\"sys.exit() is not allowed in LLM-generated code\")\nRuntimeError: sys.exit() is not allowed in LLM-generated code\n"
+     }
+    },
+    {
+     "label": "sb_quit",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "error",
+      "message": "Traceback (most recent call last):\n  File \"<mirror>/addon/blender_mcp_addon/mcp_to_blender_server.py\", line 230, in _execute_code\n    exec(code, namespace)\n    ~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 2, in <module>\n  File \"<mirror>/addon/blender_mcp_addon/weak_sandbox.py\", line 127, in _blocked\n    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: Operator 'bpy.ops.wm.quit_blender()' is not allowed in LLM-generated code: Terminates the Blender process, use bpy.app.quit() if you must\n"
+     }
+    },
+    {
+     "label": "sb_factory",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.0,
+     "structured": {
+      "status": "error",
+      "message": "Traceback (most recent call last):\n  File \"<mirror>/addon/blender_mcp_addon/mcp_to_blender_server.py\", line 230, in _execute_code\n    exec(code, namespace)\n    ~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 2, in <module>\n  File \"<mirror>/addon/blender_mcp_addon/weak_sandbox.py\", line 127, in _blocked\n    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: Operator 'bpy.ops.wm.read_factory_settings()' is not allowed in LLM-generated code: Resets all user preferences and startup file, use bpy.ops.wm.read_homefile() or bpy.ops.wm.read_homefile(use_empty=True, use_factory_startup=True) instead\n"
+     }
+    },
+    {
+     "label": "sb_os",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "cwd": "<scratch>/offmcp",
+       "uid": 0,
+       "can_list_home": 4
+      }
+     }
+    },
+    {
+     "label": "sb_osexit_alias",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "has_exit": true
+      }
+     }
+    },
+    {
+     "label": "alive",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "alive": true,
+       "n": 1019
+      }
+     }
+    },
+    {
+     "label": "cli_exec",
+     "tool": "execute_blender_code_for_cli",
+     "isError": false,
+     "sec": 4.25,
+     "structured": {
+      "file": "<scratch>/h3d/fable_italian.blend",
+      "n": 1046
+     }
+    },
+    {
+     "label": "cli_sum",
+     "tool": "get_blendfile_summary_datablocks_for_cli",
+     "isError": false,
+     "sec": 3.7,
+     "structured": {
+      "status": "ok",
+      "datablock_counts": {
+       "all_ids": 2858,
+       "materials": 894,
+       "meshes": 894,
+       "objects": 1046,
+       "scenes": 1,
+       "screens": 11,
+       "window_managers": 1,
+       "workspaces": 11
+      },
+      "render_engine": "BLENDER_EEVEE",
+      "scene_name": "Scene",
+      "workspaces": [
+       "Animation",
+       "Compositing",
+       "Geometry Nodes",
+       "Layout",
+       "Modeling",
+       "Rendering",
+       "Scripting",
+       "Sculpting",
+       "Shading",
+       "Texture Paint",
+       "UV Editing"
+      ],
+      "active_workspace": "Layout"
+     }
+    },
+    {
+     "label": "cli_same_dirty",
+     "tool": "execute_blender_code_for_cli",
+     "isError": false,
+     "sec": 1.69,
+     "structured": {
+      "file": "<scratch>/h3d/fable_modern_mcp_0001.blend"
+     }
+    }
+   ]
+  },
+  {
+   "run": "3_eevee_crash",
+   "what": "EEVEE 썸네일 렌더 → GPU·EGL 없는 서버에서 Blender 프로세스 중단(이후 호출 모두 연결 실패)",
+   "calls": [
+    {
+     "label": "cam",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.02,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "engine": "BLENDER_EEVEE"
+      }
+     }
+    },
+    {
+     "label": "thumb",
+     "tool": "render_thumbnail_to_path",
+     "isError": true,
+     "sec": 0.27,
+     "content": [
+      {
+       "text": "Error executing tool render_thumbnail_to_path: Empty response from Blender"
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "viewport",
+     "tool": "render_viewport_to_path",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool render_viewport_to_path: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "cycles",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "thumb_cy",
+     "tool": "render_thumbnail_to_path",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool render_thumbnail_to_path: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "viewport_cy",
+     "tool": "render_viewport_to_path",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool render_viewport_to_path: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "building_audit",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "scene_audit",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "big_result",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "big_request",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.14,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "alive2",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.01,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    }
+   ]
+  },
+  {
+   "run": "3b_cycles_limits_systemexit",
+   "what": "Cycles 렌더·요청/응답 크기·raise SystemExit",
+   "calls": [
+    {
+     "label": "cam",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.02,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "engine": "BLENDER_EEVEE"
+      }
+     }
+    },
+    {
+     "label": "cycles",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {}
+     }
+    },
+    {
+     "label": "thumb_cy",
+     "tool": "render_thumbnail_to_path",
+     "isError": false,
+     "sec": 1.67,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "filepath": "<bpy.app.tempdir>/blender_mcp/thumb_cycles.png",
+       "message": null
+      }
+     }
+    },
+    {
+     "label": "viewport_cy",
+     "tool": "render_viewport_to_path",
+     "isError": false,
+     "sec": 2.53,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "filepath": "<bpy.app.tempdir>/blender_mcp/viewport_cycles.png",
+       "message": null
+      }
+     }
+    },
+    {
+     "label": "building_audit",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.95,
+     "structured": {
+      "status": "error",
+      "message": "Traceback (most recent call last):\n  File \"<mirror>/addon/blender_mcp_addon/mcp_to_blender_server.py\", line 230, in _execute_code\n    exec(code, namespace)\n    ~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 8, in <module>\nAttributeError: 'NoneType' object has no attribute 'get'\n"
+     },
+     "_note": "하네스 코드 오류(recommended 가 None 인 경우 처리 누락) — 4_building_audit 에서 고쳐 다시 실행"
+    },
+    {
+     "label": "scene_audit",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.53,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "sec": 0.5,
+       "keys": [
+        "units",
+        "interpenetrations",
+        "summary"
+       ],
+       "summary": {
+        "units": 1,
+        "units_with_issues": 1,
+        "interpenetrating_pairs": 0,
+        "floor_z": null,
+        "ceiling_z": null,
+        "collection": null,
+        "tolerance_m": 0.005
+       }
+      }
+     }
+    },
+    {
+     "label": "big_result",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 5.79,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "x": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa… (+12582212 chars)"
+      }
+     }
+    },
+    {
+     "label": "big_request",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.75,
+     "structured": {
+      "status": "error",
+      "message": "Request exceeds 10485760 byte limit"
+     }
+    },
+    {
+     "label": "alive2",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "alive": true
+      }
+     }
+    },
+    {
+     "label": "tempdir",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "tempdir": "<bpy.app.tempdir>/",
+       "files": [
+        "thumb_cycles.png",
+        "viewport_cycles.png"
+       ]
+      }
+     }
+    },
+    {
+     "label": "sysexit_raise",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Empty response from Blender"
+      }
+     ],
+     "structured": null
+    },
+    {
+     "label": "alive3",
+     "tool": "execute_blender_code",
+     "isError": true,
+     "sec": 0.0,
+     "content": [
+      {
+       "text": "Error executing tool execute_blender_code: Cannot connect to Blender at localhost:9876. Ensure Blender is running with the MCP addon enabled and the server started."
+      }
+     ],
+     "structured": null
+    }
+   ]
+  },
+  {
+   "run": "4_building_audit",
+   "what": "이 저장소 building_audit.py 를 execute_blender_code 로 실행",
+   "calls": [
+    {
+     "label": "building_audit",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.84,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "sec": 0.8,
+       "summary": {
+        "rooms": 10,
+        "doors": 9,
+        "windows": 9,
+        "walls": 4,
+        "trim": 5,
+        "errors": 0,
+        "warnings": 3,
+        "liminal_risk": "low",
+        "liminal_reasons": [],
+        "collection": null,
+        "notes": [
+         "직선이 아닌 벽 1개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: walls#0"
+        ]
+       },
+       "codes": {
+        "door_narrow": 1,
+        "door_swing_conflict": 1,
+        "window_misaligned": 1
+       },
+       "n_doors": 9,
+       "swing_sample": [
+        [
+         "opening-balcony-door",
+         null,
+         "미닫이로 봄(이름·넓은 유리문·폭 2 m 초과)"
+        ],
+        [
+         "opening-bath1-door",
+         "floor-bath1",
+         "방 안쪽(그 방의 문)으로"
+        ],
+        [
+         "opening-bath2-door",
+         "floor-vestibule",
+         "좁은 방(floor-bath2)은 안쪽으로 80°까지만 열려(item-it_toilet) 바깥여닫이로 · 열린 문짝이 같은 방의 다른 문 앞을 가리지 않게"
+        ],
+        [
+         "opening-bed1-door",
+         "floor-bed1",
+         "방 안쪽(그 방의 문)으로 · 열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로"
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "label": "cam",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {}
+     }
+    },
+    {
+     "label": "thumb",
+     "tool": "render_thumbnail_to_path",
+     "isError": false,
+     "sec": 1.46,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "filepath": "<bpy.app.tempdir>/blender_mcp/thumb.png",
+       "message": null
+      }
+     }
+    },
+    {
+     "label": "copy",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "copied": 17360
+      }
+     }
+    }
+   ]
+  },
+  {
+   "run": "5_lit_thumbnail",
+   "what": "조명·카메라 추가 후 썸네일",
+   "calls": [
+    {
+     "label": "aim",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.03,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "lo": [
+        -35.57350158691406,
+        -48.187503814697266,
+        -0.1600053757429123
+       ],
+       "hi": [
+        44.42649841308594,
+        31.812503814697266,
+        2.9200000762939453
+       ],
+       "lights": 1
+      }
+     }
+    },
+    {
+     "label": "thumb",
+     "tool": "render_thumbnail_to_path",
+     "isError": false,
+     "sec": 1.1,
+     "structured": {
+      "status": "ok",
+      "result": {
+       "status": "ok",
+       "filepath": "<bpy.app.tempdir>/blender_mcp/thumb2.png",
+       "message": null
+      }
+     }
+    },
+    {
+     "label": "copy",
+     "tool": "execute_blender_code",
+     "isError": false,
+     "sec": 0.01,
+     "structured": {
+      "status": "ok",
+      "result": {}
+     }
+    }
+   ]
+  }
+ ]
+}

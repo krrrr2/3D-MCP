@@ -1,0 +1,297 @@
+{
+ "rooms": [
+  {
+   "name": "FLOOR_Photography",
+   "type": "interior",
+   "area_m2": 17.92,
+   "size_m": [
+    5.52,
+    3.25
+   ],
+   "ceiling_h_m": 2.77,
+   "doors": 0,
+   "passages": [
+    "FLOOR_Corridor"
+   ],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 59,
+   "windows_total": 0
+  },
+  {
+   "name": "FLOOR_Game",
+   "type": "interior",
+   "area_m2": 12.04,
+   "size_m": [
+    4.07,
+    2.96
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 51,
+   "windows_total": 0
+  },
+  {
+   "name": "FLOOR_LivingDining",
+   "type": "habitable",
+   "area_m2": 26.32,
+   "size_m": [
+    8.53,
+    3.35
+   ],
+   "ceiling_h_m": 2.79,
+   "doors": 1,
+   "passages": [],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 40,
+   "windows_total": 0
+  },
+  {
+   "name": "FLOOR_Bar",
+   "type": "interior",
+   "area_m2": 10.36,
+   "size_m": [
+    4.62,
+    2.76
+   ],
+   "ceiling_h_m": 2.78,
+   "doors": 0,
+   "passages": [
+    "FLOOR_Corridor"
+   ],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 18,
+   "windows_total": 0
+  },
+  {
+   "name": "FLOOR_Corridor",
+   "type": "circulation",
+   "area_m2": 44.89,
+   "size_m": [
+    9.83,
+    6.84
+   ],
+   "ceiling_h_m": 2.78,
+   "doors": 4,
+   "passages": [
+    "FLOOR_Photography"
+   ],
+   "windows": 0,
+   "glassless_window_openings": [],
+   "glazed_doors_to_outside": [],
+   "furniture": 8,
+   "windows_total": 0
+  }
+ ],
+ "openings": [
+  {
+   "name": "DOOR_Game_hinged_leaf",
+   "kind": "door",
+   "wall": "WALL_game_south",
+   "width_m": 0.92,
+   "at": [
+    -3.47,
+    3.43
+   ],
+   "sides": [
+    "FLOOR_Game",
+    "FLOOR_Corridor"
+   ],
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_Game",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -3.564,
+        2.987
+       ],
+       "closed_dir": [
+        0.005,
+        1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.005
+       ],
+       "leaf_m": 0.88,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 열면 문짝이 옆벽에 붙음 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "FLOOR_Game"
+   }
+  },
+  {
+   "name": "DOOR_LivingDining_hinged_leaf",
+   "kind": "door",
+   "wall": "WALL_living_south_east",
+   "width_m": 0.96,
+   "at": [
+    -1.37,
+    5.86
+   ],
+   "sides": [
+    "FLOOR_LivingDining",
+    "FLOOR_Corridor"
+   ],
+   "open_leaf": true,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_LivingDining",
+     "max_open_deg": 90,
+     "rests_on_wall": false,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -0.912,
+        5.94
+       ],
+       "closed_dir": [
+        -1.0,
+        0.005
+       ],
+       "open_dir": [
+        0.005,
+        1.0
+       ],
+       "leaf_m": 0.92,
+       "floor_z": -0.0
+      }
+     ]
+    },
+    "why": "방 안쪽(그 방의 문)으로 · 모델에 열린 방향 그대로",
+    "modeled_opens_into": "FLOOR_LivingDining"
+   }
+  },
+  {
+   "name": "DOOR_Service_closed_hinged_leaf",
+   "kind": "door",
+   "wall": "WALL_587_Corridor",
+   "width_m": 0.92,
+   "at": [
+    -0.39,
+    5.21
+   ],
+   "sides": [
+    "FLOOR_Corridor",
+    "EXTERIOR"
+   ],
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_Corridor",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        -0.542,
+        5.646
+       ],
+       "closed_dir": [
+        -0.005,
+        -1.0
+       ],
+       "open_dir": [
+        -1.0,
+        0.005
+       ],
+       "leaf_m": 0.88,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "열면 문짝이 옆벽에 붙음",
+    "modeled_opens_into": null
+   }
+  },
+  {
+   "name": "DOOR_East_entrance_hinged_leaf",
+   "kind": "door",
+   "wall": "WALL_57D_Corridor",
+   "width_m": 0.92,
+   "at": [
+    4.25,
+    -0.01
+   ],
+   "sides": [
+    "EXTERIOR",
+    "FLOOR_Corridor"
+   ],
+   "open_leaf": false,
+   "swing": {
+    "kind": "hinged",
+    "recommended": {
+     "opens_into": "FLOOR_Corridor",
+     "max_open_deg": 90,
+     "rests_on_wall": true,
+     "leaves": [
+      {
+       "hinge_xy": [
+        4.02,
+        -0.413
+       ],
+       "closed_dir": [
+        0.187,
+        0.982
+       ],
+       "open_dir": [
+        -0.982,
+        0.187
+       ],
+       "leaf_m": 0.88,
+       "floor_z": 0.0
+      }
+     ]
+    },
+    "why": "열면 문짝이 옆벽에 붙음",
+    "modeled_opens_into": null
+   }
+  }
+ ],
+ "issues": [
+  {
+   "severity": "warning",
+   "code": "windowless_room",
+   "object": "FLOOR_LivingDining",
+   "detail": "창이 없는 거실·침실 등 생활 공간입니다."
+  }
+ ],
+ "summary": {
+  "rooms": 5,
+  "doors": 4,
+  "windows": 0,
+  "walls": 44,
+  "trim": 83,
+  "errors": 0,
+  "warnings": 1,
+  "liminal_risk": "medium",
+  "liminal_reasons": [
+   "생활 공간의 절반 이상에 창이 없음",
+   "복도 면적 비율 40%"
+  ],
+  "collection": null,
+  "notes": [
+   "외부 지면(Ground/Terrain)이 없어 모델 바깥은 '모델링되지 않은 외부'로 보았습니다.",
+   "직선이 아닌 벽 1개(곡선·꺾임·구멍 많음)는 두께·끝 틈 검사를 생략했습니다: WALL_57D_Corridor"
+  ],
+  "seconds": 91.1
+ }
+}

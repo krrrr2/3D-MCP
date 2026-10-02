@@ -1,0 +1,2402 @@
+{
+  "topic": "실세계 가구·인테리어·인체 스케일 치수 표준 (AI 3D 모델링/배치용 레퍼런스, 출처 포함)",
+  "summary_ko": [
+    "AI 에이전트가 Blender/Unreal/Unity로 가구와 방을 만들 때 쓸 수 있는 실세계 치수표 약 110행을 모았다. 좌석, 테이블, 침대·매트리스, 수납·주방, 건축(문·천장·계단·벽·콘센트), 동선·배치 간격, 인체 치수를 다룬다. 모든 값은 mm로 환산했다(1 Blender unit = 1 m 기준이면 ÷1000).",
+    "주요 기준값(여러 출처가 일치): 식탁 높이 710~760 mm(28~30 in), 식탁 의자 좌판 430~480 mm, 상판과 좌판의 높이차 250~305 mm, 1인당 식탁 폭 610 mm(24 in), 커피테이블 높이 410~460 mm, 소파에서 커피테이블까지 355~455 mm, 벽 그림 중심 높이 1450 mm(57 in).",
+    "한국 특유의 값: 아파트 천장고는 대부분 2300 mm(일부 2350~2400), 층고 2800~2850 mm. 싱크대 높이 850 mm(키 160~165 cm 여성 기준의 오래된 산업 표준, 최근에는 900 mm 권장도 있음). 주방은 하부장 850 + 미드웨이 약 700 + 상부장 약 750 = 약 2300 mm 모듈. 방문과 현관문은 900 또는 1000 × 2100 mm, 욕실문 700×2000 또는 800×2100 mm. 매트리스는 S 1000, SS 1100, Q 1500, K 1600, LK 1800 × 2000 mm.",
+    "미국·NKBA 기준: 조리대 36 in(914 mm, 캐비닛 34.5 in + 상판 1.5 in), 하부장 깊이 24 in, 상부장 하단 54 in(조리대 위 18 in 간격), 작업 통로 42 in(1인)·48 in(다인), 워크 트라이앵글 총합 26 ft 이하·각 변 4~9 ft, 식탁 뒤 통행 44 in. IRC 계단은 단높이 최대 7¾ in, 디딤판 최소 10 in, 머리 위 여유 6'8\", 손잡이 34~38 in.",
+    "한국 법규(공동주택 계단): 단높이 18 cm 이하, 단너비 26 cm 이상, 높이 3 m 이내마다 유효너비 120 cm 이상의 계단참, 높이 1 m를 넘는 계단에는 난간 설치(주택건설기준 등에 관한 규정 제16조, 피난·방화규칙 제15조).",
+    "매트리스 이름은 지역마다 크기가 다르다. 한국 K(1600 폭), 미국 King(1930), 영국 King(1500), EU King(1600)이 모두 다른 크기다. 따라서 AI 프롬프트나 MCP 도구에는 이름 대신 실제 mm 값을 넘겨야 한다.",
+    "출처끼리 충돌하는 값은 note 필드에 적었다. 조리대 높이(한국 850, 한국 신규 권장 900, 미국 914), 상하부장 간격(미국 457, 한국 650~750), 주방 통로(NKBA 1067, 한국 실무 900 이상), TV 시청거리 배수(1.5~2.5배는 유통사 기준이고 THX·SMPTE 시야각 기준과 다름) 등이다.",
+    "환경 제약(WebFetch 차단) 때문에 대부분 검색 요약으로만 교차 확인했다. 냉장고 크기, EU(DIN 18101)·미국 문 크기, 미국 콘센트·스위치 높이, 눈높이와 도달거리, 암체어·콘솔 치수는 검색으로 확인하지 못해 confidence를 low로 두고 urls를 비워 두었다(gaps 참고)."
+  ],
+  "items": [
+    {
+      "name": "NKBA Kitchen Planning Guidelines with Access Standards",
+      "category": "업계 가이드라인(주방)",
+      "what_it_is": "미국 National Kitchen & Bath Association의 주방 계획 지침. 작업 통로 폭, 워크 트라이앵글, 식탁·아일랜드 주변 여유 공간, 무릎 공간 등을 규정한다. 미국 주방 레이아웃의 사실상 표준이다.",
+      "how_to_use": "주방 씬을 자동 배치할 때 통로 1067/1219 mm, 트라이앵글 ≤7925 mm, 상부장 하단 1372 mm 같은 값을 레이아웃 검증 규칙(assert)으로 쓴다.",
+      "strengths": "수치가 명확하고 널리 인용된다. 접근성(Access) 기준도 들어 있다.",
+      "weaknesses": "미국 기준이라 한국 아파트 주방(850 mm 조리대, 좁은 통로)과는 차이가 크다. 원문 PDF는 이번 환경에서 직접 열람하지 못했다(egress 차단).",
+      "license_or_price": "PDF 무료 공개",
+      "language": "영어",
+      "status_date": "2022년판 PDF (검색 결과 기준)",
+      "urls": [
+        "https://media.nkba.org/uploads/2022/05/Kitchen-Planning-Guidelines.pdf",
+        "https://www.ivocabinets.com/wp-content/uploads/2024/06/NKBA-Kitchen-Planning-Guidelines.pdf",
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "International Residential Code (IRC) R311 계단/손잡이 조항",
+      "category": "건축 법규(미국)",
+      "what_it_is": "미국 단독·2세대 주택용 모델 코드. 계단 단높이 최대 7¾ in, 디딤판 최소 10 in, 머리 위 여유 6'8\", 손잡이 34~38 in, 가드 36 in 등을 규정한다.",
+      "how_to_use": "미국풍 주택의 계단을 절차적으로 생성할 때 rise/run을 이 한계 안에서 정하고 손잡이 높이를 고정한다.",
+      "strengths": "법적 최소·최대 기준이라 '그럴듯함'을 보장하는 하한선이 된다.",
+      "weaknesses": "주(州)마다 개정판 채택이 다르다. 상업 건물은 IBC를 따른다.",
+      "license_or_price": "ICC 저작물(일부 지자체 요약본 무료)",
+      "language": "영어",
+      "status_date": "2015~2021 IRC 요약 자료",
+      "urls": [
+        "https://www.essexct.gov/DocumentCenter/View/449/Residential-Stairways-and-Ramps-2015-Irc-Handout-PDF",
+        "https://buildingcodetrainer.com/residential-stair-code/",
+        "https://trademastercalc.com/reference/irc-stair-code",
+        "https://resources.viewrail.com/code-compliance/railing-code/maximum-and-minimum-handrail-heights"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "주택건설기준 등에 관한 규정 제16조 / 건축물의 피난·방화구조 등의 기준에 관한 규칙 제15조",
+      "category": "건축 법규(한국)",
+      "what_it_is": "한국 공동주택과 일반 건축물의 계단 기준. 단높이 18 cm 이하, 단너비 26 cm 이상, 높이 3 m 이내마다 계단참(유효너비 120 cm 이상), 높이 1 m를 넘는 계단의 난간 설치 등을 정한다.",
+      "how_to_use": "한국 아파트·빌라 씬의 공용계단을 모델링할 때 치수 상·하한으로 쓴다.",
+      "strengths": "국가법령정보센터가 공식 출처다.",
+      "weaknesses": "용도별(학교·집회 등)로 수치가 다르다. 손잡이 높이 등 세부 조항은 이번에 원문을 열람하지 못했다.",
+      "license_or_price": "공공(무료)",
+      "language": "한국어",
+      "status_date": "현행(검색 시점 2026-09)",
+      "urls": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=8238",
+        "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lspttninfSeq=124056&chrClsCd=010202",
+        "https://casenote.kr/%EB%B2%95%EC%A0%9C%EC%B2%98/18-0465-d5162f",
+        "https://www.midascad.com/cad_archive/buildingact-4",
+        "https://04noti.com/%EA%B3%84%EB%8B%A8-%EC%84%B8%EB%B6%80-%EC%84%A4%EC%B9%98%EA%B8%B0%EC%A4%80-%EB%8B%A8%EB%84%88%EB%B9%84-%EB%8B%A8%EB%86%92%EC%9D%B4-%EA%B3%84%EB%8B%A8%EB%84%88%EB%B9%84/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "사이즈코리아 제8차 한국인 인체치수조사 (2020~2021 측정, 2022 발표)",
+      "category": "인체치수 데이터(한국)",
+      "what_it_is": "국가기술표준원이 20~69세 6,839명을 대상으로 430개 항목(직접측정 137, 3D 293)을 측정한 조사. 평균 키는 남 172.5 cm, 여 159.6 cm다.",
+      "how_to_use": "한국 인체 기준 휴먼 스케일 레퍼런스(마네킹, 캐릭터 신장), 눈높이·팔 길이 추정, 한국형 가구 높이 검증에 쓴다.",
+      "strengths": "국가 공식 3D 스캔 데이터이고 항목이 매우 많다.",
+      "weaknesses": "세부 항목(눈높이, 앉은 눈높이 등)은 사이트에서 직접 내려받아야 한다. 이번에는 평균 키만 확인했다.",
+      "license_or_price": "공공(회원가입 후 데이터 이용)",
+      "language": "한국어",
+      "status_date": "2022-03 발표",
+      "urls": [
+        "https://sizekorea2022.kr/8th_results/",
+        "https://www.motir.go.kr/kor/article/ATCL8764a1224/155118041/view",
+        "https://mobile.newsis.com/view.html?ar_id=NISX20220330_0001813471"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "KS G 4203 사무용 책상 및 테이블 / KS G 2010 학생용 책상 및 의자",
+      "category": "한국산업표준(가구)",
+      "what_it_is": "사무용·학생용 책상과 의자의 치수를 정한 KS 규격. 사무용 책상은 기본 높이 720 mm가 관행이다.",
+      "how_to_use": "한국 사무실·학교 씬의 책상과 의자 치수 기준으로 쓴다.",
+      "strengths": "국가표준이다.",
+      "weaknesses": "KS 원문은 유료이거나 열람이 제한된다. 이번에는 검색 요약과 관련 논문 제목 수준으로만 확인했다.",
+      "license_or_price": "KS 원문 유료",
+      "language": "한국어",
+      "status_date": "검색 시점 기준 현행",
+      "urls": [
+        "https://www.kssn.net/search/stddetail.do?itemNo=K001010111402",
+        "https://standard.go.kr/KSCI/standardIntro/getStandardSearchView.do?menuId=919&topMenuId=502&upperMenuId=503&ksNo=KSG2010&tmprKsNo=KSG2010&reformNo=29",
+        "https://www.esk.or.kr/conference/2009_fall/pdf/14_5.pdf",
+        "https://www.jksoeh.org/data/issue/JKSOEH/J01901/J01901002.pdf"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "IKEA 제품 스펙 (BILLY / PAX)",
+      "category": "제조사 스펙",
+      "what_it_is": "대표적인 대량생산 가구의 정확한 치수. BILLY는 깊이 28 cm, 폭 40/80 cm, 높이 106/202/237 cm이고, PAX는 깊이 58 cm, 폭 50/75/100 cm, 높이 201/236 cm다.",
+      "how_to_use": "책장·붙박이장 에셋을 만들 때 실제 제품 치수를 그대로 쓰면 스케일 오류가 없다.",
+      "strengths": "치수가 정확하고 전 세계 공통이다.",
+      "weaknesses": "특정 브랜드 기준이라 한국 붙박이장(깊이 600 이상) 등과는 다를 수 있다.",
+      "license_or_price": "공개 제품 정보",
+      "language": "영어/다국어",
+      "status_date": "2026 검색 기준",
+      "urls": [
+        "https://www.ikea.com/us/en/p/billy-bookcase-white-50522040/",
+        "https://www.ikea.com/us/en/cat/billy-series-28102/",
+        "https://www.dimensions.com/element/ikea-billy-bookcases",
+        "https://itemfits.com/dimensions/ikea/ikea-pax"
+      ],
+      "confidence": "high"
+    },
+    {
+      "name": "Dimensions.com",
+      "category": "치수 레퍼런스 사이트",
+      "what_it_is": "가구, 가전, 건축 요소, 인체의 치수 도면 데이터베이스(협탁, IKEA BILLY 등).",
+      "how_to_use": "개별 오브젝트의 표준 치수를 조회해 모델링 기준 박스(bounding box)를 정한다.",
+      "strengths": "도면과 함께 제공되고 품목 범위가 넓다.",
+      "weaknesses": "이번 환경에서는 본문을 직접 열람하지 못했다(검색 결과로만 확인).",
+      "license_or_price": "무료 열람(일부 CAD 다운로드)",
+      "language": "영어",
+      "status_date": "2026",
+      "urls": [
+        "https://www.dimensions.com/collection/bedside-tables-nightstands",
+        "https://www.dimensions.com/element/ikea-billy-bookcases"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "LX Z:IN 스타일 가이드(주방 상부장/싱크대 설치)",
+      "category": "한국 제조사 가이드",
+      "what_it_is": "한국 주방의 표준 모듈(하부장 850 / 미드웨이 700 / 상부장 750 ≒ 전체 2300 mm)을 설명하는 LX하우시스 가이드.",
+      "how_to_use": "한국 아파트 주방 씬의 수직 모듈을 정하는 기준으로 쓴다.",
+      "strengths": "국내 대형 제조사 자료다.",
+      "weaknesses": "검색 요약으로만 확인했다. 브랜드와 현장에 따라 ±50 mm 정도 차이가 난다.",
+      "license_or_price": "무료",
+      "language": "한국어",
+      "status_date": "2026 검색 기준",
+      "urls": [
+        "https://www.lxzin.com/styling/style-guide/detail/5596",
+        "https://www.lxzin.com/styling/style-guide/detail/647"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "57-inch(145 cm) 그림 걸기 규칙",
+      "category": "배치 규칙(갤러리 관행)",
+      "what_it_is": "작품 중심을 바닥에서 57 in(약 145 cm)에 맞추는 박물관·갤러리 관행. 평균 서 있는 눈높이에 근거한다.",
+      "how_to_use": "벽 장식이나 액자를 자동 배치할 때 중심 z 값을 1.45 m로 정하고, 가구 위에서는 가구 상단 기준 여백 규칙과 함께 쓴다.",
+      "strengths": "여러 출처가 일치한다.",
+      "weaknesses": "천장이 높거나 가구 위에 걸 때는 예외가 있다. 일부 출처는 60 in를 제시한다.",
+      "license_or_price": "-",
+      "language": "영어",
+      "status_date": "2026",
+      "urls": [
+        "https://www.ashanging.com/en_us/help/what-is-the-rule-of-57",
+        "https://www.parkwestgallery.com/blog/3-simple-rules-for-hanging-art/",
+        "https://artacademi.com/blogs/kb/ocular-ergonomics-physics-57-inch-museum-height-rule"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "know_how": [
+    {
+      "tip": "치수는 항상 mm(또는 m)로 된 정규화 테이블로 AI에게 제공하고, 매트리스·침대는 이름(King 등) 대신 실제 폭×길이를 넘긴다.",
+      "why": "'King'이 한국 1600, 미국 1930, 영국 1500, EU 1600 mm 폭으로 모두 달라 LLM이 이름만 보고 치수를 고르면 지역이 섞인다.",
+      "example": "MCP 도구 호출 인자: bed={region:'KR', mattress_mm:[1500,2000], top_height_mm:~500~635} 처럼 명시한다.",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://brunch.co.kr/@phapark/59"
+      ]
+    },
+    {
+      "tip": "종속 치수는 기준 치수에서 계산해 검증한다. 좌판 높이 = 상판 높이 − 250~305 mm, 스툴 좌판 = 카운터 높이 − 250~300 mm, 협탁 상단 ≈ 매트리스 상단 ±50 mm, 커피테이블 ≈ 소파 좌판 −25~50 mm.",
+      "why": "개별 가구를 따로 생성하면 서로 어울리지 않는 조합(예: 너무 높은 의자)이 나온다. 관계식으로 묶어 두면 씬 전체가 그럴듯해진다.",
+      "example": "식탁 750 mm → 의자 좌판 450~470 mm, 조리대 850 mm(KR) → 스툴 좌판 약 580~600 mm.",
+      "urls": [
+        "https://www.popmaison.com/blogs/guide/dining-chair-dimensions",
+        "https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference",
+        "https://froy.com/blogs/tips/how-tall-should-a-nightstand-be-the-nightstand-height-guide"
+      ]
+    },
+    {
+      "tip": "한국 아파트 씬은 천장고 2300 mm(층고 2800~2850)로 모델링한다. 미국식 2438 mm(8 ft)나 유럽식 2.5~2.7 m를 기본값으로 두지 않는다.",
+      "why": "천장고가 틀리면 문(2100), 상부장(총 2300 모듈), 펜던트 높이까지 비율이 모두 어긋나 '한국 집 같지 않은' 인상을 준다.",
+      "example": "거실만 우물천장으로 50~100 mm 높이고, 주방 상부장 상단은 천장에 붙여(850+700+750=2300) 마감한다.",
+      "urls": [
+        "https://hkpm.co.kr/%EC%9D%BC%EB%B0%98%EC%A0%81%EC%9D%B8-%EC%95%84%ED%8C%8C%ED%8A%B8-%EC%B8%B5%EA%B3%A0%EC%99%80-%EC%B2%9C%EC%9E%A5%EA%B3%A0-%EA%B8%B0%EC%A4%80%EA%B3%BC-%EC%9D%98%EB%AF%B8-%EA%B4%80%EA%B3%84/",
+        "https://www.lxzin.com/styling/style-guide/detail/5596"
+      ]
+    },
+    {
+      "tip": "배치 규칙은 '하드 제약(법규·최소 통로)'과 '소프트 선호(디자인 관행)'로 나눠 레이아웃 솔버나 에이전트 검증 단계에 넣는다.",
+      "why": "IRC·건축법 계단 치수, 작업 통로, 식탁 뒤 여유(915 mm) 같은 하드 제약을 어기면 비현실적으로 보인다. 러그 크기나 그림 높이는 선호라 약간의 편차를 허용해도 된다.",
+      "example": "hard: walkway≥760(선호 910), table-to-wall≥915, riser≤180(KR)/197(US). soft: art_center=1450±50, pendant_above_table=760~860.",
+      "urls": [
+        "https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing",
+        "https://eurekaergonomic.com/blogs/eureka-ergonomic-blog/dining-table-space-clearance-guide"
+      ]
+    },
+    {
+      "tip": "계단은 rise/run을 법규 범위 안에서 정하고, 층고를 정수 단수로 나눠 단높이를 균등하게 한다.",
+      "why": "AI가 계단 단수를 대충 정하면 단높이가 220 mm를 넘거나 불균등해져 한눈에 어색하다. 공동주택은 18 cm 이하, IRC는 7¾ in(197 mm) 이하가 상한이다.",
+      "example": "층고 2800 mm, 단높이 175 mm로 16단, 디딤판 260~280 mm. 높이 3 m 이내에 계단참 1200 mm 이상.",
+      "urls": [
+        "https://www.midascad.com/cad_archive/buildingact-4",
+        "https://trademastercalc.com/reference/irc-stair-code"
+      ]
+    },
+    {
+      "tip": "한국과 미국 주방은 별도 프리셋으로 관리한다. KR은 조리대 850(신축·리모델링은 900도 사용), 상하부장 간격 650~750, 상부장 깊이 약 350이다. US는 조리대 914, 간격 457(18 in), 상부장 깊이 305(12 in)다.",
+      "why": "두 지역의 상하부장 간격 차이가 200 mm 이상이어서 섞으면 한 공간 안에서 모순이 생긴다.",
+      "urls": [
+        "https://chiho.co.kr/blogroom/%EC%A3%BC%EB%B0%A9-%EC%8B%B1%ED%81%AC%EB%8C%80-%EB%86%92%EC%9D%B4%EC%99%80-%EB%8F%99%EC%84%A0-%EC%84%A4%EA%B3%84-%ED%82%A4%EB%B3%84-%EC%B5%9C%EC%A0%81-%EC%B9%98%EC%88%98-%EA%B3%B5%EA%B0%9C-%EC%A3%BC%EB%B0%A9%EC%84%A4%EA%B3%84",
+        "https://www.thewcsupply.com/pages/kitchen-design-guidelines-standard-clearances"
+      ]
+    },
+    {
+      "tip": "스케일 검증용 휴먼 레퍼런스(한국 남 1725 mm, 여 1596 mm)를 씬에 임시로 배치하고 렌더링 전에 숨긴다.",
+      "why": "사람 실루엣 옆에 두면 가구 스케일 오류(과대·과소 모델링)를 시각적으로도, 자동 bounding-box 비교로도 즉시 잡아낼 수 있다.",
+      "urls": [
+        "https://sizekorea2022.kr/8th_results/"
+      ]
+    },
+    {
+      "tip": "대량생산 가구는 실제 제품 치수(IKEA BILLY 280 mm 깊이, PAX 580 mm 깊이 등)를 그대로 쓰면 '진짜 같은' 느낌이 커진다.",
+      "why": "사람들은 흔한 제품의 비례를 무의식적으로 기억한다. 표준 범위의 평균값보다 실제 SKU 치수가 더 설득력 있다.",
+      "urls": [
+        "https://www.ikea.com/us/en/cat/billy-series-28102/",
+        "https://itemfits.com/dimensions/ikea/ikea-pax"
+      ]
+    },
+    {
+      "tip": "출처끼리 값이 다르면 범위(range)를 저장하고, 생성할 때는 범위 안에서 약간의 무작위 편차를 준다.",
+      "why": "모든 의자를 정확히 450 mm로 만들면 오히려 CG처럼 보인다. 실제 제품은 430~480처럼 분산이 있다.",
+      "urls": [
+        "https://www.sizemarker.com/dimensions/standard-dining-chair-dimensions"
+      ]
+    }
+  ],
+  "case_studies": [],
+  "measurements": [
+    {
+      "item": "식탁 의자",
+      "dimension": "좌판 높이(바닥~좌판 상면)",
+      "typical_value": "450",
+      "range": "430–480 (17–19 in, 일부 17–20 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "여러 제조사·가이드가 일치. 상판 높이에서 250~305 mm를 뺀 값이 적정하다.",
+      "urls": [
+        "https://www.popmaison.com/blogs/guide/dining-chair-dimensions",
+        "https://picketandrail.com/blogs/dining-blog/what-are-the-typical-dimensions-of-a-standard-dining-chair",
+        "https://www.sizemarker.com/dimensions/standard-dining-chair-dimensions",
+        "https://www.yezhifurniture.com/standard-dining-chair-dimensions/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "식탁 의자",
+      "dimension": "좌판 높이(한국 실무)",
+      "typical_value": "450",
+      "range": "430–460",
+      "unit": "mm",
+      "region": "KR",
+      "note": "한국 인테리어 실무 요약(식탁 750 / 의자 450). 단일 SNS 출처라 medium.",
+      "urls": [
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "식탁 의자",
+      "dimension": "좌판 깊이",
+      "typical_value": "430",
+      "range": "406–457 (16–18 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "등을 기댔을 때 무릎 뒤에 5~10 cm 여유가 남는 깊이.",
+      "urls": [
+        "https://picketandrail.com/blogs/dining-blog/what-are-the-typical-dimensions-of-a-standard-dining-chair",
+        "https://eurekaergonomic.com/blogs/eureka-ergonomic-blog/how-to-choose-the-right-dining-chair-dimensions",
+        "https://www.asktfurniture.net/post/standard-dining-chair-dimensions"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "식탁 의자",
+      "dimension": "좌판 폭",
+      "typical_value": "450",
+      "range": "400–500",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색 요약에서 수치가 직접 확인되지 않은 업계 관행값. 1인당 식탁 폭 610 mm 안에 들어가야 한다.",
+      "urls": [
+        "https://www.asktfurniture.net/post/standard-dining-chair-dimensions",
+        "https://measurementstuff.com/standard-dining-chair-dimensions/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "식탁 의자",
+      "dimension": "등받이 높이(좌판~등받이 상단)",
+      "typical_value": "400",
+      "range": "305–508 (12–20 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://picketandrail.com/blogs/dining-blog/what-are-the-typical-dimensions-of-a-standard-dining-chair",
+        "https://www.popmaison.com/blogs/guide/dining-chair-dimensions"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "식탁 의자",
+      "dimension": "전체 높이(바닥~등받이 상단)",
+      "typical_value": "850",
+      "range": "813–965 (32–38 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://www.sizemarker.com/dimensions/standard-dining-chair-dimensions",
+        "https://www.hernest.com/blog-detail/how-tall-is-a-dining-chair-b-104.html"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "식탁-의자 관계",
+      "dimension": "상판 높이와 좌판 높이의 차(다리 여유)",
+      "typical_value": "300",
+      "range": "254–305 (10–12 in)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "가장 중요한 관계식. 팔걸이 의자라면 팔걸이 상단이 에이프런(상판 아래 프레임) 아래로 들어가는지도 확인한다.",
+      "urls": [
+        "https://www.popmaison.com/blogs/guide/dining-chair-dimensions",
+        "https://eurekaergonomic.com/blogs/eureka-ergonomic-blog/dining-table-chair-dimensions"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "소파",
+      "dimension": "좌판 높이",
+      "typical_value": "450",
+      "range": "432–483 (17–19 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "한국 로우형·모듈 소파는 더 낮은 경우가 많지만(약 380~420) 출처로 확인하지 못했다.",
+      "urls": [
+        "https://omhucph.com/blogs/inspiration/standard-sofa-dimensions",
+        "https://www.interiorinsider.com/article/sofa-dimensions-guide",
+        "https://seatup.com/blog/guide-to-sofa-dimensions/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "소파",
+      "dimension": "좌판 깊이",
+      "typical_value": "560",
+      "range": "508–610 (20–24 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "딥시트(deep seat) 소파는 610~760까지 나온다.",
+      "urls": [
+        "https://homestylecalculator.com/standard-sofa-dimensions/",
+        "https://seatup.com/blog/guide-to-sofa-dimensions/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "3인 소파",
+      "dimension": "전체 폭",
+      "typical_value": "2130",
+      "range": "1830–2440 (메트릭 출처) / 1980–2290 (78–90 in 출처)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "출처별 범위가 다르다. 가장 흔한 값은 약 213 cm(84 in).",
+      "urls": [
+        "https://www.povison.com/blog/buying-guide/standard-sofa-size-guide.html",
+        "https://roomsketch3d.com/help/dimensions/sofa-and-loveseat-dimensions",
+        "https://tribesigns.com/blogs/furniture-knowledge/standard-sofa-size-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "3인 소파",
+      "dimension": "전체 깊이",
+      "typical_value": "940",
+      "range": "810–1020 (32–40 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://www.povison.com/blog/buying-guide/standard-sofa-size-guide.html",
+        "https://rapportfurniture.com/blogs/rapport-furniture/sofa-dimensions-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "소파",
+      "dimension": "전체 높이(등받이 상단)",
+      "typical_value": "840",
+      "range": "760–915 (30–36 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://www.povison.com/blog/buying-guide/standard-sofa-size-guide.html",
+        "https://adorncroft.com/blog/sofa-size-guide/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "2인 소파(러브시트)",
+      "dimension": "전체 폭",
+      "typical_value": "1500",
+      "range": "1320–1830 (52–72 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://roomsketch3d.com/help/dimensions/sofa-and-loveseat-dimensions",
+        "https://adorncroft.com/blog/sofa-size-guide/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "2인 소파(러브시트)",
+      "dimension": "전체 깊이",
+      "typical_value": "890",
+      "range": "760–1020",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://roomsketch3d.com/help/dimensions/sofa-and-loveseat-dimensions"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "소파",
+      "dimension": "팔걸이 높이(바닥~팔걸이 상단)",
+      "typical_value": "600",
+      "range": "550–700",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색 결과는 '크기와 무관하게 거의 일정'하다고만 했고 수치는 제시하지 않았다. 업계 관행값.",
+      "urls": [
+        "https://homestylecalculator.com/standard-sofa-dimensions/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "암체어(1인 소파)",
+      "dimension": "전체 폭 / 깊이",
+      "typical_value": "800 / 850",
+      "range": "폭 710–1000, 깊이 760–1000",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색으로 확인하지 못한 업계 관행값. 좌판 높이와 깊이는 소파 기준을 따른다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "카운터 스툴",
+      "dimension": "좌판 높이(914 mm 조리대용)",
+      "typical_value": "635",
+      "range": "610–660 (24–26 in)",
+      "unit": "mm",
+      "region": "US",
+      "note": "좌판에서 상판까지 약 254 mm(10 in) 여유.",
+      "urls": [
+        "https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference",
+        "https://barstoolcomforts.com/heights/",
+        "https://www.rejuvenation.com/pages/design-tips/how-to-choose-bar-stool-height/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "바 스툴",
+      "dimension": "좌판 높이(1020–1070 mm 바 카운터용)",
+      "typical_value": "740",
+      "range": "711–762 (28–30 in)",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference",
+        "https://froy.com/blogs/tips/dining-table-height-bar-height-and-counter-height-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "바 테이블/바 카운터",
+      "dimension": "상판 높이",
+      "typical_value": "1060",
+      "range": "1016–1067 (40–42 in)",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference",
+        "https://moruxo.com/blog/counter-height-table-bar-height-table-table-height"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "스툴-카운터 관계",
+      "dimension": "좌판~상판 수직 간격",
+      "typical_value": "254",
+      "range": "230–305 (9–12 in)",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://barstoolcomforts.com/heights/",
+        "https://the-edit.lumens.com/the-guides/how-to-choose-seating-height/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "카운터 스툴(한국 850 mm 조리대)",
+      "dimension": "좌판 높이(파생값)",
+      "typical_value": "600",
+      "range": "550–620",
+      "unit": "mm",
+      "region": "KR",
+      "note": "한국 조리대 850(또는 900)에서 250~300 mm를 뺀 계산값. 직접적인 출처는 없다.",
+      "urls": [
+        "https://chiho.co.kr/blogroom/%EC%A3%BC%EB%B0%A9-%EC%8B%B1%ED%81%AC%EB%8C%80-%EB%86%92%EC%9D%B4%EC%99%80-%EB%8F%99%EC%84%A0-%EC%84%A4%EA%B3%84-%ED%82%A4%EB%B3%84-%EC%B5%9C%EC%A0%81-%EC%B9%98%EC%88%98-%EA%B3%B5%EA%B0%9C-%EC%A3%BC%EB%B0%A9%EC%84%A4%EA%B3%84",
+        "https://barstoolcomforts.com/heights/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "사무용 의자",
+      "dimension": "좌판 높이(조절 범위)",
+      "typical_value": "450",
+      "range": "400–520 (BIFMA 대략 16–20.5 in, 한국 실무는 400부터 조절·450 기본)",
+      "unit": "mm",
+      "region": "KR/US",
+      "note": "BIFMA 범위는 sizemarker 요약 기준이다. 한국은 '최소 400부터 조절 가능, 450 기본'이라는 실무 의견. 책상 720 mm와 짝을 이룬다.",
+      "urls": [
+        "https://www.sizemarker.com/ko/dimensions/standard-office-chair-dimensions",
+        "https://www.teamblind.com/kr/post/%EC%A0%81%EC%A0%88%ED%95%9C-%EC%9D%98%EC%9E%90-%EB%86%92%EC%9D%B4%EC%97%90-%EB%8C%80%ED%95%B4-XBOhgfr2",
+        "https://www.jksoeh.org/data/issue/JKSOEH/J01901/J01901002.pdf"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "벤치(식탁용)",
+      "dimension": "좌판 높이 / 깊이",
+      "typical_value": "450 / 380",
+      "range": "높이 430–480, 깊이 330–400",
+      "unit": "mm",
+      "region": "Global",
+      "note": "식탁 의자 좌판 높이 규칙(상판 −250~305)을 따른다. 깊이는 검색 미확인 관행값.",
+      "urls": [
+        "https://www.popmaison.com/blogs/guide/dining-chair-dimensions"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "식탁",
+      "dimension": "상판 높이",
+      "typical_value": "750",
+      "range": "711–762 (28–30 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://www.popmaison.com/blogs/guide/dining-chair-dimensions",
+        "https://flowyline.com/blogs/for-diy-ers/standard-dining-table-dimensions-the-size-guide",
+        "https://froy.com/blogs/tips/dining-table-height-bar-height-and-counter-height-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "식탁",
+      "dimension": "상판 높이(한국 실무)",
+      "typical_value": "750",
+      "range": "720–750",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "식탁",
+      "dimension": "1인당 상판 가장자리 폭",
+      "typical_value": "610",
+      "range": "610 (일상) – 710~760 (격식 있는 식사)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "4인 사각 테이블은 폭 약 1200~1400 mm가 흔하다(계산값).",
+      "urls": [
+        "https://www.nepafurniture.com/blog/home-furniture-32/dining-table-size-guide-based-on-number-of-people-414",
+        "https://www.retreathomefurniture.com/blogs/buying-guides/dining-table-size-guide",
+        "https://parotas.com/en/calculate-best-dining-table-size/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "식탁",
+      "dimension": "상판 폭(깊이 방향)",
+      "typical_value": "900",
+      "range": "800–1020 (한국 4인 식탁은 800 전후가 흔함)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색 요약에서 수치를 직접 확인하지 못했다. 관행값.",
+      "urls": [
+        "https://flowyline.com/blogs/for-diy-ers/standard-dining-table-dimensions-the-size-guide"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "커피 테이블",
+      "dimension": "높이",
+      "typical_value": "430",
+      "range": "406–457 (16–18 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "소파 좌판과 같거나 25~50 mm 낮게 맞춘다.",
+      "urls": [
+        "https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference",
+        "https://www.apartmenttherapy.com/living-room-layouts-the-ideal-measurements-for-everything-in-the-room-206734"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "커피 테이블",
+      "dimension": "길이(소파 길이 대비)",
+      "typical_value": "0.67",
+      "range": "0.5–0.67",
+      "unit": "ratio",
+      "region": "Global",
+      "note": "'소파 길이의 약 2/3'는 인테리어 관행. 이번 검색 요약에서는 직접 확인하지 못했다.",
+      "urls": [
+        "https://www.apartmenttherapy.com/living-room-layouts-the-ideal-measurements-for-everything-in-the-room-206734"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "사이드 테이블(소파 옆)",
+      "dimension": "높이",
+      "typical_value": "600",
+      "range": "500–660 (소파 팔걸이 높이 ±50)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "팔걸이 높이에 맞추는 것이 원칙.",
+      "urls": [
+        "https://www.hernest.com/blog-detail/side-table-vs-nightstand-b-91.html"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "책상(사무용)",
+      "dimension": "상판 높이",
+      "typical_value": "720",
+      "range": "700–740",
+      "unit": "mm",
+      "region": "KR",
+      "note": "한국 사무용 책상 기본값 720(KS G 4203 관행). 미국은 29–30 in(737–762)이 흔해 20~40 mm 차이가 난다.",
+      "urls": [
+        "http://m.todaysppc.com/renewal/view.php?id=free&page=11&page_num=15&category=&sn=off&ss=on&sc=on&keyword=&prev_no=&select_arrange=headnum&desc=asc&no=479576",
+        "https://www.kssn.net/search/stddetail.do?itemNo=K001010111402",
+        "https://www.esk.or.kr/conference/2009_fall/pdf/14_5.pdf"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "책상",
+      "dimension": "상판 높이(미국)",
+      "typical_value": "740",
+      "range": "711–762 (28–30 in)",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색으로 직접 확인하지 못한 관행값.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "책상",
+      "dimension": "상판 깊이",
+      "typical_value": "700",
+      "range": "600–800",
+      "unit": "mm",
+      "region": "KR/Global",
+      "note": "검색 요약에서 KS 수치를 확인하지 못했다. 모니터 사용 시 700 이상이 흔하다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "콘솔 테이블",
+      "dimension": "높이 / 깊이",
+      "typical_value": "800 / 350",
+      "range": "높이 760–910, 깊이 250–450",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색 미확인 관행값.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "매트리스 S(싱글)",
+      "dimension": "폭×길이",
+      "typical_value": "1000×2000",
+      "range": "브랜드별 ±50",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://brunch.co.kr/@phapark/59",
+        "https://sleeper.co.kr/magazine/01-bed-size-guide/bed-size-guide.html",
+        "https://blog.3boon1.com/mattress-size-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 SS(슈퍼싱글)",
+      "dimension": "폭×길이",
+      "typical_value": "1100×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "한국 1인 침대에서 가장 흔한 크기.",
+      "urls": [
+        "https://brunch.co.kr/@phapark/59",
+        "https://rodanism.co.kr/%EB%A7%A4%ED%8A%B8%EB%A6%AC%EC%8A%A4-%EC%82%AC%EC%9D%B4%EC%A6%88-%EC%B4%9D-%EC%A0%95%EB%A6%AC-%EC%8A%88%ED%8D%BC%EC%8B%B1%EA%B8%80ss-%ED%80%B8%EC%82%AC%EC%9D%B4%EC%A6%88q-%EB%93%B1/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 D(더블)",
+      "dimension": "폭×길이",
+      "typical_value": "1400×2000",
+      "range": "폭 1350–1400",
+      "unit": "mm",
+      "region": "KR",
+      "note": "브랜드마다 폭이 다르다. 한국에서는 사용 빈도가 낮다.",
+      "urls": [
+        "https://shop.moamoang.co.kr/%EC%B9%A8%EB%8C%80-%EB%A7%A4%ED%8A%B8%EB%A6%AC%EC%8A%A4-%EC%82%AC%EC%9D%B4%EC%A6%88/",
+        "https://maholn.com/blog/?bmode=view&idx=23711323"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "매트리스 Q(퀸)",
+      "dimension": "폭×길이",
+      "typical_value": "1500×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "한국 2인용 표준(신혼·안방). 미국 Queen(1524×2032)과 거의 같지만 약간 작다.",
+      "urls": [
+        "https://brunch.co.kr/@phapark/59",
+        "https://sleeper.co.kr/magazine/01-bed-size-guide/bed-size-guide.html"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 K(킹)",
+      "dimension": "폭×길이",
+      "typical_value": "1600×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "미국 King(1930)보다 330 mm 좁다. EU King(160×200)과 같다.",
+      "urls": [
+        "https://brunch.co.kr/@phapark/59",
+        "https://policyoh.com/%EC%B9%A8%EB%8C%80-%EB%A7%A4%ED%8A%B8%EB%A6%AC%EC%8A%A4-%EC%82%AC%EC%9D%B4%EC%A6%88%ED%95%9C%EA%B5%AD-%EB%AF%B8%EA%B5%AD-%ED%94%84%EB%9E%91%EC%8A%A4-%EC%82%AC%EC%9D%B4%EC%A6%88-%EA%B7%9C%EA%B2%A9/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 LK(라지킹)",
+      "dimension": "폭×길이",
+      "typical_value": "1800×2000",
+      "range": "폭 1700 이상을 LK로 분류하는 브랜드도 있음. 일부는 CK로 표기",
+      "unit": "mm",
+      "region": "KR",
+      "note": "키 180 cm 이상이면 길이 2100 옵션을 권장한다.",
+      "urls": [
+        "https://brunch.co.kr/@phapark/59",
+        "https://sleeper.co.kr/magazine/01-bed-size-guide/bed-size-guide.html",
+        "http://thesleep.kr/144/?bmode=view&idx=655266"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 US Twin",
+      "dimension": "폭×길이",
+      "typical_value": "965×1905 (38×75 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://www.turmerry.com/blogs/dreamerry/international-mattress-size-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 US Twin XL",
+      "dimension": "폭×길이",
+      "typical_value": "965×2032 (38×80 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "note": "기숙사 표준. 검색 요약에 직접 나오지는 않았고 국제 가이드 페이지 범위의 일반 지식이다.",
+      "urls": [
+        "https://www.nectarsleep.com/posts/international-mattress-sizes-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "매트리스 US Full(Double)",
+      "dimension": "폭×길이",
+      "typical_value": "1372×1905 (54×75 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://www.bedinabox.com/blogs/news/european-vs-united-states-mattress-size-comparison-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 US Queen",
+      "dimension": "폭×길이",
+      "typical_value": "1524×2032 (60×80 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu",
+        "https://globalsizechart.com/tools/home/mattress-size-chart"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 US King(Eastern King)",
+      "dimension": "폭×길이",
+      "typical_value": "1930×2032 (76×80 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu",
+        "https://brunch.co.kr/@phapark/59"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 US California King",
+      "dimension": "폭×길이",
+      "typical_value": "1829×2134 (72×84 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "note": "King보다 폭이 좁고 길이가 길다.",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://brunch.co.kr/@phapark/59"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 EU Single",
+      "dimension": "폭×길이",
+      "typical_value": "900×2000",
+      "range": "80–100 × 200",
+      "unit": "mm",
+      "region": "EU",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://oddmattress.co.uk/all-mattresses/mattress-size-guide/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 EU Double",
+      "dimension": "폭×길이",
+      "typical_value": "1400×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "EU",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://www.bedinabox.com/blogs/news/european-vs-united-states-mattress-size-comparison-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 EU King",
+      "dimension": "폭×길이",
+      "typical_value": "1600×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "EU",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 EU Super/Grand King",
+      "dimension": "폭×길이",
+      "typical_value": "1800×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "EU",
+      "note": "UK Super King과 같은 크기.",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide",
+        "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "매트리스 UK Single",
+      "dimension": "폭×길이",
+      "typical_value": "900×1900",
+      "range": "-",
+      "unit": "mm",
+      "region": "UK",
+      "note": "UK 싱글·더블 계열은 EU보다 100 mm 짧다(검색 요약으로 확인). 개별 수치는 일반 지식.",
+      "urls": [
+        "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu",
+        "https://oddmattress.co.uk/all-mattresses/mattress-size-guide/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "매트리스 UK Small Double",
+      "dimension": "폭×길이",
+      "typical_value": "1200×1900",
+      "range": "-",
+      "unit": "mm",
+      "region": "UK",
+      "urls": [
+        "https://oddmattress.co.uk/all-mattresses/mattress-size-guide/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "매트리스 UK Double",
+      "dimension": "폭×길이",
+      "typical_value": "1350×1900",
+      "range": "-",
+      "unit": "mm",
+      "region": "UK",
+      "urls": [
+        "https://oddmattress.co.uk/all-mattresses/mattress-size-guide/",
+        "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "매트리스 UK King",
+      "dimension": "폭×길이",
+      "typical_value": "1500×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "UK",
+      "note": "UK King은 폭이 US Queen에 가깝다(검색 요약으로 확인).",
+      "urls": [
+        "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "매트리스 UK Super King",
+      "dimension": "폭×길이",
+      "typical_value": "1800×2000",
+      "range": "-",
+      "unit": "mm",
+      "region": "UK",
+      "urls": [
+        "https://www.t3.com/features/mattress-size-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "침대",
+      "dimension": "바닥~매트리스 상단 높이",
+      "typical_value": "635",
+      "range": "500–760 (미국 표준 약 25 in)",
+      "unit": "mm",
+      "region": "US",
+      "note": "한국은 저상형 프레임과 얇은 매트리스 조합으로 400~550 mm도 흔하지만 출처로 확인하지 못했다.",
+      "urls": [
+        "https://froy.com/blogs/tips/how-tall-should-a-nightstand-be-the-nightstand-height-guide",
+        "https://www.dimensions.com/collection/bedside-tables-nightstands"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "협탁(나이트스탠드)",
+      "dimension": "높이",
+      "typical_value": "650",
+      "range": "610–710 (24–28 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "매트리스 상단과 같거나 ±50 mm(2 in) 이내가 이상적이다. 침대가 낮으면 협탁도 낮춘다.",
+      "urls": [
+        "https://www.dimensions.com/collection/bedside-tables-nightstands",
+        "https://www.wayfair.com/sca/ideas-and-advice/guides/nightstand-dimensions-how-to-choose-the-right-nightstand-size-for-your-bedroom-T12031",
+        "https://froy.com/blogs/tips/how-tall-should-a-nightstand-be-the-nightstand-height-guide"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "침대 주변 통로",
+      "dimension": "침대 옆 여유 폭",
+      "typical_value": "600",
+      "range": "最소 600, 쾌적 750–900",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색으로 확인하지 못한 레이아웃 관행값.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "싱크대/조리대",
+      "dimension": "상판 높이(한국 아파트 표준)",
+      "typical_value": "850",
+      "range": "850–900",
+      "unit": "mm",
+      "region": "KR",
+      "note": "키 160~165 cm 여성 기준으로 수십 년 전에 정립된 산업 표준이다. 최근 실무에서는 900 mm를 권장하기도 해 출처 간 이견이 있다. 흔히 쓰는 휴리스틱은 '키/2 + 50 mm'.",
+      "urls": [
+        "https://chiho.co.kr/blogroom/%EC%A3%BC%EB%B0%A9-%EC%8B%B1%ED%81%AC%EB%8C%80-%EB%86%92%EC%9D%B4%EC%99%80-%EB%8F%99%EC%84%A0-%EC%84%A4%EA%B3%84-%ED%82%A4%EB%B3%84-%EC%B5%9C%EC%A0%81-%EC%B9%98%EC%88%98-%EA%B3%B5%EA%B0%9C-%EC%A3%BC%EB%B0%A9%EC%84%A4%EA%B3%84",
+        "https://www.lxzin.com/styling/style-guide/detail/5596",
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "조리대",
+      "dimension": "상판 높이(미국 표준)",
+      "typical_value": "914 (36 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "note": "하부장 본체 34.5 in(876 mm) + 상판 1.5 in(38 mm). 한국 표준보다 64 mm 높다.",
+      "urls": [
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+        "https://www.allurekitchencabinet.com/blog/7-base-cabinet-sizes-standard-height-depth-width",
+        "https://designmaxofficial.com/kitchen-cabinet-dimensions-guide/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "하부장",
+      "dimension": "깊이(미국)",
+      "typical_value": "610 (24 in)",
+      "range": "상판은 635–648 (25–25.5 in)",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.allurekitchencabinet.com/blog/7-base-cabinet-sizes-standard-height-depth-width",
+        "https://slabwise.com/guides/how-deep-are-countertops"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "하부장/싱크대",
+      "dimension": "상판 깊이(한국)",
+      "typical_value": "600",
+      "range": "600–650 (실무에서는 650 이상 권장)",
+      "unit": "mm",
+      "region": "KR",
+      "note": "600은 일반적인 관행이고, 인테리어 실무 출처는 '최소 650 이상'을 권한다. 이견이 있다.",
+      "urls": [
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7",
+        "https://www.lxzin.com/styling/style-guide/detail/647"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "상부장",
+      "dimension": "하단 높이(바닥~상부장 하단, 미국)",
+      "typical_value": "1372 (54 in)",
+      "range": "1372–1448",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.thewcsupply.com/pages/kitchen-design-guidelines-standard-clearances",
+        "https://tcwholesalecabinetry.com/blog/wall-cabinet-sizes-types"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "상부장",
+      "dimension": "조리대~상부장 하단 간격(미국 NKBA)",
+      "typical_value": "457 (18 in)",
+      "range": "최소 457, 일반 457–508",
+      "unit": "mm",
+      "region": "US",
+      "note": "한국(650~750)보다 약 200~300 mm 좁다. 지역 프리셋을 분리해야 한다.",
+      "urls": [
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+        "https://www.dmbbuildersinc.com/standard-kitchen-dimensions/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "상부장",
+      "dimension": "상하부장 간격(미드웨이, 한국)",
+      "typical_value": "700",
+      "range": "650–750",
+      "unit": "mm",
+      "region": "KR",
+      "note": "LX Z:IN 표준 모듈 700, 실무 요약 650~750. 커뮤니티 질문(뽐뿌)에서도 편차가 확인된다.",
+      "urls": [
+        "https://www.lxzin.com/styling/style-guide/detail/5596",
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7",
+        "https://m.ppomppu.co.kr/new/bbs_view.php?id=interior&no=10642"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "상부장",
+      "dimension": "상부장 높이(한국 표준 모듈)",
+      "typical_value": "750",
+      "range": "700–900 (천장고에 따라 조정)",
+      "unit": "mm",
+      "region": "KR",
+      "note": "하부장 850 + 미드웨이 700 + 상부장 750 = 2300(천장고). 천장이 높으면 상부장 높이만 늘린다.",
+      "urls": [
+        "https://www.lxzin.com/styling/style-guide/detail/5596",
+        "https://www.teamblind.com/kr/post/%EB%AC%B4%EB%AA%B0%EB%94%A9-%EC%A3%BC%EB%B0%A9-%EC%83%81%EB%B6%80%EC%9E%A5%EA%B3%BC-%EC%B2%9C%EC%9E%A5-%EB%86%92%EC%9D%B4-%EB%AC%B8%EC%9D%98-1qzVjCGh"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "상부장",
+      "dimension": "하단 높이(바닥~상부장 하단, 한국)",
+      "typical_value": "1550",
+      "range": "1500–1600",
+      "unit": "mm",
+      "region": "KR",
+      "note": "850 + 650~750에서 나온 파생값.",
+      "urls": [
+        "https://www.lxzin.com/styling/style-guide/detail/5596"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "상부장",
+      "dimension": "깊이(한국)",
+      "typical_value": "350",
+      "range": "300–350",
+      "unit": "mm",
+      "region": "KR",
+      "note": "실무 요약의 '이단장 하부 깊이 350'. 일반 상부장은 300~350.",
+      "urls": [
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "상부장",
+      "dimension": "깊이(미국)",
+      "typical_value": "305 (12 in)",
+      "range": "305–381",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://tcwholesalecabinetry.com/blog/wall-cabinet-sizes-types",
+        "https://designmaxofficial.com/kitchen-cabinet-dimensions-guide/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "상부장",
+      "dimension": "본체 높이(미국 표준 규격)",
+      "typical_value": "762 / 914 / 1067 (30/36/42 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색 요약에서 직접 확인하지 못했고 페이지 제목 기준. 업계 관행값.",
+      "urls": [
+        "https://tcwholesalecabinetry.com/blog/wall-cabinet-sizes-types"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "주방 수직 모듈",
+      "dimension": "하부장+미드웨이+상부장 전체 높이(한국)",
+      "typical_value": "2300",
+      "range": "2300–2400",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.lxzin.com/styling/style-guide/detail/5596"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "주방 작업 통로",
+      "dimension": "1인 조리 시 최소 폭",
+      "typical_value": "1067 (42 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+        "https://media.nkba.org/uploads/2022/05/Kitchen-Planning-Guidelines.pdf"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "주방 작업 통로",
+      "dimension": "다인 조리 시 최소 폭",
+      "typical_value": "1219 (48 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+        "https://www.modcabinetry.com/nkba-guideline/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "주방 동선",
+      "dimension": "최소 통로 폭(한국 실무)",
+      "typical_value": "900",
+      "range": "900 이상",
+      "unit": "mm",
+      "region": "KR",
+      "note": "NKBA 1067과 다르다. 한국 아파트는 대체로 더 좁다.",
+      "urls": [
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "워크 트라이앵글",
+      "dimension": "싱크·레인지·냉장고 3변 합계 상한",
+      "typical_value": "7925 (26 ft)",
+      "range": "≤7925",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+        "https://en.wikipedia.org/wiki/Kitchen_work_triangle"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "워크 트라이앵글",
+      "dimension": "각 변 길이",
+      "typical_value": "1219–2743 (4–9 ft)",
+      "range": "1219–2743",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+        "https://en.wikipedia.org/wiki/Kitchen_work_triangle"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "아일랜드",
+      "dimension": "최소 폭 / 좌석 다리 공간(한국 실무)",
+      "typical_value": "700 / 250",
+      "range": "폭 700 이상",
+      "unit": "mm",
+      "region": "KR",
+      "note": "단일 SNS 실무 출처다. 미국 NKBA는 좌석 무릎 공간으로 상판 높이 762에 457, 914에 381, 1067에 305 mm를 권고하는데, 이는 원문을 열람하지 못한 기억치라 low.",
+      "urls": [
+        "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7",
+        "https://media.nkba.org/uploads/2022/05/Kitchen-Planning-Guidelines.pdf"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "책장 IKEA BILLY",
+      "dimension": "깊이",
+      "typical_value": "280 (11 in)",
+      "range": "일반 책장 250–350",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://www.ikea.com/us/en/p/billy-bookcase-white-50522040/",
+        "https://www.dimensions.com/element/ikea-billy-bookcases",
+        "https://itemfits.com/dimensions/ikea/ikea-billy"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "책장 IKEA BILLY",
+      "dimension": "폭 / 높이",
+      "typical_value": "폭 400·800 / 높이 1060·2020·2370",
+      "range": "-",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://www.ikea.com/us/en/cat/billy-series-28102/",
+        "https://www.ikea.com/us/en/p/billy-bookcase-white-90522043/",
+        "https://en.wikipedia.org/wiki/IKEA_Billy"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "책장",
+      "dimension": "선반 간격(수직)",
+      "typical_value": "300",
+      "range": "250–350 (대형 도서 350–400)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색 미확인 관행값. BILLY는 선반 높이 조절형이다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "옷장 IKEA PAX",
+      "dimension": "깊이",
+      "typical_value": "580",
+      "range": "일반 옷장 550–650 (행거 사용 시 약 600)",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://itemfits.com/dimensions/ikea/ikea-pax"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "옷장 IKEA PAX",
+      "dimension": "폭 / 높이",
+      "typical_value": "폭 500·750·1000 / 높이 2010·2360",
+      "range": "-",
+      "unit": "mm",
+      "region": "Global",
+      "note": "2360 mm 높이는 한국 천장고 2300에 들어가지 않는다. 한국 씬에서는 2010 또는 맞춤 붙박이장을 쓴다.",
+      "urls": [
+        "https://itemfits.com/dimensions/ikea/ikea-pax"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "냉장고(미국 표준형)",
+      "dimension": "폭 / 높이 / 깊이",
+      "typical_value": "폭 762–914 / 높이 1676–1778 / 깊이 737–889",
+      "range": "폭 30–36 in, 높이 66–70 in",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색 결과에 냉장고 수치가 나오지 않아 미확인. 일반 지식 수준이므로 검증이 필요하다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "냉장고(한국 양문형·4도어)",
+      "dimension": "폭 / 높이 / 깊이",
+      "typical_value": "약 910 / 약 1800–1850 / 약 900–930(도어 포함)",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "미확인 일반 지식. 제조사(삼성·LG) 스펙으로 검증해야 한다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "아파트",
+      "dimension": "천장고(반자높이)",
+      "typical_value": "2300",
+      "range": "2300 (대부분) – 2350–2400 (일부)",
+      "unit": "mm",
+      "region": "KR",
+      "note": "거실은 우물천장으로 국부적으로 더 높다.",
+      "urls": [
+        "https://hkpm.co.kr/%EC%9D%BC%EB%B0%98%EC%A0%81%EC%9D%B8-%EC%95%84%ED%8C%8C%ED%8A%B8-%EC%B8%B5%EA%B3%A0%EC%99%80-%EC%B2%9C%EC%9E%A5%EA%B3%A0-%EA%B8%B0%EC%A4%80%EA%B3%BC-%EC%9D%98%EB%AF%B8-%EA%B4%80%EA%B3%84/",
+        "http://www.aptn.co.kr/news/articleView.html?idxno=49567",
+        "https://sanerang.com/entry/%EC%95%84%ED%8C%8C%ED%8A%B8-%EC%B2%9C%EC%9E%A5%EB%86%92%EC%9D%B4-23m-%EB%B0%98%EC%9E%90%EB%86%92%EC%9D%B4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "아파트",
+      "dimension": "층고(바닥 슬래브~상층 슬래브)",
+      "typical_value": "2800",
+      "range": "2800–2850",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://hkpm.co.kr/%EC%9D%BC%EB%B0%98%EC%A0%81%EC%9D%B8-%EC%95%84%ED%8C%8C%ED%8A%B8-%EC%B8%B5%EA%B3%A0%EC%99%80-%EC%B2%9C%EC%9E%A5%EA%B3%A0-%EA%B8%B0%EC%A4%80%EA%B3%BC-%EC%9D%98%EB%AF%B8-%EA%B4%80%EA%B3%84/",
+        "https://www.a-ha.io/questions/41a27d6d5c2dfadb88b54e89959b5c12"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "방문(실내문)",
+      "dimension": "폭×높이",
+      "typical_value": "900×2100",
+      "range": "900–1000 × 2100",
+      "unit": "mm",
+      "region": "KR",
+      "note": "출처마다 문틀 포함 치수인지 문짝 치수인지가 불명확하다. 문짝 폭은 보통 800~850 수준으로 알려져 있으나 미확인.",
+      "urls": [
+        "https://m.cafe.daum.net/retirecountry/GbzJ/5?q=D_KkJLW6NS9QQ0",
+        "https://www.jisiklog.com/qa/14210770",
+        "https://a-ha.io/questions/4e22c54b42b8110980a1018e203ab0cb"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "욕실문",
+      "dimension": "폭×높이",
+      "typical_value": "700×2000",
+      "range": "700×2000 – 800×2100",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://m.cafe.daum.net/retirecountry/GbzJ/5?q=D_KkJLW6NS9QQ0"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "현관문(아파트)",
+      "dimension": "폭×높이",
+      "typical_value": "1000×2100",
+      "range": "900–1100 × 2100 (가전 대형화로 1100 증가 추세)",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://aprodoor.com/front-door-sizes/",
+        "http://www.changhojajae.com/m/product.html?branduid=729803"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "실내문(미국)",
+      "dimension": "폭×높이",
+      "typical_value": "813×2032 (32×80 in)",
+      "range": "폭 610–914 (24–36 in), 높이 2032 (6'8\")",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색으로 직접 확인하지 못한 일반 지식. 높이 6'8\"는 IRC 계단 머리 여유와 같은 값이다. 현관문은 보통 914×2032(36×80 in).",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "실내문(독일/EU, DIN 18101)",
+      "dimension": "문짝 폭 / 높이",
+      "typical_value": "폭 610·735·860·985 / 높이 1985·2110",
+      "range": "-",
+      "unit": "mm",
+      "region": "EU(DE)",
+      "note": "검색으로 확인하지 못한 기억치. DIN 원문으로 검증해야 한다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "창대(창 하단) 높이",
+      "dimension": "바닥~창대(침실 일반창)",
+      "typical_value": "900",
+      "range": "800–1000 (거실 전면창은 바닥까지)",
+      "unit": "mm",
+      "region": "KR",
+      "note": "검색으로 확인하지 못한 관행값. 한국 아파트 거실은 바닥부터 시작하는 발코니 창이 일반적이다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "비상탈출창(IRC)",
+      "dimension": "창 개구부 하단 최대 높이",
+      "typical_value": "1118 (44 in)",
+      "range": "≤1118",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색으로 직접 확인하지 못한 IRC 기억치.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "계단(한국 공동주택)",
+      "dimension": "단높이(riser) 상한",
+      "typical_value": "180",
+      "range": "≤180",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.midascad.com/cad_archive/buildingact-4",
+        "https://04noti.com/%EA%B3%84%EB%8B%A8-%EC%84%B8%EB%B6%80-%EC%84%A4%EC%B9%98%EA%B8%B0%EC%A4%80-%EB%8B%A8%EB%84%88%EB%B9%84-%EB%8B%A8%EB%86%92%EC%9D%B4-%EA%B3%84%EB%8B%A8%EB%84%88%EB%B9%84/",
+        "https://casenote.kr/%EB%B2%95%EC%A0%9C%EC%B2%98/18-0465-d5162f"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단(한국 공동주택)",
+      "dimension": "단너비(tread) 하한",
+      "typical_value": "260",
+      "range": "≥260",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.midascad.com/cad_archive/buildingact-4",
+        "https://casenote.kr/%EB%B2%95%EC%A0%9C%EC%B2%98/18-0465-d5162f"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단참(한국)",
+      "dimension": "설치 간격 / 유효너비",
+      "typical_value": "높이 3000 이내마다 / 1200 이상",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lspttninfSeq=124056&chrClsCd=010202",
+        "https://04noti.com/%EA%B3%84%EB%8B%A8-%EC%84%B8%EB%B6%80-%EC%84%A4%EC%B9%98%EA%B8%B0%EC%A4%80-%EB%8B%A8%EB%84%88%EB%B9%84-%EB%8B%A8%EB%86%92%EC%9D%B4-%EA%B3%84%EB%8B%A8%EB%84%88%EB%B9%84/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단 난간(한국)",
+      "dimension": "난간 설치 의무 기준 높이",
+      "typical_value": "1000 초과 계단",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "높이 1 m를 넘는 계단과 계단참의 양옆에 난간(벽 포함)을 설치해야 한다.",
+      "urls": [
+        "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lspttninfSeq=124056&chrClsCd=010202",
+        "https://www.midascad.com/cad_archive/buildingact-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단(한국)",
+      "dimension": "유효높이(머리 위 여유) / 손잡이 높이",
+      "typical_value": "2100 / 850",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "피난·방화규칙 제15조의 기억치이며, 검색 요약에서 수치를 직접 확인하지는 못했다(해설 페이지 제목에 '유효높이'와 '손잡이' 항목이 있음).",
+      "urls": [
+        "https://04noti.com/%EA%B3%84%EB%8B%A8-%EC%84%B8%EB%B6%80-%EC%84%A4%EC%B9%98%EA%B8%B0%EC%A4%80-%EB%8B%A8%EB%84%88%EB%B9%84-%EB%8B%A8%EB%86%92%EC%9D%B4-%EA%B3%84%EB%8B%A8%EB%84%88%EB%B9%84/",
+        "https://www.midascad.com/cad_archive/buildingact-4"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "난간(한국 공동주택 발코니·외부)",
+      "dimension": "난간 높이",
+      "typical_value": "1200",
+      "range": "1200 이상 (건축물 내부 계단은 900 이상으로 알려짐)",
+      "unit": "mm",
+      "region": "KR",
+      "note": "주택건설기준 규정의 기억치. 검색 요약으로 확인하지 못했다.",
+      "urls": [
+        "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=8238"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "계단(IRC)",
+      "dimension": "단높이(riser) 상한",
+      "typical_value": "197 (7¾ in)",
+      "range": "≤197",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.essexct.gov/DocumentCenter/View/449/Residential-Stairways-and-Ramps-2015-Irc-Handout-PDF",
+        "https://buildingcodetrainer.com/residential-stair-code/",
+        "https://trademastercalc.com/reference/irc-stair-code"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단(IRC)",
+      "dimension": "디딤판(tread) 하한",
+      "typical_value": "254 (10 in, 챌면 코 있을 때)",
+      "range": "코 없으면 279 (11 in)",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://www.essexct.gov/DocumentCenter/View/449/Residential-Stairways-and-Ramps-2015-Irc-Handout-PDF",
+        "https://build-construct.com/building/building-tips/residential-stair-code-requirements-riser-height-tread-depth-width-and-headroom/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단(IRC)",
+      "dimension": "머리 위 여유(headroom)",
+      "typical_value": "2032 (6'8\")",
+      "range": "≥2032",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://trademastercalc.com/reference/irc-stair-code",
+        "https://dos.ny.gov/system/files/documents/2019/10/tb-1005-rcnys-residential-exit-doors-stairs-and.pdf"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "계단 손잡이(IRC)",
+      "dimension": "디딤판 코 연결선 기준 높이",
+      "typical_value": "864–965 (34–38 in)",
+      "range": "864–965",
+      "unit": "mm",
+      "region": "US",
+      "urls": [
+        "https://resources.viewrail.com/code-compliance/railing-code/maximum-and-minimum-handrail-heights",
+        "https://www.simplifiedbuilding.com/railing/handrail-guide",
+        "https://buildingcodetrainer.com/residential-stair-code/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "가드(추락방지 난간, IRC)",
+      "dimension": "최소 높이",
+      "typical_value": "914 (36 in)",
+      "range": "≥914 (상업시설 IBC는 42 in)",
+      "unit": "mm",
+      "region": "US",
+      "note": "IBC 42 in는 검색 미확인 기억치.",
+      "urls": [
+        "https://www.engineeringexpress.com/wiki/handrail-design-guidelines/",
+        "https://resources.viewrail.com/code-compliance/railing-code/maximum-and-minimum-handrail-heights"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "계단 쾌적 공식",
+      "dimension": "2R + T",
+      "typical_value": "630",
+      "range": "600–650",
+      "unit": "mm",
+      "region": "Global",
+      "note": "Blondel 공식(Neufert에도 수록). 이번 검색으로는 확인하지 못했다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "벽 두께(한국 아파트)",
+      "dimension": "외벽 콘크리트 구조체",
+      "typical_value": "200",
+      "range": "200 (단열재와 마감을 더하면 전체 약 300 이상)",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.clien.net/service/board/kin/12725939",
+        "https://www.a-ha.io/questions/4c62435ef5f74961bcce64ed41912ed3",
+        "https://www.pgr21.com/qna/180303"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "벽 두께(한국 아파트)",
+      "dimension": "내력벽(내벽)",
+      "typical_value": "180",
+      "range": "150–200 (180 이상이면 내력벽일 가능성이 큼)",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.ajd.co.kr/contents/basic-tip/detail/%EB%82%B4%EB%A0%A5%EB%B2%BD_%EB%B9%84%EB%82%B4%EB%A0%A5%EB%B2%BD_%EA%B5%AC%EB%B6%84_%EB%B0%A9%EB%B2%95%EA%B3%BC_%EC%B0%A8%EC%9D%B4%EF%BD%9C%EB%8F%84%EB%A9%B4%C2%B7%EB%91%90%EA%BB%98%EB%A1%9C_%EC%B2%A0%EA%B1%B0_%EA%B0%80%EB%8A%A5_%EC%97%AC%EB%B6%80_%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0-72255",
+        "https://www.clien.net/service/board/kin/12725939"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "벽 두께(한국 아파트)",
+      "dimension": "비내력 칸막이 / 습식 공간(욕실) 벽",
+      "typical_value": "100 / 150",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://www.ajd.co.kr/contents/basic-tip/detail/%EB%82%B4%EB%A0%A5%EB%B2%BD_%EB%B9%84%EB%82%B4%EB%A0%A5%EB%B2%BD_%EA%B5%AC%EB%B6%84_%EB%B0%A9%EB%B2%95%EA%B3%BC_%EC%B0%A8%EC%9D%B4%EF%BD%9C%EB%8F%84%EB%A9%B4%C2%B7%EB%91%90%EA%BB%98%EB%A1%9C_%EC%B2%A0%EA%B1%B0_%EA%B0%80%EB%8A%A5_%EC%97%AC%EB%B6%80_%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0-72255"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "벽 두께(미국 목조 스터드 벽)",
+      "dimension": "2×4 스터드 + 양면 석고보드",
+      "typical_value": "114 (약 4.5 in)",
+      "range": "114–165 (2×6 외벽)",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색 미확인 일반 지식.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "콘센트(한국)",
+      "dimension": "설치 높이(일반 벽면, 중심)",
+      "typical_value": "300",
+      "range": "250–400",
+      "unit": "mm",
+      "region": "KR",
+      "note": "검색 요약은 '300은 가이드와 일치'라고만 했다(합성 요약의 의견). 원문 수치는 미확인.",
+      "urls": [
+        "https://sunnysunnyday.com/entry/%EC%8B%B1%ED%81%AC%EB%8C%80-%EC%95%9E%EC%97%90-%EC%BD%98%EC%84%BC%ED%8A%B8%EA%B0%80-%EC%9E%88%EB%8D%98-%ED%98%84%EC%9E%A5%EC%9D%84-%EC%9D%B4%EC%96%B4%EB%B0%9B%EA%B3%A0-%EB%82%98%EC%84%9C-%EC%A0%95%EB%A6%AC%ED%95%9C-%EC%BD%98%EC%84%BC%ED%8A%B8%C2%B7%EC%8A%A4%EC%9C%84%EC%B9%98-%EC%9C%84%EC%B9%98-%EC%84%A4%EA%B3%84-%EA%B0%80%EC%9D%B4%EB%93%9C-%EA%B3%B5%EA%B0%84%EB%B3%84-%EC%BD%98%EC%84%BC%ED%8A%B8-%EB%86%92%EC%9D%B4-%EC%8A%A4%EC%9C%84%EC%B9%98-%EB%B0%B0%EC%B9%98-%ED%9A%8C%EB%A1%9C-%EB%B6%84%EB%A6%AC-%EA%B8%B0%EC%A4%80",
+        "https://dinsodesign.com/bbs/board.php?bo_table=process&wr_id=1517"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "콘센트(한국)",
+      "dimension": "침대 옆 협탁용 설치 높이",
+      "typical_value": "650",
+      "range": "600–700",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://sunnysunnyday.com/entry/%EC%8B%B1%ED%81%AC%EB%8C%80-%EC%95%9E%EC%97%90-%EC%BD%98%EC%84%BC%ED%8A%B8%EA%B0%80-%EC%9E%88%EB%8D%98-%ED%98%84%EC%9E%A5%EC%9D%84-%EC%9D%B4%EC%96%B4%EB%B0%9B%EA%B3%A0-%EB%82%98%EC%84%9C-%EC%A0%95%EB%A6%AC%ED%95%9C-%EC%BD%98%EC%84%BC%ED%8A%B8%C2%B7%EC%8A%A4%EC%9C%84%EC%B9%98-%EC%9C%84%EC%B9%98-%EC%84%A4%EA%B3%84-%EA%B0%80%EC%9D%B4%EB%93%9C-%EA%B3%B5%EA%B0%84%EB%B3%84-%EC%BD%98%EC%84%BC%ED%8A%B8-%EB%86%92%EC%9D%B4-%EC%8A%A4%EC%9C%84%EC%B9%98-%EB%B0%B0%EC%B9%98-%ED%9A%8C%EB%A1%9C-%EB%B6%84%EB%A6%AC-%EA%B8%B0%EC%A4%80"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "콘센트(한국)",
+      "dimension": "책상 위 사용 설치 높이",
+      "typical_value": "850",
+      "range": "800–900",
+      "unit": "mm",
+      "region": "KR",
+      "urls": [
+        "https://sunnysunnyday.com/entry/%EC%8B%B1%ED%81%AC%EB%8C%80-%EC%95%9E%EC%97%90-%EC%BD%98%EC%84%BC%ED%8A%B8%EA%B0%80-%EC%9E%88%EB%8D%98-%ED%98%84%EC%9E%A5%EC%9D%84-%EC%9D%B4%EC%96%B4%EB%B0%9B%EA%B3%A0-%EB%82%98%EC%84%9C-%EC%A0%95%EB%A6%AC%ED%95%9C-%EC%BD%98%EC%84%BC%ED%8A%B8%C2%B7%EC%8A%A4%EC%9C%84%EC%B9%98-%EC%9C%84%EC%B9%98-%EC%84%A4%EA%B3%84-%EA%B0%80%EC%9D%B4%EB%93%9C-%EA%B3%B5%EA%B0%84%EB%B3%84-%EC%BD%98%EC%84%BC%ED%8A%B8-%EB%86%92%EC%9D%B4-%EC%8A%A4%EC%9C%84%EC%B9%98-%EB%B0%B0%EC%B9%98-%ED%9A%8C%EB%A1%9C-%EB%B6%84%EB%A6%AC-%EA%B8%B0%EC%A4%80"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "조명 스위치(한국)",
+      "dimension": "설치 높이(중심)",
+      "typical_value": "1200",
+      "range": "1100–1250",
+      "unit": "mm",
+      "region": "KR",
+      "note": "검색 요약의 합성 의견 수준으로만 뒷받침된다. 원문 수치는 미확인.",
+      "urls": [
+        "https://sunnysunnyday.com/entry/%EC%8B%B1%ED%81%AC%EB%8C%80-%EC%95%9E%EC%97%90-%EC%BD%98%EC%84%BC%ED%8A%B8%EA%B0%80-%EC%9E%88%EB%8D%98-%ED%98%84%EC%9E%A5%EC%9D%84-%EC%9D%B4%EC%96%B4%EB%B0%9B%EA%B3%A0-%EB%82%98%EC%84%9C-%EC%A0%95%EB%A6%AC%ED%95%9C-%EC%BD%98%EC%84%BC%ED%8A%B8%C2%B7%EC%8A%A4%EC%9C%84%EC%B9%98-%EC%9C%84%EC%B9%98-%EC%84%A4%EA%B3%84-%EA%B0%80%EC%9D%B4%EB%93%9C-%EA%B3%B5%EA%B0%84%EB%B3%84-%EC%BD%98%EC%84%BC%ED%8A%B8-%EB%86%92%EC%9D%B4-%EC%8A%A4%EC%9C%84%EC%B9%98-%EB%B0%B0%EC%B9%98-%ED%9A%8C%EB%A1%9C-%EB%B6%84%EB%A6%AC-%EA%B8%B0%EC%A4%80"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "콘센트/스위치(미국)",
+      "dimension": "콘센트 높이 / 스위치 높이",
+      "typical_value": "305–406 / 1219 (12–16 in / 48 in)",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "note": "검색 미확인 관행값.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "거실 통로",
+      "dimension": "좌석 그룹 주변 주 통행로 폭",
+      "typical_value": "910 (36 in)",
+      "range": "760–910 (30–36 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing",
+        "https://www.apartmenttherapy.com/living-room-layouts-the-ideal-measurements-for-everything-in-the-room-206734",
+        "https://keckfurniture.com/blog/living-room-layout-rules-traffic-flow-conversation-zones-and-tv-placement/"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "소파-커피테이블",
+      "dimension": "간격(소파 앞면~테이블 모서리)",
+      "typical_value": "400",
+      "range": "356–457 (14–18 in)",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing",
+        "https://www.apartmenttherapy.com/living-room-layouts-the-ideal-measurements-for-everything-in-the-room-206734",
+        "https://vbufurniture.com/blogs/furniture-buying-guide/stationary-anchors-sofa"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "TV 시청거리",
+      "dimension": "화면 대각선 대비 배수",
+      "typical_value": "1.5–2.5",
+      "range": "-",
+      "unit": "ratio",
+      "region": "Global",
+      "note": "유통·인테리어 가이드의 규칙이다. THX(시야각 약 40°)·SMPTE(약 30°) 기준으로 계산하면 약 1.2~1.6배로 더 가깝다(기억치, 미확인). 4K에서는 더 가까워도 된다.",
+      "urls": [
+        "https://keckfurniture.com/blog/living-room-layout-rules-traffic-flow-conversation-zones-and-tv-placement/",
+        "https://wehomzfurn.com/blogs/decoration-ideas/optimizing-your-living-room-the-ultimate-guide-to-sofa-and-tv-layouts-by-wehomz"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "TV 시청거리",
+      "dimension": "55인치 TV 권장 거리",
+      "typical_value": "2400",
+      "range": "2130–2740 (7–9 ft)",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://keckfurniture.com/blog/living-room-layout-rules-traffic-flow-conversation-zones-and-tv-placement/",
+        "https://planner5d.com/blog/living-room-furniture-layout/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "TV 시청거리",
+      "dimension": "65인치 TV 권장 거리",
+      "typical_value": "2750",
+      "range": "2440–3050 (8–10 ft)",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://keckfurniture.com/blog/living-room-layout-rules-traffic-flow-conversation-zones-and-tv-placement/"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "TV",
+      "dimension": "화면 중심 높이(소파 착석 눈높이 기준)",
+      "typical_value": "1050",
+      "range": "950–1150",
+      "unit": "mm",
+      "region": "Global",
+      "note": "소파 좌판 약 430~450 mm와 앉은 눈높이 약 600~700 mm를 더한 파생값. 출처가 없다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "러그(거실)",
+      "dimension": "소파 양끝 바깥으로 나오는 여유",
+      "typical_value": "150 (6 in) 이상",
+      "range": "≥150",
+      "unit": "mm",
+      "region": "Global",
+      "note": "모든 좌석의 최소 앞다리 2개가 러그 위에 오도록 배치한다.",
+      "urls": [
+        "https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing",
+        "https://www.toparredi.com/en/living-room-layout-dimensions-spacing-guide"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "러그",
+      "dimension": "벽까지 남기는 바닥 여백",
+      "typical_value": "450",
+      "range": "최소 150, 작은 방 305–457, 큰 방 610",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing",
+        "https://anabei.com/blogs/tips-tricks/living-room-furniture-ideas-easy-layouts-that-actually-work"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "러그(식탁 아래)",
+      "dimension": "식탁 모서리 바깥 확장 폭",
+      "typical_value": "610 (24 in)",
+      "range": "600–760",
+      "unit": "mm",
+      "region": "Global",
+      "note": "의자를 뺐을 때도 뒷다리가 러그 위에 남도록 하는 관행. 검색으로 확인하지 못했다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "식탁 주변",
+      "dimension": "식탁 모서리~벽 최소 간격(의자 빼기)",
+      "typical_value": "915 (36 in)",
+      "range": "≥915",
+      "unit": "mm",
+      "region": "Global/US",
+      "urls": [
+        "https://eurekaergonomic.com/blogs/eureka-ergonomic-blog/dining-table-space-clearance-guide",
+        "https://www.homary.com/tips-and-ideas/article/how-much-space-around-a-dining-table-the-complete-clearance-guide-513.html",
+        "https://www.nepafurniture.com/blog/home-furniture-32/how-much-space-is-needed-around-a-dining-table-416"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "식탁 주변",
+      "dimension": "앉은 사람 뒤로 통행할 때 간격(NKBA)",
+      "typical_value": "1118 (44 in)",
+      "range": "1067–1219 (42–48 in)",
+      "unit": "mm",
+      "region": "US",
+      "note": "아무도 지나가지 않으면 915 mm, 정기적으로 통행하면 1118 mm(NKBA 인용).",
+      "urls": [
+        "https://www.lamonluther.com/resources/table-size-space-guidelines/",
+        "https://enkledesigns.com/how-much-room-do-you-need-around-a-dining-table/",
+        "https://media.nkba.org/uploads/2022/05/Kitchen-Planning-Guidelines.pdf"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "식탁 의자",
+      "dimension": "의자를 빼는 데 필요한 거리",
+      "typical_value": "510 (20 in)",
+      "range": "460–610",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://sicotas.com/blogs/blogs-sicotas-brand-story/minimum-space-around-dining-table",
+        "https://actufurniture.com/blogs/buying-guides/how-much-space-do-you-need-around-a-dining-table"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "펜던트 조명(식탁 위)",
+      "dimension": "식탁 상판~조명 하단 높이",
+      "typical_value": "810",
+      "range": "760–860 (30–34 in), 일부 출처 30–36 in(760–915)",
+      "unit": "mm",
+      "region": "Global/US",
+      "note": "천장고 2300인 한국 아파트에서는 바닥 기준 약 1550~1600 mm가 된다(파생값).",
+      "urls": [
+        "https://www.fenchelshades.com/blog/post/pendant-lights-over-dining-table-height-standard-measurements-and-placement-guide-2026-usa",
+        "https://artika.com/blogs/inspiration/complete-pendant-height-spacing-guide",
+        "https://citylightssf.com/blogs/city-lights-insights/how-high-to-hang-dining-room-pendant-lights"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "펜던트 조명(다등)",
+      "dimension": "조명 간 중심 간격",
+      "typical_value": "660",
+      "range": "610–760 (24–30 in), 최대 915",
+      "unit": "mm",
+      "region": "Global",
+      "urls": [
+        "https://www.2modern.com/blogs/modern-how-to/how-far-apart-should-pendant-lights-be",
+        "https://www.kouboo.com/blogs/news/essential-guide-to-pendant-lighting-sizing-spacing-more"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "펜던트/샹들리에",
+      "dimension": "조명 폭 상한(식탁 폭 기준)",
+      "typical_value": "식탁 폭 − 610 (양쪽 각 305)",
+      "range": "-",
+      "unit": "mm",
+      "region": "Global",
+      "note": "다등 배열은 식탁 길이의 약 2/3에 걸치고, 식탁 끝에서 150~300 mm 안쪽에 둔다.",
+      "urls": [
+        "https://shophorne.com/blogs/journal/styling-guide-what-size-pendant-light-should-i-hang-in-the-dining-room",
+        "https://schoolhouse.com/blogs/how-to/choose-the-right-size-chandelier-or-pendant"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "item": "벽 그림/액자",
+      "dimension": "작품 중심 높이(바닥 기준)",
+      "typical_value": "1450 (57 in)",
+      "range": "1450–1520 (57–60 in)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "57 in는 평균 서 있는 눈높이에 근거한 박물관 관행. 60 in를 제시하는 출처도 있다. 소파나 콘솔 위에서는 가구 상단 기준 여백(약 150~250 mm, 미확인)을 우선한다.",
+      "urls": [
+        "https://www.ashanging.com/en_us/help/what-is-the-rule-of-57",
+        "https://www.parkwestgallery.com/blog/3-simple-rules-for-hanging-art/",
+        "https://www.fab-art.co/blogs/news/the-57-inch-rule-perfect-art-hanging-height-explained",
+        "https://www.modernmemorydesign.com/blogs/news/how-high-to-hang-pictures-the-ultimate-gallery-standard-guide-2026"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "책상-의자",
+      "dimension": "책상 앞 의자 이동 여유(책상 모서리~뒤쪽 장애물)",
+      "typical_value": "900",
+      "range": "760–1000",
+      "unit": "mm",
+      "region": "Global",
+      "note": "검색 미확인 관행값.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "한국 성인 남성",
+      "dimension": "평균 키(20~69세, 제8차 사이즈코리아)",
+      "typical_value": "1725",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "1979년 1차 조사보다 64 mm 커졌다. n=6,839(남녀 합계), 측정 항목 430개.",
+      "urls": [
+        "https://sizekorea2022.kr/8th_results/",
+        "https://www.motir.go.kr/kor/article/ATCL8764a1224/155118041/view",
+        "https://v.daum.net/v/EEgCB84oRR?f=p"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "한국 성인 여성",
+      "dimension": "평균 키(20~69세, 제8차 사이즈코리아)",
+      "typical_value": "1596",
+      "range": "-",
+      "unit": "mm",
+      "region": "KR",
+      "note": "1979년보다 53 mm 커졌다.",
+      "urls": [
+        "https://sizekorea2022.kr/8th_results/",
+        "https://mobile.newsis.com/view.html?ar_id=NISX20220330_0001813471",
+        "https://plus.hankyung.com/apps/newsinside.view?aid=2022033028267&category=&sns=y"
+      ],
+      "confidence": "high"
+    },
+    {
+      "item": "미국 성인",
+      "dimension": "평균 키(남/여)",
+      "typical_value": "약 1753 / 약 1613",
+      "range": "-",
+      "unit": "mm",
+      "region": "US",
+      "note": "CDC NHANES 계열의 기억치. 이번 검색으로 확인하지 못했다.",
+      "urls": [],
+      "confidence": "low"
+    },
+    {
+      "item": "서 있는 눈높이",
+      "dimension": "바닥~눈 높이(평균)",
+      "typical_value": "1450–1600",
+      "range": "키 × 약 0.93 (KR 남 약 1600, 여 약 1480)",
+      "unit": "mm",
+      "region": "KR/Global",
+      "note": "57 in(1450) 그림 규칙이 '평균 눈높이'를 근거로 한다. 키 비율 0.93은 인체측정 관행 기억치이고 사이즈코리아 원자료로 검증해야 한다.",
+      "urls": [
+        "https://artacademi.com/blogs/kb/ocular-ergonomics-physics-57-inch-museum-height-rule",
+        "https://sizekorea2022.kr/8th_results/"
+      ],
+      "confidence": "low"
+    },
+    {
+      "item": "앉은 눈높이",
+      "dimension": "바닥~눈 높이(식탁 의자 착석)",
+      "typical_value": "1150",
+      "range": "1100–1250 (소파 착석 시 약 1000–1100)",
+      "unit": "mm",
+      "region": "Global",
+      "note": "좌판 450 + 앉은 눈높이 약 700~800을 더한 파생값. 출처가 없다.",
+      "urls": [],
+      "confidence": "low"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Standard Dining Chair Dimensions and How to Choose the Right One (Pop Maison)",
+      "url": "https://www.popmaison.com/blogs/guide/dining-chair-dimensions",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "좌판 높이 17–19 in와 상판-좌판 10–12 in 관계를 제시한다."
+    },
+    {
+      "title": "What Are the Typical Dimensions of a Standard Dining Chair? (Picket & Rail)",
+      "url": "https://picketandrail.com/blogs/dining-blog/what-are-the-typical-dimensions-of-a-standard-dining-chair",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "좌판 깊이 16–18 in, 등받이 12–20 in."
+    },
+    {
+      "title": "Standard Dining Chair Dimensions (2026) - Sizemarker",
+      "url": "https://www.sizemarker.com/dimensions/standard-dining-chair-dimensions",
+      "source_type": "치수 레퍼런스",
+      "why_useful": "의자 전체 높이 32–38 in."
+    },
+    {
+      "title": "Standard Sofa Size Guide (Povison)",
+      "url": "https://www.povison.com/blog/buying-guide/standard-sofa-size-guide.html",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "3인 소파 183–244 cm, 가장 흔한 폭 213 cm."
+    },
+    {
+      "title": "Standard Sofa and Loveseat Sizes (RoomSketch3D)",
+      "url": "https://roomsketch3d.com/help/dimensions/sofa-and-loveseat-dimensions",
+      "source_type": "치수 레퍼런스",
+      "why_useful": "러브시트 132–183 cm 폭, 76–102 cm 깊이."
+    },
+    {
+      "title": "Standard Sofa Dimensions (OMHU)",
+      "url": "https://omhucph.com/blogs/inspiration/standard-sofa-dimensions",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "cm와 inch를 함께 제시하는 소파 치수."
+    },
+    {
+      "title": "이스턴킹? 라지킹? 캘리포니아킹? 침대 크기의 모든 것 (브런치)",
+      "url": "https://brunch.co.kr/@phapark/59",
+      "source_type": "한국 블로그",
+      "why_useful": "한국 S/SS/Q/K/LK 규격과 미국 킹 계열 비교."
+    },
+    {
+      "title": "침대 사이즈 완벽 가이드 (슬립퍼)",
+      "url": "https://sleeper.co.kr/magazine/01-bed-size-guide/bed-size-guide.html",
+      "source_type": "한국 매거진",
+      "why_useful": "한국 매트리스 규격과 2100 길이 옵션."
+    },
+    {
+      "title": "Mattress size guide 2026 (T3)",
+      "url": "https://www.t3.com/features/mattress-size-guide",
+      "source_type": "리뷰 매체",
+      "why_useful": "US/UK/EU 매트리스 규격 비교."
+    },
+    {
+      "title": "UK vs US mattress sizes (TechRadar)",
+      "url": "https://www.techradar.com/health-fitness/mattresses/mattress-sizes-uk-vs-us-vs-eu",
+      "source_type": "리뷰 매체",
+      "why_useful": "UK King이 US Queen에 가깝다는 비교, EU가 UK보다 10 cm 길다는 점."
+    },
+    {
+      "title": "주방 싱크대 높이와 동선 설계 (치호건축사사무소)",
+      "url": "https://chiho.co.kr/blogroom/%EC%A3%BC%EB%B0%A9-%EC%8B%B1%ED%81%AC%EB%8C%80-%EB%86%92%EC%9D%B4%EC%99%80-%EB%8F%99%EC%84%A0-%EC%84%A4%EA%B3%84-%ED%82%A4%EB%B3%84-%EC%B5%9C%EC%A0%81-%EC%B9%98%EC%88%98-%EA%B3%B5%EA%B0%9C-%EC%A3%BC%EB%B0%A9%EC%84%A4%EA%B3%84",
+      "source_type": "한국 건축사무소 블로그",
+      "why_useful": "한국 싱크대 850 mm가 키 160~165 cm 여성 기준 산업 표준이라는 설명."
+    },
+    {
+      "title": "주방을 설계한다면 꼭 알아야 할 치수들 (ideabuild, Threads)",
+      "url": "https://www.threads.com/@ideabuild_official/post/DQ8kvc-kRe7",
+      "source_type": "한국 인테리어 실무 SNS",
+      "why_useful": "아일랜드 700, 동선 900, 싱크대 900 권장, 미드웨이 650~750, 식탁 750, 의자 450, 상부장 깊이 350, 싱크대 깊이 650 이상."
+    },
+    {
+      "title": "[중급] 주방 상부장 스타일 알아보기 (LX Z:IN)",
+      "url": "https://www.lxzin.com/styling/style-guide/detail/5596",
+      "source_type": "한국 제조사 가이드",
+      "why_useful": "하부장 850, 미드웨이 700, 상부장 750, 합계 약 2300의 모듈."
+    },
+    {
+      "title": "[고급] 싱크대 설치 준비하기 (LX Z:IN)",
+      "url": "https://www.lxzin.com/styling/style-guide/detail/647",
+      "source_type": "한국 제조사 가이드",
+      "why_useful": "싱크대 설치 치수."
+    },
+    {
+      "title": "NKBA Kitchen Planning Guidelines with Access Standards (PDF)",
+      "url": "https://media.nkba.org/uploads/2022/05/Kitchen-Planning-Guidelines.pdf",
+      "source_type": "업계 표준 가이드라인",
+      "why_useful": "미국 주방 통로, 트라이앵글, 식탁 여유 공간의 원문(이번에는 egress 차단으로 직접 열람하지 못함)."
+    },
+    {
+      "title": "Kitchen Dimensions: Code Requirements & NKBA Guidelines (CRD Design Build)",
+      "url": "https://www.crddesignbuild.com/blog/kitchen-dimensions-code-requirements-nkba-guidelines/",
+      "source_type": "시공사 블로그(NKBA 요약)",
+      "why_useful": "통로 42/48 in, 트라이앵글 26 ft와 각 변 4–9 ft, 조리대 36 in."
+    },
+    {
+      "title": "Kitchen Design Guidelines & Clearances (Wholesale Cabinet Supply)",
+      "url": "https://www.thewcsupply.com/pages/kitchen-design-guidelines-standard-clearances",
+      "source_type": "캐비닛 업체 가이드",
+      "why_useful": "상부장 하단 54 in, 조리대 위 18 in."
+    },
+    {
+      "title": "Kitchen work triangle (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Kitchen_work_triangle",
+      "source_type": "백과사전",
+      "why_useful": "워크 트라이앵글 개념과 수치."
+    },
+    {
+      "title": "7 Base Cabinet Sizes (Allure)",
+      "url": "https://www.allurekitchencabinet.com/blog/7-base-cabinet-sizes-standard-height-depth-width",
+      "source_type": "캐비닛 업체 가이드",
+      "why_useful": "하부장 34.5 in 높이, 24 in 깊이."
+    },
+    {
+      "title": "Wall Cabinet Sizes & Heights Chart (TC Wholesale Cabinetry)",
+      "url": "https://tcwholesalecabinetry.com/blog/wall-cabinet-sizes-types",
+      "source_type": "캐비닛 업체 가이드",
+      "why_useful": "미국 상부장 높이와 깊이."
+    },
+    {
+      "title": "일반적인 아파트 층고와 천장고 기준 (한국PM)",
+      "url": "https://hkpm.co.kr/%EC%9D%BC%EB%B0%98%EC%A0%81%EC%9D%B8-%EC%95%84%ED%8C%8C%ED%8A%B8-%EC%B8%B5%EA%B3%A0%EC%99%80-%EC%B2%9C%EC%9E%A5%EA%B3%A0-%EA%B8%B0%EC%A4%80%EA%B3%BC-%EC%9D%98%EB%AF%B8-%EA%B4%80%EA%B3%84/",
+      "source_type": "한국 업계 블로그",
+      "why_useful": "층고 2.8~2.85 m, 천장고 2.3 m 기준."
+    },
+    {
+      "title": "[김수암 칼럼] 층고와 천장고가 높은 것도 경쟁력이다 (아파트관리신문)",
+      "url": "http://www.aptn.co.kr/news/articleView.html?idxno=49567",
+      "source_type": "한국 언론 칼럼",
+      "why_useful": "천장고 2300 대부분, 일부 2350~2400."
+    },
+    {
+      "title": "방문 사이즈 - 건재정보 (다음카페)",
+      "url": "https://m.cafe.daum.net/retirecountry/GbzJ/5?q=D_KkJLW6NS9QQ0",
+      "source_type": "한국 커뮤니티",
+      "why_useful": "욕실문 700×2000/800×2100, 방문 900 또는 1000×2100."
+    },
+    {
+      "title": "현관문 크기: 알아야 할 표준 치수 (APRO)",
+      "url": "https://aprodoor.com/front-door-sizes/",
+      "source_type": "도어 제조사 가이드",
+      "why_useful": "아파트 현관문 900/1000/1100×2100."
+    },
+    {
+      "title": "계단의 설치기준 (마이다스캐드)",
+      "url": "https://www.midascad.com/cad_archive/buildingact-4",
+      "source_type": "한국 법규 해설",
+      "why_useful": "단높이, 단너비, 손잡이, 대체 경사로 기준 해설."
+    },
+    {
+      "title": "건축물의 피난ㆍ방화구조 등의 기준에 관한 규칙 (국가법령정보센터)",
+      "url": "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lspttninfSeq=124056&chrClsCd=010202",
+      "source_type": "법령 원문",
+      "why_useful": "제15조 계단 기준(계단참, 난간, 유효높이 등)."
+    },
+    {
+      "title": "법제처 민원인 해석 - 돌음계단 단너비 측정 (CaseNote)",
+      "url": "https://casenote.kr/%EB%B2%95%EC%A0%9C%EC%B2%98/18-0465-d5162f",
+      "source_type": "법령해석",
+      "why_useful": "주택건설기준 등에 관한 규정 제16조 관련 해석."
+    },
+    {
+      "title": "2015 IRC Residential Stairways and Ramps handout (Essex, CT)",
+      "url": "https://www.essexct.gov/DocumentCenter/View/449/Residential-Stairways-and-Ramps-2015-Irc-Handout-PDF",
+      "source_type": "지자체 코드 요약",
+      "why_useful": "IRC 단높이 7¾, 디딤판 10, 머리 여유 6'8\"."
+    },
+    {
+      "title": "Maximum and Minimum Handrail Heights (Viewrail)",
+      "url": "https://resources.viewrail.com/code-compliance/railing-code/maximum-and-minimum-handrail-heights",
+      "source_type": "제조사 코드 해설",
+      "why_useful": "IRC 손잡이 34–38 in."
+    },
+    {
+      "title": "IRC Stair Code Requirements (TradeMaster Calc)",
+      "url": "https://trademastercalc.com/reference/irc-stair-code",
+      "source_type": "코드 레퍼런스",
+      "why_useful": "IRC 계단 수치 요약."
+    },
+    {
+      "title": "콘센트·스위치 위치 설계 가이드 (sunnysunnyday)",
+      "url": "https://sunnysunnyday.com/entry/%EC%8B%B1%ED%81%AC%EB%8C%80-%EC%95%9E%EC%97%90-%EC%BD%98%EC%84%BC%ED%8A%B8%EA%B0%80-%EC%9E%88%EB%8D%98-%ED%98%84%EC%9E%A5%EC%9D%84-%EC%9D%B4%EC%96%B4%EB%B0%9B%EA%B3%A0-%EB%82%98%EC%84%9C-%EC%A0%95%EB%A6%AC%ED%95%9C-%EC%BD%98%EC%84%BC%ED%8A%B8%C2%B7%EC%8A%A4%EC%9C%84%EC%B9%98-%EC%9C%84%EC%B9%98-%EC%84%A4%EA%B3%84-%EA%B0%80%EC%9D%B4%EB%93%9C-%EA%B3%B5%EA%B0%84%EB%B3%84-%EC%BD%98%EC%84%BC%ED%8A%B8-%EB%86%92%EC%9D%B4-%EC%8A%A4%EC%9C%84%EC%B9%98-%EB%B0%B0%EC%B9%98-%ED%9A%8C%EB%A1%9C-%EB%B6%84%EB%A6%AC-%EA%B8%B0%EC%A4%80",
+      "source_type": "한국 시공 실무 블로그",
+      "why_useful": "협탁용 콘센트 60~70 cm, 책상용 80~90 cm."
+    },
+    {
+      "title": "내력벽 비내력벽 구분 방법과 차이 (AJD)",
+      "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EB%82%B4%EB%A0%A5%EB%B2%BD_%EB%B9%84%EB%82%B4%EB%A0%A5%EB%B2%BD_%EA%B5%AC%EB%B6%84_%EB%B0%A9%EB%B2%95%EA%B3%BC_%EC%B0%A8%EC%9D%B4%EF%BD%9C%EB%8F%84%EB%A9%B4%C2%B7%EB%91%90%EA%BB%98%EB%A1%9C_%EC%B2%A0%EA%B1%B0_%EA%B0%80%EB%8A%A5_%EC%97%AC%EB%B6%80_%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0-72255",
+      "source_type": "한국 인테리어 가이드",
+      "why_useful": "180 mm 이상이면 내력벽, 100 mm 내외면 비내력벽, 습식 벽 150 mm."
+    },
+    {
+      "title": "아파트 벽체두께는 얼마정도인가요? (클리앙)",
+      "url": "https://www.clien.net/service/board/kin/12725939",
+      "source_type": "한국 커뮤니티",
+      "why_useful": "외벽 200, 내벽 150~200(가끔 100)."
+    },
+    {
+      "title": "The ultimate guide to living room clearances (Homes & Gardens)",
+      "url": "https://www.homesandgardens.com/interior-design/living-rooms/a-guide-to-living-room-clearances-measurements-and-spacing",
+      "source_type": "인테리어 매체",
+      "why_useful": "소파-커피테이블 14–18 in, 통로 30–36 in, 러그 규칙."
+    },
+    {
+      "title": "Ideal Living Room Layout Measurements (Apartment Therapy)",
+      "url": "https://www.apartmenttherapy.com/living-room-layouts-the-ideal-measurements-for-everything-in-the-room-206734",
+      "source_type": "인테리어 매체",
+      "why_useful": "거실 배치 치수 종합."
+    },
+    {
+      "title": "Living Room Layout Rules: Traffic Flow, Conversation Zones, and TV Placement (Keck Furniture)",
+      "url": "https://keckfurniture.com/blog/living-room-layout-rules-traffic-flow-conversation-zones-and-tv-placement/",
+      "source_type": "가구점 가이드",
+      "why_useful": "TV 거리 1.5–2.5배, 55인치 7–9 ft, 65인치 8–10 ft."
+    },
+    {
+      "title": "Dining Table Space Guide (Eureka Ergonomic)",
+      "url": "https://eurekaergonomic.com/blogs/eureka-ergonomic-blog/dining-table-space-clearance-guide",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "식탁 주변 36 in 여유."
+    },
+    {
+      "title": "Table Size & Space Guidelines (Lamon Luther)",
+      "url": "https://www.lamonluther.com/resources/table-size-space-guidelines/",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "NKBA 인용 36/44 in 식탁 여유."
+    },
+    {
+      "title": "Dining Table Size Guide Based on Number of People (NEPA Furniture)",
+      "url": "https://www.nepafurniture.com/blog/home-furniture-32/dining-table-size-guide-based-on-number-of-people-414",
+      "source_type": "가구점 가이드",
+      "why_useful": "1인당 24 in(61 cm), 격식 있는 식사 28–30 in."
+    },
+    {
+      "title": "Pendant Lights Over Dining Table Height 2026 Guide (Fenchel Shades)",
+      "url": "https://www.fenchelshades.com/blog/post/pendant-lights-over-dining-table-height-standard-measurements-and-placement-guide-2026-usa",
+      "source_type": "조명 업체 가이드",
+      "why_useful": "식탁 위 30–34 in."
+    },
+    {
+      "title": "Complete Pendant Light Height & Spacing Guide (Artika)",
+      "url": "https://artika.com/blogs/inspiration/complete-pendant-height-spacing-guide",
+      "source_type": "조명 제조사 가이드",
+      "why_useful": "펜던트 높이와 간격."
+    },
+    {
+      "title": "How Far Apart Should Pendant Lights Be? (2Modern)",
+      "url": "https://www.2modern.com/blogs/modern-how-to/how-far-apart-should-pendant-lights-be",
+      "source_type": "조명 판매사 가이드",
+      "why_useful": "펜던트 간격 24–36 in."
+    },
+    {
+      "title": "What Is the Rule of 57 for Hanging Art? (AS Hanging)",
+      "url": "https://www.ashanging.com/en_us/help/what-is-the-rule-of-57",
+      "source_type": "액자 걸이 제조사 가이드",
+      "why_useful": "그림 중심 57 in(145 cm)=평균 눈높이."
+    },
+    {
+      "title": "Three Simple Rules To Follow When Hanging Art (Park West Gallery)",
+      "url": "https://www.parkwestgallery.com/blog/3-simple-rules-for-hanging-art/",
+      "source_type": "갤러리",
+      "why_useful": "갤러리 관행 확인."
+    },
+    {
+      "title": "사이즈코리아 제8차 한국인 인체치수 조사 결과",
+      "url": "https://sizekorea2022.kr/8th_results/",
+      "source_type": "정부 공식 데이터",
+      "why_useful": "한국인 평균 키 남 172.5, 여 159.6 cm."
+    },
+    {
+      "title": "한국인 평균 키와 다리길이, 비만도 공개 (산업통상부 보도)",
+      "url": "https://www.motir.go.kr/kor/article/ATCL8764a1224/155118041/view",
+      "source_type": "정부 보도자료",
+      "why_useful": "제8차 조사 개요(6,839명, 430항목)."
+    },
+    {
+      "title": "Bar-Height vs. Counter-Height Furniture (POLYWOOD)",
+      "url": "https://www.polywood.com/blogs/buying-guides/bar-height-vs-counter-heights-for-stools-and-tables-whats-the-difference",
+      "source_type": "가구 브랜드 가이드",
+      "why_useful": "카운터 스툴 24–26 in, 바 스툴 28–30 in, 커피테이블 16–18 in."
+    },
+    {
+      "title": "Nightstands & Bedside Tables Dimensions (Dimensions.com)",
+      "url": "https://www.dimensions.com/collection/bedside-tables-nightstands",
+      "source_type": "치수 레퍼런스",
+      "why_useful": "협탁 24–28 in, 침대 높이 약 25 in."
+    },
+    {
+      "title": "How Tall Should a Nightstand Be? (Froy)",
+      "url": "https://froy.com/blogs/tips/how-tall-should-a-nightstand-be-the-nightstand-height-guide",
+      "source_type": "가구 판매사 가이드",
+      "why_useful": "매트리스 상단 ±2 in 규칙."
+    },
+    {
+      "title": "KS G 4203 사무용 책상 및 테이블 (KSSN)",
+      "url": "https://www.kssn.net/search/stddetail.do?itemNo=K001010111402",
+      "source_type": "한국산업표준 목록",
+      "why_useful": "사무용 책상 KS 규격 존재 확인."
+    },
+    {
+      "title": "KS 가구 규격의 치수 개정을 위한 사전 조사 연구 (대한인간공학회 2009)",
+      "url": "https://www.esk.or.kr/conference/2009_fall/pdf/14_5.pdf",
+      "source_type": "학술 발표",
+      "why_useful": "KS G 4101(의자), KS G 4102(책상) 치수 항목 검토."
+    },
+    {
+      "title": "표준 사무용 의자 치수 (2026): BIFMA 범위 (Sizemarker)",
+      "url": "https://www.sizemarker.com/ko/dimensions/standard-office-chair-dimensions",
+      "source_type": "치수 레퍼런스",
+      "why_useful": "BIFMA 좌판·등받이·팔걸이 범위."
+    },
+    {
+      "title": "사무용 책상의 기본 높이가 720mm 인가 봐요 (Todaysppc)",
+      "url": "http://m.todaysppc.com/renewal/view.php?id=free&page=11&page_num=15&category=&sn=off&ss=on&sc=on&keyword=&prev_no=&select_arrange=headnum&desc=asc&no=479576",
+      "source_type": "한국 커뮤니티",
+      "why_useful": "한국 사무용 책상 720 mm 관행."
+    },
+    {
+      "title": "BILLY bookcase (IKEA US)",
+      "url": "https://www.ikea.com/us/en/p/billy-bookcase-white-50522040/",
+      "source_type": "제조사 제품 페이지",
+      "why_useful": "BILLY 40×28×202 cm."
+    },
+    {
+      "title": "IKEA PAX Dimensions (itemfits)",
+      "url": "https://itemfits.com/dimensions/ikea/ikea-pax",
+      "source_type": "치수 레퍼런스",
+      "why_useful": "PAX 깊이 58 cm, 폭 50/75/100, 높이 201/236."
+    },
+    {
+      "title": "IKEA Billy Bookcases Dimensions (Dimensions.com)",
+      "url": "https://www.dimensions.com/element/ikea-billy-bookcases",
+      "source_type": "치수 레퍼런스",
+      "why_useful": "BILLY 도면 치수."
+    },
+    {
+      "title": "LH주택평면계획기준 연구 (CODIL)",
+      "url": "https://www.codil.or.kr/filebank/original/RK/OTKCRK150014/OTKCRK150014.pdf",
+      "source_type": "공공 연구보고서(미열람)",
+      "why_useful": "한국 공공주택 평면 기준(주방·실 치수) 추가 조사 후보. 이번에는 열람하지 못했다."
+    }
+  ],
+  "gaps": [
+    "WebFetch 차단(NKBA PDF, law.go.kr, dimensions.com, sizekorea 등) 때문에 원문 수치를 직접 확인하지 못했다. 대부분 검색 요약 두 개 이상의 교차 확인에 의존했다. NKBA 원문의 무릎 공간(30/36/42 in 카운터별 18/15/12 in)과 식탁 뒤 통행 32/36/44 in 세부 조항은 원문 검증이 필요하다.",
+    "냉장고(미국 표준형, 한국 양문형·4도어·김치냉장고) 치수는 검색 결과에서 확인하지 못했다. 삼성·LG·GE 제조사 스펙 페이지로 보강해야 한다.",
+    "EU(DIN 18101)·미국 실내문과 현관문 표준 치수, 미국 콘센트·스위치 높이, IRC 비상탈출창 창대 44 in는 검색으로 확인하지 못했다(기억치, low).",
+    "한국 창대 높이(침실 약 900 mm)와 한국 계단 유효높이 2.1 m, 손잡이 85 cm, 난간 120 cm(주택건설기준 제18조)는 법령 원문 확인이 필요하다.",
+    "사이즈코리아의 눈높이(서 있을 때, 앉았을 때), 어깨높이, 팔 뻗은 도달거리 등 세부 인체치수는 평균 키 외에 얻지 못했다. sizekorea.kr 데이터를 직접 받아 보강해야 한다.",
+    "암체어, 콘솔, 벤치 깊이, 책장 선반 간격, 침대 옆 통로, 책상 뒤 의자 여유, 식탁 아래 러그 확장폭은 검색으로 수치를 확인하지 못한 관행값이다.",
+    "한국 소파(로우형·모듈형)의 좌판 높이와 깊이, 한국 침대 프레임 높이(저상형) 데이터가 없다. 한샘·일룸·시디즈 등 한국 제조사 스펙이 필요하다.",
+    "Neufert Architects' Data 원문 수치(식탁 1인 폭 60 cm, 계단 2R+T=63 cm 등)는 접근하지 못해 인용하지 않았다.",
+    "TV 시청거리의 THX/SMPTE 시야각 기준 수치(약 40°/30°)는 기억치다. 유통사의 1.5–2.5배 규칙과 차이가 난다는 점만 note에 적었다.",
+    "한국 문 규격이 문틀 포함 치수인지 문짝 치수인지가 출처마다 불분명하다. KS F 표준이나 제조사(LX, 영림) 스펙으로 확인해야 한다."
+  ]
+}

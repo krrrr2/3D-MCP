@@ -1,0 +1,57 @@
+{
+ "topic": "G11_architecture 원문 대조 (2026-09-27)",
+ "verdicts": [
+  {
+   "claim": "IfcOpenShell 공식 MCP 서버가 PyPI ifcopenshell-mcp로 배포된다",
+   "verdict": "confirmed",
+   "note": "PyPI ifcopenshell-mcp 0.8.5(2026-04-01), 요약 'MCP server for querying and editing IFC building models', 홈페이지 ifcopenshell.org.",
+   "evidence_urls": [
+    "https://docs.ifcopenshell.org/ifcmcp.html"
+   ]
+  },
+  {
+   "claim": "Building Tools 마지막 커밋 2025-05",
+   "verdict": "confirmed",
+   "note": "마지막 커밋 2025-05-16.",
+   "evidence_urls": [
+    "https://github.com/ranjian0/building_tools"
+   ]
+  },
+  {
+   "claim": "Home Builder 5가 2026년에 가장 활발",
+   "verdict": "confirmed",
+   "note": "마지막 커밋 2026-09-26.",
+   "evidence_urls": [
+    "https://github.com/CreativeDesigner3D/home_builder_5"
+   ]
+  },
+  {
+   "claim": "McNeel RhinoAI가 공식 저장소",
+   "verdict": "confirmed",
+   "note": "mcneel/rhinoai 마지막 커밋 2026-09-26.",
+   "evidence_urls": [
+    "https://github.com/mcneel/rhinoai"
+   ]
+  },
+  {
+   "claim": "BlenderGIS 2025-12 Blender 5 수정",
+   "verdict": "confirmed",
+   "note": "마지막 커밋 2025-12-20.",
+   "evidence_urls": [
+    "https://github.com/domlysz/BlenderGIS"
+   ]
+  },
+  {
+   "claim": "BIM-Edit 벤치마크 최고 평균 49.48%, Revit 2027 공식 MCP 읽기 전용",
+   "verdict": "unverifiable",
+   "note": "arXiv·Autodesk 차단, 검색 요약만 있음.",
+   "evidence_urls": []
+  }
+ ],
+ "item_checks": [],
+ "unreliable_sources": [],
+ "missed_items": [],
+ "notes": [
+  "메인 에이전트가 하위 조사 결과의 핵심 주장을 1차 출처(GitHub 저장소·커밋·LICENSE, PyPI JSON, 로컬 bpy)로 다시 확인한 기록이다. 독립 검증 에이전트가 아니며, 파일 다운로드는 텍스트(LICENSE·README)와 git 메타데이터(--no-checkout)만 했다."
+ ]
+}
