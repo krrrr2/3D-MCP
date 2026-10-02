@@ -625,7 +625,7 @@ UE 5.7 문서의 비공식 Markdown 미러로 확인한 내용입니다(공식 �
 - [ ] **`--dangerously-skip-permissions` 금지**(Epic 명시). 프로젝트 `.mcp.json` 서버는 신뢰를 확인한 뒤 승인(`claude -p` 비대화형 실행에서는 확인 없이 로드됨, [security](https://code.claude.com/docs/en/security)).
 - [ ] **외부 텍스트는 데이터로**: 에셋 설명·웹 콘텐츠 속 지시문(프롬프트 인젝션)을 따르지 않음.
 - [ ] **다운로드한 `.blend`의 Python 자동 실행 끔**(Preferences > Save & Load).
-- [ ] **서버·스킬 라이선스**: 공식 Blender Lab 서버 GPL-3.0-or-later, blend-ai AGPL-3.0-or-later(수정본을 네트워크 서비스로 제공하면 소스 공개 의무).
+- [ ] **서버·스킬 라이선스**: 공식 Blender Lab 서버 GPL-3.0-or-later, blend-ai는 blenderwright로 이름이 바뀌었고 2026-10 LICENSE는 MIT(2026-09 조사 때는 AGPL-3.0-or-later. 설치 시점 LICENSE를 다시 확인).
 
 ### 10.6 비용·컨텍스트
 

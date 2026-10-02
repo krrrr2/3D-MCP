@@ -1,0 +1,377 @@
+{
+ "topic": "[보완] MCP·스킬·컴퓨터 유즈용 배치·조형 도우미 (2026-10-02)",
+ "method_note": "사용자 질문('MCP용이나 컴퓨터 유즈용으로 조형·배치를 잘 되게 하는 그것')에 답하려고 메인 에이전트가 WebSearch 3회로 후보를 찾고, GitHub 원 저장소를 git 메타데이터(--no-checkout, 파일 이름 목록만)와 raw README·LICENSE 텍스트로 확인. 설치·실행 없음. 의심 저장소는 열지 않음.",
+ "summary_ko": [
+  "MCP용으로 배치를 '도구'로 제공하는 대표는 blender-ai-mcp: 접촉 간격 배치·대칭 쌍·받침면 쌍·겹침 정리 매크로와 측정·단언(scene_assert_*) 도구.",
+  "스킬(규칙) 쪽은 dream-loop(목표 이미지 + 비평가 루프), blender-skills(94개, set-dressing·sculpting 등), ProfRino Assembly Skill, cc-blender-skill.",
+  "컴퓨터 유즈로 조형(메시 편집)을 하는 공개 도구는 아직 연구 단계(ViSculpt, 코드 미확인). dream-loop 저자도 'MCP나 스크립트가 컴퓨터 유즈보다 결과가 좋다'고 명시.",
+  "blend-ai는 blenderwright로 이름이 바뀌었고 LICENSE가 MIT로 확인됨(이전 기록 AGPL 정정)."
+ ],
+ "items": [
+  {
+   "name": "blender-ai-mcp (PatrykIti)",
+   "category": "mcp_placement",
+   "what_it_is": "배치·조립 품질을 '도구'로 제공하는 Blender MCP. README: macro_relative_layout(정렬·배치·접촉 간격 기반 부품 배치), macro_align_part_with_contact(거의 맞는 두 부품을 접촉하도록 최소 이동), macro_place_symmetry_pair(대칭 쌍 배치), macro_place_supported_pair(공통 받침면 위 쌍 배치), macro_cleanup_part_intersections(쌍별 겹침 정리). 검증은 scene_measure_*·scene_assert_*(측정·단언)와 실루엣 분석.",
+   "how_to_use": "MCP 클라이언트에 등록 → 에이전트가 자유 좌표 대신 매크로로 배치하고, 마지막에 scene_assert_*로 접촉·간격을 단언. 비전(스크린샷)은 보조, 최종 판정은 결정적 측정이라는 설계.",
+   "strengths": "배치·접촉·대칭을 결정적으로 처리하는 전용 도구가 가장 잘 갖춰짐",
+   "weaknesses": "설정 복잡, 2026-05-04 이후 커밋 없음",
+   "license": "Apache-2.0(LICENSE 확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-05-04",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "실행 파일·zip 없음(파일 목록 확인)",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/PatrykIti/blender-ai-mcp"
+   ]
+  },
+  {
+   "name": "dream-loop (achimala)",
+   "category": "agent_skill",
+   "what_it_is": "에이전트 스킬. ① 이미지 생성으로 목표 스크린샷을 '꿈꾸고' ② 그 목표를 보며 만들고 ③ 별도 AI 비평가가 실제 화면을 목표와 비교해 피드백 ④ 만족할 때까지 반복. README: 'The Blender MCP or scripting interface is preferred to computer use; it produces better results.' GPT-6 Astra(Codex)로만 테스트.",
+   "how_to_use": "npx skills add achimala/dream-loop 또는 스킬 폴더에 복제. 이미지 생성·비전 입력·서브에이전트가 필요.",
+   "strengths": "목표 이미지 + 비평 루프로 시각 품질을 끌어올림(배치·분위기)",
+   "weaknesses": "수치 검사는 없음(부유·관통은 별도 스크립트 필요). Astra에서만 테스트",
+   "license": "MIT(LICENSE 확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-09-10",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "없음(파일 13개)",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/achimala/dream-loop"
+   ]
+  },
+  {
+   "name": "blender-asset-mcp (yi00it)",
+   "category": "mcp_asset",
+   "what_it_is": "게임 에셋용 MCP. 에이전트가 자기 결과를 렌더해 확인·수정하고, 엔진 예산(폴리·텍스처)과 manifold 등을 검증한 뒤 GLB/FBX로 내보냄. 체크포인트, UCX 콜리전, LOD 체인 생성 포함.",
+   "how_to_use": "MCP 클라이언트에 등록.",
+   "strengths": "렌더→검사→수정 루프와 익스포트 검증이 도구로 내장",
+   "weaknesses": "배치 전용 도구는 아님",
+   "license": "MIT(LICENSE 확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-09-23",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "없음",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/yi00it/blender-asset-mcp"
+   ]
+  },
+  {
+   "name": "blenderwright (HoldMyBeer-gg, 구 blend-ai)",
+   "category": "mcp_sandboxed",
+   "what_it_is": "README: 'Formerly blend-ai. Same project, new name'. 191개 도구/28모듈. Transforms(snap 포함), Physics 9개(rigid body·cloth·fluid·particles·bake), Sculpting 8개(브러시·리메시·멀티레스·대칭·dyntopo 설정). 실제 스컬프트 붓질(stroke)은 아직 노출 안 됨.",
+   "how_to_use": "Blender Extension으로 설치(4.2+, 5.1 테스트).",
+   "strengths": "임의 코드 없이 전용 도구로 조작, 물리 안착 가능",
+   "weaknesses": "스컬프트 붓질 불가, 도구가 많아 컨텍스트 비용",
+   "license": "MIT(LICENSE.md 확인, 2026-10-02). 이전 조사(2026-09)에서는 AGPL-3.0-or-later로 기록됨",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-10-01",
+   "distribution": "GitHub, Blender Extension",
+   "safety": {
+    "source_visible": true,
+    "binaries": "저장소에 blend-ai-v1.0.0.zip(애드온 패키지)과 build.ps1(빌드 스크립트) 포함. 같은 조직 빌드물이지만 가능하면 소스에서 직접 패키징",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/HoldMyBeer-gg/blenderwright"
+   ]
+  },
+  {
+   "name": "blender-skills (arjun988)",
+   "category": "agent_skill",
+   "what_it_is": "94개 Blender 스킬 묶음(Cursor·Claude Code·Kiro·Codex). 생산(sculpting, retopology), 파이프라인(scene-assembly, set-dressing, procedural-modeling, collision-proxy, qa-review, archviz) 등. 오케스트레이터 스킬이 전문 스킬로 분배.",
+   "how_to_use": ".claude/skills 등에 복사. MCP와 함께 사용.",
+   "strengths": "배치(set-dressing·scene-assembly)와 유기(sculpting·creature) 작업 규칙이 스킬로 정리",
+   "weaknesses": "스킬 안 코드 스니펫은 실행 전 검토 필요. Anthropic 마켓플레이스 등록 심사 중(README)",
+   "license": "MIT(LICENSE 확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-07-10",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "없음",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/arjun988/blender-skills"
+   ]
+  },
+  {
+   "name": "Blender-Bonsai-IfcOpenShell-Sverchok Claude 스킬 패키지 (OpenAEC Foundation)",
+   "category": "agent_skill",
+   "what_it_is": "Blender·Bonsai·IfcOpenShell·Sverchok용 결정적(deterministic) Claude 스킬 73개(검색 요약). Blender MCP 연결용 .mcp.json 포함.",
+   "how_to_use": "Claude Code 스킬 폴더에 복사.",
+   "strengths": "건축(IFC)·파라메트릭(Sverchok) 작업을 스킬로 규칙화",
+   "weaknesses": "세부 미확인",
+   "license": "MIT(LICENSE 확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-03-30",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "없음",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/OpenAEC-Foundation/Blender-Bonsai-ifcOpenshell-Sverchok-Claude-Skill-Package"
+   ]
+  },
+  {
+   "name": "dcc-mcp-blender (dcc-mcp)",
+   "category": "mcp_server",
+   "what_it_is": "Blender 안에 Streamable HTTP MCP 서버를 내장하는 애드온, 200개 이상 도구(장면·오브젝트·물리 포함, 검색 요약). dcc-mcp-core 생태계.",
+   "how_to_use": "애드온 설치.",
+   "strengths": "멀티 DCC 공통 구조",
+   "weaknesses": "HTTP 서버이므로 127.0.0.1 바인딩 확인 필요",
+   "license": "MIT(LICENSE 확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-10-02",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "Windows 링크·상태 확인용 .ps1 스크립트 4개(tools/)",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/dcc-mcp/dcc-mcp-blender"
+   ]
+  },
+  {
+   "name": "blender-expert-skill (mhd347)",
+   "category": "agent_skill",
+   "what_it_is": "Blender 전반(렌더, 컴포지터, 스컬프트 모드, 지오메트리 노드, 모델링, 조명, PBR)을 다루는 Claude 스킬(검색 요약). 스컬프트 절: Dyntopo, 멀티레스, 브러시, 마스킹, 리토폴로지, 노멀 베이크.",
+   "how_to_use": "스킬 폴더에 복사.",
+   "strengths": "스컬프트 지식 정리",
+   "weaknesses": "파일 2개뿐, LICENSE 파일 없음",
+   "license": "LICENSE 파일 없음(확인)",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-05-19",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "없음",
+    "red_flags": "라이선스 미표기",
+    "verdict": "주의"
+   },
+   "urls": [
+    "https://github.com/mhd347/blender-expert-skill"
+   ]
+  },
+  {
+   "name": "ViSculpt (논문, 2026-08)",
+   "category": "computer_use_sculpt",
+   "what_it_is": "Blender GUI를 사람처럼 조작해 기존 메시를 편집하는 학습 없는 멀티에이전트 시스템. 계획→GUI 조작→시각 평가를 반복. Gemini 3 Flash 기본, Windows 11 + Blender 4.5 LTS에서 실험(검색 요약).",
+   "how_to_use": "연구 참고. 공개 코드 저장소는 찾지 못함.",
+   "strengths": "컴퓨터 유즈로 국소 메시 편집(스컬프트형)을 시도한 최신 사례",
+   "weaknesses": "코드 미공개(확인 못 함), 연구 단계",
+   "license": "미확인",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "arXiv 2608.24169(2026-08)",
+   "distribution": "arXiv",
+   "safety": {
+    "source_visible": true,
+    "binaries": "—",
+    "red_flags": "코드 없음",
+    "verdict": "주의"
+   },
+   "urls": [
+    "https://arxiv.org/abs/2608.24169"
+   ]
+  },
+  {
+   "name": "awesome-Agentic-3D-Modeling (wendashi)",
+   "category": "curated_list",
+   "what_it_is": "에이전트형 3D 모델링 프레임워크·논문 목록(awesome list).",
+   "how_to_use": "새 도구를 찾을 때 출발점.",
+   "strengths": "자주 갱신됨",
+   "weaknesses": "목록일 뿐 검증 아님",
+   "license": "LICENSE 파일 없음",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2026-10-02",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "없음(README 1개)",
+    "red_flags": "없음",
+    "verdict": "안전 신호 양호"
+   },
+   "urls": [
+    "https://github.com/wendashi/awesome-Agentic-3D-Modeling"
+   ]
+  },
+  {
+   "name": "blender-agent-tools (elasticdotventures)",
+   "category": "agent_tools",
+   "what_it_is": "Blender 에이전트 도구 모음(세부 미확인).",
+   "how_to_use": "—",
+   "strengths": "—",
+   "weaknesses": "LICENSE 없음, install.ps1 설치 스크립트, 2025-10 이후 정체",
+   "license": "LICENSE 파일 없음",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "마지막 커밋 2025-10-24",
+   "distribution": "GitHub",
+   "safety": {
+    "source_visible": true,
+    "binaries": "install.ps1",
+    "red_flags": "라이선스 미표기 + 설치 스크립트 → 실행 전 내용 검토",
+    "verdict": "주의"
+   },
+   "urls": [
+    "https://github.com/elasticdotventures/blender-agent-tools"
+   ]
+  },
+  {
+   "name": "[위험 의심] sergey-ali-lab2098c2/Blender-3D-Modeling-2026",
+   "category": "suspicious",
+   "what_it_is": "검색 결과 설명이 'Blender-3D computer graphics software. FullFree.' 원래 무료인 Blender를 'FullFree'로 내건 개인 저장소는 악성 배포 미끼의 전형적 패턴.",
+   "how_to_use": "열지 않음. Blender는 blender.org에서만.",
+   "strengths": "—",
+   "weaknesses": "—",
+   "license": "—",
+   "popularity": "미확인(GitHub API 차단)",
+   "last_update": "—",
+   "distribution": "—",
+   "safety": {
+    "source_visible": true,
+    "binaries": "확인하지 않음(접근 안 함)",
+    "red_flags": "무료 소프트웨어를 'FullFree/crack' 식으로 재배포하는 저장소 패턴",
+    "verdict": "위험"
+   },
+   "urls": []
+  }
+ ],
+ "know_how": [
+  {
+   "tip": "MCP 배치는 자유 좌표 대신 '관계 매크로 → 결정적 단언' 순서로 시킨다(blender-ai-mcp 설계)",
+   "why": "비전은 해석 보조, 최종 판정은 측정이라는 원칙이 부유·관통을 줄임",
+   "urls": [
+    "https://github.com/PatrykIti/blender-ai-mcp"
+   ]
+  },
+  {
+   "tip": "시각 품질은 목표 이미지 + 별도 비평가 루프로 끌어올리고, 물리 오류는 스크립트로 따로 잡는다",
+   "why": "dream-loop은 시각 비교만 하므로 부유·관통 같은 수치 오류는 scene_audit 같은 검사로 보완해야 함",
+   "urls": [
+    "https://github.com/achimala/dream-loop"
+   ]
+  }
+ ],
+ "case_studies": [],
+ "sources": [
+  {
+   "title": "PatrykIti/blender-ai-mcp README",
+   "url": "https://github.com/PatrykIti/blender-ai-mcp",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-05-04",
+   "why_useful": "배치 매크로·단언 도구 목록"
+  },
+  {
+   "title": "achimala/dream-loop README",
+   "url": "https://github.com/achimala/dream-loop",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-09-10",
+   "why_useful": "목표 이미지·비평 루프 스킬"
+  },
+  {
+   "title": "yi00it/blender-asset-mcp",
+   "url": "https://github.com/yi00it/blender-asset-mcp",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-09-23",
+   "why_useful": "렌더 검사·익스포트 검증 MCP"
+  },
+  {
+   "title": "HoldMyBeer-gg/blenderwright README·LICENSE",
+   "url": "https://github.com/HoldMyBeer-gg/blenderwright",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-10-01",
+   "why_useful": "blend-ai 개명, MIT, 물리·스컬프트 도구"
+  },
+  {
+   "title": "arjun988/blender-skills",
+   "url": "https://github.com/arjun988/blender-skills",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-07-10",
+   "why_useful": "94개 스킬"
+  },
+  {
+   "title": "OpenAEC Blender-Bonsai-IfcOpenShell-Sverchok Claude Skill Package",
+   "url": "https://github.com/OpenAEC-Foundation/Blender-Bonsai-ifcOpenshell-Sverchok-Claude-Skill-Package",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-03-30",
+   "why_useful": "건축·파라메트릭 스킬"
+  },
+  {
+   "title": "dcc-mcp/dcc-mcp-blender",
+   "url": "https://github.com/dcc-mcp/dcc-mcp-blender",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-10-02",
+   "why_useful": "Blender 내장 HTTP MCP"
+  },
+  {
+   "title": "mhd347/blender-expert-skill",
+   "url": "https://github.com/mhd347/blender-expert-skill",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2026-05-19",
+   "why_useful": "스컬프트 포함 Blender 스킬"
+  },
+  {
+   "title": "ViSculpt: Visual-Centric Agentic Geometry Editing",
+   "url": "https://arxiv.org/abs/2608.24169",
+   "source_type": "논문(검색 요약)",
+   "date": "2026-08",
+   "why_useful": "컴퓨터 유즈 메시 편집"
+  },
+  {
+   "title": "wendashi/awesome-Agentic-3D-Modeling",
+   "url": "https://github.com/wendashi/awesome-Agentic-3D-Modeling",
+   "source_type": "GitHub 목록(직접 확인)",
+   "date": "2026-10-02",
+   "why_useful": "에이전트형 3D 도구 목록"
+  },
+  {
+   "title": "elasticdotventures/blender-agent-tools",
+   "url": "https://github.com/elasticdotventures/blender-agent-tools",
+   "source_type": "GitHub(직접 확인)",
+   "date": "2025-10-24",
+   "why_useful": "주의 사례(라이선스 없음, 설치 스크립트)"
+  },
+  {
+   "title": "Top 8 Claude Skills for 3D Modeling, Game Dev, and Shader Programming (Snyk)",
+   "url": "https://snyk.io/articles/top-claude-skills-3d-modeling-game-dev-shader-programming/",
+   "source_type": "기사(검색 요약)",
+   "date": "2026",
+   "why_useful": "스킬 목록"
+  },
+  {
+   "title": "Claude + Blender MCP: What It Can Do, What It Can't (MindStudio)",
+   "url": "https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance",
+   "source_type": "기사(검색 요약)",
+   "date": "2026",
+   "why_useful": "MCP로 스컬프트 모드 접근 불가 지적"
+  }
+ ],
+ "gaps": [
+  "별 수·다운로드 수는 GitHub API 차단으로 확인 못 함",
+  "ViSculpt 공개 코드 위치",
+  "OpenAEC 스킬 73개·dcc-mcp-blender 200+ 도구 수치는 검색 요약"
+ ]
+}

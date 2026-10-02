@@ -45,6 +45,7 @@ TOPIC_TITLES = {
     "G11_architecture": "[보완] 건물·건축·평면·도시 배치 도구",
     "G12_tool_safety": "[보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)",
     "G13_placement_libraries": "[보완] 조형·배치 라이브러리 재확인(BlenderProc 등)",
+    "G14_agent_placement_helpers": "[보완] MCP·스킬·컴퓨터 유즈용 배치·조형 도우미",
 }
 
 VERDICT_KO = {"confirmed": "✅ 확인", "partially": "🟡 부분", "refuted": "❌ 반박", "unverifiable": "❔ 미확인"}

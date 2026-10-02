@@ -606,7 +606,7 @@ LLM이 bpy로 버텍스를 직접 움직여 유기 곡면을 만들면 울퉁불
 |---|---|---|---|
 | [MCP for Blender](https://github.com/ahujasid/mcp-for-blender) (ahujasid, 구 blender-mcp) | 코드 실행으로 부품을 만들고 검사 스크립트를 실행, 뷰포트 캡처 | PyPI `mcp-for-blender` 2.1.0(2026-09-25), 약 29.4k★, MIT, 36개 tool. `uvx blender-mcp`도 호환 래퍼로 동작 | `execute_code` 전에 저장, 작업을 작게 나누기, 소켓 타임아웃 180초. 익명 텔레메트리 기본 ON(`DISABLE_TELEMETRY=true`). `BLENDER_MCP_SAFE_MODE=1`은 샌드박스가 아님. Tripo는 유료 Premium 전용. Hunyuan3D 로컬 API 경로는 한국 라이선스 제외, Tencent Cloud 경로 약관은 (미확인) |
 | Claude 공식 Blender 커넥터(Blender Lab) | 같은 용도의 공식 MCP | 커넥터 v1.0.1, 애드온 `blender_version_min` 5.1.0, GPL-3.0-or-later | **5.1 미만 불가.** 공식·커뮤니티 모두 localhost:9876을 써서 **동시에 켜면 충돌** ([02 Blender MCP](02_blender_mcp.md)) |
-| [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai) | 도구 186개, mesh 품질 분석(non-manifold, loose vertex, zero-area face, duplicate vertex) 내장 | Blender 4.2+(5.1에서 테스트), 148★ | **AGPL-3.0-or-later**. 샌드박스가 파일 쓰기를 막음. 도구가 많아 컨텍스트를 많이 씀 |
+| [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai) | 도구 186개, mesh 품질 분석(non-manifold, loose vertex, zero-area face, duplicate vertex) 내장 | Blender 4.2+(5.1에서 테스트), 148★ | 2026-10-02 확인: [blenderwright](https://github.com/HoldMyBeer-gg/blenderwright)로 이름이 바뀌었고 LICENSE는 **MIT**(이전 조사 시점 표기는 AGPL-3.0-or-later). 샌드박스가 파일 쓰기를 막음. 도구가 많아 컨텍스트를 많이 씀 |
 | [build123d-mcp](https://github.com/pzfreo/build123d-mcp) | 정밀 부품, fit·간섭 검사 | 0.3.90 | 단위 mm |
 | [AgentCAD](https://github.com/jdilla1277/agentcad) | CAD 버전 관리, A/B diff, check-spec | 0.6.0 | Python ≤3.12 |
 | [RobertCoop/openscad-mcp](https://github.com/RobertCoop/openscad-mcp) | 조립 간섭·클리어런스 검사 | MIT | CSG 메시는 Blender 후처리 필요 |

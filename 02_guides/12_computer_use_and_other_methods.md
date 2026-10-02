@@ -83,6 +83,11 @@ AI가 **화면 스크린샷 → 판단 → 마우스 이동·클릭·드래그·
 - Astra 가이드들도 캐릭터·유기체는 Blender 지오메트리로 억지로 만들지 말고 **이미지→3D·텍스트→3D 생성기로 베이스를 만들라**고 권한다고 합니다([kingy.ai](https://kingy.ai/blog/blender-openai-astra-complete-guide/)) (미확인). 레퍼런스 이미지로 드래곤을 만든 사례는 헤드리스 Blender를 썼다고 합니다([Sarang Borude, X](https://x.com/doomdave/status/2096335588727349434), 신뢰도 낮음) (미확인).
 - 권장 순서: 생성기(Rodin·Tripo·Meshy·TRELLIS.2)로 형태 → 리메시·UV·베이크를 스크립트로 → 필요하면 **사람이** 스컬프트로 다듬기 → 컴퓨터 유즈는 결과 확인. 생성된 메시의 특정 부위를 텍스트·이미지로 고치는 연구(ES3D, 3DEditFormer, EditFlow3D 등)도 나오고 있습니다([ES3D](https://arxiv.org/pdf/2608.15749), [EditFlow3D](https://arxiv.org/pdf/2608.03179), 연구 단계) (미확인: 논문 내용 미열람).
 
+- **2026-10 추가 확인**: 컴퓨터 유즈로 메시를 직접 고치는 연구가 나왔습니다.
+  - [ViSculpt](https://arxiv.org/abs/2608.24169)(2026-08): Blender GUI를 사람처럼 조작하며 계획 → 조작 → 시각 평가를 반복합니다. Gemini 3 Flash, Blender 4.5 LTS(검색 요약). 공개 코드는 찾지 못했습니다.
+  - 목표 이미지 + 비평가 루프 스킬 [dream-loop](https://github.com/achimala/dream-loop): 저자가 README에 "Blender MCP나 스크립트가 컴퓨터 유즈보다 결과가 좋다"고 적었습니다.
+  - MCP로 배치를 도구화한 서버([blender-ai-mcp](https://github.com/PatrykIti/blender-ai-mcp))와 함께 정리한 표는 [배치·조형 보조 도구 색인](../03_playbooks/06_placement_structure_helpers.md) 맨 앞에 있습니다.
+
 ## 6. 권장 구성 (실전)
 
 ```

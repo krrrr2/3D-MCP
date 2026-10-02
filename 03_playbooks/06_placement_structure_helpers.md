@@ -13,6 +13,29 @@
   - 규칙을 강제하는 **스킬**
 - 가장 빨리 쓸 수 있는 것은 **이 저장소의 스크립트**입니다. Blender 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트를 통과했고, 공식 MCP에서 import 실행도 확인했습니다.
 
+## MCP·스킬·컴퓨터 유즈용 배치·조형 도우미 (에이전트가 직접 쓰는 것)
+
+"MCP나 컴퓨터 유즈로 AI가 배치·조형을 잘하게 돕는 도구"입니다. 2026-10-02에 GitHub 원 저장소의 파일 목록, README, LICENSE로 확인했고, 설치·실행은 하지 않았습니다. 원자료는 [`G14_agent_placement_helpers.gap.json`](../01_research/raw/G14_agent_placement_helpers.gap.json)입니다.
+
+| 형태 | 도구 | 무엇을 돕나 | 라이선스·상태 | 안전 |
+|---|---|---|---|---|
+| **MCP 서버(배치 전용 도구)** | **[blender-ai-mcp](https://github.com/PatrykIti/blender-ai-mcp)** | `macro_relative_layout`(정렬·접촉 간격 배치), `macro_align_part_with_contact`(거의 맞는 두 부품을 맞붙임), `macro_place_symmetry_pair`(대칭 쌍), `macro_place_supported_pair`(같은 받침면 위 쌍), `macro_cleanup_part_intersections`(겹침 정리). 최종 판정은 `scene_measure_*`·`scene_assert_*` | Apache-2.0. 마지막 커밋 2026-05 | 실행 파일 없음 |
+| MCP 서버(전용 도구, 임의 코드 없음) | [blenderwright](https://github.com/HoldMyBeer-gg/blenderwright)(구 blend-ai) | 스냅, 물리(rigid body 안착), 스컬프트 **설정**(브러시·리메시·멀티레스). 실제 붓질은 미지원 | **MIT**(LICENSE 확인. 예전 문서의 AGPL 표기는 정정함). 커밋 2026-10 | 저장소에 애드온 zip·빌드 스크립트 포함 → 가능하면 소스에서 패키징 |
+| MCP 서버(검사 루프) | [blender-asset-mcp](https://github.com/yi00it/blender-asset-mcp) | 렌더 → 자기 확인 → 수정, 엔진 예산·manifold 검증, 콜리전·LOD | MIT. 커밋 2026-09 | 양호 |
+| 에이전트 스킬(시각 품질) | [dream-loop](https://github.com/achimala/dream-loop) | 이미지 생성으로 **목표 화면**을 먼저 만들고, 별도 비평가가 실제 화면과 비교해 고칠 점을 지시 | MIT. 커밋 2026-09. GPT-6 Astra(Codex)로만 테스트 | 양호 |
+| 에이전트 스킬(규칙) | [blender-skills](https://github.com/arjun988/blender-skills)(94개) | set-dressing·scene-assembly(배치), sculpting·creature·retopology(유기), collision-proxy, qa-review | MIT. 커밋 2026-07 | 스니펫은 실행 전 검토 |
+| 에이전트 스킬(조립) | [ProfRino Assembly Skill](https://github.com/ProfRino/Blender-MCP-Assembly-Skill), cc-blender-skill | 연결 맵, 결합부 겹침 5~15 mm, QA 게이트 → "분해된 의자" 방지 | [07 가이드 6절](../02_guides/07_modeling_objects_furniture_sculpture.md) | — |
+| 에이전트 스킬(건축) | [OpenAEC 스킬 패키지](https://github.com/OpenAEC-Foundation/Blender-Bonsai-ifcOpenshell-Sverchok-Claude-Skill-Package) | Blender·Bonsai(IFC)·IfcOpenShell·Sverchok용 결정적 스킬(73개, 검색 요약) | MIT. 커밋 2026-03 | 양호 |
+| 컴퓨터 유즈(GUI 조형) | [ViSculpt](https://arxiv.org/abs/2608.24169)(논문, 2026-08) | Blender GUI를 사람처럼 조작해 메시를 국소 편집. 계획 → 조작 → 시각 평가 반복 | 공개 코드 찾지 못함(연구 단계) | — |
+| 목록 | [awesome-Agentic-3D-Modeling](https://github.com/wendashi/awesome-Agentic-3D-Modeling) | 에이전트형 3D 도구·논문 모음(2026-10-02 갱신) | 목록일 뿐 검증 아님 | — |
+
+- **배치는 MCP + 결정적 검사가 가장 확실합니다.** blender-ai-mcp의 매크로·단언 도구를 쓰거나, 어느 MCP에서든 이 저장소의 `placement_utils`·`scene_audit`를 부르세요.
+- **시각 품질**(분위기·구도)은 dream-loop 같은 "목표 이미지 + 비평가" 루프로 끌어올립니다. 이 루프는 부유·관통 같은 수치 오류를 잡지 않으니 위 검사와 같이 쓰세요.
+- **컴퓨터 유즈로 스컬프트**하는 것은 아직 연구 단계입니다. dream-loop 저자도 "MCP나 스크립트가 컴퓨터 유즈보다 결과가 좋다"고 적었습니다.
+- **주의**
+  - 라이선스 없이 설치 스크립트(`install.ps1`)를 실행하게 하는 저장소([blender-agent-tools](https://github.com/elasticdotventures/blender-agent-tools))는 내용을 읽은 뒤에만 실행하세요.
+  - 무료인 Blender를 "FullFree"로 내건 개인 저장소처럼 무료 소프트웨어를 다시 배포한다는 저장소는 열지 마세요([설치 안전 가이드](../02_guides/14_tool_install_safety.md)).
+
 ## GitHub 라이브러리 바로 찾기
 
 "조형·배치가 잘 되게 해 주는 라이브러리"로 자주 떠올리는 것들입니다. 2026-10-02에 GitHub 원 저장소의 마지막 커밋과 LICENSE를 다시 확인했습니다. 설치·실행은 하지 않았습니다.
@@ -63,7 +86,7 @@
 |---|---|---|---|
 | 공식 Blender Lab 서버 | **없음**(분석·문서·코드 실행) | 이 저장소 스크립트를 import해서 쓰면 됨(확인) | [02 Blender MCP 가이드 4절](../02_guides/02_blender_mcp.md) |
 | ahujasid MCP for Blender | **없음**(에셋·생성 중심) | `execute_blender_code`로 직접 구현 | [08 배치 가이드 3.2절](../02_guides/08_scene_layout_placement.md) |
-| blend-ai | 스냅(Transforms), 원점, rigid body·bake, OpenGL 렌더 피드백 | AGPL-3.0 | 같은 곳 |
+| blenderwright(구 blend-ai) | 스냅(Transforms), 원점, rigid body·bake, 스컬프트 설정(브러시·리메시·멀티레스, 실제 붓질은 미지원), OpenGL 렌더 피드백 | MIT(2026-10 LICENSE, 이전 AGPL) | 같은 곳 |
 | Vibe3DScene | 자체 MCP + 에이전트, VLM 시각 검사 위에 관통 검사 옵션(기본 임계 2 cm) | 설정 요소 많음(Redis 등) | 같은 곳 |
 | blender-ai-mcp | 결정적 측정·assertion(배치·공간 관계 검증) | 설정 복잡, 2026-05 이후 커밋 없음 | [02 Blender MCP 가이드 5.1절](../02_guides/02_blender_mcp.md) |
 | glonorce/Blender_mcp | BVH 면 간 거리·관통 검사, 0~100 무결성 점수 | 소규모 | 같은 곳 |

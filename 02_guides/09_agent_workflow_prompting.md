@@ -848,7 +848,7 @@ Claude의 이미지 비용은 **⌈w/28⌉ × ⌈h/28⌉** 비주얼 토큰입�
 - [ ] **프롬프트 인젝션 주의.** 에셋 설명이나 웹 콘텐츠처럼 MCP가 가져오는 외부 텍스트는 지시가 아니라 데이터로 다룹니다.
 - [ ] **다운로드한 `.blend`의 Python 자동 실행 끄기**(Preferences > Save & Load > Auto Run Python Scripts. blend-ai도 비활성화).
 - [ ] **hooks로 파괴적 패턴 차단**(8.4절). 단 정규식은 실수 방지용입니다.
-- [ ] **임의 코드를 아예 없애는 선택지**: [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai)(허용 import 5개: bpy, bmesh, mathutils, math, json, 셰이더 노드 64종 allowlist, 텔레메트리 없음, 127.0.0.1 바인딩). **AGPL-3.0-or-later**라 수정본을 네트워크 서비스로 제공하면 소스 공개 의무가 생깁니다.
+- [ ] **임의 코드를 아예 없애는 선택지**: [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai)(허용 import 5개: bpy, bmesh, mathutils, math, json, 셰이더 노드 64종 allowlist, 텔레메트리 없음, 127.0.0.1 바인딩). 2026-10-02 확인: [blenderwright](https://github.com/HoldMyBeer-gg/blenderwright)로 이름이 바뀌었고 LICENSE는 **MIT**(이전 조사 시점 표기는 AGPL-3.0-or-later).
 - [ ] **CI 검증은 포트가 열리지 않는 headless 경로로 분리**(`blender -b`, 또는 신뢰도를 확인한 headless QA 서버).
 - [ ] **VM이나 dev container에서 실행하는 것도 고려.**
 - [ ] **스킬·서버 라이선스 확인**: Bniya-cn blender-design-master는 라이선스가 없고, 공식 Blender Lab 서버는 GPL-3.0-or-later입니다(번들 배포 시 주의).

@@ -31,8 +31,9 @@
 - [[보완] 건물·건축·평면·도시 배치 도구](#g11_architecture) — 출처 52개
 - [[보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)](#g12_tool_safety) — 출처 43개
 - [[보완] 조형·배치 라이브러리 재확인(BlenderProc 등)](#g13_placement_libraries) — 출처 5개
+- [[보완] MCP·스킬·컴퓨터 유즈용 배치·조형 도우미](#g14_agent_placement_helpers) — 출처 13개
 
-항목·사례에 인용된 URL까지 합친 고유 URL 수: **1960개**
+항목·사례에 인용된 URL까지 합친 고유 URL 수: **1970개**
 
 <a id="01_ai-models"></a>
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
@@ -1433,4 +1434,29 @@
 | 3 | BlenderProc change log | GitHub 문서(직접 확인) | 2024-10-22(v2.8.0) | Blender 4.2.1 업그레이드 | <https://github.com/DLR-RM/BlenderProc/blob/main/change_log.md> |
 | 4 | PyPI blenderproc | 패키지 레지스트리 | — | 설치 이름 | <https://pypi.org/project/blenderproc/> |
 | 5 | google-research/kubric | GitHub(직접 확인) | 2026-05-21(마지막 커밋) | PyBullet + Blender 물리 배치 | <https://github.com/google-research/kubric> |
+
+<a id="g14_agent_placement_helpers"></a>
+## [보완] MCP·스킬·컴퓨터 유즈용 배치·조형 도우미
+
+주제 원문: [보완] MCP·스킬·컴퓨터 유즈용 배치·조형 도우미 (2026-10-02)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | PatrykIti/blender-ai-mcp README | GitHub(직접 확인) | 2026-05-04 | 배치 매크로·단언 도구 목록 | <https://github.com/PatrykIti/blender-ai-mcp> |
+| 2 | achimala/dream-loop README | GitHub(직접 확인) | 2026-09-10 | 목표 이미지·비평 루프 스킬 | <https://github.com/achimala/dream-loop> |
+| 3 | yi00it/blender-asset-mcp | GitHub(직접 확인) | 2026-09-23 | 렌더 검사·익스포트 검증 MCP | <https://github.com/yi00it/blender-asset-mcp> |
+| 4 | HoldMyBeer-gg/blenderwright README·LICENSE | GitHub(직접 확인) | 2026-10-01 | blend-ai 개명, MIT, 물리·스컬프트 도구 | <https://github.com/HoldMyBeer-gg/blenderwright> |
+| 5 | arjun988/blender-skills | GitHub(직접 확인) | 2026-07-10 | 94개 스킬 | <https://github.com/arjun988/blender-skills> |
+| 6 | OpenAEC Blender-Bonsai-IfcOpenShell-Sverchok Claude Skill Package | GitHub(직접 확인) | 2026-03-30 | 건축·파라메트릭 스킬 | <https://github.com/OpenAEC-Foundation/Blender-Bonsai-ifcOpenshell-Sverchok-Claude-Skill-Package> |
+| 7 | dcc-mcp/dcc-mcp-blender | GitHub(직접 확인) | 2026-10-02 | Blender 내장 HTTP MCP | <https://github.com/dcc-mcp/dcc-mcp-blender> |
+| 8 | mhd347/blender-expert-skill | GitHub(직접 확인) | 2026-05-19 | 스컬프트 포함 Blender 스킬 | <https://github.com/mhd347/blender-expert-skill> |
+| 9 | ViSculpt: Visual-Centric Agentic Geometry Editing | 논문(검색 요약) | 2026-08 | 컴퓨터 유즈 메시 편집 | <https://arxiv.org/abs/2608.24169> |
+| 10 | wendashi/awesome-Agentic-3D-Modeling | GitHub 목록(직접 확인) | 2026-10-02 | 에이전트형 3D 도구 목록 | <https://github.com/wendashi/awesome-Agentic-3D-Modeling> |
+| 11 | elasticdotventures/blender-agent-tools ⚠ | GitHub(직접 확인) | 2025-10-24 | 주의 사례(라이선스 없음, 설치 스크립트) | <https://github.com/elasticdotventures/blender-agent-tools> |
+| 12 | Top 8 Claude Skills for 3D Modeling, Game Dev, and Shader Programming (Snyk) | 기사(검색 요약) | 2026 | 스킬 목록 | <https://snyk.io/articles/top-claude-skills-3d-modeling-game-dev-shader-programming/> |
+| 13 | Claude + Blender MCP: What It Can Do, What It Can't (MindStudio) | 기사(검색 요약) | 2026 | MCP로 스컬프트 모드 접근 불가 지적 | <https://www.mindstudio.ai/blog/claude-blender-mcp-real-world-performance> |
+
+**⚠ 신뢰도 경고가 붙은 출처**
+
+- <https://github.com/elasticdotventures/blender-agent-tools> — LICENSE 없음 + install.ps1 설치 스크립트. 실행 전 내용 검토.
 

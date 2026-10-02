@@ -10,7 +10,7 @@
 > 3. 필요한 주제의 가이드
 >
 > 자주 묻는 것:
-> - "배치·조형 보조 도구가 뭐가 있나" → [배치·조형 보조 도구 한눈에 보기](../03_playbooks/06_placement_structure_helpers.md)
+> - "배치·조형 보조 도구가 뭐가 있나" → [배치·조형 보조 도구 한눈에 보기](../03_playbooks/06_placement_structure_helpers.md) (맨 앞: MCP·스킬·컴퓨터 유즈용 도우미 표, 그다음 GitHub 라이브러리 표)
 > - "공식 Blender MCP는 어떤가" → [Blender MCP 가이드 4절](../02_guides/02_blender_mcp.md)과 [구동 검증 기록](../01_research/handson/blender_lab_mcp/README.md)
 
 ## 1. 현재 목표
@@ -24,7 +24,7 @@
 |---|---|---|
 | 조사 (13개 주제) | ✅ 완료 | 주제마다 조사 에이전트 1 + 독립 검증 에이전트 1 |
 | 공백 보완 조사 (8개) | ✅ 완료 | 치수·라이선스는 독립 재검증까지. G7(컴퓨터 유즈)은 메인 에이전트가 직접 조사. G8(공식 Blender Lab MCP)은 소스 정독 + 실제 구동 검증 |
-| 원자료 보존 | ✅ | `01_research/raw/` 47개 JSON (수정 금지) + 실제 구동 응답 원본 `01_research/handson/blender_lab_mcp/raw/` |
+| 원자료 보존 | ✅ | `01_research/raw/` 49개 JSON (수정 금지) + 실제 구동 응답 원본 `01_research/handson/blender_lab_mcp/raw/` |
 | 출처 카탈로그·검증 로그 | ✅ 자동 생성 | 고유 URL 약 1,470개 |
 | 가이드 12편 · 플레이북 5편 · 템플릿 2 · 사례집 2 | ✅ 작성 | 약 13,800줄 |
 | 문서 교차 검토 | ✅ 완료 | 5개 그룹 모두 독립 검토 완료(3~5그룹은 한도 해제 후 재실행). 아래 3절 참고 |
@@ -127,6 +127,7 @@
 | 14 | 배치·조형 보조 도구 색인(`03_playbooks/06_placement_structure_helpers.md`), 다음 세션 시작점 정리 |
 | 15 | 인체·유기물·건물 도구와 설치 안전 추가 조사(G9~G12 + 원문 대조), 가이드 13·14, Blender MCP 보안 절 CVE 4건, README·색인·목적 대응표 갱신 |
 | 16 | 조형·배치 라이브러리 재확인: BlenderProc(물리 배치) 추가, 색인 06 맨 앞에 'GitHub 라이브러리 바로 찾기' 표(원자료 G13) |
+| 17 | MCP·스킬·컴퓨터 유즈용 배치·조형 도우미(원자료 G14): blender-ai-mcp 배치 매크로, dream-loop, blender-asset-mcp, ViSculpt 등. 색인 06 맨 앞에 표. blend-ai → blenderwright 개명과 LICENSE MIT 확인으로 문서 7곳의 AGPL 표기 정정 |
 
 ## 8. 이어서 작업하는 법
 

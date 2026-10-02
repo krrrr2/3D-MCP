@@ -326,7 +326,7 @@ safe mode에서 이 `sys.path` import가 막히면 `scene_audit.py` 파일 내�
 | 버전 | 최신(2.1.0 이상) | 2026 CVE 4건(10661·10662·10688 Low, 66004 Poly Haven 경로 조작 Moderate, 커밋 30a3308 수정) 반영 버전. 목록은 [Blender MCP 가이드 10.1절](../02_guides/02_blender_mcp.md) | [GHSA](https://github.com/advisories/GHSA-qqw9-95ww-prfm). 로컬 파일을 읽어 외부 API로 보내는 구체적 시나리오는 [이슈 #202](https://github.com/ahujasid/blender-mcp/issues/202)에 있음(GHSA 본문이 #202와 명시적으로 연결하지는 않음) |
 
 - 근거: [README](https://github.com/ahujasid/blender-mcp), [커밋 로그](https://github.com/ahujasid/blender-mcp/commits/main), [텔레메트리 이슈 #232](https://github.com/ahujasid/blender-mcp/issues/232).
-- 더 강한 격리가 필요하면 임의 코드 실행을 막은 [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai)(허용 import 5개, 127.0.0.1 전용, AGPL-3.0-or-later)를 검토하세요.
+- 더 강한 격리가 필요하면 임의 코드 실행을 막은 [blend-ai](https://github.com/HoldMyBeer-gg/blend-ai)(허용 import 5개, 127.0.0.1 전용. 현 이름 blenderwright, 2026-10 LICENSE MIT)를 검토하세요.
 - **유료 생성 API는 호출 전에 사용자 확인**을 받도록 프롬프트나 [CLAUDE.md 템플릿](templates/CLAUDE.md)에 적어 두세요.
 
 ### 2.7 자주 나는 오류 (경로 B)
