@@ -13,6 +13,25 @@
   - 규칙을 강제하는 **스킬**
 - 가장 빨리 쓸 수 있는 것은 **이 저장소의 스크립트**입니다. Blender 4.2.23 LTS·5.0.1·5.2.2 LTS에서 테스트를 통과했고, 공식 MCP에서 import 실행도 확인했습니다.
 
+## GitHub 라이브러리 바로 찾기
+
+"조형·배치가 잘 되게 해 주는 라이브러리"로 자주 떠올리는 것들입니다. 2026-10-02에 GitHub 원 저장소의 마지막 커밋과 LICENSE를 다시 확인했습니다. 설치·실행은 하지 않았습니다.
+
+| 라이브러리 | 하는 일 | 라이선스 | 상태 | 주의 |
+|---|---|---|---|---|
+| [BlenderProc](https://github.com/DLR-RM/BlenderProc) (DLR) | **물체 배치**: 표면 위 포즈 샘플링(`sample_poses_on_surface`), 충돌 검사, 물리로 떨어뜨려 안착(`simulate_physics_and_fix_final_poses`) | GPL-3.0 | v2.8.0(2024-10), 커밋 2026-01 | 자체 Blender 4.2.1을 공식 서버에서 받아 **별도 프로세스**로 실행. 작업 중인 Blender 5.x 안에서 import하는 방식이 아님 |
+| [Infinigen](https://github.com/princeton-vl/infinigen) (Princeton) | **조형 + 배치**: 나무·바위·생물·지형 생성기, 실내 가구 제약 배치(Infinigen Indoors) | BSD-3 | 커밋 2026-08 | 자연 에셋은 `nature-stable` 태그(구 bpy) → 별도 환경에서 뽑아 가져오기 |
+| [fogleman/sdf](https://github.com/fogleman/sdf) | **유기 조형**: 파이썬 코드로 SDF를 조합(smooth union) → 메시 | MIT | 커밋 2024-08(정체) | Blender 5.x에서는 내장 SDF 노드로 같은 일을 할 수 있음 |
+| [Sverchok](https://github.com/nortikin/sverchok) | **파라메트릭 조형**: 600개 이상 노드(격자, 파빌리온, 트위스트) | GPL-3.0 | 커밋 2026-09 | 큰 노드 그래프는 에이전트가 틀리기 쉬움 |
+| [Kubric](https://github.com/google-research/kubric) (Google) | 물리(PyBullet) 기반 다물체 배치 장면 생성 | Apache-2.0 | 커밋 2026-05 | Blender 2.93 고정 → 아이디어 참고용 |
+| Holodeck · LayoutVLM · SceneSmith · HSM | 관계 제약 → 솔버로 가구 좌표 | 각자 다름 | — | [08 배치 가이드 3.1절](../02_guides/08_scene_layout_placement.md) |
+
+- **지금 Blender 5.x 작업에 바로 쓰기 좋은 것**:
+  - 이 저장소 스크립트(아래 1절)
+  - 08 가이드의 물리 안착 코드(4.7절). BlenderProc의 "표면 샘플링 → 물리 안착 → 포즈 고정"과 같은 원리를 bpy로 구현한 것입니다.
+  - Blender 5.x 내장 SDF 노드
+- 원자료: [`G13_placement_libraries.gap.json`](../01_research/raw/G13_placement_libraries.gap.json)
+
 ## 1. 이 저장소에 이미 있는 것 (바로 사용)
 
 | 필요 | 도구 | 하는 일 | 위치 |

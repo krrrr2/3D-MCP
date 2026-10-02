@@ -30,8 +30,9 @@
 - [[보완] 유기물·자연·조형물 도구](#g10_organic_nature) — 출처 61개
 - [[보완] 건물·건축·평면·도시 배치 도구](#g11_architecture) — 출처 52개
 - [[보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)](#g12_tool_safety) — 출처 43개
+- [[보완] 조형·배치 라이브러리 재확인(BlenderProc 등)](#g13_placement_libraries) — 출처 5개
 
-항목·사례에 인용된 URL까지 합친 고유 URL 수: **1955개**
+항목·사례에 인용된 URL까지 합친 고유 URL 수: **1960개**
 
 <a id="01_ai-models"></a>
 ## AI 모델 비교 (GPT-6 Astra / Claude / Gemini ...)
@@ -1419,4 +1420,17 @@
 | 41 | GitHub Advisory DB — CVE-2025-32434 (torch.load weights_only RCE) | GitHub Advisory DB(직접 확인) | 2025-04-18 | PyTorch 버전 하한 근거 | <https://github.com/advisories?query=CVE-2025-32434> |
 | 42 | Blender Lab MCP Server | Blender 공식(검색 요약) | 2026 | 공식 MCP 서버 배포처 | <https://www.blender.org/lab/mcp-server/> |
 | 43 | Malvertising through search engines (Securelist) | 보안 벤더 연구(검색 요약) | 2023 | Blender 사칭 광고 배경 | <https://securelist.com/malvertising-through-search-engines/108996/> |
+
+<a id="g13_placement_libraries"></a>
+## [보완] 조형·배치 라이브러리 재확인(BlenderProc 등)
+
+주제 원문: [보완] 조형·배치 라이브러리 재확인: BlenderProc 등 (2026-10-02)
+
+| # | 제목 | 유형 | 날짜 | 왜 유용한가 | URL |
+|---|---|---|---|---|---|
+| 1 | DLR-RM/BlenderProc README·LICENSE·change_log | GitHub(직접 확인) | 2026-01-07(마지막 커밋) | 배치 샘플링·물리 안착·충돌 검사 API | <https://github.com/DLR-RM/BlenderProc> |
+| 2 | BlenderProc physics tutorial | GitHub 문서(직접 확인) | 상시 | collision_shape, simulate_physics_and_fix_final_poses | <https://github.com/DLR-RM/BlenderProc/blob/main/docs/tutorials/physics.md> |
+| 3 | BlenderProc change log | GitHub 문서(직접 확인) | 2024-10-22(v2.8.0) | Blender 4.2.1 업그레이드 | <https://github.com/DLR-RM/BlenderProc/blob/main/change_log.md> |
+| 4 | PyPI blenderproc | 패키지 레지스트리 | — | 설치 이름 | <https://pypi.org/project/blenderproc/> |
+| 5 | google-research/kubric | GitHub(직접 확인) | 2026-05-21(마지막 커밋) | PyBullet + Blender 물리 배치 | <https://github.com/google-research/kubric> |
 

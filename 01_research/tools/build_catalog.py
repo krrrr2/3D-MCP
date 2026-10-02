@@ -44,6 +44,7 @@ TOPIC_TITLES = {
     "G10_organic_nature": "[보완] 유기물·자연·조형물 도구",
     "G11_architecture": "[보완] 건물·건축·평면·도시 배치 도구",
     "G12_tool_safety": "[보완] 3D 도구 보안(악성 애드온·.blend·MCP·모델 파일)",
+    "G13_placement_libraries": "[보완] 조형·배치 라이브러리 재확인(BlenderProc 등)",
 }
 
 VERDICT_KO = {"confirmed": "✅ 확인", "partially": "🟡 부분", "refuted": "❌ 반박", "unverifiable": "❔ 미확인"}

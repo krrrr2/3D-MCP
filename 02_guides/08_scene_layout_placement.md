@@ -438,6 +438,8 @@ print(pu.check_clearances([              # (A, B, 최소 m, 최대 m 또는 None
 
 ### 4.7 소품: 받침면 + rigid body 안착
 
+> 같은 원리를 함수로 묶은 라이브러리가 [BlenderProc](https://github.com/DLR-RM/BlenderProc)(DLR, GPL-3.0)입니다. 표면 위 포즈 샘플링, 충돌 검사, 물리 안착 후 포즈 고정을 함수로 제공합니다. 다만 자체 Blender 4.2.1로 별도 프로세스에서 돌기 때문에, 작업 중인 Blender 5.x 안에서는 아래 코드를 쓰는 편이 간단합니다.
+
 쌓기·기대기처럼 자연스러운 접촉은 솔버보다 물리가 잘 만듭니다. SceneSmith는 소품을 5초(dt 0.001) 시뮬레이션해 안정성을 보고, 45° 이상 기울면 "넘어짐", 1 m 이상 움직이면 실패로 봅니다([manipuland 설정](https://raw.githubusercontent.com/nepfaff/scenesmith/main/configurations/manipuland_agent/base_manipuland_agent.yaml)). SAGE는 받침 위 후보 150개를 샘플링한 뒤 physics critic으로 거릅니다.
 
 ```python
